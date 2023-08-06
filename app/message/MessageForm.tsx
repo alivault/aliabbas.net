@@ -11,31 +11,55 @@ import {
   FormField,
   FormItem,
   FormMessage,
+  FormLabel,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useForm } from 'react-hook-form';
 import { Textarea } from '@/components/ui/textarea';
 import { useEffect } from 'react';
 import Link from 'next/link';
-
-const formSchema = z.object({
-  email: z.string().email({ message: 'Please provide a valid email address.' }),
-  message: z.string().nonempty({ message: 'A message is required.' }),
-  formError: z.string().optional(),
-});
+import { Loader } from 'lucide-react';
 
 export function MessageForm() {
   const [isSubmitted, setSubmitted] = useState(false);
+  const [number1, setNumber1] = useState<number | null>(null);
+  const [number2, setNumber2] = useState<number | null>(null);
+
+  useEffect(() => {
+    setNumber1(Math.floor(Math.random() * 11));
+    setNumber2(Math.floor(Math.random() * 11));
+  }, []);
+
+  const formSchema = z.object({
+    email: z
+      .string()
+      .email({ message: 'Please provide a valid email address.' }),
+    message: z.string().nonempty({ message: 'A message is required.' }),
+    verification: z
+      .string()
+      .refine(
+        str =>
+          number1 !== null &&
+          number2 !== null &&
+          parseInt(str, 10) === number1 + number2,
+        {
+          message: `Please answer the verification question correctly.`,
+        }
+      ),
+    formError: z.string().optional(),
+  });
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
       message: '',
+      verification: '',
       formError: '',
     },
   });
 
-  const { setError, clearErrors } = form;
+  const { setError, clearErrors, setValue } = form;
 
   const watchedEmail = form.watch('email');
   const watchedMessage = form.watch('message');
@@ -85,13 +109,16 @@ export function MessageForm() {
   } else {
     return (
       <section className='flex flex-col gap-4'>
-        <h1 className='text-xl font-bold'>
-          Do you have a question or are you interested in working with me? Just
-          fill out the form below and I will get back to you within 24 hours.
-        </h1>
+        <h1 className='text-xl font-bold'>Message</h1>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(onSubmit, errors => {
+              if (errors.verification) {
+                setValue('verification', '');
+              }
+              setNumber1(Math.floor(Math.random() * 11));
+              setNumber2(Math.floor(Math.random() * 11));
+            })}
             className='flex flex-col gap-4'
           >
             <FormField
@@ -100,7 +127,7 @@ export function MessageForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input placeholder='Your Email' {...field} />
+                    <Input placeholder='Your email' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -112,12 +139,32 @@ export function MessageForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Textarea placeholder='Your Message' {...field} />
+                    <Textarea placeholder='Your message' {...field} />
                   </FormControl>
                   <FormMessage>
                     {form.formState.errors.formError &&
                       form.formState.errors.formError.message}
                   </FormMessage>
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name='verification'
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className='flex items-center gap-2'>
+                    Anti-spam verification:{' '}
+                    {number1 !== null && number2 !== null ? (
+                      `${number1} + ${number2} = ?`
+                    ) : (
+                      <Loader className='h-3 w-3 animate-spin' />
+                    )}
+                  </FormLabel>
+                  <FormControl>
+                    <Input type='number' {...field} />
+                  </FormControl>
+                  <FormMessage />
                 </FormItem>
               )}
             />
