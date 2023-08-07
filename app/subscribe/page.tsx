@@ -1,6 +1,6 @@
 import React from 'react';
 import TheNav from '@/components/TheNav';
-import { FollowForm } from './FollowForm';
+import { SubscribeForm } from './SubscribeForm';
 
 export default function FollowPage() {
   return (
@@ -9,11 +9,7 @@ export default function FollowPage() {
         <TheNav />
       </header>
       <section className='flex flex-col gap-4'>
-        <h1 className='text-xl font-bold'>
-          Follow me to unlock innovative insights to navigate your life and
-          career more creatively. No spam. Just good stuff.
-        </h1>
-        <FollowForm />
+        <SubscribeForm />
       </section>
     </main>
   );

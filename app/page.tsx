@@ -24,7 +24,7 @@ export default function Home() {
         </p>
         <div className='grid grid-cols-2 gap-2'>
           <Button asChild>
-            <Link href='/follow'>Follow</Link>
+            <Link href='/subscribe'>Subscribe</Link>
           </Button>
           <Button asChild variant={'secondary'}>
             <Link href='/message'>Message</Link>

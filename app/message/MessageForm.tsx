@@ -19,6 +19,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useEffect } from 'react';
 import Link from 'next/link';
 import { Loader } from 'lucide-react';
+import Spinner from '@/components/Spinner';
 
 export function MessageForm() {
   const [isSubmitted, setSubmitted] = useState(false);
@@ -158,7 +159,7 @@ export function MessageForm() {
                     {number1 !== null && number2 !== null ? (
                       `${number1} + ${number2} = ?`
                     ) : (
-                      <Loader className='h-3 w-3 animate-spin' />
+                      <Spinner size='xs' />
                     )}
                   </FormLabel>
                   <FormControl>
@@ -169,7 +170,7 @@ export function MessageForm() {
               )}
             />
             <Button type='submit' disabled={form.formState.isSubmitting}>
-              {form.formState.isSubmitting ? 'Sending...' : 'Send'}
+              {form.formState.isSubmitting ? <Spinner size='md' /> : 'Send'}
             </Button>
           </form>
         </Form>
