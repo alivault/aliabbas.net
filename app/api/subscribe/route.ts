@@ -16,14 +16,16 @@ export async function POST(request: NextRequest) {
   try {
     const response = await mailerlite.subscribers.createOrUpdate(params);
     return NextResponse.json(response.data);
-  } catch (error) {
-    if (error.response) {
-      return NextResponse.json(error.response.data, { status: 500 });
-    } else {
-      return NextResponse.json(
-        { error: 'Unable to subscribe email.' },
-        { status: 500 }
-      );
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      const responseError = error as { response?: { data?: any } };
+      if (responseError.response && responseError.response.data) {
+        return NextResponse.json(responseError.response.data, { status: 500 });
+      }
     }
+    return NextResponse.json(
+      { error: 'Unable to subscribe email.' },
+      { status: 500 }
+    );
   }
 }
