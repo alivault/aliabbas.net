@@ -1,6 +1,6 @@
 import React from 'react';
 
-interface ExperienceItemProps {
+interface WorkItemProps {
   title: string;
   company: string;
   url?: string;
@@ -8,7 +8,7 @@ interface ExperienceItemProps {
   description: string;
 }
 
-const ExperienceItem: React.FC<ExperienceItemProps> = ({
+const WorkItem: React.FC<WorkItemProps> = ({
   title,
   company,
   url,
@@ -24,7 +24,7 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
             href={url}
             target='_blank'
             rel='noopener noreferrer'
-            className='text-link hover:underline dark:text-link-dark'
+            className='dark:text-link-dark text-link hover:underline'
           >
             {company}
           </a>
@@ -38,4 +38,4 @@ const ExperienceItem: React.FC<ExperienceItemProps> = ({
   );
 };
 
-export default ExperienceItem;
+export default WorkItem;

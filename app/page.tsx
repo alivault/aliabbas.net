@@ -1,6 +1,6 @@
 import ArticlesSection from '@/components/ArticlesSection';
 import Avatar from '@/components/Avatar';
-import ExperienceSection from '@/components/ExperienceSection';
+import WorkSection from '@/components/WorkSection';
 import ProjectsSection from '@/components/ProjectsSection';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
@@ -31,9 +31,9 @@ export default function Home() {
           </Button>
         </div>
       </section>
-      <ProjectsSection />
-      <ExperienceSection />
       <ArticlesSection />
+      <ProjectsSection />
+      <WorkSection />
     </main>
   );
 }
