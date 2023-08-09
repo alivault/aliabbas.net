@@ -3,6 +3,23 @@ import remarkGfm from 'remark-gfm';
 import CustomImage from '@/components/CustomImage';
 import rehypePrettyCode from 'rehype-pretty-code';
 
+const shiki = require('shiki');
+
+async function customGetHighlighter() {
+  const path = require('path');
+  const themePath = path.resolve(
+    process.cwd(),
+    'node_modules/shiki/themes/github-dark-dimmed.json'
+  );
+  const theme = await shiki.loadTheme(themePath);
+  const highlighter = await shiki.getHighlighter({ theme });
+  return highlighter;
+}
+
+const options = {
+  getHighlighter: customGetHighlighter,
+};
+
 type Filetree = {
   tree: [
     {
@@ -43,7 +60,7 @@ export async function getArticleByName(
       parseFrontmatter: true,
       mdxOptions: {
         remarkPlugins: [remarkGfm],
-        rehypePlugins: [[rehypePrettyCode]],
+        rehypePlugins: [[rehypePrettyCode, options]],
       },
     },
   });
