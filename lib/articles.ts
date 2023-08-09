@@ -2,6 +2,7 @@ import { compileMDX } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 import CustomImage from '@/components/CustomImage';
 import rehypePrettyCode from 'rehype-pretty-code';
+import { highlight } from './shiki';
 
 type Filetree = {
   tree: [
@@ -43,7 +44,14 @@ export async function getArticleByName(
       parseFrontmatter: true,
       mdxOptions: {
         remarkPlugins: [remarkGfm],
-        rehypePlugins: [[rehypePrettyCode]],
+        rehypePlugins: [
+          [
+            rehypePrettyCode,
+            {
+              highlight,
+            },
+          ],
+        ],
       },
     },
   });

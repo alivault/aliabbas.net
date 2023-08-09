@@ -10,16 +10,8 @@ const nextConfig = {
       },
     ],
   },
-  unstable_includeFiles: ['node_modules/.pnpm/**/shiki/**/*.json'],
-  output: 'standalone',
-  future: {
-    webpack5: true,
-  },
-  webpack(config) {
-    config.resolve.fallback = {
-      ...config.resolve.fallback,
-      fs: false,
-    };
+  experimental: {
+    serverComponentsExternalPackages: ['shiki', 'vscode-oniguruma'],
   },
 };
 
