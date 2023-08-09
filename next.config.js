@@ -10,6 +10,7 @@ const nextConfig = {
       },
     ],
   },
+  unstable_includeFiles: ['node_modules/.pnpm/**/shiki/**/*.json'],
 };
 
 module.exports = nextConfig;
