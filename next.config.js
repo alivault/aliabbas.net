@@ -11,6 +11,7 @@ const nextConfig = {
     ],
   },
   unstable_includeFiles: ['node_modules/.pnpm/**/shiki/**/*.json'],
+  output: 'standalone',
 };
 
 module.exports = nextConfig;
