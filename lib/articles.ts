@@ -7,10 +7,7 @@ const shiki = require('shiki');
 
 async function customGetHighlighter() {
   const path = require('path');
-  const themePath = path.resolve(
-    process.cwd(),
-    'node_modules/shiki/themes/github-dark-dimmed.json'
-  );
+  const themePath = path.resolve(process.cwd(), 'lib/github-dark-dimmed.json');
   const theme = await shiki.loadTheme(themePath);
   const highlighter = await shiki.getHighlighter({ theme });
   return highlighter;
