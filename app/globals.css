@@ -37,6 +37,7 @@
 
     --link: 212 94% 45%;
   }
+
   @media (prefers-color-scheme: dark) {
     :root {
       --background: 212 40% 4%;
@@ -71,13 +72,19 @@
       --link: 212 94% 60%;
     }
   }
-}
 
-@layer base {
   * {
     @apply border-border;
   }
   body {
     @apply bg-background text-foreground;
+  }
+
+  /* prevent auto zoom on input in safari on iphone */
+  input[type='text'],
+  input[type='email'],
+  input[type='number'],
+  textarea {
+    font-size: 16px;
   }
 }

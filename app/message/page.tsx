@@ -4,10 +4,8 @@ import { MessageForm } from './MessageForm';
 
 export default function MessagePage() {
   return (
-    <main>
-      <header>
-        <TheNav />
-      </header>
+    <main className='flex flex-col gap-8'>
+      <TheNav />
       <MessageForm />
     </main>
   );

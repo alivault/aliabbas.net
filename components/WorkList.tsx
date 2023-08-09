@@ -16,7 +16,7 @@ interface ExperienceListProps {
 const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
   const experiences: Experience[] = [
     {
-      title: 'Product Designer & Developer',
+      title: 'Web Designer',
       company: 'Super Studios Inc.',
       url: 'https://superstudios.io/',
       date: 'Mar 2021 - Present',
@@ -24,7 +24,7 @@ const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
         'Conceptualizing and designing user interfaces using Figma for UX/UI design, Webflow for streamlined prototype development, and Next.js with Tailwind CSS to rapidly build modern, responsive designs.',
     },
     {
-      title: 'Web Designer & Developer',
+      title: 'Web Designer',
       company: 'Freelance',
       date: 'Mar 2019 - Mar 2021 · 2 yrs 1 mo',
       description:
@@ -65,7 +65,7 @@ const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
     : experiences;
 
   return (
-    <ul className='flex flex-col gap-4'>
+    <ul className='flex flex-col gap-8'>
       {displayedItems.map((item, index) => (
         <ExperienceItem key={index} {...item} />
       ))}

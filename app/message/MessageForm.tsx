@@ -18,7 +18,6 @@ import { useForm } from 'react-hook-form';
 import { Textarea } from '@/components/ui/textarea';
 import { useEffect } from 'react';
 import Link from 'next/link';
-import { Loader } from 'lucide-react';
 import Spinner from '@/components/Spinner';
 
 export function MessageForm() {
@@ -32,10 +31,11 @@ export function MessageForm() {
   }, []);
 
   const formSchema = z.object({
+    name: z.string().nonempty({ message: 'A name is required' }),
     email: z
       .string()
-      .email({ message: 'Please provide a valid email address.' }),
-    message: z.string().nonempty({ message: 'A message is required.' }),
+      .email({ message: 'Please provide a valid email address' }),
+    message: z.string().nonempty({ message: 'A message is required' }),
     verification: z
       .string()
       .refine(
@@ -44,7 +44,7 @@ export function MessageForm() {
           number2 !== null &&
           parseInt(str, 10) === number1 + number2,
         {
-          message: `Please answer the verification question correctly.`,
+          message: `Please answer the verification question correctly`,
         }
       ),
     formError: z.string().optional(),
@@ -53,6 +53,7 @@ export function MessageForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: '',
       email: '',
       message: '',
       verification: '',
@@ -110,7 +111,11 @@ export function MessageForm() {
   } else {
     return (
       <section className='flex flex-col gap-4'>
-        <h1 className='text-xl font-bold'>Message</h1>
+        <h1 className='text-3xl font-bold'>Message Ali </h1>
+        <p>
+          Looking to collaborate, hire, or seek guidance in tech and travel?
+          Drop me a message – let's create something remarkable together.
+        </p>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit, errors => {
@@ -124,11 +129,23 @@ export function MessageForm() {
           >
             <FormField
               control={form.control}
+              name='name'
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <Input type='text' placeholder='Your name' {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
               name='email'
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input placeholder='Your email' {...field} />
+                    <Input type='email' placeholder='Your email' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -140,7 +157,11 @@ export function MessageForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Textarea placeholder='Your message' {...field} />
+                    <Textarea
+                      className='text-base'
+                      placeholder='Your message'
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage>
                     {form.formState.errors.formError &&

@@ -13,7 +13,7 @@ export default function Home() {
       <section className='flex flex-col gap-4'>
         <Avatar size='2xl' />
         <div className='flex flex-col'>
-          <h1 className='text-2xl font-bold'>Ali Abbas</h1>
+          <h1 className='text-3xl font-bold'>Ali Abbas</h1>
           <p className='opacity-50'>Designer. Developer. Team Player.</p>
         </div>
         <p>

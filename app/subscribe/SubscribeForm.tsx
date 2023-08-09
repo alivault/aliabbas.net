@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormMessage,
@@ -62,9 +63,9 @@ export function SubscribeForm() {
     return (
       <section className='flex flex-col gap-4'>
         <div className='flex flex-col gap-4'>
-          <h1 className='rounded-lg bg-green-600 p-5 text-center text-xl font-bold text-white'>
+          <span className='rounded-lg bg-green-600 p-5 text-center text-xl font-bold text-white'>
             Thank you for subscribing!
-          </h1>
+          </span>
           <div className='flex'>
             <Link href='/' className='text-link hover:underline'>
               ← Back to Home
@@ -76,9 +77,11 @@ export function SubscribeForm() {
   } else {
     return (
       <section className='flex flex-col gap-4'>
-        <h1 className='text-xl font-bold'>
-          Receive my articles directly in your inbox.
-        </h1>
+        <p>
+          Join me as I traverse the globe, embracing diverse cultures and
+          teaching you how to do the same through a fulfilling career in tech,
+          all delivered straight to your inbox.
+        </p>
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -90,8 +93,11 @@ export function SubscribeForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Input placeholder='Your Email' {...field} />
+                    <Input type='email' placeholder='Your Email' {...field} />
                   </FormControl>
+                  <FormDescription>
+                    No spam. Unsubscribe at any time.
+                  </FormDescription>
                   <FormMessage>
                     {form.formState.errors.formError &&
                       form.formState.errors.formError.message}
