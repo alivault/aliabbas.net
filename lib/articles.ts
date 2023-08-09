@@ -1,9 +1,7 @@
 import { compileMDX } from 'next-mdx-remote/rsc';
-import rehypeAutolinkHeadings from 'rehype-autolink-headings';
-import rehypeHighlight from 'rehype-highlight';
-import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import CustomImage from '@/components/CustomImage';
+import rehypePrettyCode from 'rehype-pretty-code';
 
 type Filetree = {
   tree: [
@@ -44,17 +42,8 @@ export async function getArticleByName(
     options: {
       parseFrontmatter: true,
       mdxOptions: {
-        rehypePlugins: [
-          rehypeHighlight,
-          rehypeSlug,
-          [
-            rehypeAutolinkHeadings,
-            {
-              behavior: 'append',
-            },
-          ],
-        ],
         remarkPlugins: [remarkGfm],
+        rehypePlugins: [[rehypePrettyCode]],
       },
     },
   });

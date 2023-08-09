@@ -79,8 +79,24 @@ module.exports = {
       typography: {
         DEFAULT: {
           css: {
+            a: { color: 'hsl(var(--link))', textDecoration: 'none' },
+            'a:hover': { textDecoration: 'underline' },
             'code::before': { content: '""' },
             'code::after': { content: '""' },
+            code: {
+              backgroundColor: 'hsl(var(--foreground) / 15%)',
+              padding: '0.125rem 0.25rem 0.125rem 0.25rem',
+              borderRadius: '0.25rem',
+              fontWeight: '500',
+            },
+            'pre > code': { display: 'grid' },
+            pre: { padding: '1rem 0 1rem 0 !important' },
+            '[data-line]': { padding: '0 1rem 0 1rem' },
+            '[data-highlighted-line]': {
+              backgroundColor: 'hsl(0 0% 100% / 5%)',
+              borderLeftColor: 'hsl(var(--primary))',
+              borderLeftWidth: '2px',
+            },
             '.contains-task-list': {
               paddingLeft: '0.5rem !important',
             },
