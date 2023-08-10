@@ -48,7 +48,7 @@ export default async function Article({ params: { articleId } }: Props) {
   const date = getFormattedDate(meta.date);
 
   return (
-    <main className='flex flex-col gap-8'>
+    <main className='flex flex-col gap-6'>
       <TheNav />
       <article className='prose dark:prose-invert lg:prose-lg prose-h1:mb-4 prose-h1:text-3xl lg:prose-h1:text-4xl'>
         <h1>{meta.title}</h1>

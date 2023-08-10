@@ -12,7 +12,7 @@ export default function ProjectsSection({}) {
             target='blank'
             className='text-link hover:underline'
           >
-            Color Palette Maker
+            Color Palette Maker [WIP]
           </a>
         </li>
       </ul>

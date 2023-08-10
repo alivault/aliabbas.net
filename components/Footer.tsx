@@ -3,7 +3,7 @@ import TheNav from './TheNav';
 import { SubscribeForm } from '@/app/subscribe/SubscribeForm';
 export default function Footer({}) {
   return (
-    <div className='flex flex-col gap-8 border-t py-8'>
+    <div className='flex flex-col gap-6 border-t py-6'>
       <TheNav />
       <SubscribeForm />
     </div>

@@ -65,7 +65,7 @@ const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
     : experiences;
 
   return (
-    <ul className='flex flex-col gap-8'>
+    <ul className='flex flex-col gap-6'>
       {displayedItems.map((item, index) => (
         <ExperienceItem key={index} {...item} />
       ))}
