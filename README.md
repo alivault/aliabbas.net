@@ -2,13 +2,15 @@ This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next
 
 ## Getting Started
 
-First, run the development server:
+First, install the dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
+pnpm install
+```
+
+Then, run the development server:
+
+```bash
 pnpm dev
 ```
 
@@ -16,7 +18,9 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+This project uses [Next MDX Remote](https://github.com/hashicorp/next-mdx-remote) to render MDX files. The files are hosted in my articles github repository, and are fetched at build time.
+
+Syntax higlighting is provided by [Rehype Pretty Code](https://rehype-pretty-code.netlify.app/), a [Rehype](https://github.com/rehypejs/rehype/blob/main/doc/plugins.md) plugin powered by the [Shiki](https://shiki.matsu.io/) syntax highlighter that provides beautiful code blocks for Markdown or MDX.
 
 ## Learn More
 
