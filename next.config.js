@@ -12,6 +12,7 @@ const nextConfig = {
   },
   experimental: {
     outputFileTracingIncludes: {
+      '/': ['node_modules/shiki/**/*'],
       '/articles/[articleId]': ['node_modules/shiki/**/*'],
     },
   },
