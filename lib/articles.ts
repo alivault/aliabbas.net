@@ -43,7 +43,14 @@ export async function getArticleByName(
       parseFrontmatter: true,
       mdxOptions: {
         remarkPlugins: [remarkGfm],
-        rehypePlugins: [[rehypePrettyCode]],
+        rehypePlugins: [
+          [
+            rehypePrettyCode,
+            {
+              theme: 'github-dark-dimmed',
+            },
+          ],
+        ],
       },
     },
   });
