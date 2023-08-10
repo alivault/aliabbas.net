@@ -11,7 +11,9 @@ const nextConfig = {
     ],
   },
   experimental: {
-    serverComponentsExternalPackages: ['shiki', 'vscode-oniguruma'],
+    outputFileTracingIncludes: {
+      '/articles/[articleId]': ['node_modules/shiki/**/*'],
+    },
   },
 };
 
