@@ -98,14 +98,9 @@ export function MessageForm() {
   if (isSubmitted) {
     return (
       <section className='flex flex-col gap-4'>
-        <h1 className='rounded-lg bg-green-600 p-5 text-center text-xl font-bold text-white'>
+        <span className='rounded-lg bg-green-600 p-5 text-center text-xl font-bold text-white'>
           Thank you for your message. I will respond soon.
-        </h1>
-        <div className='flex'>
-          <Link href='/' className='text-link hover:underline'>
-            ← Back to Home
-          </Link>
-        </div>
+        </span>
       </section>
     );
   } else {

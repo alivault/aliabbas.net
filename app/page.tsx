@@ -17,10 +17,9 @@ export default function Home() {
           <p className='opacity-50'>Designer. Developer. Team Player.</p>
         </div>
         <p>
-          I'm a digital designer and full-stack web developer based in Los
-          Angeles. Welcome to my website where I share my thoughts on design,
-          development, and life. If you have any questions or comments, feel
-          free to reach out!
+          I'm a full-stack web developer based in Los Angeles. Welcome to my
+          website where I share my thoughts on design, development, and life. If
+          you have any questions or comments, feel free to reach out!
         </p>
         <div className='grid grid-cols-2 gap-2'>
           <Button asChild>

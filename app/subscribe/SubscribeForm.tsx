@@ -66,11 +66,6 @@ export function SubscribeForm() {
           <span className='rounded-lg bg-green-600 p-5 text-center text-xl font-bold text-white'>
             Thank you for subscribing!
           </span>
-          <div className='flex'>
-            <Link href='/' className='text-link hover:underline'>
-              ← Back to Home
-            </Link>
-          </div>
         </div>
       </section>
     );
