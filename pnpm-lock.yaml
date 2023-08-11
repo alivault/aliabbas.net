@@ -89,6 +89,9 @@ dependencies:
   typescript:
     specifier: 5.1.6
     version: 5.1.6
+  unified:
+    specifier: ^10.1.2
+    version: 10.1.2
   zod:
     specifier: ^3.21.4
     version: 3.21.4

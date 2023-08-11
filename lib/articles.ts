@@ -1,7 +1,41 @@
+import * as fs from 'fs/promises';
+import { join as pathJoin } from 'path';
+import rehypeCode, { Options as RehypeCodeOptions } from 'rehype-pretty-code';
+import * as shiki from 'shiki';
 import { compileMDX } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 import CustomImage from '@/components/CustomImage';
-import rehypePrettyCode from 'rehype-pretty-code';
+
+const getShikiPath = (): string => {
+  return pathJoin(process.cwd(), 'lib/shiki');
+};
+
+const touched = { current: false };
+
+const touchShikiPath = (): void => {
+  if (touched.current) return;
+  fs.readdir(getShikiPath());
+  touched.current = true;
+};
+
+const getHighlighter: RehypeCodeOptions['getHighlighter'] = async options => {
+  touchShikiPath();
+
+  const highlighter = await shiki.getHighlighter({
+    ...(options as any),
+    paths: {
+      languages: `${getShikiPath()}/languages/`,
+      themes: `${getShikiPath()}/themes/`,
+    },
+  });
+
+  return highlighter;
+};
+
+const getRehypeCodeOptions = (): Partial<RehypeCodeOptions> => ({
+  theme: 'github-dark-dimmed',
+  getHighlighter,
+});
 
 type Filetree = {
   tree: [
@@ -43,14 +77,7 @@ export async function getArticleByName(
       parseFrontmatter: true,
       mdxOptions: {
         remarkPlugins: [remarkGfm],
-        rehypePlugins: [
-          [
-            rehypePrettyCode,
-            {
-              theme: 'github-dark-dimmed',
-            },
-          ],
-        ],
+        rehypePlugins: [[rehypeCode, getRehypeCodeOptions()]],
       },
     },
   });
