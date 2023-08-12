@@ -16,6 +16,9 @@ export const metadata: Metadata = {
     title: 'Ali Abbas',
     description: "I'm a web developer focused on building great products.",
   },
+  other: {
+    'darkreader-lock': '',
+  },
 };
 
 export default function RootLayout({
