@@ -5,13 +5,26 @@ import { Analytics } from '@vercel/analytics/react';
 export const metadata: Metadata = {
   title: 'Ali Abbas',
   description: "I'm a web developer focused on building great products.",
+  openGraph: {
+    title: 'Ali Abbas',
+    description: "I'm a web developer focused on building great products.",
+    url: 'https://aliabbas.dev',
+    type: 'website',
+    images: [
+      {
+        url: 'https://aliabbas.dev/opengraph-image.jpeg',
+        width: 384,
+        height: 384,
+        alt: 'Ali Headshot',
+      },
+    ],
+  },
   other: {
     'twitter:card': 'summary',
     'twitter:title': 'Ali Abbas',
-    'og:title': 'Ali Abbas',
-    'og:url': 'https://aliabbas.dev',
-    'og:type': 'website',
-    'og:description': "I'm a web developer focused on building great products.",
+    'twitter:description':
+      "I'm a web developer focused on building great products.",
+    'twitter:image': 'https://aliabbas.dev/twitter-image.jpeg',
   },
 };
 
