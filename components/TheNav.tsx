@@ -5,7 +5,7 @@ import NavLink from './NavLink';
 import React from 'react';
 export default function TheNav({}) {
   return (
-    <nav className='mx-auto flex w-full max-w-[640px] items-start'>
+    <nav className='mx-auto flex w-full items-start'>
       <ul className='flex flex-row gap-4'>
         <li className='flex items-center gap-2'>
           <Link href='/'>
