@@ -10,21 +10,10 @@ export const metadata: Metadata = {
     description: "I'm a web developer focused on building great products.",
     url: 'https://aliabbas.dev',
     type: 'website',
-    images: [
-      {
-        url: 'https://aliabbas.dev/opengraph-image.jpeg',
-        width: 384,
-        height: 384,
-        alt: 'Ali Headshot',
-      },
-    ],
   },
   other: {
     'twitter:card': 'summary',
     'twitter:title': 'Ali Abbas',
-    'twitter:description':
-      "I'm a web developer focused on building great products.",
-    'twitter:image': 'https://aliabbas.dev/twitter-image.jpeg',
   },
 };
 
@@ -35,7 +24,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <body className='mx-auto max-w-3xl bg-background p-4 text-foreground lg:p-6'>
+      <body className='mx-auto flex min-h-[100dvh] max-w-3xl flex-col bg-background p-4 text-foreground lg:p-6'>
         {children}
         <Analytics />
       </body>

@@ -1,8 +1,8 @@
-import Footer from './../../../components/Footer';
+import Footer from '@/components/Footer';
 import getFormattedDate from '@/lib/getFormattedDate';
 import { getArticlesMeta, getArticleByName } from '@/lib/articles';
-import 'highlight.js/styles/atom-one-dark.css';
 import TheNav from '@/components/TheNav';
+import Link from 'next/link';
 
 export const revalidate = 86400; // 24 hours
 
@@ -33,6 +33,10 @@ export async function generateMetadata({ params: { articleId } }: Props) {
 
   return {
     title: article.meta.title,
+    description: article.meta.description,
+    twitter: {
+      title: article.meta.title,
+    },
   };
 }
 
@@ -40,7 +44,14 @@ export default async function Article({ params: { articleId } }: Props) {
   const article = await getArticleByName(`${articleId}.mdx`);
 
   if (!article) {
-    return <h1>Article not found</h1>;
+    return (
+      <main className='flex grow flex-col items-center justify-center gap-4'>
+        <h1>Article not found</h1>
+        <Link href='/' className='text-link hover:underline'>
+          ← Go home
+        </Link>
+      </main>
+    );
   }
 
   const { meta, content } = article;
