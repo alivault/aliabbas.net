@@ -68,6 +68,7 @@ export async function getArticleByName(
   const { frontmatter, content } = await compileMDX<{
     title: string;
     date: string;
+    description: string;
   }>({
     source: rawMDX,
     components: {
@@ -89,6 +90,7 @@ export async function getArticleByName(
       id,
       title: frontmatter.title,
       date: frontmatter.date,
+      description: frontmatter.description,
     },
     content,
   };
