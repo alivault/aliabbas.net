@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     description: "I'm a web developer focused on building great products.",
   },
   other: {
-    'darkreader-lock': '',
+    'darkreader-lock': 'true',
   },
 };
 
