@@ -34,8 +34,14 @@ export async function generateMetadata({ params: { articleId } }: Props) {
   return {
     title: article.meta.title,
     description: article.meta.description,
+    openGraph: {
+      title: article.meta.title,
+      description: article.meta.description,
+      type: 'article',
+    },
     twitter: {
       title: article.meta.title,
+      description: article.meta.description,
     },
   };
 }
