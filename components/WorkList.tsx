@@ -47,6 +47,7 @@ const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
     {
       title: 'Creative Director & Co-Founder',
       company: 'Verge Collective',
+      url: 'https://vergecollective.com/',
       date: 'Oct 2012 - Sep 2016 · 4 yrs',
       description:
         "I managed our team's brand design roadmap, frequently liaising with clients to comprehend their objectives and challenges. I translated these insights for our team and oversaw brand campaigns, client presentations, feedback integration, and brand standard formulation. Our clientele included Keller Williams Real Estate, Tony Horton of P90X, The Santa Maria Group, Prime Source Mortgage, Capital Direct Funding, and The United Nations.",
