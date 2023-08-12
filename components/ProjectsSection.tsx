@@ -8,11 +8,12 @@ export default function ProjectsSection({}) {
       <ul className='flex flex-col gap-4'>
         <li>
           <a
-            href='https://www.aliabbas.dev/color-palette-maker/'
+            href='https://alivault.github.io/color-palette-maker/'
             target='blank'
+            rel='noopener noreferrer'
             className='text-link hover:underline'
           >
-            Color Palette Maker [WIP]
+            Color Palette Maker (WIP)
           </a>
         </li>
       </ul>
