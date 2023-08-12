@@ -37,6 +37,7 @@ export async function generateMetadata({ params: { articleId } }: Props) {
     openGraph: {
       title: article.meta.title,
       description: article.meta.description,
+      url: `https://aliabbas.dev/articles/${articleId}`,
       type: 'article',
     },
     twitter: {

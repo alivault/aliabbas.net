@@ -11,9 +11,10 @@ export const metadata: Metadata = {
     url: 'https://aliabbas.dev',
     type: 'website',
   },
-  other: {
-    'twitter:card': 'summary',
-    'twitter:title': 'Ali Abbas',
+  twitter: {
+    card: 'summary',
+    title: 'Ali Abbas',
+    description: "I'm a web developer focused on building great products.",
   },
 };
 
