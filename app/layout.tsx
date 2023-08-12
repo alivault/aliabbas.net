@@ -4,7 +4,10 @@ import { Analytics } from '@vercel/analytics/react';
 
 export const metadata: Metadata = {
   title: 'Ali Abbas',
-  description: 'Designer. Developer. Team player.',
+  description: "I'm a web developer focused on building great products.",
+  other: {
+    'twitter:card': 'summary',
+  },
 };
 
 export default function RootLayout({
