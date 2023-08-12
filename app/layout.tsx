@@ -7,6 +7,11 @@ export const metadata: Metadata = {
   description: "I'm a web developer focused on building great products.",
   other: {
     'twitter:card': 'summary',
+    'twitter:title': 'Ali Abbas',
+    'og:title': 'Ali Abbas',
+    'og:url': 'https://aliabbas.dev',
+    'og:type': 'website',
+    'og:description': "I'm a web developer focused on building great products.",
   },
 };
 
