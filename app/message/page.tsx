@@ -1,6 +1,6 @@
-import React from 'react';
-import TheNav from '@/components/TheNav';
-import { MessageForm } from './MessageForm';
+import React from 'react'
+import TheNav from '@/components/TheNav'
+import { MessageForm } from './MessageForm'
 
 export default function MessagePage() {
   return (
@@ -8,5 +8,5 @@ export default function MessagePage() {
       <TheNav />
       <MessageForm />
     </main>
-  );
+  )
 }

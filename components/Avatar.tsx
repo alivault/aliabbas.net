@@ -1,12 +1,12 @@
-import React from 'react';
-import Image from 'next/image';
+import React from 'react'
+import Image from 'next/image'
 
 interface AvatarProps {
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl';
-  src?: string;
-  alt?: string;
-  quality?: number;
-  priority?: boolean;
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | '2xl'
+  src?: string
+  alt?: string
+  quality?: number
+  priority?: boolean
 }
 
 const sizeMapping = {
@@ -16,7 +16,7 @@ const sizeMapping = {
   lg: 64,
   xl: 80,
   '2xl': 144,
-};
+}
 
 const Avatar: React.FC<AvatarProps> = ({
   size = 'md',
@@ -35,7 +35,7 @@ const Avatar: React.FC<AvatarProps> = ({
       priority={priority}
       className='relative shrink-0 overflow-hidden rounded-full'
     />
-  );
-};
+  )
+}
 
-export default Avatar;
+export default Avatar

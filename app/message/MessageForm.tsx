@@ -1,10 +1,10 @@
-'use client';
+'use client'
 
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { useState } from 'react';
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { useState } from 'react'
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -12,23 +12,22 @@ import {
   FormItem,
   FormMessage,
   FormLabel,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { useForm } from 'react-hook-form';
-import { Textarea } from '@/components/ui/textarea';
-import { useEffect } from 'react';
-import Link from 'next/link';
-import Spinner from '@/components/Spinner';
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { useForm } from 'react-hook-form'
+import { Textarea } from '@/components/ui/textarea'
+import { useEffect } from 'react'
+import Spinner from '@/components/Spinner'
 
 export function MessageForm() {
-  const [isSubmitted, setSubmitted] = useState(false);
-  const [number1, setNumber1] = useState<number | null>(null);
-  const [number2, setNumber2] = useState<number | null>(null);
+  const [isSubmitted, setSubmitted] = useState(false)
+  const [number1, setNumber1] = useState<number | null>(null)
+  const [number2, setNumber2] = useState<number | null>(null)
 
   useEffect(() => {
-    setNumber1(Math.floor(Math.random() * 11));
-    setNumber2(Math.floor(Math.random() * 11));
-  }, []);
+    setNumber1(Math.floor(Math.random() * 11))
+    setNumber2(Math.floor(Math.random() * 11))
+  }, [])
 
   const formSchema = z.object({
     name: z.string().nonempty({ message: 'A name is required' }),
@@ -48,7 +47,7 @@ export function MessageForm() {
         }
       ),
     formError: z.string().optional(),
-  });
+  })
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -59,16 +58,16 @@ export function MessageForm() {
       verification: '',
       formError: '',
     },
-  });
+  })
 
-  const { setError, clearErrors, setValue } = form;
+  const { setError, clearErrors, setValue } = form
 
-  const watchedEmail = form.watch('email');
-  const watchedMessage = form.watch('message');
+  const watchedEmail = form.watch('email')
+  const watchedMessage = form.watch('message')
 
   useEffect(() => {
-    clearErrors('formError');
-  }, [watchedEmail, watchedMessage, clearErrors]);
+    clearErrors('formError')
+  }, [watchedEmail, watchedMessage, clearErrors])
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     const response = await fetch('/api/send', {
@@ -77,21 +76,21 @@ export function MessageForm() {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(values),
-    });
+    })
 
     if (!response.ok) {
-      throw new Error('Network response was not ok');
+      throw new Error('Network response was not ok')
     }
 
-    const data = await response.json();
+    const data = await response.json()
 
     if (data.error) {
       setError('formError', {
         message:
           'An error occurred while sending your message. Please try again later.',
-      });
+      })
     } else {
-      setSubmitted(true);
+      setSubmitted(true)
     }
   }
 
@@ -102,7 +101,7 @@ export function MessageForm() {
           Thank you for your message. I will respond soon.
         </span>
       </section>
-    );
+    )
   } else {
     return (
       <section className='flex flex-col gap-4'>
@@ -115,10 +114,10 @@ export function MessageForm() {
           <form
             onSubmit={form.handleSubmit(onSubmit, errors => {
               if (errors.verification) {
-                setValue('verification', '');
+                setValue('verification', '')
               }
-              setNumber1(Math.floor(Math.random() * 11));
-              setNumber2(Math.floor(Math.random() * 11));
+              setNumber1(Math.floor(Math.random() * 11))
+              setNumber2(Math.floor(Math.random() * 11))
             })}
             className='flex flex-col gap-4'
           >
@@ -191,6 +190,6 @@ export function MessageForm() {
           </form>
         </Form>
       </section>
-    );
+    )
   }
 }

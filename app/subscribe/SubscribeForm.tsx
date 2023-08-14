@@ -1,10 +1,10 @@
-'use client';
+'use client'
 
-import { useState } from 'react';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
+import { useState } from 'react'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -12,21 +12,21 @@ import {
   FormField,
   FormItem,
   FormMessage,
-} from '@/components/ui/form';
-import { Input } from '@/components/ui/input';
-import { useForm } from 'react-hook-form';
-import Link from 'next/link';
-import Spinner from '@/components/Spinner';
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { useForm } from 'react-hook-form'
+import Link from 'next/link'
+import Spinner from '@/components/Spinner'
 
 const formSchema = z.object({
   email: z.string().email({
     message: 'Please provide a valid email address.',
   }),
   formError: z.string().optional(),
-});
+})
 
 export function SubscribeForm() {
-  const [isSubmitted, setSubmitted] = useState(false);
+  const [isSubmitted, setSubmitted] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -34,12 +34,12 @@ export function SubscribeForm() {
       email: '',
       formError: '',
     },
-  });
+  })
 
-  const { setError } = form;
+  const { setError } = form
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    form.clearErrors('formError');
+    form.clearErrors('formError')
 
     const response = await fetch('/api/subscribe', {
       method: 'POST',
@@ -48,14 +48,14 @@ export function SubscribeForm() {
         Accept: 'application/json',
       },
       body: JSON.stringify(values),
-    });
+    })
 
-    const data = await response.json();
+    const data = await response.json()
 
     if (!response.ok) {
-      setError('formError', { message: data.message });
+      setError('formError', { message: data.message })
     } else {
-      setSubmitted(true);
+      setSubmitted(true)
     }
   }
 
@@ -68,7 +68,7 @@ export function SubscribeForm() {
           </span>
         </div>
       </section>
-    );
+    )
   } else {
     return (
       <section className='flex flex-col gap-4'>
@@ -110,6 +110,6 @@ export function SubscribeForm() {
           </form>
         </Form>
       </section>
-    );
+    )
   }
 }

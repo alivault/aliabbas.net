@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from 'next/link'
 
 export default function ColorPaletteMaker() {
   return (
@@ -20,5 +20,5 @@ export default function ColorPaletteMaker() {
         for future updates on this project.
       </p>
     </main>
-  );
+  )
 }

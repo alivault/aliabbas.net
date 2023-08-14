@@ -1,11 +1,11 @@
-import React from 'react';
+import React from 'react'
 
 interface WorkItemProps {
-  title: string;
-  company: string;
-  url?: string;
-  date: string;
-  description: string;
+  title: string
+  company: string
+  url?: string
+  date: string
+  description: string
 }
 
 const WorkItem: React.FC<WorkItemProps> = ({
@@ -35,7 +35,7 @@ const WorkItem: React.FC<WorkItemProps> = ({
       <span className='text-sm opacity-50'>{date}</span>
       <p className='text-sm'>{description}</p>
     </li>
-  );
-};
+  )
+}
 
-export default WorkItem;
+export default WorkItem

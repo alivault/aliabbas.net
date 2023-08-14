@@ -1,6 +1,6 @@
-import React from 'react';
-import TheNav from '@/components/TheNav';
-import { SubscribeForm } from './SubscribeForm';
+import React from 'react'
+import TheNav from '@/components/TheNav'
+import { SubscribeForm } from './SubscribeForm'
 
 export default function FollowPage() {
   return (
@@ -11,5 +11,5 @@ export default function FollowPage() {
         <SubscribeForm />
       </section>
     </main>
-  );
+  )
 }

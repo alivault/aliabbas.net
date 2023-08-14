@@ -1,8 +1,8 @@
-import React from 'react';
-import { Loader } from 'lucide-react';
+import React from 'react'
+import { Loader } from 'lucide-react'
 
 interface SpinnerProps {
-  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+  size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
 }
 
 const sizeClass = {
@@ -11,11 +11,11 @@ const sizeClass = {
   md: 'h-6 w-6',
   lg: 'h-8 w-8',
   xl: 'h-12 w-12',
-};
+}
 
 const Spinner: React.FC<SpinnerProps> = ({ size = 'sm' }) => {
-  const sizeClassName = sizeClass[size];
-  return <Loader className={`${sizeClassName} animate-spin`} />;
-};
+  const sizeClassName = sizeClass[size]
+  return <Loader className={`${sizeClassName} animate-spin`} />
+}
 
-export default Spinner;
+export default Spinner

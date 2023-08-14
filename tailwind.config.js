@@ -93,7 +93,7 @@ module.exports = {
             pre: { padding: '1rem 0 1rem 0 !important' },
             '[data-line]': { padding: '0 1rem 0 1rem' },
             '[data-highlighted-line]': {
-              backgroundColor: 'hsl(0 0% 100% / 5%)',
+              backgroundColor: 'hsl(0 0% 100% / 10%)',
               borderLeftColor: 'hsl(var(--primary))',
               borderLeftWidth: '2px',
             },
@@ -118,4 +118,4 @@ module.exports = {
     },
   },
   plugins: [require('tailwindcss-animate'), require('@tailwindcss/typography')],
-};
+}

@@ -1,7 +1,7 @@
-import WorkList from './WorkList';
-import SectionHeader from './SectionHeader';
-import React from 'react';
-import Link from 'next/link';
+import WorkList from './WorkList'
+import SectionHeader from './SectionHeader'
+import React from 'react'
+import Link from 'next/link'
 export default function WorkSection({}) {
   return (
     <section className='flex flex-col gap-4'>
@@ -11,5 +11,5 @@ export default function WorkSection({}) {
         Show more experience →
       </Link>
     </section>
-  );
+  )
 }

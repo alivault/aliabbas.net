@@ -1,34 +1,34 @@
-import Footer from '@/components/Footer';
-import getFormattedDate from '@/lib/getFormattedDate';
-import { getArticlesMeta, getArticleByName } from '@/lib/articles';
-import TheNav from '@/components/TheNav';
-import Link from 'next/link';
+import Footer from '@/components/Footer'
+import getFormattedDate from '@/lib/getFormattedDate'
+import { getArticlesMeta, getArticleByName } from '@/lib/articles'
+import TheNav from '@/components/TheNav'
+import Link from 'next/link'
 
-export const revalidate = 86400; // 24 hours
+export const revalidate = 86400 // 24 hours
 
 type Props = {
   params: {
-    articleId: string;
-  };
-};
+    articleId: string
+  }
+}
 
 export async function generateStaticParams() {
-  const articles = await getArticlesMeta();
+  const articles = await getArticlesMeta()
 
-  if (!articles) return [];
+  if (!articles) return []
 
   return articles.map(article => ({
     articleId: article.id,
-  }));
+  }))
 }
 
 export async function generateMetadata({ params: { articleId } }: Props) {
-  const article = await getArticleByName(`${articleId}.mdx`);
+  const article = await getArticleByName(`${articleId}.mdx`)
 
   if (!article) {
     return {
       title: 'Article Not Found',
-    };
+    }
   }
 
   return {
@@ -44,11 +44,11 @@ export async function generateMetadata({ params: { articleId } }: Props) {
       title: article.meta.title,
       description: article.meta.description,
     },
-  };
+  }
 }
 
 export default async function Article({ params: { articleId } }: Props) {
-  const article = await getArticleByName(`${articleId}.mdx`);
+  const article = await getArticleByName(`${articleId}.mdx`)
 
   if (!article) {
     return (
@@ -58,12 +58,12 @@ export default async function Article({ params: { articleId } }: Props) {
           ← Go home
         </Link>
       </main>
-    );
+    )
   }
 
-  const { meta, content } = article;
+  const { meta, content } = article
 
-  const date = getFormattedDate(meta.date);
+  const date = getFormattedDate(meta.date)
 
   return (
     <main className='flex flex-col gap-6'>
@@ -77,5 +77,5 @@ export default async function Article({ params: { articleId } }: Props) {
       </article>
       <Footer />
     </main>
-  );
+  )
 }

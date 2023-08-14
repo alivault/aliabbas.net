@@ -1,13 +1,13 @@
-import Image from 'next/image';
+import Image from 'next/image'
 
 type Props = {
-  src: string;
-  alt: string;
-  priority?: string;
-};
+  src: string
+  alt: string
+  priority?: string
+}
 
 export default function CustomImage({ src, alt, priority }: Props) {
-  const prty = priority ? true : false;
+  const prty = priority ? true : false
 
   return (
     <div className='h-full w-full'>
@@ -20,5 +20,5 @@ export default function CustomImage({ src, alt, priority }: Props) {
         priority={prty}
       />
     </div>
-  );
+  )
 }

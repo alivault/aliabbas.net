@@ -1,8 +1,8 @@
-import Link from 'next/link';
-import Avatar from './Avatar';
-import NavLink from './NavLink';
+import Link from 'next/link'
+import Avatar from './Avatar'
+import NavLink from './NavLink'
 
-import React from 'react';
+import React from 'react'
 export default function TheNav({}) {
   return (
     <nav className='mx-auto flex w-full items-start'>
@@ -20,5 +20,5 @@ export default function TheNav({}) {
         </li>
       </ul>
     </nav>
-  );
+  )
 }

@@ -1,9 +1,9 @@
-import Link from 'next/link';
-import React from 'react';
+import Link from 'next/link'
+import React from 'react'
 
 interface Props {
-  children: React.ReactNode;
-  href: string;
+  children: React.ReactNode
+  href: string
 }
 
 const NavLink: React.FC<Props> = ({ children, href }) => {
@@ -11,7 +11,7 @@ const NavLink: React.FC<Props> = ({ children, href }) => {
     <Link href={href} className='text-link hover:underline'>
       {children}
     </Link>
-  );
-};
+  )
+}
 
-export default NavLink;
+export default NavLink

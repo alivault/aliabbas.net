@@ -1,8 +1,8 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { revalidatePath } from 'next/cache';
+import { NextRequest, NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
 
 export async function GET(request: NextRequest) {
-  const secret = request.nextUrl.searchParams.get('secret');
+  const secret = request.nextUrl.searchParams.get('secret')
 
   if (secret !== process.env.SECRET) {
     return new NextResponse(JSON.stringify({ message: 'Invalid Token' }), {
@@ -11,12 +11,12 @@ export async function GET(request: NextRequest) {
       headers: {
         'Content-Type': 'application/json',
       },
-    });
+    })
   }
 
-  const path = request.nextUrl.searchParams.get('path') || '/';
+  const path = request.nextUrl.searchParams.get('path') || '/'
 
-  revalidatePath(path);
+  revalidatePath(path)
 
-  return NextResponse.json({ revalidated: true });
+  return NextResponse.json({ revalidated: true })
 }

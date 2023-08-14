@@ -1,11 +1,11 @@
-import ArticlesSection from '@/components/ArticlesSection';
-import Avatar from '@/components/Avatar';
-import WorkSection from '@/components/WorkSection';
-import ProjectsSection from '@/components/ProjectsSection';
-import { Button } from '@/components/ui/button';
-import Link from 'next/link';
+import ArticlesSection from '@/components/ArticlesSection'
+import Avatar from '@/components/Avatar'
+import WorkSection from '@/components/WorkSection'
+import ProjectsSection from '@/components/ProjectsSection'
+import { Button } from '@/components/ui/button'
+import Link from 'next/link'
 
-export const revalidate = 86400; // 24 hours
+export const revalidate = 86400 // 24 hours
 
 export default function Home() {
   return (
@@ -34,5 +34,5 @@ export default function Home() {
       <ProjectsSection />
       <WorkSection />
     </main>
-  );
+  )
 }

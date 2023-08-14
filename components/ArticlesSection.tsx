@@ -1,12 +1,12 @@
-import { getArticlesMeta } from '@/lib/articles';
-import ArticleListItem from './ArticleListItem';
-import SectionHeader from './SectionHeader';
+import { getArticlesMeta } from '@/lib/articles'
+import ArticleListItem from './ArticleListItem'
+import SectionHeader from './SectionHeader'
 
 export default async function ArticlesSection() {
-  const articles = await getArticlesMeta();
+  const articles = await getArticlesMeta()
 
   if (!articles) {
-    return <span>Sorry, no articles yet.</span>;
+    return <span>Sorry, no articles yet.</span>
   }
 
   return (
@@ -18,5 +18,5 @@ export default async function ArticlesSection() {
         ))}
       </ul>
     </section>
-  );
+  )
 }

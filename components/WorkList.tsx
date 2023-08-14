@@ -1,16 +1,16 @@
-import React from 'react';
-import ExperienceItem from './WorkItem';
+import React from 'react'
+import ExperienceItem from './WorkItem'
 
 interface Experience {
-  title: string;
-  company: string;
-  url?: string;
-  date: string;
-  description: string;
+  title: string
+  company: string
+  url?: string
+  date: string
+  description: string
 }
 
 interface ExperienceListProps {
-  maxItems?: number;
+  maxItems?: number
 }
 
 const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
@@ -59,11 +59,9 @@ const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
       description:
         'I organized concerts and festivals, from 800-seat venues to 15,000+ stadium events over three years. Booked artists included A-Trak, Major Lazer, Steve Aoki, People Under The Stairs, Portugal. the Man, OK Go and many others, totaling over 100 performers. My responsibilities encompassed event coordination, artist booking negotiations, equipment management, and collaboration with publicity and ticketing teams to drive sales.',
     },
-  ];
+  ]
 
-  const displayedItems = maxItems
-    ? experiences.slice(0, maxItems)
-    : experiences;
+  const displayedItems = maxItems ? experiences.slice(0, maxItems) : experiences
 
   return (
     <ul className='flex flex-col gap-6'>
@@ -71,7 +69,7 @@ const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
         <ExperienceItem key={index} {...item} />
       ))}
     </ul>
-  );
-};
+  )
+}
 
-export default ExperienceList;
+export default ExperienceList

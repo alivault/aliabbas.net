@@ -1,5 +1,5 @@
-import React from 'react';
-import SectionHeader from './SectionHeader';
+import React from 'react'
+import SectionHeader from './SectionHeader'
 
 export default function ProjectsSection({}) {
   return (
@@ -18,5 +18,5 @@ export default function ProjectsSection({}) {
         </li>
       </ul>
     </section>
-  );
+  )
 }

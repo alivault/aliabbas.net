@@ -1,11 +1,11 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode } from 'react'
 
 interface SectionHeaderProps {
-  children: ReactNode;
+  children: ReactNode
 }
 
 const SectionHeader: React.FC<SectionHeaderProps> = ({ children }) => {
-  return <h2 className='text-xl font-bold'>{children}</h2>;
-};
+  return <h2 className='text-xl font-bold'>{children}</h2>
+}
 
-export default SectionHeader;
+export default SectionHeader

@@ -1,25 +1,25 @@
-import * as fs from 'fs/promises';
-import { join as pathJoin } from 'path';
-import rehypeCode, { Options as RehypeCodeOptions } from 'rehype-pretty-code';
-import * as shiki from 'shiki';
-import { compileMDX } from 'next-mdx-remote/rsc';
-import remarkGfm from 'remark-gfm';
-import CustomImage from '@/components/CustomImage';
+import * as fs from 'fs/promises'
+import { join as pathJoin } from 'path'
+import rehypeCode, { Options as RehypeCodeOptions } from 'rehype-pretty-code'
+import * as shiki from 'shiki'
+import { compileMDX } from 'next-mdx-remote/rsc'
+import remarkGfm from 'remark-gfm'
+import CustomImage from '@/components/CustomImage'
 
 const getShikiPath = (): string => {
-  return pathJoin(process.cwd(), 'lib/shiki');
-};
+  return pathJoin(process.cwd(), 'lib/shiki')
+}
 
-const touched = { current: false };
+const touched = { current: false }
 
 const touchShikiPath = (): void => {
-  if (touched.current) return;
-  fs.readdir(getShikiPath());
-  touched.current = true;
-};
+  if (touched.current) return
+  fs.readdir(getShikiPath())
+  touched.current = true
+}
 
 const getHighlighter: RehypeCodeOptions['getHighlighter'] = async options => {
-  touchShikiPath();
+  touchShikiPath()
 
   const highlighter = await shiki.getHighlighter({
     ...(options as any),
@@ -27,23 +27,23 @@ const getHighlighter: RehypeCodeOptions['getHighlighter'] = async options => {
       languages: `${getShikiPath()}/languages/`,
       themes: `${getShikiPath()}/themes/`,
     },
-  });
+  })
 
-  return highlighter;
-};
+  return highlighter
+}
 
 const getRehypeCodeOptions = (): Partial<RehypeCodeOptions> => ({
   theme: 'github-dark-dimmed',
   getHighlighter,
-});
+})
 
 type Filetree = {
   tree: [
     {
-      path: string;
+      path: string
     },
-  ];
-};
+  ]
+}
 
 export async function getArticleByName(
   fileName: string
@@ -57,18 +57,18 @@ export async function getArticleByName(
         'X-GitHub-Api-Version': '2022-11-28',
       },
     }
-  );
+  )
 
-  if (!res.ok) return undefined;
+  if (!res.ok) return undefined
 
-  const rawMDX = await res.text();
+  const rawMDX = await res.text()
 
-  if (rawMDX === '404: Not Found') return undefined;
+  if (rawMDX === '404: Not Found') return undefined
 
   const { frontmatter, content } = await compileMDX<{
-    title: string;
-    date: string;
-    description: string;
+    title: string
+    date: string
+    description: string
   }>({
     source: rawMDX,
     components: {
@@ -81,9 +81,9 @@ export async function getArticleByName(
         rehypePlugins: [[rehypeCode, getRehypeCodeOptions()]],
       },
     },
-  });
+  })
 
-  const id = fileName.replace(/\.mdx$/, '');
+  const id = fileName.replace(/\.mdx$/, '')
 
   const articleObj: Article = {
     meta: {
@@ -93,9 +93,9 @@ export async function getArticleByName(
       description: frontmatter.description,
     },
     content,
-  };
+  }
 
-  return articleObj;
+  return articleObj
 }
 
 export async function getArticlesMeta(): Promise<Meta[] | undefined> {
@@ -108,25 +108,25 @@ export async function getArticlesMeta(): Promise<Meta[] | undefined> {
         'X-GitHub-Api-Version': '2022-11-28',
       },
     }
-  );
+  )
 
-  if (!res.ok) return undefined;
+  if (!res.ok) return undefined
 
-  const repoFiletree: Filetree = await res.json();
+  const repoFiletree: Filetree = await res.json()
 
   const filesArray = repoFiletree.tree
     .map(file => file.path)
-    .filter(file => file.endsWith('.mdx'));
+    .filter(file => file.endsWith('.mdx'))
 
-  const articles: Meta[] = [];
+  const articles: Meta[] = []
 
   for (const file of filesArray) {
-    const article = await getArticleByName(file);
+    const article = await getArticleByName(file)
     if (article) {
-      const { meta } = article;
-      articles.push(meta);
+      const { meta } = article
+      articles.push(meta)
     }
   }
 
-  return articles.sort((a, b) => (a.date < b.date ? 1 : -1));
+  return articles.sort((a, b) => (a.date < b.date ? 1 : -1))
 }

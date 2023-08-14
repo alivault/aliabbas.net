@@ -16,6 +16,6 @@ const nextConfig = {
       '/articles/[articleId]': ['node_modules/shiki/**/*'],
     },
   },
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig

@@ -1,6 +1,6 @@
-import WorkList from '@/components/WorkList';
-import TheNav from '@/components/TheNav';
-import Footer from '@/components/Footer';
+import WorkList from '@/components/WorkList'
+import TheNav from '@/components/TheNav'
+import Footer from '@/components/Footer'
 
 export default function WorkPage() {
   return (
@@ -12,5 +12,5 @@ export default function WorkPage() {
         <Footer />
       </section>
     </main>
-  );
+  )
 }

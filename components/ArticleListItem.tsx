@@ -1,13 +1,13 @@
-import Link from 'next/link';
-import getFormattedDate from '@/lib/getFormattedDate';
+import Link from 'next/link'
+import getFormattedDate from '@/lib/getFormattedDate'
 
 type Props = {
-  article: Meta;
-};
+  article: Meta
+}
 
 export default function ListItem({ article }: Props) {
-  const { id, title, date } = article;
-  const formattedDate = getFormattedDate(date);
+  const { id, title, date } = article
+  const formattedDate = getFormattedDate(date)
 
   return (
     <li className='flex flex-col items-start gap-1'>
@@ -19,5 +19,5 @@ export default function ListItem({ article }: Props) {
       </Link>
       <span className='text-xs opacity-50'>{formattedDate}</span>
     </li>
-  );
+  )
 }
