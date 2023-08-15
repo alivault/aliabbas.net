@@ -16,7 +16,7 @@ interface ExperienceListProps {
 const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
   const experiences: Experience[] = [
     {
-      title: 'Product Designer',
+      title: 'Web Designer',
       company: 'Super Studios Inc.',
       url: 'https://superstudios.io/',
       date: '2021 - Present',
