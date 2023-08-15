@@ -1,7 +1,8 @@
 import ArticlesSection from '@/components/ArticlesSection'
 import Avatar from '@/components/Avatar'
-import WorkSection from '@/components/WorkSection'
+import ExperienceSection from '@/components/ExperienceSection'
 import ProjectsSection from '@/components/ProjectsSection'
+import Section from '@/components/Section'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 
@@ -10,7 +11,7 @@ export const revalidate = 86400 // 24 hours
 export default function Home() {
   return (
     <main className='flex flex-col gap-8'>
-      <section className='flex flex-col gap-4'>
+      <Section>
         <Avatar size='2xl' />
         <div className='flex flex-col'>
           <h1 className='text-3xl font-bold'>Ali Abbas</h1>
@@ -29,10 +30,10 @@ export default function Home() {
             <Link href='/message'>Message</Link>
           </Button>
         </div>
-      </section>
+      </Section>
       <ArticlesSection />
       <ProjectsSection />
-      <WorkSection />
+      <ExperienceSection />
     </main>
   )
 }

@@ -1,6 +1,7 @@
 import { getArticlesMeta } from '@/lib/articles'
 import ArticleListItem from './ArticleListItem'
 import SectionHeader from './SectionHeader'
+import Section from './Section'
 
 export default async function ArticlesSection() {
   const articles = await getArticlesMeta()
@@ -10,13 +11,13 @@ export default async function ArticlesSection() {
   }
 
   return (
-    <section className='flex flex-col gap-4'>
-      <SectionHeader>📔 Articles</SectionHeader>
+    <Section>
+      <SectionHeader>Articles</SectionHeader>
       <ul className='flex flex-col gap-4'>
         {articles.map(article => (
           <ArticleListItem key={article.id} article={article} />
         ))}
       </ul>
-    </section>
+    </Section>
   )
 }

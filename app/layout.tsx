@@ -28,7 +28,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang='en'>
-      <body className='mx-auto flex min-h-[100dvh] max-w-3xl flex-col bg-background p-4 text-foreground lg:p-6'>
+      <body className='mx-auto flex min-h-[100dvh] max-w-2xl flex-col bg-background p-4 text-foreground lg:p-6'>
         {children}
         <Analytics />
       </body>
