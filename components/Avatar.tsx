@@ -20,7 +20,7 @@ const sizeMapping = {
 
 const Avatar: React.FC<AvatarProps> = ({
   size = 'md',
-  src = '/img/headshot.jpg',
+  src = '/img/ali-headshot.jpg',
   alt = 'Avatar image',
   quality = 100,
   priority = false,
