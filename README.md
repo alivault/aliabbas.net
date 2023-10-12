@@ -36,3 +36,16 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+## License
+
+This work is licensed under a Creative Commons Attribution 4.0 International License. You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use. For more details, see the [full license text](https://creativecommons.org/licenses/by/4.0/).
+
+## Attribution
+
+If you clone, fork, or use any part of this website/repository, please provide proper attribution by linking back to this repository and mentioning my name.
+
+### Example Attribution:
+
+"This work is based on [MDX Blog](https://github.com/alivault/mdx-blog) by [Ali Abbas](https://github.com/alivault/), licensed under CC BY 4.0."
+
