@@ -68,7 +68,7 @@ export default async function Article({ params: { articleId } }: Props) {
   return (
     <main className='flex flex-col gap-6'>
       <TheNav />
-      <article className='prose dark:prose-invert lg:prose-lg prose-h1:mb-4 prose-h1:text-3xl lg:prose-h1:text-4xl'>
+      <article className='prose dark:prose-invert sm:prose-lg prose-h1:mb-4 prose-h1:text-3xl sm:prose-h1:text-4xl'>
         <h1>{meta.title}</h1>
         <time className='text-sm opacity-50' dateTime={meta.date}>
           {date}
