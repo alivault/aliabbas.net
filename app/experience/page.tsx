@@ -7,7 +7,7 @@ export default function WorkPage() {
     <main className='flex flex-col gap-6'>
       <TheNav />
       <section className='flex flex-col gap-6'>
-        <h1 className='text-2xl font-bold'>Experience</h1>
+        <h1 className='text-2xl font-bold'>💼 Experience</h1>
         <WorkList />
         <Footer />
       </section>

@@ -6,7 +6,7 @@ import Section from './Section'
 export default function WorkSection({}) {
   return (
     <Section>
-      <SectionHeader>Experience</SectionHeader>
+      <SectionHeader>💼 Experience</SectionHeader>
       <ExperienceList maxItems={1} />
       <Link href='/experience' className='text-link hover:underline'>
         Show more experience →

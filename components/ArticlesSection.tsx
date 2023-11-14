@@ -12,7 +12,7 @@ export default async function ArticlesSection() {
 
   return (
     <Section>
-      <SectionHeader>Articles</SectionHeader>
+      <SectionHeader>📝 Articles</SectionHeader>
       <ul className='flex flex-col gap-4'>
         {articles.map(article => (
           <ArticleListItem key={article.id} article={article} />

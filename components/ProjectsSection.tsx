@@ -6,7 +6,7 @@ import { ExternalLink } from 'lucide-react'
 export default function ProjectsSection({}) {
   return (
     <Section>
-      <SectionHeader>Projects</SectionHeader>
+      <SectionHeader>🚀 Projects</SectionHeader>
       <ul className='flex flex-col gap-4'>
         <li className='flex justify-start'>
           <a
