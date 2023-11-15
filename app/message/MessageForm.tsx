@@ -178,7 +178,11 @@ export function MessageForm() {
                     )}
                   </FormLabel>
                   <FormControl>
-                    <Input type='number' {...field} />
+                    <Input
+                      type='number'
+                      className='[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none'
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
