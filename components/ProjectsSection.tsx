@@ -15,7 +15,7 @@ export default function ProjectsSection({}) {
             rel='noopener noreferrer'
             className='flex items-center gap-2 text-link hover:underline'
           >
-            Color Palette Maker (WIP)
+            Color Palette Maker
             <ExternalLink className='h-4 w-4' />
           </a>
         </li>
