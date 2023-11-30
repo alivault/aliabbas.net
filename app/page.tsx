@@ -18,9 +18,11 @@ export default function Home() {
           <p className='opacity-50'>Designer. Developer. Team Player.</p>
         </div>
         <p>
-          I'm a web developer based in Los Angeles. Welcome to my website where
-          I share my thoughts on design, development, and life. If you have any
-          questions or comments, feel free to reach out!
+          Hi there! I'm a web developer in Los Angeles with a passion for
+          front-end development. This site showcases my journey and projects in
+          design and development, highlighting my dedication to innovation and
+          user-friendly solutions. Interested in collaborating or have
+          questions? Feel free to reach out anytime!
         </p>
         <div className='grid grid-cols-2 gap-2'>
           <Button asChild>
