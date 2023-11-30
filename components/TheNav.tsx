@@ -13,9 +13,6 @@ export default function TheNav({}) {
           </Link>
           <div className='flex flex-col'>
             <NavLink href='/'>Ali Abbas</NavLink>
-            <Link href='/' className='text-xs opacity-50 hover:underline'>
-              aliabbas.dev
-            </Link>
           </div>
         </li>
       </ul>

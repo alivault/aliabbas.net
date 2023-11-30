@@ -18,7 +18,7 @@ export default function Home() {
           <p className='opacity-50'>Designer. Developer. Team Player.</p>
         </div>
         <p>
-          Hi there! I'm a web developer in Los Angeles with a passion for
+          Hi there! I'm a web developer based in Los Angeles with a passion for
           front-end development. This site showcases my journey and projects in
           design and development, highlighting my dedication to innovation and
           user-friendly solutions. Interested in collaborating or have
