@@ -1,9 +1,0 @@
-{
-  "redirects": [
-    {
-      "source": "/color-palette-maker",
-      "destination": "https://alivault.github.io/color-palette-maker/",
-      "permanent": false
-    }
-  ]
-}

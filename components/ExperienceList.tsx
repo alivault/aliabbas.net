@@ -1,5 +1,4 @@
-import React from 'react'
-import ExperienceItem from './ExperienceItem'
+import ExperienceItem from '@/components/ExperienceItem'
 
 interface Experience {
   title: string
@@ -64,7 +63,7 @@ const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
   const displayedItems = maxItems ? experiences.slice(0, maxItems) : experiences
 
   return (
-    <ul className='flex flex-col gap-6'>
+    <ul className="flex flex-col gap-4">
       {displayedItems.map((item, index) => (
         <ExperienceItem key={index} {...item} />
       ))}

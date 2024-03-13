@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import React from 'react'
 
 interface Props {
   children: React.ReactNode
@@ -8,7 +7,10 @@ interface Props {
 
 const NavLink: React.FC<Props> = ({ children, href }) => {
   return (
-    <Link href={href} className='text-link hover:underline'>
+    <Link
+      href={href}
+      className="-mx-4 rounded-lg p-4 transition-colors hover:bg-foreground/10 active:bg-foreground/20"
+    >
       {children}
     </Link>
   )

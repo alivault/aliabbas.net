@@ -1,41 +1,7 @@
-import * as fs from 'fs/promises'
-import { join as pathJoin } from 'path'
-import rehypeCode, { Options as RehypeCodeOptions } from 'rehype-pretty-code'
-import * as shiki from 'shiki'
 import { compileMDX } from 'next-mdx-remote/rsc'
+import rehypeHighlight from 'rehype-highlight'
 import remarkGfm from 'remark-gfm'
-import CustomImage from '@/components/CustomImage'
-
-const getShikiPath = (): string => {
-  return pathJoin(process.cwd(), 'lib/shiki')
-}
-
-const touched = { current: false }
-
-const touchShikiPath = (): void => {
-  if (touched.current) return
-  fs.readdir(getShikiPath())
-  touched.current = true
-}
-
-const getHighlighter: RehypeCodeOptions['getHighlighter'] = async options => {
-  touchShikiPath()
-
-  const highlighter = await shiki.getHighlighter({
-    ...(options as any),
-    paths: {
-      languages: `${getShikiPath()}/languages/`,
-      themes: `${getShikiPath()}/themes/`,
-    },
-  })
-
-  return highlighter
-}
-
-const getRehypeCodeOptions = (): Partial<RehypeCodeOptions> => ({
-  theme: 'github-dark-dimmed',
-  getHighlighter,
-})
+import 'highlight.js/styles/github-dark-dimmed.css'
 
 type Filetree = {
   tree: [
@@ -46,7 +12,7 @@ type Filetree = {
 }
 
 export async function getArticleByName(
-  fileName: string
+  fileName: string,
 ): Promise<Article | undefined> {
   const res = await fetch(
     `https://raw.githubusercontent.com/alivault/articles/main/${fileName}`,
@@ -56,7 +22,7 @@ export async function getArticleByName(
         Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
         'X-GitHub-Api-Version': '2022-11-28',
       },
-    }
+    },
   )
 
   if (!res.ok) return undefined
@@ -71,14 +37,15 @@ export async function getArticleByName(
     description: string
   }>({
     source: rawMDX,
-    components: {
-      CustomImage,
-    },
+    components: {},
     options: {
       parseFrontmatter: true,
       mdxOptions: {
         remarkPlugins: [remarkGfm],
-        rehypePlugins: [[rehypeCode, getRehypeCodeOptions()]],
+        rehypePlugins: [
+          // @ts-expect-error
+          rehypeHighlight,
+        ],
       },
     },
   })
@@ -107,7 +74,7 @@ export async function getArticlesMeta(): Promise<Meta[] | undefined> {
         Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
         'X-GitHub-Api-Version': '2022-11-28',
       },
-    }
+    },
   )
 
   if (!res.ok) return undefined
@@ -115,8 +82,8 @@ export async function getArticlesMeta(): Promise<Meta[] | undefined> {
   const repoFiletree: Filetree = await res.json()
 
   const filesArray = repoFiletree.tree
-    .map(file => file.path)
-    .filter(file => file.endsWith('.mdx'))
+    .map((file) => file.path)
+    .filter((file) => file.endsWith('.mdx'))
 
   const articles: Meta[] = []
 

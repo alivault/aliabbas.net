@@ -1,0 +1,18 @@
+{
+  "semi": false,
+  "singleQuote": true,
+  "trailingComma": "all",
+  "importOrder": [
+    "^(react/(.*)$)|^(react$)",
+    "^(next/(.*)$)|^(next$)",
+    "^(@/components/(.*)$)|^(@/components$)",
+    "^(@/assets/(.*)$)|^(@/assets$)",
+    "^(@/public/(.*)$)|^(@/public$)",
+    "^@/(.*)$",
+    "<THIRD_PARTY_MODULES>"
+  ],
+  "plugins": [
+    "@ianvs/prettier-plugin-sort-imports",
+    "prettier-plugin-tailwindcss"
+  ]
+}

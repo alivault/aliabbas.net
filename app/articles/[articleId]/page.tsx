@@ -1,8 +1,9 @@
-import Footer from '@/components/Footer'
-import getFormattedDate from '@/lib/getFormattedDate'
-import { getArticlesMeta, getArticleByName } from '@/lib/articles'
-import TheNav from '@/components/TheNav'
 import Link from 'next/link'
+import Footer from '@/components/Footer'
+import Main from '@/components/Main'
+import Nav from '@/components/Nav'
+import { getArticleByName, getArticlesMeta } from '@/lib/articles'
+import getFormattedDate from '@/lib/getFormattedDate'
 
 export const revalidate = 86400 // 24 hours
 
@@ -17,7 +18,7 @@ export async function generateStaticParams() {
 
   if (!articles) return []
 
-  return articles.map(article => ({
+  return articles.map((article) => ({
     articleId: article.id,
   }))
 }
@@ -52,9 +53,9 @@ export default async function Article({ params: { articleId } }: Props) {
 
   if (!article) {
     return (
-      <main className='flex grow flex-col items-center justify-center gap-4'>
+      <main className="flex grow flex-col items-center justify-center gap-4">
         <h1>Article not found</h1>
-        <Link href='/' className='text-link hover:underline'>
+        <Link href="/" className="text-link hover:underline">
           ← Go home
         </Link>
       </main>
@@ -66,16 +67,16 @@ export default async function Article({ params: { articleId } }: Props) {
   const date = getFormattedDate(meta.date)
 
   return (
-    <main className='flex flex-col gap-6'>
-      <TheNav />
-      <article className='prose dark:prose-invert sm:prose-lg prose-h1:mb-4 prose-h1:text-3xl sm:prose-h1:text-4xl'>
+    <Main>
+      <Nav />
+      <article className="prose max-w-none dark:prose-invert prose-h1:mb-4 prose-h1:text-3xl prose-pre:py-0">
         <h1>{meta.title}</h1>
-        <time className='text-sm opacity-50' dateTime={meta.date}>
+        <time className="text-sm opacity-50" dateTime={meta.date}>
           {date}
         </time>
         {content}
       </article>
       <Footer />
-    </main>
+    </Main>
   )
 }

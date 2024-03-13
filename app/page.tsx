@@ -1,41 +1,53 @@
-import ArticlesSection from '@/components/ArticlesSection'
-import Avatar from '@/components/Avatar'
+import type { Metadata } from 'next'
+import Link from 'next/link'
+import ArticlesSection from '@/components/ArticleSection'
 import ExperienceSection from '@/components/ExperienceSection'
+import Main from '@/components/Main'
 import ProjectsSection from '@/components/ProjectsSection'
 import Section from '@/components/Section'
 import { Button } from '@/components/ui/button'
-import Link from 'next/link'
 
-export const revalidate = 86400 // 24 hours
+export const metadata: Metadata = {
+  title: 'Ali Abbas',
+  description: 'Designer and front-end developer.',
+  openGraph: {
+    title: 'Ali Abbas',
+    description: 'Designer and front-end developer.',
+    url: 'https://aliabbas.dev',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Ali Abbas',
+    description: 'Designer and front-end developer.',
+  },
+  other: {
+    'darkreader-lock': 'true',
+  },
+}
 
 export default function Home() {
   return (
-    <main className='flex flex-col gap-8'>
+    <Main>
       <Section>
-        <Avatar size='2xl' />
-        <div className='flex flex-col'>
-          <h1 className='text-3xl font-bold'>Ali Abbas</h1>
-          <p className='opacity-50'>Designer. Developer. Team Player.</p>
-        </div>
-        <p>
-          Hi there! I'm a web developer based in Los Angeles with a passion for
-          front-end development. This site showcases my journey and projects in
-          design and development, highlighting my dedication to innovation and
-          user-friendly solutions. Interested in collaborating or have
-          questions? Feel free to reach out anytime!
+        <h1 className="mb-2 font-mono text-3xl font-bold">Ali Abbas</h1>
+        <p className="prose mb-4 max-w-none leading-relaxed dark:prose-invert">
+          Designer and front-end developer currently working at Super Studios,
+          Inc.
         </p>
-        <div className='grid grid-cols-2 gap-2'>
+
+        <div className="grid grid-cols-2 gap-2">
           <Button asChild>
-            <Link href='/subscribe'>Subscribe</Link>
+            <Link href="/subscribe">Subscribe</Link>
           </Button>
-          <Button asChild variant={'secondary'}>
-            <Link href='/message'>Message</Link>
+          <Button asChild variant="secondary">
+            <Link href="/contact">Contact</Link>
           </Button>
         </div>
       </Section>
       <ArticlesSection />
-      <ProjectsSection />
       <ExperienceSection />
-    </main>
+      <ProjectsSection />
+    </Main>
   )
 }

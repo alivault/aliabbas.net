@@ -1,16 +1,18 @@
 import WorkList from '@/components/ExperienceList'
-import TheNav from '@/components/TheNav'
 import Footer from '@/components/Footer'
+import Main from '@/components/Main'
+import Nav from '@/components/Nav'
+import Section from '@/components/Section'
 
 export default function WorkPage() {
   return (
-    <main className='flex flex-col gap-6'>
-      <TheNav />
-      <section className='flex flex-col gap-6'>
-        <h1 className='text-2xl font-bold'>💼 Experience</h1>
+    <Main>
+      <Nav />
+      <Section>
+        <h1 className="mb-4 font-mono text-3xl font-bold">Experience</h1>
         <WorkList />
-        <Footer />
-      </section>
-    </main>
+      </Section>
+      <Footer />
+    </Main>
   )
 }

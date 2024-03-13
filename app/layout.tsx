@@ -1,36 +1,23 @@
-import './globals.css'
 import type { Metadata } from 'next'
-import { Analytics } from '@vercel/analytics/react'
+import { notoSans, notoSansMono } from '@/fonts'
+import '@/app/globals.css'
 
 export const metadata: Metadata = {
   title: 'Ali Abbas',
-  description: "I'm a web developer focused on building great products.",
-  openGraph: {
-    title: 'Ali Abbas',
-    description: "I'm a web developer focused on building great products.",
-    url: 'https://aliabbas.dev',
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary',
-    title: 'Ali Abbas',
-    description: "I'm a web developer focused on building great products.",
-  },
-  other: {
-    'darkreader-lock': 'true',
-  },
+  description: 'Designer. Developer. Team player.',
 }
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode
-}) {
+}>) {
   return (
-    <html lang='en'>
-      <body className='mx-auto flex min-h-[100dvh] max-w-2xl flex-col bg-background px-5 py-8 text-foreground'>
+    <html lang="en">
+      <body
+        className={`${notoSansMono.variable} ${notoSans.variable}  flex flex-col bg-background px-4 py-10 text-foreground`}
+      >
         {children}
-        <Analytics />
       </body>
     </html>
   )

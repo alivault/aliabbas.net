@@ -1,16 +1,12 @@
-import ExperienceList from './ExperienceList'
-import SectionHeader from './SectionHeader'
-import React from 'react'
-import Link from 'next/link'
-import Section from './Section'
+import ExperienceList from '@/components/ExperienceList'
+import Section from '@/components/Section'
+import SectionHeading from '@/components/SectionHeading'
+
 export default function WorkSection({}) {
   return (
     <Section>
-      <SectionHeader>💼 Experience</SectionHeader>
+      <SectionHeading href="/experience">Experience</SectionHeading>
       <ExperienceList maxItems={1} />
-      <Link href='/experience' className='text-link hover:underline'>
-        Show more experience →
-      </Link>
     </Section>
   )
 }

@@ -1,15 +1,18 @@
-import React from 'react'
-import TheNav from '@/components/TheNav'
-import { SubscribeForm } from './SubscribeForm'
+import Main from '@/components/Main'
+import Nav from '@/components/Nav'
+import Section from '@/components/Section'
+import { SubscribeForm } from '@/components/SubscribeForm'
 
-export default function FollowPage() {
+export default function SubscribePage() {
   return (
-    <main className='flex flex-col gap-8'>
-      <TheNav />
-      <section className='flex flex-col gap-4'>
-        <h1 className='text-3xl font-bold'>The Chronicles of Ali</h1>
+    <Main>
+      <Nav />
+      <Section>
+        <h1 className="mb-4 font-mono text-2xl font-bold sm:text-3xl">
+          The Chronicles of Ali
+        </h1>
         <SubscribeForm />
-      </section>
-    </main>
+      </Section>
+    </Main>
   )
 }

@@ -1,22 +1,22 @@
-import React from 'react'
-import SectionHeader from './SectionHeader'
-import Section from './Section'
-import { ExternalLink } from 'lucide-react'
+import Section from '@/components/Section'
+import SectionHeading from '@/components/SectionHeading'
 
 export default function ProjectsSection({}) {
   return (
     <Section>
-      <SectionHeader>🚀 Projects</SectionHeader>
-      <ul className='flex flex-col gap-4'>
-        <li className='flex justify-start'>
+      <SectionHeading>Projects</SectionHeading>
+      <ul className="flex flex-col gap-4">
+        <li>
           <a
-            href='https://alivault.github.io/color-palette-maker/'
-            target='blank'
-            rel='noopener noreferrer'
-            className='flex items-center gap-2 text-link hover:underline'
+            href="https://alivault.github.io/color-palette-maker/"
+            target="blank"
+            rel="noopener noreferrer"
+            className="-mx-4 flex flex-col gap-1 rounded-lg p-4 transition-colors hover:bg-foreground/10 active:bg-foreground/20"
           >
             Color Palette Maker
-            <ExternalLink className='h-4 w-4' />
+            <span className="text-xs opacity-50">
+              Craft harmonius color palettes using the OKLCH colorspace.
+            </span>
           </a>
         </li>
       </ul>

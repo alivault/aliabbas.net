@@ -1,4 +1,3 @@
-import React from 'react'
 import Image from 'next/image'
 
 interface AvatarProps {
@@ -33,7 +32,7 @@ const Avatar: React.FC<AvatarProps> = ({
       height={sizeMapping[size]}
       quality={quality}
       priority={priority}
-      className='relative shrink-0 overflow-hidden rounded-full'
+      className="relative shrink-0 overflow-hidden rounded-full bg-slate-500"
     />
   )
 }
