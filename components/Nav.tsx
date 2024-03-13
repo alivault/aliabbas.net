@@ -8,7 +8,7 @@ export default function Nav({}) {
         href="/"
         className="-mx-4 flex items-center gap-2 rounded-lg p-4 font-mono transition-colors hover:bg-foreground/10 active:bg-foreground/20"
       >
-        <ChevronLeft className="w-auto" />
+        <ChevronLeft />
         Ali Abbas
       </Link>
     </nav>

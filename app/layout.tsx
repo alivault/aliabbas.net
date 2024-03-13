@@ -15,7 +15,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${notoSansMono.variable} ${notoSans.variable}  flex flex-col bg-background px-4 py-10 text-foreground md:py-20`}
+        className={`${notoSansMono.variable} ${notoSans.variable} flex flex-col bg-background px-4 py-10 font-sans text-foreground antialiased md:py-20`}
       >
         {children}
       </body>

@@ -72,15 +72,6 @@
   }
 }
 
-@layer base {
-  * {
-    @apply border-border;
-  }
-  body {
-    @apply bg-background font-sans text-foreground;
-  }
-}
-
 /* prevent auto zoom on input on iphone */
 input[type='text'],
 input[type='email'],
