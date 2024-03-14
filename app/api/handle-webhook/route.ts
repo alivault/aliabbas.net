@@ -1,5 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
+import { NextRequest, NextResponse } from 'next/server'
 
 export async function POST(request: NextRequest) {
   if (request.method !== 'POST') {
@@ -23,9 +23,11 @@ export async function POST(request: NextRequest) {
 
   const payload = JSON.parse(payloadText)
   const modifiedFiles = payload?.commits?.[0]?.modified || []
+  const addedFiles = payload?.commits?.[0]?.added || []
+  const allRelevantFiles = [...modifiedFiles, ...addedFiles]
 
-  const mdxFilesChanged = modifiedFiles.some((file: string) =>
-    file.endsWith('.mdx')
+  const mdxFilesChanged = allRelevantFiles.some((file: string) =>
+    file.endsWith('.mdx'),
   )
 
   if (mdxFilesChanged) {
