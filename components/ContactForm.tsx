@@ -104,7 +104,7 @@ export function ContactForm() {
     return (
       <section className="flex flex-col gap-4">
         <h1 className="font-mono text-3xl font-bold">Contact</h1>
-        <p>
+        <p className="prose dark:prose-invert">
           Looking to collaborate, hire, or seek guidance in tech and travel?
           Drop me a message – let's create something remarkable together.
         </p>
