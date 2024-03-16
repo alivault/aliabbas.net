@@ -13,7 +13,7 @@ export default function Comments() {
       mapping="title"
       reactionsEnabled="1"
       emitMetadata="0"
-      inputPosition="top"
+      inputPosition="bottom"
       theme="preferred_color_scheme"
       lang="en"
       loading="lazy"
