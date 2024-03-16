@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Comments from '@/components/Comments'
 import Footer from '@/components/Footer'
 import Main from '@/components/Main'
 import Nav from '@/components/Nav'
@@ -76,6 +77,7 @@ export default async function Article({ params: { articleId } }: Props) {
         </time>
         {content}
       </article>
+      <Comments />
       <Footer />
     </Main>
   )

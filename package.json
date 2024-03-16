@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@giscus/react": "^3.0.0",
     "@hookform/resolvers": "^3.3.4",
     "@mailerlite/mailerlite-nodejs": "^1.2.1",
     "@radix-ui/react-label": "^2.0.2",
