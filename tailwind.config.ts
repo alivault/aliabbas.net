@@ -31,10 +31,12 @@ const config = {
         primary: {
           DEFAULT: 'hsl(var(--primary))',
           foreground: 'hsl(var(--primary-foreground))',
+          hover: 'hsl(var(--primary-hover))',
         },
         secondary: {
           DEFAULT: 'hsl(var(--secondary))',
           foreground: 'hsl(var(--secondary-foreground))',
+          hover: 'hsl(var(--secondary-hover))',
         },
         destructive: {
           DEFAULT: 'hsl(var(--destructive))',
@@ -56,9 +58,6 @@ const config = {
           DEFAULT: 'hsl(var(--card))',
           foreground: 'hsl(var(--card-foreground))',
         },
-      },
-      boxShadow: {
-        button: 'inset 0 1px 1px 0 hsl(0 0 100% / 0.4)',
       },
       borderRadius: {
         lg: 'var(--radius)',
