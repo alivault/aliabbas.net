@@ -13,13 +13,11 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 131.58 58.51% 33.132%;
+    --primary: 222.06 84.96% 4.8897%;
     --primary-foreground: 210 40% 98%;
-    --primary-hover: 132.77 57.903% 39.803%;
 
     --secondary: 207.53 32.962% 90.212%;
     --secondary-foreground: 222.06 84.96% 4.8897%;
-    --secondary-hover: 207.53 32.962% 84.212%;
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
@@ -50,13 +48,11 @@
       --popover: 222.2 84% 4.9%;
       --popover-foreground: 210 40% 98%;
 
-      --primary: 131.58 58.51% 33.132%;
-      --primary-foreground: 210 40% 98%;
-      --primary-hover: 132.77 57.903% 39.803%;
+      --primary: 210 40% 88%;
+      --primary-foreground: 222.06 84.96% 4.8897%;
 
       --secondary: 210.08 11.841% 21.261%;
       --secondary-foreground: 0 0 97%;
-      --secondary-hover: 210.08 11.841% 27.261%;
 
       --muted: 217.2 32.6% 17.5%;
       --muted-foreground: 215 20.2% 65.1%;
