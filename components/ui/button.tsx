@@ -4,18 +4,18 @@ import { Slot } from '@radix-ui/react-slot'
 import { cva, type VariantProps } from 'class-variance-authority'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center whitespace-nowrap rounded-lg text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gradient-to-t text-[#ededed] dark:text-[#d0d0d0] hover:text-white shadow-button ring-1 ring-black/20',
   {
     variants: {
       variant: {
         default:
-          'bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80',
+          'from-[#a95321] to-[#e38b5c] dark:from-[#5A341E] dark:to-[#B26E49] dark:active:from-[#633217] dark:active:to-[#633217] active:from-[#a95321] active:to-[#a95321]',
         destructive:
           'bg-destructive text-destructive-foreground hover:bg-destructive/90',
         outline:
           'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
         secondary:
-          'bg-secondary text-secondary-foreground border border-border hover:bg-secondary/80 active:bg-secondary/70',
+          'from-[#e4e4e4] to-[#ffffff] dark:from-[#2F2F2F] dark:to-[#4F4F4F] dark:active:from-[#2C2C2C] dark:active:to-[#2C2C2C] active:from-[#ececec] active:to-[#e4e4e4] text-[#434343] hover:text-black dark:hover:text-white',
         ghost: 'hover:bg-accent hover:text-accent-foreground',
         link: 'text-primary underline-offset-4 hover:underline',
       },
