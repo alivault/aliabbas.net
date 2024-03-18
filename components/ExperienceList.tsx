@@ -41,7 +41,7 @@ const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
       company: 'Live Streaming App',
       date: '2016 - 2018',
       description:
-        'I spreaheaded all aspects of design, overseeing branding, app, and web design. Within a year, our rebranded app gained over 1,000 daily active users with an average 48-minute engagement and surpassed 5,000 monthly active users.',
+        'I spearheaded all aspects of design, overseeing branding, app, and web design. Within a year, our rebranded app gained over 1,000 daily active users with an average 48-minute engagement and surpassed 5,000 monthly active users.',
     },
     {
       title: 'Co-Founder',
