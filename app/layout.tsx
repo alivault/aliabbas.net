@@ -5,6 +5,7 @@ import '@/app/globals.css'
 export const metadata: Metadata = {
   title: 'Ali Abbas',
   description: 'Designer. Developer. Team player.',
+  metadataBase: new URL('https://www.aliabbas.dev'),
 }
 
 export default function RootLayout({
