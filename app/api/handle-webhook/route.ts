@@ -22,10 +22,14 @@ export async function POST(request: NextRequest) {
   }
 
   const payload = JSON.parse(payloadText)
-  const modifiedFiles = payload?.commits?.[0]?.modified || []
-  const addedFiles = payload?.commits?.[0]?.added || []
-  const removedFiles = payload?.commits?.[0]?.removed || []
-  const allRelevantFiles = [...modifiedFiles, ...addedFiles, ...removedFiles]
+  const { commits = [] } = payload
+  const allRelevantFiles = commits.flatMap(
+    ({ modified = [], added = [], removed = [] }) => [
+      ...modified,
+      ...added,
+      ...removed,
+    ],
+  )
 
   const mdxFilesChanged = allRelevantFiles.some((file: string) =>
     file.endsWith('.mdx'),
