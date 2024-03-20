@@ -36,17 +36,32 @@ export async function POST(request: NextRequest) {
   )
 
   if (mdxFilesChanged) {
-    const revalidateURL = `https://aliabbas.dev/api/revalidate?secret=${process.env.SECRET}`
+    const revalidatePaths = [
+      '/',
+      '/articles',
+      ...allRelevantFiles
+        .filter((file: string) => file.endsWith('.mdx'))
+        .map((file: string) => `/articles/${file.replace('.mdx', '')}`),
+    ]
+
+    const revalidatePromises = revalidatePaths.map((path) =>
+      fetch(
+        `https://aliabbas.dev/api/revalidate?secret=${process.env.SECRET}&path=${encodeURIComponent(path)}`,
+        {
+          method: 'GET',
+        },
+      ),
+    )
 
     try {
-      const fetchRes = await fetch(revalidateURL, {
-        method: 'GET',
-      })
-
-      if (fetchRes.ok) {
+      const results = await Promise.all(revalidatePromises)
+      const allOk = results.every((res) => res.ok)
+      if (allOk) {
         return NextResponse.json({ message: 'Revalidated successfully' })
       } else {
-        return new NextResponse('Error revalidating', { status: 500 })
+        return new NextResponse('Error revalidating some paths', {
+          status: 500,
+        })
       }
     } catch (error) {
       console.error('Error revalidating:', error)
