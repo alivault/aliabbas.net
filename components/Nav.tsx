@@ -1,14 +1,14 @@
 import Link from 'next/link'
-import { ChevronLeft } from 'lucide-react'
+import Logo from './Logo'
 
 export default function Nav({}) {
   return (
-    <nav className="mx-auto flex w-full flex-col gap-5">
+    <nav className="mx-auto flex w-full flex-col items-start gap-5">
       <Link
         href="/"
-        className="-mx-4 flex items-center gap-2 rounded-lg p-4 font-mono transition-colors hover:bg-secondary active:bg-secondary/50"
+        className="flex items-center gap-4 rounded-lg font-mono text-2xl font-bold transition-colors"
       >
-        <ChevronLeft />
+        <Logo className="w-10" />
         Ali Abbas
       </Link>
     </nav>
