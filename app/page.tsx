@@ -48,8 +48,8 @@ export default function Home() {
         </div>
       </section>
       <ArticlesSection />
-      <ExperienceSection />
       <ProjectsSection />
+      <ExperienceSection />
     </Main>
   )
 }
