@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import ArticlesSection from '@/components/ArticleSection'
 import ExperienceSection from '@/components/ExperienceSection'
+import Logo from '@/components/Logo'
 import Main from '@/components/Main'
 import ProjectsSection from '@/components/ProjectsSection'
 import Section from '@/components/Section'
@@ -29,7 +30,8 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <Main>
-      <Section>
+      <section className="flex flex-col items-center text-center">
+        <Logo className="mb-4" />
         <h1 className="mb-2 font-mono text-3xl font-bold">Ali Abbas</h1>
         <p className="prose mb-4 max-w-none leading-relaxed dark:prose-invert">
           Designer and front-end developer currently working at Super Studios,
@@ -44,7 +46,7 @@ export default function Home() {
             <Link href="/contact">Contact</Link>
           </Button>
         </div>
-      </Section>
+      </section>
       <ArticlesSection />
       <ExperienceSection />
       <ProjectsSection />
