@@ -15,7 +15,7 @@ export default function ProjectsSection({}) {
           >
             Color Palette Maker
             <span className="text-xs opacity-50">
-              Craft harmonius color palettes using the OKLCH colorspace.
+              Craft harmonious color palettes using the OKLCH colorspace.
             </span>
           </a>
         </li>
