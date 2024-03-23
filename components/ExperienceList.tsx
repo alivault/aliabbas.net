@@ -15,12 +15,12 @@ interface ExperienceListProps {
 const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
   const experiences: Experience[] = [
     {
-      title: 'Web Developer',
+      title: 'Front-End Developer',
       company: 'Super Studios Inc.',
       url: 'https://superstudios.io/',
       date: '2021 - Present',
       description:
-        'Conceptualizing and designing user interfaces using Next.js with Tailwind to rapidly build modern, responsive designs.',
+        'Conceptualizing and designing user interfaces using Next.js, Typescript and Tailwind to rapidly build modern, responsive designs.',
     },
     {
       title: 'Brand Architect',
@@ -30,7 +30,7 @@ const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
         'Leveraged Adobe Creative Suite, Figma, and Webflow to architect and prototype diverse digital products, encompassing website design, app user interface development, and logo creation.',
     },
     {
-      title: 'App Designer',
+      title: 'Product Designer',
       company: 'DApp Evolution',
       date: '2018 - 2019',
       description:
@@ -44,7 +44,7 @@ const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
         'I spearheaded all aspects of design, overseeing branding, app, and web design. Within a year, our rebranded app gained over 1,000 daily active users with an average 48-minute engagement and surpassed 5,000 monthly active users.',
     },
     {
-      title: 'Co-Founder',
+      title: 'Creative Director & Co-Founder',
       company: 'Verge Collective',
       url: 'https://vergecollective.com/',
       date: '2012 - 2016',
