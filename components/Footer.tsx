@@ -1,6 +1,6 @@
 import GitHubIcon from '@/components/GitHubIcon'
 
-export default function Footer({}) {
+export default function Footer() {
   return (
     <footer className="flex flex-col items-center">
       <a
