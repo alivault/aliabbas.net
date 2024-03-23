@@ -1,9 +1,15 @@
-import Nav from '@/components/Nav'
+import GitHubIcon from '@/components/GitHubIcon'
 
 export default function Footer({}) {
   return (
-    <div className="flex flex-col border-t border-border pt-10">
-      <Nav />
-    </div>
+    <footer className="flex flex-col items-center">
+      <a
+        href="https://github.com/alivault"
+        target="_blank"
+        aria-label="GitHub Icon"
+      >
+        <GitHubIcon />
+      </a>
+    </footer>
   )
 }

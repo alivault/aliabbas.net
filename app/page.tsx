@@ -2,10 +2,10 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import ArticlesSection from '@/components/ArticleSection'
 import ExperienceSection from '@/components/ExperienceSection'
+import Footer from '@/components/Footer'
 import Logo from '@/components/Logo'
 import Main from '@/components/Main'
 import ProjectsSection from '@/components/ProjectsSection'
-import Section from '@/components/Section'
 import { Button } from '@/components/ui/button'
 
 export const metadata: Metadata = {
@@ -50,6 +50,7 @@ export default function Home() {
       <ArticlesSection />
       <ProjectsSection />
       <ExperienceSection />
+      <Footer />
     </Main>
   )
 }
