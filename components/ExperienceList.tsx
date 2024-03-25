@@ -34,7 +34,7 @@ const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
       company: 'DApp Evolution',
       date: '2018 - 2019',
       description:
-        'I led app design for TronChat, a social media platform by DappEvolution. It enables users to earn TRX and bridges the gap between cryptocurrency and blockchain. I collaborated with the CTO on high-fidelity designs in Sketch and crafted UI animations using Flinto and After Effects.',
+        'I led app design for TronChat, a social media platform by DAppEvolution. It enables users to earn TRX and bridges the gap between cryptocurrency and blockchain. I collaborated with the CTO on high-fidelity designs in Sketch and crafted UI animations using Flinto and After Effects.',
     },
     {
       title: 'Design Director',
