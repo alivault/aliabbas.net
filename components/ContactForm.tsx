@@ -150,11 +150,7 @@ export function ContactForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <AutosizeTextarea
-                      placeholder="Your message"
-                      minHeight={90}
-                      {...field}
-                    />
+                    <AutosizeTextarea placeholder="Your message" {...field} />
                   </FormControl>
                   <FormMessage>
                     {form.formState.errors.formError &&

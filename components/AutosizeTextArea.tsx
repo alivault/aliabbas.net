@@ -11,6 +11,8 @@ interface UseAutosizeTextAreaProps {
   triggerAutoSize: string
 }
 
+const offsetBorder = 2
+
 export const useAutosizeTextArea = ({
   textAreaRef,
   triggerAutoSize,
@@ -20,7 +22,6 @@ export const useAutosizeTextArea = ({
   const [init, setInit] = React.useState(true)
   React.useEffect(() => {
     // We need to reset the height momentarily to get the correct scrollHeight for the textarea
-    const offsetBorder = 2
     if (textAreaRef) {
       if (init) {
         textAreaRef.style.minHeight = `${minHeight + offsetBorder}px`
@@ -60,7 +61,7 @@ export const AutosizeTextarea = React.forwardRef<
   (
     {
       maxHeight = Number.MAX_SAFE_INTEGER,
-      minHeight = 52,
+      minHeight = 90,
       className,
       onChange,
       value,
@@ -95,6 +96,7 @@ export const AutosizeTextarea = React.forwardRef<
         {...props}
         value={value}
         ref={textAreaRef}
+        style={{ minHeight: `${minHeight + offsetBorder}px` }}
         className={cn(
           'flex w-full rounded-md border border-input bg-background px-3 py-2 ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
           className,
