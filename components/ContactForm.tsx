@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
+import { AutosizeTextarea } from './AutosizeTextArea'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
@@ -149,7 +150,11 @@ export function ContactForm() {
               render={({ field }) => (
                 <FormItem>
                   <FormControl>
-                    <Textarea placeholder="Your message" {...field} />
+                    <AutosizeTextarea
+                      placeholder="Your message"
+                      minHeight={90}
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage>
                     {form.formState.errors.formError &&
