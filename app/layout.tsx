@@ -3,9 +3,15 @@ import { notoSans, notoSansMono } from '@/fonts'
 import '@/app/globals.css'
 
 export const metadata: Metadata = {
-  title: 'Ali Abbas',
+  title: {
+    template: '%s | Ali Abbas',
+    default: 'Ali Abbas',
+  },
   description: 'Designer. Developer. Team player.',
   metadataBase: new URL('https://www.aliabbas.dev'),
+  other: {
+    'darkreader-lock': 'true',
+  },
 }
 
 export default function RootLayout({

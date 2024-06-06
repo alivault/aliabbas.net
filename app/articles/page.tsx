@@ -1,8 +1,14 @@
+import { Metadata } from 'next'
 import ArticleList from '@/components/ArticleList'
 import Footer from '@/components/Footer'
 import Main from '@/components/Main'
 import Nav from '@/components/Nav'
 import Section from '@/components/Section'
+
+export const metadata: Metadata = {
+  title: 'Articles',
+  description: 'Articles about software development.',
+}
 
 export default function ArticlesPage() {
   return (

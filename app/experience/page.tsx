@@ -1,8 +1,14 @@
+import { Metadata } from 'next'
 import WorkList from '@/components/ExperienceList'
 import Footer from '@/components/Footer'
 import Main from '@/components/Main'
 import Nav from '@/components/Nav'
 import Section from '@/components/Section'
+
+export const metadata: Metadata = {
+  title: 'Experience',
+  description: 'My work experience.',
+}
 
 export default function WorkPage() {
   return (
