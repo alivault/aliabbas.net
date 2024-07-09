@@ -15,12 +15,20 @@ interface ExperienceListProps {
 const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
   const experiences: Experience[] = [
     {
-      title: 'Front-End Developer',
+      title: 'Senior Frontend Engineer',
       company: 'Super Studios Inc.',
       url: 'https://superstudios.io/',
-      date: '2021 - Present',
+      date: '2024 - Present',
       description:
-        'Conceptualizing and designing user interfaces using Next.js, Typescript and Tailwind to rapidly build modern, responsive designs.',
+        'I specialize in conceptualizing and designing user interfaces using Next.js, Typescript, and Tailwind. My expertise lies in rapidly building modern, responsive designs that enhance user experience and drive engagement.',
+    },
+    {
+      title: 'Web Designer',
+      company: 'Super Studios Inc.',
+      url: 'https://superstudios.io/',
+      date: '2021 - 2024',
+      description:
+        'I conceptualize and design user interfaces using Figma for UX/UI, Webflow for prototype development, and Next.js for modern, responsive designs.',
     },
     {
       title: 'Brand Architect',
@@ -46,7 +54,6 @@ const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
     {
       title: 'Creative Director & Co-Founder',
       company: 'Verge Collective',
-      url: 'https://vergecollective.com/',
       date: '2012 - 2016',
       description:
         "I managed our team's brand design roadmap, frequently liaising with clients to comprehend their objectives and challenges. I translated these insights for our team and oversaw brand campaigns, client presentations, feedback integration, and brand standard formulation. Our clientele included Keller Williams Real Estate, Tony Horton of P90X, and The United Nations.",
