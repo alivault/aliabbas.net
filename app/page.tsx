@@ -34,8 +34,7 @@ export default function Home() {
         <Logo className="mb-4" />
         <h1 className="mb-2 font-mono text-3xl font-bold">Ali Abbas</h1>
         <p className="prose mb-4 max-w-none leading-relaxed dark:prose-invert">
-          Designer and front-end developer currently working at Super Studios,
-          Inc.
+          Front-end developer currently working at Super Studios, Inc.
         </p>
 
         <div className="grid grid-cols-2 gap-2">
