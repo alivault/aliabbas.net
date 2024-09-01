@@ -1,25 +1,27 @@
 export default function Logo({ className }: { className?: string }) {
   return (
     <svg
-      className={className}
-      width="53"
-      height="47"
-      viewBox="0 0 53 47"
+      viewBox="0 0 87 69"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      className={className}
     >
-      <path
-        d="M0.0331972 36.7166H28.7441L24.6499 29.756H11.2339L28.1814 0.0977783H21.1171L0.0331972 36.7166Z"
-        fill="currentColor"
-      />
-      <path
-        d="M16.9698 26.427L31.055 1.77842L52.1344 38.3905L48.6056 44.6646L31.6901 14.459L24.6499 26.427H16.9698Z"
-        fill="currentColor"
-      />
-      <path
-        d="M34.5653 40.0455H0L3.57476 46.4008H45.762L31.6191 21.1449L27.5329 28.0914L34.5653 40.0455Z"
-        fill="currentColor"
-      />
+      <g id="A icon">
+        <path
+          id="Clip 23"
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M19.4196 53.5981C25.5133 64.2833 38.8393 68.3571 38.8393 68.3571H19.4196H0C0 68.3571 13.326 64.2833 19.4196 53.5981Z"
+          fill="white"
+        />
+        <path
+          id="Mask"
+          fill-rule="evenodd"
+          clip-rule="evenodd"
+          d="M38.8393 15.931L68.5289 68.3571H87L48.0474 0L38.8393 15.931Z"
+          fill="white"
+        />
+      </g>
     </svg>
   )
 }

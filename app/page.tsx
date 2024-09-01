@@ -31,7 +31,7 @@ export default function Home() {
   return (
     <Main>
       <section className="flex flex-col items-center text-center">
-        <Logo className="mb-4" />
+        <Logo className="mb-4 w-[64px]" />
         <h1 className="mb-2 font-mono text-3xl font-bold">Ali Abbas</h1>
         <p className="prose mb-4 max-w-none leading-relaxed dark:prose-invert">
           Front-end developer currently working at Super Studios, Inc.
