@@ -1,24 +1,29 @@
+import ProjectItem from '@/components/ProjectItem'
 import Section from '@/components/Section'
 import SectionHeading from '@/components/SectionHeading'
 
-export default function ProjectsSection({}) {
+const projects = [
+  {
+    href: 'https://alivault.github.io/color-palette-maker/',
+    title: '🎨 Color Palette Maker',
+    description: 'Craft harmonious color palettes using the OKLCH colorspace.',
+  },
+  {
+    href: 'https://cash-flow-monthly.vercel.app/',
+    title: '💸 Cash Flow',
+    description:
+      'Evaluate your cash flow effortlessly with this simple calculator.',
+  },
+]
+
+export default function ProjectsSection() {
   return (
     <Section>
       <SectionHeading>Projects</SectionHeading>
       <ul className="flex flex-col gap-4">
-        <li>
-          <a
-            href="https://alivault.github.io/color-palette-maker/"
-            target="blank"
-            rel="noopener noreferrer"
-            className="-mx-4 flex flex-col gap-1 rounded-lg p-4 transition-colors hover:bg-secondary active:bg-secondary/50"
-          >
-            Color Palette Maker
-            <span className="text-xs opacity-50">
-              Craft harmonious color palettes using the OKLCH colorspace.
-            </span>
-          </a>
-        </li>
+        {projects.map((project, index) => (
+          <ProjectItem key={index} {...project} />
+        ))}
       </ul>
     </Section>
   )
