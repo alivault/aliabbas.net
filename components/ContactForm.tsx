@@ -12,7 +12,6 @@ import {
   FormMessage,
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { AutosizeTextarea } from './AutosizeTextArea'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
@@ -29,11 +28,11 @@ export function ContactForm() {
   }, [])
 
   const formSchema = z.object({
-    name: z.string().nonempty({ message: 'A name is required' }),
+    name: z.string().min(1, { message: 'A name is required' }),
     email: z
       .string()
       .email({ message: 'Please provide a valid email address' }),
-    message: z.string().nonempty({ message: 'A message is required' }),
+    message: z.string().min(1, { message: 'A message is required' }),
     verification: z
       .string()
       .refine(
@@ -106,8 +105,8 @@ export function ContactForm() {
       <section className="flex flex-col gap-4">
         <h1 className="font-mono text-3xl font-bold">Contact</h1>
         <p className="prose dark:prose-invert">
-          Looking to collaborate, hire, or seek guidance in tech and travel?
-          Drop me a message – let's create something remarkable together.
+          Looking to collaborate or hire for a project? Drop me a message –
+          let's create something remarkable together.
         </p>
         <Form {...form}>
           <form

@@ -36,15 +36,9 @@ export default function Home() {
         <p className="prose mb-4 max-w-none leading-relaxed dark:prose-invert">
           Front-end developer currently working at Super Studios, Inc.
         </p>
-
-        <div className="grid grid-cols-2 gap-2">
-          <Button asChild>
-            <Link href="/subscribe">Subscribe</Link>
-          </Button>
-          <Button asChild variant="secondary">
-            <Link href="/contact">Contact</Link>
-          </Button>
-        </div>
+        <Button asChild variant="secondary" className="w-[110px]">
+          <Link href="/contact">Contact</Link>
+        </Button>
       </section>
       <ArticlesSection />
       <ProjectsSection />
