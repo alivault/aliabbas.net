@@ -105,8 +105,8 @@ export function ContactForm() {
       <section className="flex flex-col gap-4">
         <h1 className="font-mono text-3xl font-bold">Contact</h1>
         <p className="prose dark:prose-invert">
-          Looking to collaborate or hire for a project? Drop me a message –
-          let's create something remarkable together.
+          If you are interested in collaborating on a project or would like to
+          connect with me, please feel free to send a message.
         </p>
         <Form {...form}>
           <form
