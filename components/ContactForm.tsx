@@ -182,7 +182,11 @@ export function ContactForm() {
                 </FormItem>
               )}
             />
-            <Button type="submit" disabled={form.formState.isSubmitting}>
+            <Button
+              type="submit"
+              variant="secondary"
+              disabled={form.formState.isSubmitting}
+            >
               {form.formState.isSubmitting ? <Spinner size="md" /> : 'Send'}
             </Button>
           </form>

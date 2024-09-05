@@ -4,7 +4,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 240deg 2.44% 92%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -13,10 +13,10 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.06 84.96% 4.8897%;
+    --primary: 214deg 97.4% 44.7%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 207.53 32.962% 90.212%;
+    --secondary: 0 0% 100%;
     --secondary-foreground: 222.06 84.96% 4.8897%;
 
     --muted: 210 40% 96.1%;
@@ -28,8 +28,8 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 220deg 10.3% 85%;
+    --input: 0 0% 100%;
     --ring: 212.34 92.379% 44.524%;
 
     --radius: 0.5rem;
@@ -39,7 +39,7 @@
 
   @media (prefers-color-scheme: dark) {
     :root {
-      --background: 213 25.7% 6.86%;
+      --background: 210deg 3.57% 11%;
       --foreground: 210 40% 98%;
 
       --card: 222.2 84% 4.9%;
@@ -48,10 +48,10 @@
       --popover: 222.2 84% 4.9%;
       --popover-foreground: 210 40% 98%;
 
-      --primary: 210 40% 88%;
-      --primary-foreground: 222.06 84.96% 4.8897%;
+      --primary: 214deg 97.4% 44.7%;
+      --primary-foreground: 210 40% 98%;
 
-      --secondary: 210.08 11.841% 21.261%;
+      --secondary: 240deg 0.535% 36.7%;
       --secondary-foreground: 0 0 97%;
 
       --muted: 217.2 32.6% 17.5%;
@@ -63,8 +63,8 @@
       --destructive: 3 100% 72.4%;
       --destructive-foreground: 210 40% 98%;
 
-      --border: 215 10% 23.5%;
-      --input: 217.2 32.6% 17.5%;
+      --border: 210deg 1.37% 28.6%;
+      --input: 240deg 0.99% 19.8%;
       --ring: 215.72 92.58% 57.813%;
 
       --link: 212 94% 60%;

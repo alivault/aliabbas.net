@@ -17,7 +17,7 @@ export default function ProjectItem({
         href={href}
         target="blank"
         rel="noopener noreferrer"
-        className="-mx-4 flex flex-col gap-1 rounded-lg p-4 transition-colors hover:bg-secondary active:bg-secondary/50"
+        className="-mx-4 flex flex-col gap-1 rounded-lg p-4 transition-colors hover:bg-foreground/10 active:bg-foreground/20"
       >
         {title}
         <span className="text-xs opacity-50">{description}</span>
