@@ -28,7 +28,7 @@ const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
       url: 'https://superstudios.io/',
       date: '2021 - 2024',
       description:
-        'I conceptualize and design user interfaces using Figma for UX/UI, Webflow for prototype development, and Next.js for modern, responsive designs.',
+        'I designed and developed user interfaces with Figma for UX/UI, Webflow for prototyping, and Next.js to create modern, responsive web experiences.',
     },
     {
       title: 'Brand Architect',

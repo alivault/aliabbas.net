@@ -106,8 +106,8 @@ export function ContactForm() {
       <section className="p-5">
         <PageHeading>Contact</PageHeading>
         <p className="prose mb-4 max-w-none dark:prose-invert">
-          If you are interested in collaborating on a project or would like to
-          connect with me, please feel free to send a message.
+          I’m always open to new collaborations and connections! Feel free to
+          drop me a message if you’d like to chat or work together.
         </p>
         <Form {...form}>
           <form
