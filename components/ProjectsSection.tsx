@@ -20,7 +20,7 @@ export default function ProjectsSection() {
   return (
     <Section>
       <SectionHeading>Projects</SectionHeading>
-      <ul className="flex flex-col gap-4">
+      <ul className="flex flex-col">
         {projects.map((project, index) => (
           <ProjectItem key={index} {...project} />
         ))}

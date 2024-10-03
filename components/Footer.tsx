@@ -4,10 +4,10 @@ import Logo from './Logo'
 
 export default function Footer() {
   return (
-    <footer className="flex items-center justify-center gap-8">
+    <footer className="flex items-center justify-center gap-8 p-5 pb-10">
       <Link
         href="/"
-        className="flex items-center gap-4 rounded-lg font-mono text-2xl font-bold"
+        className="flex items-center gap-4 rounded-lg font-heading text-2xl font-bold"
         title="Ali Abbas"
       >
         <Logo className="w-10" />

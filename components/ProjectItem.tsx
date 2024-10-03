@@ -19,8 +19,8 @@ export default function ProjectItem({
         rel="noopener noreferrer"
         className="-mx-4 flex flex-col gap-1 rounded-lg p-4 transition-colors hover:bg-foreground/10 active:bg-foreground/20"
       >
-        {title}
-        <span className="text-xs opacity-50">{description}</span>
+        <span className="text-lg font-medium">{title}</span>
+        <span className="prose dark:prose-invert">{description}</span>
       </Link>
     </li>
   )

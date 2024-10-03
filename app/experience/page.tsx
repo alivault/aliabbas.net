@@ -1,8 +1,8 @@
 import { Metadata } from 'next'
 import WorkList from '@/components/ExperienceList'
-import Footer from '@/components/Footer'
 import Main from '@/components/Main'
 import Nav from '@/components/Nav'
+import PageHeading from '@/components/PageHeading'
 import Section from '@/components/Section'
 
 export const metadata: Metadata = {
@@ -15,10 +15,9 @@ export default function WorkPage() {
     <Main>
       <Nav />
       <Section>
-        <h1 className="mb-4 font-mono text-3xl font-bold">Experience</h1>
+        <PageHeading>Experience</PageHeading>
         <WorkList />
       </Section>
-      <Footer />
     </Main>
   )
 }

@@ -15,21 +15,21 @@ const WorkItem: React.FC<WorkItemProps> = ({
 }) => {
   return (
     <li className="flex flex-col items-start gap-2 py-4">
-      <span className="text-sm opacity-50">{date}</span>
-      <span>{title}</span>
+      <span className="opacity-50">{date}</span>
+      <span className="text-lg font-medium">{title}</span>
       {url ? (
         <a
           href={url}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center justify-start gap-1 text-sm hover:underline"
+          className="opacity-50 hover:underline"
         >
           {company}
         </a>
       ) : (
-        <span className="text-sm opacity-50">{company}</span>
+        <span className="opacity-50">{company}</span>
       )}
-      <p className="text-sm opacity-50">{description}</p>
+      <p className="prose max-w-none dark:prose-invert">{description}</p>
     </li>
   )
 }

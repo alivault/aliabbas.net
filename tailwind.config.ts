@@ -1,6 +1,9 @@
 import type { Config } from 'tailwindcss'
 
 const config = {
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
   content: [
     './pages/**/*.{ts,tsx}',
     './components/**/*.{ts,tsx}',
@@ -19,7 +22,7 @@ const config = {
     extend: {
       fontFamily: {
         sans: ['var(--font-noto-sans)'],
-        mono: ['var(--font-noto-sans-mono)'],
+        heading: ['var(--font-playfair)'],
       },
       colors: {
         border: 'hsl(var(--border))',

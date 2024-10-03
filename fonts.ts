@@ -1,4 +1,4 @@
-import { Noto_Sans, Noto_Sans_Mono } from 'next/font/google'
+import { Noto_Sans, Playfair_Display } from 'next/font/google'
 
 export const notoSans = Noto_Sans({
   subsets: ['latin'],
@@ -6,8 +6,8 @@ export const notoSans = Noto_Sans({
   variable: '--font-noto-sans',
 })
 
-export const notoSansMono = Noto_Sans_Mono({
+export const playfair = Playfair_Display({
   subsets: ['latin'],
   display: 'swap',
-  variable: '--font-noto-sans-mono',
+  variable: '--font-playfair',
 })

@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { AutosizeTextarea } from './AutosizeTextArea'
+import PageHeading from './PageHeading'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
@@ -102,9 +103,9 @@ export function ContactForm() {
     )
   } else {
     return (
-      <section className="flex flex-col gap-4">
-        <h1 className="font-mono text-3xl font-bold">Contact</h1>
-        <p className="prose dark:prose-invert">
+      <section className="p-5">
+        <PageHeading>Contact</PageHeading>
+        <p className="prose mb-4 max-w-none dark:prose-invert">
           If you are interested in collaborating on a project or would like to
           connect with me, please feel free to send a message.
         </p>

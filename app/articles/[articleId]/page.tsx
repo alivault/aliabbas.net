@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import Comments from '@/components/Comments'
-import Footer from '@/components/Footer'
 import Main from '@/components/Main'
 import Nav from '@/components/Nav'
 import { getArticleByName, getArticlesMeta } from '@/lib/articles'
@@ -70,7 +69,7 @@ export default async function Article({ params: { articleId } }: Props) {
   return (
     <Main>
       <Nav />
-      <article className="prose max-w-none dark:prose-invert prose-h1:mb-4 prose-h1:text-3xl prose-pre:py-0">
+      <article className="prose max-w-none p-5 dark:prose-invert prose-h1:mb-4 prose-h1:text-3xl prose-pre:py-0">
         <h1>{meta.title}</h1>
         <time className="text-sm opacity-50" dateTime={meta.date}>
           {date}
@@ -78,7 +77,6 @@ export default async function Article({ params: { articleId } }: Props) {
         {content}
       </article>
       <Comments />
-      <Footer />
     </Main>
   )
 }
