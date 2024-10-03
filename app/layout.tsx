@@ -1,7 +1,6 @@
 import type { Metadata } from 'next'
 import { notoSans, playfair } from '@/fonts'
 import '@/app/globals.css'
-import Footer from '@/components/Footer'
 
 export const metadata: Metadata = {
   title: {
@@ -21,13 +20,9 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html
-      lang="en"
-      className={`${notoSans.variable} ${playfair.variable} h-full`}
-    >
-      <body className="relative flex h-full flex-col bg-background font-sans text-foreground antialiased [&_:focus-visible]:outline-none [&_:focus-visible]:ring-2 [&_:focus-visible]:ring-ring">
+    <html lang="en" className={`${notoSans.variable} ${playfair.variable}`}>
+      <body className="flex flex-col bg-background font-sans text-foreground antialiased [&_:focus-visible]:outline-none [&_:focus-visible]:ring-2 [&_:focus-visible]:ring-ring">
         {children}
-        <Footer />
       </body>
     </html>
   )
