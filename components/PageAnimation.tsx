@@ -13,6 +13,7 @@ export default function PageAnimation({ children }: PageAnimationProps) {
     visible: {
       transition: {
         staggerChildren: 0.1,
+        delayChildren: 0.1,
       },
     },
   }
