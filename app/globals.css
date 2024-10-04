@@ -13,7 +13,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 214deg 97.4% 44.7%;
+    --primary: 214deg 97.4% 48%;
     --primary-foreground: 210 40% 98%;
 
     --secondary: 0 0% 100%;
@@ -48,7 +48,7 @@
       --popover: 222.2 84% 4.9%;
       --popover-foreground: 210 40% 98%;
 
-      --primary: 214deg 97.4% 44.7%;
+      --primary: 214deg 97.4% 38%;
       --primary-foreground: 210 40% 98%;
 
       --secondary: 240deg 0.535% 36.7%;
@@ -63,7 +63,7 @@
       --destructive: 3 100% 72.4%;
       --destructive-foreground: 210 40% 98%;
 
-      --border: 210deg 1.37% 28.6%;
+      --border: 210deg 1.37% 15%;
       --input: 240deg 0.99% 19.8%;
       --ring: 215.72 92.58% 57.813%;
 
