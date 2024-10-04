@@ -20,7 +20,7 @@ const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
       url: 'https://superstudios.io/',
       date: '2024 - Present',
       description:
-        'I specialize in conceptualizing and designing user interfaces using Next.js, Typescript, and Tailwind. My expertise lies in rapidly building modern, responsive designs that enhance user experience and drive engagement.',
+        'With a strong foundation in web development, I specialize in conceptualizing and designing user interfaces using Next.js, Typescript, and Tailwind. My expertise lies in rapidly building modern, responsive designs that enhance user experience and drive engagement.',
     },
     {
       title: 'Web Designer',
