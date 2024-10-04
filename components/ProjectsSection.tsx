@@ -4,15 +4,15 @@ import SectionHeading from '@/components/SectionHeading'
 
 const projects = [
   {
-    href: 'https://alivault.github.io/color-palette-maker/',
-    title: '🎨 Color Palette Maker',
-    description: 'Craft harmonious color palettes using the OKLCH colorspace.',
-  },
-  {
     href: 'https://cash-flow-monthly.vercel.app/',
     title: '💸 Cash Flow',
     description:
       'Evaluate your cash flow effortlessly with this simple calculator.',
+  },
+  {
+    href: 'https://alivault.github.io/color-palette-maker/',
+    title: '🎨 Color Palette Maker',
+    description: 'Craft harmonious color palettes using the OKLCH colorspace.',
   },
 ]
 

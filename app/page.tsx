@@ -28,8 +28,8 @@ export default function Home() {
   return (
     <Main>
       <HeroSection />
-      <ArticlesSection />
       <ProjectsSection />
+      <ArticlesSection />
       <ExperienceSection />
     </Main>
   )
