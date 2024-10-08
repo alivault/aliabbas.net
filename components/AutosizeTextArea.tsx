@@ -44,9 +44,10 @@ export const useAutosizeTextArea = ({
 }
 
 export type AutosizeTextAreaRef = {
-  textArea: HTMLTextAreaElement
+  textArea: HTMLTextAreaElement | null
   maxHeight: number
   minHeight: number
+  focus: () => void
 }
 
 type AutosizeTextAreaProps = {
@@ -80,9 +81,14 @@ export const AutosizeTextarea = React.forwardRef<
     })
 
     useImperativeHandle(ref, () => ({
-      textArea: textAreaRef.current as HTMLTextAreaElement,
+      textArea: textAreaRef.current,
       maxHeight,
       minHeight,
+      focus: () => {
+        if (textAreaRef.current) {
+          textAreaRef.current.focus()
+        }
+      },
     }))
 
     React.useEffect(() => {
