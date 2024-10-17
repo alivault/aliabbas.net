@@ -4,7 +4,7 @@ import SectionHeading from '@/components/SectionHeading'
 
 const projects = [
   {
-    href: 'https://cash-flow-monthly.vercel.app/',
+    href: 'https://cashflow.aliabbas.dev/',
     title: '💸 Cash Flow',
     description:
       'Evaluate your cash flow effortlessly with this simple calculator.',
