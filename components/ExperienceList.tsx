@@ -20,7 +20,7 @@ const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
       url: 'https://superstudios.io/',
       date: '2024 - Present',
       description:
-        'With a strong foundation in web development, I specialize in conceptualizing and designing user interfaces using Next.js, Typescript, and Tailwind. My expertise lies in rapidly building modern, responsive designs that enhance user experience and drive engagement.',
+        'I design and develop key components for building modern, responsive web applications using Next.js, Typescript, and Tailwind. I collaborate closely with cross-functional teams, including developers, designers, and product managers, to deliver user-centric interfaces that prioritize performance, accessibility, and engagement.',
     },
     {
       title: 'Web Designer',
@@ -28,7 +28,7 @@ const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
       url: 'https://superstudios.io/',
       date: '2021 - 2024',
       description:
-        'I designed and developed user interfaces with Figma for UX/UI, Webflow for prototyping, and Next.js to create modern, responsive web experiences.',
+        'Designed and developed user interfaces with Figma for UX/UI, Webflow for prototyping, and Next.js to create modern, responsive web experiences.',
     },
     {
       title: 'Brand Architect',
@@ -42,28 +42,28 @@ const ExperienceList: React.FC<ExperienceListProps> = ({ maxItems }) => {
       company: 'DApp Evolution',
       date: '2018 - 2019',
       description:
-        'I led app design for TronChat, a social media platform by DAppEvolution. It enables users to earn TRX and bridges the gap between cryptocurrency and blockchain. I collaborated with the CTO on high-fidelity designs in Sketch and crafted UI animations using Flinto and After Effects.',
+        'Led app design for TronChat, a social media platform by DAppEvolution. It enables users to earn TRX and bridges the gap between cryptocurrency and blockchain. I collaborated with the CTO on high-fidelity designs in Sketch and crafted UI animations using Flinto and After Effects.',
     },
     {
       title: 'Design Director',
       company: 'Live Streaming App',
       date: '2016 - 2018',
       description:
-        'I spearheaded all aspects of design, overseeing branding, app, and web design. Within a year, our rebranded app gained over 1,000 daily active users with an average 48-minute engagement and surpassed 5,000 monthly active users.',
+        'Spearheaded all aspects of design, overseeing branding, app, and web design. Within a year, our rebranded app gained over 1,000 daily active users with an average 48-minute engagement and surpassed 5,000 monthly active users.',
     },
     {
       title: 'Creative Director & Co-Founder',
       company: 'Verge Collective',
       date: '2012 - 2016',
       description:
-        "I managed our team's brand design roadmap, frequently liaising with clients to comprehend their objectives and challenges. I translated these insights for our team and oversaw brand campaigns, client presentations, feedback integration, and brand standard formulation. Our clientele included Keller Williams Real Estate, Tony Horton of P90X, and The United Nations.",
+        "Managed our team's brand design roadmap, frequently liaising with clients to comprehend their objectives and challenges. I translated these insights for our team and oversaw brand campaigns, client presentations, feedback integration, and brand standard formulation. Our clientele included Keller Williams Real Estate, Tony Horton of P90X, and The United Nations.",
     },
     {
       title: 'Events Coordinator',
       company: 'UC Santa Barbara',
       date: '2008 - 2011',
       description:
-        'I organized concerts and festivals ranging from 800-seat venues to 15,000+ stadium events. I booked over 100 artists, including A-Trak, Major Lazer, Steve Aoki, and Portugal. the Man. My responsibilities included event coordination, artist booking, equipment management, and collaborating with publicity and ticketing teams to drive sales.',
+        'Organized concerts and festivals ranging from 800-seat venues to 15,000+ stadium events. I booked over 100 artists, including A-Trak, Major Lazer, Steve Aoki, and Portugal. the Man. My responsibilities included event coordination, artist booking, equipment management, and collaborating with publicity and ticketing teams to drive sales.',
     },
   ]
 
