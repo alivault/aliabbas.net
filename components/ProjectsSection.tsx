@@ -10,7 +10,7 @@ const projects = [
       'Evaluate your cash flow effortlessly with this simple calculator.',
   },
   {
-    href: 'https://alivault.github.io/color-palette-maker/',
+    href: 'https://color-palette-maker.ali-abbas.workers.dev/',
     title: '🎨 Color Palette Maker',
     description: 'Craft harmonious color palettes using the OKLCH colorspace.',
   },
