@@ -10,9 +10,9 @@ const projects = [
       'Evaluate your cash flow effortlessly with this simple calculator.',
   },
   {
-    href: 'https://color.aliabbas.dev/',
-    title: '🎨 Color Palette Maker',
-    description: 'Craft harmonious color palettes using the OKLCH colorspace.',
+    href: 'https://chromagine.aliabbas.dev/',
+    title: '🎨 Chromagine',
+    description: 'Craft harmonious color palettes using colorspace.',
   },
 ]
 
