@@ -4,10 +4,16 @@ import SectionHeading from '@/components/SectionHeading'
 
 const portfolio = [
   {
+    href: 'https://blackhole.xyz/',
+    title: 'BlackHole',
+    description: 'RainbowKit, Next.js, TypeScript, Tailwind CSS, Shadcn UI',
+    image: '/blackhole.svg',
+  },
+  {
     href: 'https://superverse.co/',
     title: 'SuperVerse',
     description:
-      'Next.js, TypeScript, Tailwind CSS, Shadcn UI, Sanity CMS, GSAP Animations',
+      'GSAP Animations, Sanity CMS, Next.js, TypeScript, Tailwind CSS, Shadcn UI',
     image: '/superverse.svg',
   },
   {
