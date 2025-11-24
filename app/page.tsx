@@ -3,6 +3,7 @@ import ArticlesSection from '@/components/ArticleSection'
 import ExperienceSection from '@/components/ExperienceSection'
 import HeroSection from '@/components/HeroSection'
 import Main from '@/components/Main'
+import PortfolioSection from '@/components/PortfolioSection'
 import ProjectsSection from '@/components/ProjectsSection'
 
 export const metadata: Metadata = {
@@ -28,6 +29,7 @@ export default function Home() {
   return (
     <Main>
       <HeroSection />
+      <PortfolioSection />
       <ProjectsSection />
       <ArticlesSection />
       <ExperienceSection />

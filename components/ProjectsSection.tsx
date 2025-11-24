@@ -19,7 +19,7 @@ const projects = [
 export default function ProjectsSection() {
   return (
     <Section>
-      <SectionHeading>Projects</SectionHeading>
+      <SectionHeading>Side Projects</SectionHeading>
       <ul className="flex flex-col">
         {projects.map((project, index) => (
           <ProjectItem key={index} {...project} />
