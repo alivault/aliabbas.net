@@ -1,6 +1,8 @@
 import { createRootRoute, Outlet, HeadContent, Scripts } from '@tanstack/react-router'
-import { Meta } from '@tanstack/react-start'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import '../styles/globals.css'
+
+const queryClient = new QueryClient()
 
 export const Route = createRootRoute({
   head: () => ({
@@ -33,15 +35,17 @@ export const Route = createRootRoute({
 
 function RootComponent() {
   return (
+    <QueryClientProvider client={queryClient}>
     <html lang="en">
       <head>
         <HeadContent />
       </head>
-      <body className="flex flex-col bg-background font-sans text-foreground antialiased [&_:focus-visible]:outline-none [&_:focus-visible]:ring-2 [&_:focus-visible]:ring-ring">
+      <body className="flex flex-col bg-background font-sans text-foreground antialiased **:focus-visible:outline-none **:focus-visible:ring-2 **:focus-visible:ring-ring">
         <Outlet />
         <Scripts />
       </body>
     </html>
+    </QueryClientProvider>
   )
 }
 

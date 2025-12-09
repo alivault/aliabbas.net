@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@plugin "@tailwindcss/typography";
 
 @theme {
   --font-sans: 'Noto Sans', sans-serif;
@@ -28,7 +29,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-  @theme {
+  :root {
     --color-background: hsl(213deg 25.7% 6.86%);
     --color-foreground: hsl(210 40% 98%);
     --color-card: hsl(222.2 84% 4.9%);
@@ -60,3 +61,11 @@ textarea {
   font-size: 16px;
 }
 
+@utility prose {
+  code {
+    &::before,
+    &::after {
+      content: none;
+    }
+  }
+}
