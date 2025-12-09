@@ -1,5 +1,3 @@
-'use client'
-
 import { useEffect, useState } from 'react'
 import Spinner from './Spinner'
 import { Button } from './ui/button'
@@ -17,6 +15,7 @@ import PageHeading from './PageHeading'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
+import { sendContactEmail } from '~/lib/email'
 
 export default function ContactForm() {
   const [isSubmitted, setSubmitted] = useState(false)
@@ -69,27 +68,20 @@ export default function ContactForm() {
   }, [watchedEmail, watchedMessage, clearErrors])
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    const response = await fetch('/api/send', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(values),
-    })
-
-    if (!response.ok) {
-      throw new Error('Network response was not ok')
-    }
-
-    const data = await response.json()
-
-    if (data.error) {
+    try {
+      await sendContactEmail({
+        data: {
+          name: values.name,
+          email: values.email,
+          message: values.message,
+        },
+      })
+      setSubmitted(true)
+    } catch {
       setError('formError', {
         message:
           'An error occurred while sending your message. Please try again later.',
       })
-    } else {
-      setSubmitted(true)
     }
   }
 
