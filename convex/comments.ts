@@ -15,7 +15,7 @@ export const getComments = query({
   },
 })
 
-// Add a new comment (requires authentication)
+// Add a new comment (requires authentication and verified email)
 export const addComment = mutation({
   args: {
     articleSlug: v.string(),
@@ -25,6 +25,10 @@ export const addComment = mutation({
     const user = await authComponent.getAuthUser(ctx)
     if (!user) {
       throw new Error('You must be logged in to comment')
+    }
+
+    if (!user.emailVerified) {
+      throw new Error('Please verify your email address before commenting')
     }
 
     const commentId = await ctx.db.insert('comments', {

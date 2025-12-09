@@ -1,24 +1,28 @@
 /// <reference types="vite/client" />
+import { ConvexBetterAuthProvider } from '@convex-dev/better-auth/react'
+import type { ConvexQueryClient } from '@convex-dev/react-query'
+import type { QueryClient } from '@tanstack/react-query'
 import {
+  createRootRouteWithContext,
   HeadContent,
   Outlet,
   Scripts,
-  createRootRouteWithContext,
   useRouteContext,
 } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
-import { ConvexBetterAuthProvider } from '@convex-dev/better-auth/react'
-import type { ConvexQueryClient } from '@convex-dev/react-query'
-import type { ConvexReactClient } from 'convex/react'
-import type { QueryClient } from '@tanstack/react-query'
 import { authClient } from '~/lib/auth-client'
+import type { ConvexReactClient } from 'convex/react'
 import '../styles/globals.css'
 
 // Get auth information for SSR using available cookies
 const fetchAuth = createServerFn({ method: 'GET' }).handler(async () => {
   try {
-    const { getCookie, getRequest } = await import('@tanstack/react-start/server')
-    const { fetchSession, getCookieName } = await import('@convex-dev/better-auth/react-start')
+    const { getCookie, getRequest } = await import(
+      '@tanstack/react-start/server'
+    )
+    const { fetchSession, getCookieName } = await import(
+      '@convex-dev/better-auth/react-start'
+    )
     const { createAuth } = await import('../../convex/auth')
     const { session } = await fetchSession(getRequest())
     const sessionCookieName = getCookieName(createAuth)
@@ -90,7 +94,7 @@ function RootComponent() {
         <head>
           <HeadContent />
         </head>
-        <body className="flex flex-col bg-background font-sans text-foreground antialiased **:focus-visible:outline-none **:focus-visible:ring-2 **:focus-visible:ring-ring">
+        <body className="bg-background text-foreground **:focus-visible:outline-none **:focus-visible:ring-2 **:focus-visible:ring-ring flex flex-col font-sans antialiased">
           <Outlet />
           <Scripts />
         </body>
