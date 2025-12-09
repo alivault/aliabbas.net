@@ -1,80 +1,24 @@
+import type { SanityExperience } from '~/lib/sanity'
 import ExperienceItem from './ExperienceItem'
 
-interface Experience {
-  title: string
-  company: string
-  url?: string
-  date: string
-  description: string
-}
-
 interface ExperienceListProps {
-  maxItems?: number
+  experiences: SanityExperience[]
 }
 
-const experiences: Experience[] = [
-  {
-    title: 'Senior Frontend Engineer',
-    company: 'Super Studios Inc.',
-    url: 'https://superstudios.io/',
-    date: '2024 - Present',
-    description:
-      'I design and develop key components for building modern, responsive web applications using Next.js, Typescript, and Tailwind. I collaborate closely with cross-functional teams, including developers, designers, and product managers, to deliver user-centric interfaces that prioritize performance, accessibility, and engagement.',
-  },
-  {
-    title: 'Web Designer',
-    company: 'Super Studios Inc.',
-    url: 'https://superstudios.io/',
-    date: '2021 - 2024',
-    description:
-      'Designed and developed user interfaces with Figma for UX/UI, Webflow for prototyping, and Next.js to create modern, responsive web experiences.',
-  },
-  {
-    title: 'Brand Architect',
-    company: 'Freelance',
-    date: '2019 - 2021',
-    description:
-      'Leveraged Adobe Creative Suite, Figma, and Webflow to architect and prototype diverse digital products, encompassing website design, app user interface development, and logo creation.',
-  },
-  {
-    title: 'Product Designer',
-    company: 'DApp Evolution',
-    date: '2018 - 2019',
-    description:
-      'Led app design for TronChat, a social media platform by DAppEvolution. It enables users to earn TRX and bridges the gap between cryptocurrency and blockchain. I collaborated with the CTO on high-fidelity designs in Sketch and crafted UI animations using Flinto and After Effects.',
-  },
-  {
-    title: 'Design Director',
-    company: 'Live Streaming App',
-    date: '2016 - 2018',
-    description:
-      'Spearheaded all aspects of design, overseeing branding, app, and web design. Within a year, our rebranded app gained over 1,000 daily active users with an average 48-minute engagement and surpassed 5,000 monthly active users.',
-  },
-  {
-    title: 'Creative Director & Co-Founder',
-    company: 'Verge Collective',
-    date: '2012 - 2016',
-    description:
-      "Managed our team's brand design roadmap, frequently liaising with clients to comprehend their objectives and challenges. I translated these insights for our team and oversaw brand campaigns, client presentations, feedback integration, and brand standard formulation. Our clientele included Keller Williams Real Estate, Tony Horton of P90X, and The United Nations.",
-  },
-  {
-    title: 'Events Coordinator',
-    company: 'UC Santa Barbara',
-    date: '2008 - 2011',
-    description:
-      'Organized concerts and festivals ranging from 800-seat venues to 15,000+ stadium events. I booked over 100 artists, including A-Trak, Major Lazer, Steve Aoki, and Portugal. the Man. My responsibilities included event coordination, artist booking, equipment management, and collaborating with publicity and ticketing teams to drive sales.',
-  },
-]
-
-export default function ExperienceList({ maxItems }: ExperienceListProps) {
-  const displayedItems = maxItems ? experiences.slice(0, maxItems) : experiences
-
+export default function ExperienceList({ experiences }: ExperienceListProps) {
   return (
     <ul className="flex flex-col gap-4">
-      {displayedItems.map((item, index) => (
-        <ExperienceItem key={index} {...item} />
+      {experiences.map((item) => (
+        <ExperienceItem
+          key={item._id}
+          title={item.title}
+          company={item.company}
+          url={item.url}
+          startDate={item.startDate}
+          endDate={item.endDate}
+          description={item.description}
+        />
       ))}
     </ul>
   )
 }
-

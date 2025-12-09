@@ -1,4 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { useQuery } from '@tanstack/react-query'
+import { getExperiences } from '~/lib/sanity'
 import ExperienceList from '~/components/ExperienceList'
 import Main from '~/components/Main'
 import Nav from '~/components/Nav'
@@ -16,14 +18,24 @@ export const Route = createFileRoute('/experience')({
 })
 
 function ExperiencePage() {
+  const { data: experiences = [], isLoading } = useQuery({
+    queryKey: ['experiences'],
+    queryFn: getExperiences,
+  })
+
   return (
     <Main>
       <Nav />
       <Section>
         <PageHeading>Experience</PageHeading>
-        <ExperienceList />
+        {isLoading ? (
+          <p className="prose dark:prose-invert opacity-60">Loading experience...</p>
+        ) : experiences.length === 0 ? (
+          <p className="prose dark:prose-invert">No experience yet.</p>
+        ) : (
+          <ExperienceList experiences={experiences} />
+        )}
       </Section>
     </Main>
   )
 }
-

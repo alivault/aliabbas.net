@@ -2,20 +2,28 @@ interface ExperienceItemProps {
   title: string
   company: string
   url?: string
-  date: string
+  startDate: string
+  endDate: string | null
   description: string
+}
+
+function formatDateRange(startDate: string, endDate: string | null): string {
+  const startYear = new Date(startDate).getFullYear()
+  const endYear = endDate ? new Date(endDate).getFullYear() : 'Present'
+  return `${startYear} - ${endYear}`
 }
 
 export default function ExperienceItem({
   title,
   company,
   url,
-  date,
+  startDate,
+  endDate,
   description,
 }: ExperienceItemProps) {
   return (
     <li className="flex flex-col items-start gap-2 py-4">
-      <span className="opacity-50">{date}</span>
+      <span className="opacity-50">{formatDateRange(startDate, endDate)}</span>
       <span className="text-lg font-medium">{title}</span>
       {url ? (
         <a
@@ -33,4 +41,3 @@ export default function ExperienceItem({
     </li>
   )
 }
-

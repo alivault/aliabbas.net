@@ -54,3 +54,42 @@ export async function getArticleBySlug(slug: string) {
   )
 }
 
+export type SanityExperience = {
+  _id: string
+  title: string
+  company: string
+  url?: string
+  startDate: string
+  endDate: string | null
+  description: string
+}
+
+export async function getExperiences(): Promise<SanityExperience[]> {
+  return sanityClient.fetch(
+    `*[_type == "experience"] | order(startDate desc) {
+      _id,
+      title,
+      company,
+      url,
+      startDate,
+      endDate,
+      description
+    }`
+  )
+}
+
+export async function getRecentExperiences(limit = 1): Promise<SanityExperience[]> {
+  return sanityClient.fetch(
+    `*[_type == "experience"] | order(startDate desc) [0...$limit] {
+      _id,
+      title,
+      company,
+      url,
+      startDate,
+      endDate,
+      description
+    }`,
+    { limit }
+  )
+}
+

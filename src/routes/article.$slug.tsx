@@ -121,9 +121,7 @@ function ArticlePage() {
         <time className="text-sm opacity-50" dateTime={article.date}>
           {getFormattedDate(article.date)}
         </time>
-        <div className="mt-8">
           <PortableText value={article.content} components={portableTextComponents} />
-        </div>
       </article>
     </Main>
   )
