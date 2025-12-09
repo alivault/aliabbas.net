@@ -1,10 +1,10 @@
 import * as React from 'react'
-import { cn } from '~/lib/utils'
 import { Slot } from '@radix-ui/react-slot'
+import { cn } from '~/lib/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
 
 const buttonVariants = cva(
-  'inline-flex gap-1 items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background outline-none focus-visible:outline-primary disabled:pointer-events-none disabled:opacity-50 transition-colors capitalize',
+  'inline-flex cursor-pointer gap-1 items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background outline-none focus-visible:outline-primary disabled:pointer-events-none disabled:opacity-50 transition-colors capitalize',
   {
     variants: {
       variant: {
@@ -54,4 +54,3 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = 'Button'
 
 export { Button, buttonVariants }
-

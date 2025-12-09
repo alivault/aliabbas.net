@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import Main from '~/components/Main'
 import Nav from '~/components/Nav'
 import Section from '~/components/Section'
+import { Comments } from '~/components/Comments'
 import { getArticleBySlug, sanityClient } from '~/lib/sanity'
 import getFormattedDate from '~/lib/getFormattedDate'
 import { PortableText, type PortableTextComponents, type PortableTextBlock } from '@portabletext/react'
@@ -121,8 +122,11 @@ function ArticlePage() {
         <time className="text-sm opacity-50" dateTime={article.date}>
           {getFormattedDate(article.date)}
         </time>
-          <PortableText value={article.content} components={portableTextComponents} />
+        <PortableText value={article.content} components={portableTextComponents} />
       </article>
+      <div className="p-5">
+        <Comments articleSlug={slug} />
+      </div>
     </Main>
   )
 }
