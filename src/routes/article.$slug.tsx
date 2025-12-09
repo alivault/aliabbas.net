@@ -9,7 +9,7 @@ import getFormattedDate from '~/lib/getFormattedDate'
 import { PortableText, type PortableTextComponents, type PortableTextBlock } from '@portabletext/react'
 import { createImageUrlBuilder } from '@sanity/image-url'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import { oneDark } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import oneDark from 'react-syntax-highlighter/dist/cjs/styles/prism/one-dark'
 
 const builder = createImageUrlBuilder(sanityClient)
 
