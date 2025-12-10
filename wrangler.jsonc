@@ -1,0 +1,21 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ali-abbas",
+  "compatibility_date": "2025-12-09",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "@tanstack/react-start/server-entry",
+  "routes": [
+    {
+      "pattern": "aliabbas.dev",
+      "custom_domain": true,
+    },
+    {
+      "pattern": "www.aliabbas.dev",
+      "custom_domain": true,
+    },
+  ],
+  "vars": {
+    "VITE_CONVEX_URL": "https://valiant-penguin-216.convex.cloud",
+    "VITE_CONVEX_SITE_URL": "https://valiant-penguin-216.convex.site",
+  },
+}
