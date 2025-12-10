@@ -1,54 +1,33 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import {
+  PortableText,
+  type PortableTextBlock,
+  type PortableTextComponents,
+} from '@portabletext/react'
+import { createImageUrlBuilder } from '@sanity/image-url'
 import { useQuery } from '@tanstack/react-query'
+import { createFileRoute, Link } from '@tanstack/react-router'
+import { CodeBlock } from '~/components/CodeBlock'
+import { Comments } from '~/components/Comments'
 import Main from '~/components/Main'
 import Nav from '~/components/Nav'
 import Section from '~/components/Section'
-import { Comments } from '~/components/Comments'
-import { getArticleBySlug, sanityClient } from '~/lib/sanity'
 import getFormattedDate from '~/lib/getFormattedDate'
-import { PortableText, type PortableTextComponents, type PortableTextBlock } from '@portabletext/react'
-import { createImageUrlBuilder } from '@sanity/image-url'
-import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
-import oneDark from 'react-syntax-highlighter/dist/cjs/styles/prism/one-dark'
+import { getArticleBySlug, sanityClient } from '~/lib/sanity'
 
 const builder = createImageUrlBuilder(sanityClient)
-
-function CodeBlock({ value }: { value: { code: string; language?: string; filename?: string } }) {
-  if (!value.code) return null
-
-  return (
-    <div className="my-4">
-      {value.filename && (
-        <div className="rounded-t-lg bg-[#282c34] px-4 py-2 text-sm text-neutral-400">
-          {value.filename}
-        </div>
-      )}
-      <SyntaxHighlighter
-        language={value.language || 'text'}
-        style={oneDark}
-        customStyle={{
-          margin: 0,
-          borderRadius: value.filename ? '0 0 0.5rem 0.5rem' : '0.5rem',
-        }}
-      >
-        {value.code}
-      </SyntaxHighlighter>
-    </div>
-  )
-}
 
 const portableTextComponents: PortableTextComponents = {
   types: {
     code: CodeBlock,
-    image: ({ value }: { value: { asset: { _ref: string }; alt?: string } }) => {
+    image: ({
+      value,
+    }: {
+      value: { asset: { _ref: string }; alt?: string }
+    }) => {
       const imageUrl = builder.image(value).url()
       return (
         <figure className="my-6">
-          <img
-            src={imageUrl}
-            alt={value.alt || ''}
-            className="rounded-lg"
-          />
+          <img src={imageUrl} alt={value.alt || ''} className="rounded-lg" />
           {value.alt && (
             <figcaption className="mt-2 text-center text-sm opacity-60">
               {value.alt}
@@ -117,12 +96,15 @@ function ArticlePage() {
   return (
     <Main>
       <Nav />
-      <article className="prose max-w-none p-5 dark:prose-invert prose-h1:mb-4 prose-h1:text-3xl prose-pre:py-0">
+      <article className="prose dark:prose-invert prose-h1:mb-4 prose-h1:text-3xl prose-pre:py-0 max-w-none p-5">
         <h1>{article.title}</h1>
         <time className="text-sm opacity-50" dateTime={article.date}>
           {getFormattedDate(article.date)}
         </time>
-        <PortableText value={article.content} components={portableTextComponents} />
+        <PortableText
+          value={article.content}
+          components={portableTextComponents}
+        />
       </article>
       <div className="p-5">
         <Comments articleSlug={slug} />
@@ -130,4 +112,3 @@ function ArticlePage() {
     </Main>
   )
 }
-
