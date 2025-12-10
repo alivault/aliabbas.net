@@ -4,10 +4,10 @@ import SectionHeading from './SectionHeading'
 
 const projects = [
   {
-    href: 'https://cashflow.aliabbas.dev/',
-    title: '💸 Cash Flow',
+    href: 'https://floos.aliabbas.dev/',
+    title: '💸 Floos',
     description:
-      'Evaluate your cash flow effortlessly with this simple calculator.',
+      'Floos is a simple and easy to use tool to help you manage your finances.',
   },
   {
     href: 'https://chromagine.aliabbas.dev/',
@@ -28,4 +28,3 @@ export default function ProjectsSection() {
     </Section>
   )
 }
-
