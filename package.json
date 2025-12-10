@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "NODE_OPTIONS='--max-old-space-size=8192' vite",
-    "build": "NODE_OPTIONS='--max-old-space-size=8192' vite build",
+    "dev": "vite",
+    "build": "vite build",
     "preview": "vite preview",
     "deploy": "pnpm run build && wrangler deploy",
     "cf-typegen": "wrangler types"
