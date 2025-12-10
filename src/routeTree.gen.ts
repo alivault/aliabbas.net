@@ -12,10 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as ExperienceRouteImport } from './routes/experience'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ArticlesRouteImport } from './routes/articles'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArticleSlugRouteImport } from './routes/article.$slug'
-import { Route as AdminSplatRouteImport } from './routes/admin.$'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const ExperienceRoute = ExperienceRouteImport.update({
@@ -33,11 +31,6 @@ const ArticlesRoute = ArticlesRouteImport.update({
   path: '/articles',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -48,11 +41,6 @@ const ArticleSlugRoute = ArticleSlugRouteImport.update({
   path: '/article/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminSplatRoute = AdminSplatRouteImport.update({
-  id: '/$',
-  path: '/$',
-  getParentRoute: () => AdminRoute,
-} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -61,32 +49,26 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/articles': typeof ArticlesRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
-  '/admin/$': typeof AdminSplatRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/articles': typeof ArticlesRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
-  '/admin/$': typeof AdminSplatRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/articles': typeof ArticlesRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
-  '/admin/$': typeof AdminSplatRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -94,38 +76,31 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
     | '/articles'
     | '/contact'
     | '/experience'
-    | '/admin/$'
     | '/article/$slug'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/articles'
     | '/contact'
     | '/experience'
-    | '/admin/$'
     | '/article/$slug'
     | '/api/auth/$'
   id:
     | '__root__'
     | '/'
-    | '/admin'
     | '/articles'
     | '/contact'
     | '/experience'
-    | '/admin/$'
     | '/article/$slug'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRouteWithChildren
   ArticlesRoute: typeof ArticlesRoute
   ContactRoute: typeof ContactRoute
   ExperienceRoute: typeof ExperienceRoute
@@ -156,13 +131,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArticlesRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -177,13 +145,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArticleSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/$': {
-      id: '/admin/$'
-      path: '/$'
-      fullPath: '/admin/$'
-      preLoaderRoute: typeof AdminSplatRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -194,19 +155,8 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface AdminRouteChildren {
-  AdminSplatRoute: typeof AdminSplatRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminSplatRoute: AdminSplatRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRouteWithChildren,
   ArticlesRoute: ArticlesRoute,
   ContactRoute: ContactRoute,
   ExperienceRoute: ExperienceRoute,
