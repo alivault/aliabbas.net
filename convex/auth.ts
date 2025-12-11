@@ -1,12 +1,12 @@
-import { components } from './_generated/api'
-import type { DataModel } from './_generated/dataModel'
-import { query } from './_generated/server'
 import { createClient } from '@convex-dev/better-auth'
-import type { GenericCtx } from '@convex-dev/better-auth'
 import { convex, crossDomain } from '@convex-dev/better-auth/plugins'
 import { betterAuth } from 'better-auth'
 import { emailOTP } from 'better-auth/plugins'
 import { Resend } from 'resend'
+import { query } from './_generated/server'
+import { components } from './_generated/api'
+import type { GenericCtx } from '@convex-dev/better-auth'
+import type { DataModel } from './_generated/dataModel'
 
 export const authComponent = createClient<DataModel>(components.betterAuth)
 

@@ -1,6 +1,9 @@
 import { tanstackConfig } from '@tanstack/eslint-config'
 
 export default [
+  {
+    ignores: ['convex/_generated/**', 'eslint.config.js'],
+  },
   ...tanstackConfig,
   {
     files: ['**/*.{ts,tsx}'],
@@ -11,6 +14,12 @@ export default [
     },
     rules: {
       'react/no-unescaped-entities': 0,
+    },
+  },
+  {
+    files: ['convex/**/*.ts'],
+    rules: {
+      '@typescript-eslint/no-unnecessary-condition': 'off',
     },
   },
 ]
