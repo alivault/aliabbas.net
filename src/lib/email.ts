@@ -32,6 +32,5 @@ export const sendContactEmail = createServerFn({ method: 'POST' })
       throw new Error(result.error.message)
     }
 
-    return { success: true, id: result.data?.id }
+    return { success: true, id: result.data.id }
   })
-

@@ -1,6 +1,6 @@
-import type { ReactNode } from 'react'
 import Footer from './Footer'
 import PageAnimation from './PageAnimation'
+import type { ReactNode } from 'react'
 
 interface MainProps {
   children: ReactNode

@@ -1,10 +1,4 @@
 import { useState } from 'react'
-import { api } from '../../convex/_generated/api'
-import type { Id } from '../../convex/_generated/dataModel'
-import { Button } from './ui/button'
-import { InputOTP, InputOTPGroup, InputOTPSlot } from './ui/input-otp'
-import { authClient } from '~/lib/auth-client'
-import { formatDistanceToNow } from '~/lib/getFormattedDate'
 import { useMutation, useQuery } from 'convex/react'
 import {
   ArrowLeft,
@@ -18,6 +12,12 @@ import {
   Trash2,
   X,
 } from 'lucide-react'
+import { api } from '../../convex/_generated/api'
+import { Button } from './ui/button'
+import { InputOTP, InputOTPGroup, InputOTPSlot } from './ui/input-otp'
+import type { Id } from '../../convex/_generated/dataModel'
+import { authClient } from '~/lib/auth-client'
+import { formatDistanceToNow } from '~/lib/getFormattedDate'
 
 interface CommentsProps {
   articleSlug: string
@@ -132,7 +132,7 @@ export function Comments({ articleSlug }: CommentsProps) {
           resetAuthForm()
         }
       }
-    } catch (err) {
+    } catch (_err) {
       setAuthError('An unexpected error occurred')
     } finally {
       setIsAuthLoading(false)
@@ -156,9 +156,8 @@ export function Comments({ articleSlug }: CommentsProps) {
         // autoSignInAfterVerification handles session creation
         resetAuthForm()
       }
-    } catch (err) {
+    } catch (_err) {
       setAuthError('An unexpected error occurred')
-      setOtp('')
     } finally {
       setIsVerifyingOtp(false)
     }
@@ -180,7 +179,7 @@ export function Comments({ articleSlug }: CommentsProps) {
         setEmail(user.email)
         setAuthMode('verify-unverified')
       }
-    } catch (err) {
+    } catch (_err) {
       setAuthError('An unexpected error occurred')
     } finally {
       setIsSendingOtp(false)
@@ -199,7 +198,7 @@ export function Comments({ articleSlug }: CommentsProps) {
       if (result.error) {
         setAuthError(result.error.message || 'Failed to resend code')
       }
-    } catch (err) {
+    } catch (_err) {
       setAuthError('An unexpected error occurred')
     } finally {
       setIsSendingOtp(false)

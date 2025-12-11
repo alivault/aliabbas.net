@@ -1,9 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
-import { getRecentExperiences } from '~/lib/sanity'
 import ExperienceList from './ExperienceList'
 import Section from './Section'
 import SectionHeading from './SectionHeading'
 import SectionButton from './SectionButton'
+import { getRecentExperiences } from '~/lib/sanity'
 
 export default function ExperienceSection() {
   const { data: experiences = [], isLoading } = useQuery({

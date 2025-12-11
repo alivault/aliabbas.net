@@ -1,17 +1,17 @@
 /// <reference types="vite/client" />
 import { ConvexBetterAuthProvider } from '@convex-dev/better-auth/react'
-import type { ConvexQueryClient } from '@convex-dev/react-query'
-import type { QueryClient } from '@tanstack/react-query'
 import {
-  createRootRouteWithContext,
   HeadContent,
   Outlet,
   Scripts,
+  createRootRouteWithContext,
   useRouteContext,
 } from '@tanstack/react-router'
 import { createServerFn } from '@tanstack/react-start'
-import { authClient } from '~/lib/auth-client'
+import type { ConvexQueryClient } from '@convex-dev/react-query'
+import type { QueryClient } from '@tanstack/react-query'
 import type { ConvexReactClient } from 'convex/react'
+import { authClient } from '~/lib/auth-client'
 import '../styles/globals.css'
 
 // Get auth information for SSR using available cookies

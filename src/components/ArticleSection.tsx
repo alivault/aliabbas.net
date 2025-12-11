@@ -1,10 +1,11 @@
 import { Link } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
-import { getRecentArticles, type SanityArticle } from '~/lib/sanity'
-import getFormattedDate from '~/lib/getFormattedDate'
 import Section from './Section'
 import SectionHeading from './SectionHeading'
 import SectionButton from './SectionButton'
+import type {SanityArticle} from '~/lib/sanity';
+import getFormattedDate from '~/lib/getFormattedDate'
+import {  getRecentArticles } from '~/lib/sanity'
 
 function ArticleListItem({ article }: { article: SanityArticle }) {
   return (

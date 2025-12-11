@@ -1,11 +1,12 @@
 import {
-  PortableText,
-  type PortableTextBlock,
-  type PortableTextComponents,
+  PortableText
+  
+  
 } from '@portabletext/react'
 import { createImageUrlBuilder } from '@sanity/image-url'
 import { useQuery } from '@tanstack/react-query'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
+import type {PortableTextBlock, PortableTextComponents} from '@portabletext/react';
 import { CodeBlock } from '~/components/CodeBlock'
 import { Comments } from '~/components/Comments'
 import Main from '~/components/Main'
@@ -56,7 +57,7 @@ type ArticleData = {
   slug: { current: string }
   date: string
   description: string
-  content: PortableTextBlock[]
+  content: Array<PortableTextBlock>
 }
 
 function ArticlePage() {

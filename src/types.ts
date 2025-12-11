@@ -1,4 +1,4 @@
-import type { ReactElement, JSXElementConstructor } from 'react'
+import type { JSXElementConstructor, ReactElement } from 'react'
 
 export type Meta = {
   id: string

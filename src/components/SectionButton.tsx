@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
-import type { ReactNode } from 'react'
-import { Button } from './ui/button'
 import { ChevronsRight } from 'lucide-react'
+import { Button } from './ui/button'
+import type { ReactNode } from 'react'
 
 interface SectionButtonProps {
   href: string

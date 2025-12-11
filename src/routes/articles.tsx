@@ -1,10 +1,11 @@
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { Link, createFileRoute } from '@tanstack/react-router'
 import { useQuery } from '@tanstack/react-query'
+import type {SanityArticle} from '~/lib/sanity';
 import Main from '~/components/Main'
 import Nav from '~/components/Nav'
 import PageHeading from '~/components/PageHeading'
 import Section from '~/components/Section'
-import { getArticles, type SanityArticle } from '~/lib/sanity'
+import {  getArticles } from '~/lib/sanity'
 import getFormattedDate from '~/lib/getFormattedDate'
 
 export const Route = createFileRoute('/articles')({

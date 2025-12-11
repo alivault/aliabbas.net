@@ -15,7 +15,7 @@ export type SanityArticle = {
   description: string
 }
 
-export async function getArticles(): Promise<SanityArticle[]> {
+export async function getArticles(): Promise<Array<SanityArticle>> {
   return sanityClient.fetch(
     `*[_type == "article"] | order(date desc) {
       _id,
@@ -27,7 +27,7 @@ export async function getArticles(): Promise<SanityArticle[]> {
   )
 }
 
-export async function getRecentArticles(limit = 3): Promise<SanityArticle[]> {
+export async function getRecentArticles(limit = 3): Promise<Array<SanityArticle>> {
   return sanityClient.fetch(
     `*[_type == "article"] | order(date desc) [0...$limit] {
       _id,
@@ -64,7 +64,7 @@ export type SanityExperience = {
   description: string
 }
 
-export async function getExperiences(): Promise<SanityExperience[]> {
+export async function getExperiences(): Promise<Array<SanityExperience>> {
   return sanityClient.fetch(
     `*[_type == "experience"] | order(startDate desc) {
       _id,
@@ -78,7 +78,7 @@ export async function getExperiences(): Promise<SanityExperience[]> {
   )
 }
 
-export async function getRecentExperiences(limit = 1): Promise<SanityExperience[]> {
+export async function getRecentExperiences(limit = 1): Promise<Array<SanityExperience>> {
   return sanityClient.fetch(
     `*[_type == "experience"] | order(startDate desc) [0...$limit] {
       _id,

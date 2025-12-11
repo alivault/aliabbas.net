@@ -1,8 +1,8 @@
-import type { SanityExperience } from '~/lib/sanity'
 import ExperienceItem from './ExperienceItem'
+import type { SanityExperience } from '~/lib/sanity'
 
 interface ExperienceListProps {
-  experiences: SanityExperience[]
+  experiences: Array<SanityExperience>
 }
 
 export default function ExperienceList({ experiences }: ExperienceListProps) {
