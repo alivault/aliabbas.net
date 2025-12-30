@@ -4,10 +4,10 @@ import SectionHeading from './SectionHeading'
 
 const projects = [
   {
-    href: 'https://floos.aliabbas.dev/',
-    title: '💸 Floos',
+    href: 'https://flooswise.com/',
+    title: '💸 Flooswise',
     description:
-      'Floos is a simple and easy to use tool to help you manage your finances.',
+      'Flooswise is a powerful and easy to use tool to help you manage your finances.',
   },
   {
     href: 'https://chromagine.aliabbas.dev/',
