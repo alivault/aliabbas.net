@@ -6,6 +6,7 @@ import { ConvexProvider } from 'convex/react'
 import { ConvexBetterAuthProvider } from '@convex-dev/better-auth/react'
 import { routeTree } from './routeTree.gen'
 import { authClient } from './lib/auth-client'
+import { NotFound } from './components/NotFound'
 
 export function getRouter() {
   const CONVEX_URL = import.meta.env.VITE_CONVEX_URL
@@ -30,6 +31,7 @@ export function getRouter() {
     createTanStackRouter({
       routeTree,
       defaultPreload: 'intent',
+      defaultNotFoundComponent: () => <NotFound />,
       scrollRestoration: true,
       context: {
         queryClient,
