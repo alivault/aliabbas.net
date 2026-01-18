@@ -1,16 +1,13 @@
 /// <reference types="vite/client" />
-import { ConvexBetterAuthProvider } from '@convex-dev/better-auth/react'
 import {
   HeadContent,
   Outlet,
   Scripts,
   createRootRouteWithContext,
-  useRouteContext,
 } from '@tanstack/react-router'
 import type { ConvexQueryClient } from '@convex-dev/react-query'
 import type { QueryClient } from '@tanstack/react-query'
 import type { ConvexReactClient } from 'convex/react'
-import { authClient } from '~/lib/auth-client'
 import { sessionQueryOptions } from '~/lib/auth'
 import '../styles/globals.css'
 
@@ -62,21 +59,15 @@ export const Route = createRootRouteWithContext<{
 })
 
 function RootComponent() {
-  const context = useRouteContext({ from: Route.id })
   return (
-    <ConvexBetterAuthProvider
-      client={context.convexClient}
-      authClient={authClient}
-    >
-      <html lang="en">
-        <head>
-          <HeadContent />
-        </head>
-        <body className="bg-background text-foreground **:focus-visible:outline-none **:focus-visible:ring-2 **:focus-visible:ring-ring flex flex-col font-sans antialiased">
-          <Outlet />
-          <Scripts />
-        </body>
-      </html>
-    </ConvexBetterAuthProvider>
+    <html lang="en">
+      <head>
+        <HeadContent />
+      </head>
+      <body className="bg-background text-foreground **:focus-visible:outline-none **:focus-visible:ring-2 **:focus-visible:ring-ring flex flex-col font-sans antialiased">
+        <Outlet />
+        <Scripts />
+      </body>
+    </html>
   )
 }
