@@ -1,9 +1,9 @@
 import { useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useMutation, useQuery } from 'convex/react'
 import {
   ArrowLeft,
   Check,
-  Github,
   Loader2,
   LogOut,
   Mail,
@@ -17,6 +17,7 @@ import { Button } from './ui/button'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from './ui/input-otp'
 import type { Id } from '../../convex/_generated/dataModel'
 import { authClient } from '~/lib/auth-client'
+import { sessionQueryKey } from '~/lib/auth'
 import { formatDistanceToNow } from '~/lib/getFormattedDate'
 
 interface CommentsProps {
@@ -46,6 +47,7 @@ export function Comments({ articleSlug }: CommentsProps) {
   const [editedName, setEditedName] = useState('')
   const [isUpdatingName, setIsUpdatingName] = useState(false)
 
+  const queryClient = useQueryClient()
   const comments = useQuery(api.comments.getComments, { articleSlug })
   const addComment = useMutation(api.comments.addComment)
   const deleteComment = useMutation(api.comments.deleteComment)
@@ -54,15 +56,10 @@ export function Comments({ articleSlug }: CommentsProps) {
   const { data: session, isPending: isSessionLoading } = authClient.useSession()
   const user = session?.user
 
-  const handleGitHubSignIn = async () => {
-    await authClient.signIn.social({
-      provider: 'github',
-      callbackURL: window.location.href,
-    })
-  }
-
   const handleSignOut = async () => {
     await authClient.signOut()
+    // Immediately clear session in query cache to prevent loading flash
+    queryClient.setQueryData(sessionQueryKey, { userId: undefined, token: undefined })
   }
 
   const handleStartEditName = () => {
@@ -446,23 +443,13 @@ export function Comments({ articleSlug }: CommentsProps) {
               <p className="mb-4 text-sm text-neutral-500">
                 Sign in to join the conversation
               </p>
-              <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
-                <Button
-                  onClick={handleGitHubSignIn}
-                  className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
-                >
-                  <Github className="mr-2 size-4" />
-                  Sign in with GitHub
-                </Button>
-                <Button
-                  onClick={() => setAuthMode('email')}
-                  variant="outline"
-                  className="border-neutral-300 dark:border-neutral-600"
-                >
-                  <Mail className="mr-2 size-4" />
-                  Sign in with Email
-                </Button>
-              </div>
+              <Button
+                onClick={() => setAuthMode('email')}
+                className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
+              >
+                <Mail className="mr-2 size-4" />
+                Sign in with Email
+              </Button>
             </div>
           ) : authMode === 'verify-signup' ? (
             <div className="mx-auto max-w-sm">
