@@ -26,6 +26,12 @@ export const createAuth = (
     baseURL: convexSiteUrl,
     trustedOrigins: [siteUrl, convexSiteUrl].filter(Boolean),
     database: authComponent.adapter(ctx),
+    session: {
+      cookieCache: {
+        enabled: true,
+        maxAge: 5 * 60, // 5 minutes
+      },
+    },
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: true,
