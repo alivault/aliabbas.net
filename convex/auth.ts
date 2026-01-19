@@ -1,5 +1,5 @@
 import { createClient } from '@convex-dev/better-auth'
-import { convex, crossDomain } from '@convex-dev/better-auth/plugins'
+import { convex } from '@convex-dev/better-auth/plugins'
 import { betterAuth } from 'better-auth'
 import { emailOTP } from 'better-auth/plugins'
 import { Resend } from 'resend'
@@ -14,7 +14,6 @@ export const createAuth = (
   ctx: GenericCtx<DataModel>,
   { optionsOnly } = { optionsOnly: false },
 ) => {
-  const convexSiteUrl = process.env.CONVEX_SITE_URL!
   const siteUrl = process.env.SITE_URL!
   const githubClientId = process.env.GITHUB_CLIENT_ID
   const githubClientSecret = process.env.GITHUB_CLIENT_SECRET
@@ -23,8 +22,7 @@ export const createAuth = (
     logger: {
       disabled: optionsOnly,
     },
-    baseURL: convexSiteUrl,
-    trustedOrigins: [siteUrl, convexSiteUrl].filter(Boolean),
+    baseURL: siteUrl,
     database: authComponent.adapter(ctx),
     session: {
       cookieCache: {
@@ -49,7 +47,6 @@ export const createAuth = (
           }
         : undefined,
     plugins: [
-      crossDomain({ siteUrl }),
       convex(),
       emailOTP({
         sendVerificationOTP: async ({ email, otp, type }) => {

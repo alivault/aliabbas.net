@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { useQueryClient } from '@tanstack/react-query'
+import { useQuery as useTanstackQuery, useQueryClient } from '@tanstack/react-query'
+import { useRouter } from '@tanstack/react-router'
 import { useMutation, useQuery } from 'convex/react'
 import {
   ArrowLeft,
@@ -17,7 +18,7 @@ import { Button } from './ui/button'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from './ui/input-otp'
 import type { Id } from '../../convex/_generated/dataModel'
 import { authClient } from '~/lib/auth-client'
-import { sessionQueryKey } from '~/lib/auth'
+import { sessionQueryKey, sessionQueryOptions } from '~/lib/auth'
 import { formatDistanceToNow } from '~/lib/getFormattedDate'
 
 interface CommentsProps {
@@ -48,18 +49,24 @@ export function Comments({ articleSlug }: CommentsProps) {
   const [isUpdatingName, setIsUpdatingName] = useState(false)
 
   const queryClient = useQueryClient()
+  const router = useRouter()
   const comments = useQuery(api.comments.getComments, { articleSlug })
   const addComment = useMutation(api.comments.addComment)
   const deleteComment = useMutation(api.comments.deleteComment)
   const updateUserName = useMutation(api.comments.updateUserName)
 
-  const { data: session, isPending: isSessionLoading } = authClient.useSession()
+  const { data: sessionData, isPending: isSessionLoading } = useTanstackQuery(sessionQueryOptions)
+  const { data: session } = authClient.useSession()
   const user = session?.user
+  const isAuthenticated = !!sessionData?.userId
 
   const handleSignOut = async () => {
-    await authClient.signOut()
-    // Immediately clear session in query cache to prevent loading flash
+    // Optimistically clear session cache first to prevent loading flash
     queryClient.setQueryData(sessionQueryKey, { userId: undefined, token: undefined })
+    await authClient.signOut()
+    // Invalidate to ensure cache stays in sync, and re-run router guards
+    await queryClient.invalidateQueries({ queryKey: sessionQueryKey })
+    await router.invalidate()
   }
 
   const handleStartEditName = () => {
@@ -118,16 +125,20 @@ export function Comments({ articleSlug }: CommentsProps) {
           }
         }
       } else {
-        const result = await authClient.signIn.email({
-          email,
-          password,
-          callbackURL: window.location.href,
-        })
-        if (result.error) {
-          setAuthError(result.error.message || 'Sign in failed')
-        } else {
-          resetAuthForm()
-        }
+        await authClient.signIn.email(
+          { email, password },
+          {
+            onSuccess: async () => {
+              // Invalidate session cache and router so auth state updates
+              await queryClient.invalidateQueries({ queryKey: sessionQueryKey })
+              await router.invalidate()
+              resetAuthForm()
+            },
+            onError: (ctx) => {
+              setAuthError(ctx.error.message || 'Sign in failed')
+            },
+          },
+        )
       }
     } catch (_err) {
       setAuthError('An unexpected error occurred')
@@ -150,7 +161,9 @@ export function Comments({ articleSlug }: CommentsProps) {
         setAuthError(result.error.message || 'Invalid code')
         setOtp('')
       } else {
-        // autoSignInAfterVerification handles session creation
+        // Invalidate session cache and router so auth state updates
+        await queryClient.invalidateQueries({ queryKey: sessionQueryKey })
+        await router.invalidate()
         resetAuthForm()
       }
     } catch (_err) {
