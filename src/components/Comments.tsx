@@ -43,6 +43,7 @@ export function Comments({ articleSlug }: CommentsProps) {
   const [otp, setOtp] = useState('')
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false)
   const [isSendingOtp, setIsSendingOtp] = useState(false)
+  const [isGithubLoading, setIsGithubLoading] = useState(false)
 
   // Edit name state
   const [isEditingName, setIsEditingName] = useState(false)
@@ -459,16 +460,22 @@ export function Comments({ articleSlug }: CommentsProps) {
               </p>
               <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
                 <Button
-                  onClick={() =>
+                  onClick={() => {
+                    setIsGithubLoading(true)
                     authClient.signIn.social({
                       provider: 'github',
                       callbackURL: window.location.href,
                     })
-                  }
-                  className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
+                  }}
+                  disabled={isGithubLoading}
+                  className="bg-neutral-900 text-white hover:bg-neutral-800 disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
                 >
-                  <Github className="mr-2 size-4" />
-                  Sign in with GitHub
+                  {isGithubLoading ? (
+                    <Loader2 className="mr-2 size-4 animate-spin" />
+                  ) : (
+                    <Github className="mr-2 size-4" />
+                  )}
+                  {isGithubLoading ? 'Redirecting...' : 'Sign in with GitHub'}
                 </Button>
                 <Button
                   onClick={() => setAuthMode('email')}
