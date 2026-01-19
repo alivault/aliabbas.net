@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ExperienceRouteImport } from './routes/experience'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ArticlesRouteImport } from './routes/articles'
@@ -16,6 +17,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArticleSlugRouteImport } from './routes/article.$slug'
 import { Route as ApiAuthSplatRouteImport } from './routes/api.auth.$'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ExperienceRoute = ExperienceRouteImport.update({
   id: '/experience',
   path: '/experience',
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/articles': typeof ArticlesRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -60,6 +67,7 @@ export interface FileRoutesByTo {
   '/articles': typeof ArticlesRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -69,6 +77,7 @@ export interface FileRoutesById {
   '/articles': typeof ArticlesRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -79,6 +88,7 @@ export interface FileRouteTypes {
     | '/articles'
     | '/contact'
     | '/experience'
+    | '/reset-password'
     | '/article/$slug'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
@@ -87,6 +97,7 @@ export interface FileRouteTypes {
     | '/articles'
     | '/contact'
     | '/experience'
+    | '/reset-password'
     | '/article/$slug'
     | '/api/auth/$'
   id:
@@ -95,6 +106,7 @@ export interface FileRouteTypes {
     | '/articles'
     | '/contact'
     | '/experience'
+    | '/reset-password'
     | '/article/$slug'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
@@ -104,12 +116,20 @@ export interface RootRouteChildren {
   ArticlesRoute: typeof ArticlesRoute
   ContactRoute: typeof ContactRoute
   ExperienceRoute: typeof ExperienceRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ArticleSlugRoute: typeof ArticleSlugRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/experience': {
       id: '/experience'
       path: '/experience'
@@ -160,6 +180,7 @@ const rootRouteChildren: RootRouteChildren = {
   ArticlesRoute: ArticlesRoute,
   ContactRoute: ContactRoute,
   ExperienceRoute: ExperienceRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ArticleSlugRoute: ArticleSlugRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }

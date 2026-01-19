@@ -32,7 +32,7 @@ export function Comments({ articleSlug }: CommentsProps) {
 
   // Email auth state
   const [authMode, setAuthMode] = useState<
-    'options' | 'email' | 'verify-signup' | 'verify-unverified'
+    'options' | 'email' | 'verify-signup' | 'verify-unverified' | 'forgot-password' | 'reset-sent'
   >('options')
   const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
@@ -44,6 +44,7 @@ export function Comments({ articleSlug }: CommentsProps) {
   const [isVerifyingOtp, setIsVerifyingOtp] = useState(false)
   const [isSendingOtp, setIsSendingOtp] = useState(false)
   const [isGithubLoading, setIsGithubLoading] = useState(false)
+  const [isResetLoading, setIsResetLoading] = useState(false)
 
   // Edit name state
   const [isEditingName, setIsEditingName] = useState(false)
@@ -57,10 +58,9 @@ export function Comments({ articleSlug }: CommentsProps) {
   const deleteComment = useMutation(api.comments.deleteComment)
   const updateUserName = useMutation(api.comments.updateUserName)
 
-  const { data: sessionData, isPending: isSessionLoading } = useTanstackQuery(sessionQueryOptions)
+  const { isPending: isSessionLoading } = useTanstackQuery(sessionQueryOptions)
   const { data: session } = authClient.useSession()
   const user = session?.user
-  const isAuthenticated = !!sessionData?.userId
 
   const handleSignOut = async () => {
     // Optimistically clear session cache first to prevent loading flash
@@ -214,6 +214,29 @@ export function Comments({ articleSlug }: CommentsProps) {
       setAuthError('An unexpected error occurred')
     } finally {
       setIsSendingOtp(false)
+    }
+  }
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!email.trim()) return
+    setIsResetLoading(true)
+    setAuthError('')
+
+    try {
+      const result = await authClient.forgetPassword({
+        email,
+        redirectTo: `${window.location.origin}/reset-password`,
+      })
+      if (result.error) {
+        setAuthError(result.error.message || 'Failed to send reset email')
+      } else {
+        setAuthMode('reset-sent')
+      }
+    } catch (_err) {
+      setAuthError('An unexpected error occurred')
+    } finally {
+      setIsResetLoading(false)
     }
   }
 
@@ -556,7 +579,73 @@ export function Comments({ articleSlug }: CommentsProps) {
                 {isSendingOtp ? 'Sending...' : "Didn't receive code? Resend"}
               </button>
             </div>
-          ) : (
+          ) : authMode === 'forgot-password' ? (
+            <div className="mx-auto max-w-sm">
+              <button
+                onClick={() => {
+                  setAuthMode('email')
+                  setAuthError('')
+                }}
+                className="mb-4 flex cursor-pointer items-center gap-1 text-sm text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+              >
+                <ArrowLeft className="size-4" />
+                Back to sign in
+              </button>
+              <div className="mb-4">
+                <h3 className="font-medium">Reset your password</h3>
+                <p className="mt-1 text-sm text-neutral-500">
+                  Enter your email and we'll send you a reset link.
+                </p>
+              </div>
+              <form onSubmit={handleForgotPassword} className="space-y-3">
+                <input
+                  type="email"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm placeholder:text-neutral-400 focus:border-neutral-400 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:focus:border-neutral-500"
+                />
+                {authError && (
+                  <p className="text-sm text-red-500">{authError}</p>
+                )}
+                <Button
+                  type="submit"
+                  disabled={isResetLoading || !email.trim()}
+                  className="w-full bg-neutral-900 text-white hover:bg-neutral-800 disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
+                >
+                  {isResetLoading ? (
+                    <>
+                      <Loader2 className="mr-2 size-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    'Send reset link'
+                  )}
+                </Button>
+              </form>
+            </div>
+          ) : authMode === 'reset-sent' ? (
+            <div className="mx-auto max-w-sm text-center">
+              <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
+                <Check className="size-6 text-green-600 dark:text-green-400" />
+              </div>
+              <h3 className="font-medium">Check your email</h3>
+              <p className="mt-1 text-sm text-neutral-500">
+                If an account exists for{' '}
+                <strong className="text-neutral-700 dark:text-neutral-300">
+                  {email}
+                </strong>
+                , we've sent a password reset link.
+              </p>
+              <button
+                onClick={resetAuthForm}
+                className="mt-4 cursor-pointer text-sm text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+              >
+                Back to sign in
+              </button>
+            </div>
+          ) : authMode === 'email' ? (
             <div className="mx-auto max-w-sm">
               <div className="mb-4 flex items-center justify-between">
                 <h3 className="font-medium">
@@ -598,6 +687,19 @@ export function Comments({ articleSlug }: CommentsProps) {
                   className="w-full rounded-lg border border-neutral-200 bg-white px-3 py-2 text-sm placeholder:text-neutral-400 focus:border-neutral-400 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:focus:border-neutral-500"
                 />
 
+                {!isSignUp && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setAuthMode('forgot-password')
+                      setAuthError('')
+                    }}
+                    className="cursor-pointer text-sm text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
+                  >
+                    Forgot password?
+                  </button>
+                )}
+
                 {authError && (
                   <p className="text-sm text-red-500">{authError}</p>
                 )}
@@ -630,7 +732,7 @@ export function Comments({ articleSlug }: CommentsProps) {
                 </button>
               </p>
             </div>
-          )}
+          ) : null}
         </div>
       )}
 

@@ -35,6 +35,34 @@ export const createAuth = (
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: true,
+      sendResetPassword: async ({ user, url }) => {
+        const resend = new Resend(process.env.RESEND_API_KEY)
+        const result = await resend.emails.send({
+          from: 'Ali Abbas <noreply@mail.aliabbas.dev>',
+          to: user.email,
+          subject: 'Reset your password',
+          html: `
+            <div style="font-family: system-ui, sans-serif; max-width: 500px; margin: 0 auto; padding: 40px 20px;">
+              <h2 style="margin-bottom: 24px; color: #171717;">
+                Reset your password
+              </h2>
+              <p style="color: #525252; margin-bottom: 24px;">
+                Click the button below to reset your password. This link expires in 1 hour.
+              </p>
+              <a href="${url}" style="display: inline-block; background: #171717; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500;">
+                Reset Password
+              </a>
+              <p style="color: #737373; font-size: 14px; margin-top: 24px;">
+                If you didn't request this, you can safely ignore this email.
+              </p>
+            </div>
+          `,
+        })
+
+        if (result.error) {
+          throw new Error('Failed to send reset password email')
+        }
+      },
     },
     emailVerification: {
       autoSignInAfterVerification: true,
