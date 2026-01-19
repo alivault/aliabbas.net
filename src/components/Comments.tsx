@@ -5,6 +5,7 @@ import { useMutation, useQuery } from 'convex/react'
 import {
   ArrowLeft,
   Check,
+  Github,
   Loader2,
   LogOut,
   Mail,
@@ -126,7 +127,7 @@ export function Comments({ articleSlug }: CommentsProps) {
         }
       } else {
         await authClient.signIn.email(
-          { email, password },
+          { email, password, callbackURL: window.location.href },
           {
             onSuccess: async () => {
               // Invalidate session cache and router so auth state updates
@@ -456,13 +457,27 @@ export function Comments({ articleSlug }: CommentsProps) {
               <p className="mb-4 text-sm text-neutral-500">
                 Sign in to join the conversation
               </p>
-              <Button
-                onClick={() => setAuthMode('email')}
-                className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
-              >
-                <Mail className="mr-2 size-4" />
-                Sign in with Email
-              </Button>
+              <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
+                <Button
+                  onClick={() =>
+                    authClient.signIn.social({
+                      provider: 'github',
+                      callbackURL: window.location.href,
+                    })
+                  }
+                  className="bg-neutral-900 text-white hover:bg-neutral-800 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
+                >
+                  <Github className="mr-2 size-4" />
+                  Sign in with GitHub
+                </Button>
+                <Button
+                  onClick={() => setAuthMode('email')}
+                  variant="outline"
+                >
+                  <Mail className="mr-2 size-4" />
+                  Sign in with Email
+                </Button>
+              </div>
             </div>
           ) : authMode === 'verify-signup' ? (
             <div className="mx-auto max-w-sm">
