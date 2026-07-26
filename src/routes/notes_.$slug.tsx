@@ -109,14 +109,14 @@ function NotePage() {
         >
           <ArrowLeft className="size-4" /> Back to field notes
         </Link>
-        <header className="border-b border-black/20 pb-12 sm:pb-16">
+        <header className="mx-auto max-w-3xl border-b border-black/20 pb-12 sm:pb-16">
           <time
             className="font-mono text-[9px] tracking-[0.18em] text-[#335cff] uppercase"
             dateTime={note.date}
           >
             {getFormattedDate(note.date)}
           </time>
-          <h1 className="font-display mt-5 max-w-5xl text-[clamp(4rem,9vw,8.5rem)] leading-[0.8] tracking-[-0.055em]">
+          <h1 className="font-display mt-5 text-[clamp(4rem,6.5vw,6.5rem)] leading-[0.9] tracking-[-0.04em]">
             {note.title}
           </h1>
           {note.description && (
