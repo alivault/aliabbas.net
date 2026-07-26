@@ -13,8 +13,10 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArticlesRouteImport } from './routes/articles'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ExperienceRouteImport } from './routes/experience'
+import { Route as NotesRouteImport } from './routes/notes'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ArticleSlugRouteImport } from './routes/article.$slug'
+import { Route as NotesSlugRouteImport } from './routes/notes_.$slug'
 import { Route as ApiAuthSplatRouteImport } from './routes/api.auth.$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -37,6 +39,11 @@ const ExperienceRoute = ExperienceRouteImport.update({
   path: '/experience',
   getParentRoute: () => rootRouteImport,
 } as any)
+const NotesRoute = NotesRouteImport.update({
+  id: '/notes',
+  path: '/notes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -45,6 +52,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const ArticleSlugRoute = ArticleSlugRouteImport.update({
   id: '/article/$slug',
   path: '/article/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotesSlugRoute = NotesSlugRouteImport.update({
+  id: '/notes_/$slug',
+  path: '/notes/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -58,8 +70,10 @@ export interface FileRoutesByFullPath {
   '/articles': typeof ArticlesRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
+  '/notes': typeof NotesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/article/$slug': typeof ArticleSlugRoute
+  '/notes/$slug': typeof NotesSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
@@ -67,8 +81,10 @@ export interface FileRoutesByTo {
   '/articles': typeof ArticlesRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
+  '/notes': typeof NotesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/article/$slug': typeof ArticleSlugRoute
+  '/notes/$slug': typeof NotesSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
@@ -77,8 +93,10 @@ export interface FileRoutesById {
   '/articles': typeof ArticlesRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
+  '/notes': typeof NotesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/article/$slug': typeof ArticleSlugRoute
+  '/notes_/$slug': typeof NotesSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
@@ -88,8 +106,10 @@ export interface FileRouteTypes {
     | '/articles'
     | '/contact'
     | '/experience'
+    | '/notes'
     | '/reset-password'
     | '/article/$slug'
+    | '/notes/$slug'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -97,8 +117,10 @@ export interface FileRouteTypes {
     | '/articles'
     | '/contact'
     | '/experience'
+    | '/notes'
     | '/reset-password'
     | '/article/$slug'
+    | '/notes/$slug'
     | '/api/auth/$'
   id:
     | '__root__'
@@ -106,8 +128,10 @@ export interface FileRouteTypes {
     | '/articles'
     | '/contact'
     | '/experience'
+    | '/notes'
     | '/reset-password'
     | '/article/$slug'
+    | '/notes_/$slug'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
@@ -116,8 +140,10 @@ export interface RootRouteChildren {
   ArticlesRoute: typeof ArticlesRoute
   ContactRoute: typeof ContactRoute
   ExperienceRoute: typeof ExperienceRoute
+  NotesRoute: typeof NotesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   ArticleSlugRoute: typeof ArticleSlugRoute
+  NotesSlugRoute: typeof NotesSlugRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -151,6 +177,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ExperienceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/notes': {
+      id: '/notes'
+      path: '/notes'
+      fullPath: '/notes'
+      preLoaderRoute: typeof NotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -163,6 +196,13 @@ declare module '@tanstack/react-router' {
       path: '/article/$slug'
       fullPath: '/article/$slug'
       preLoaderRoute: typeof ArticleSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notes_/$slug': {
+      id: '/notes_/$slug'
+      path: '/notes/$slug'
+      fullPath: '/notes/$slug'
+      preLoaderRoute: typeof NotesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
@@ -180,8 +220,10 @@ const rootRouteChildren: RootRouteChildren = {
   ArticlesRoute: ArticlesRoute,
   ContactRoute: ContactRoute,
   ExperienceRoute: ExperienceRoute,
+  NotesRoute: NotesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   ArticleSlugRoute: ArticleSlugRoute,
+  NotesSlugRoute: NotesSlugRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

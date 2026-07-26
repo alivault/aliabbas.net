@@ -8,7 +8,7 @@ const navigation = [
   { label: 'Work', kind: 'anchor', href: '/#work' },
   { label: 'Capabilities', kind: 'anchor', href: '/#capabilities' },
   { label: 'Experience', kind: 'route', to: '/experience' as const },
-  { label: 'Notes', kind: 'route', to: '/articles' as const },
+  { label: 'Notes', kind: 'route', to: '/notes' as const },
 ] as const
 
 export default function SiteHeader() {

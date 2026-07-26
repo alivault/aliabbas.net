@@ -34,7 +34,7 @@ export default function Footer() {
             <Link to="/experience" className="hover:text-white">
               Experience
             </Link>
-            <Link to="/articles" className="hover:text-white">
+            <Link to="/notes" className="hover:text-white">
               Notes
             </Link>
             <a

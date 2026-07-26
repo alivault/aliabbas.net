@@ -703,7 +703,7 @@ export default function HomeExperience() {
               </h2>
             </div>
             <Link
-              to="/articles"
+              to="/notes"
               className="hidden items-center gap-2 text-xs font-bold sm:flex"
             >
               All notes <ArrowUpRight className="size-4" />
@@ -718,7 +718,7 @@ export default function HomeExperience() {
               articles.map((article, index) => (
                 <Link
                   key={article._id}
-                  to="/article/$slug"
+                  to="/notes/$slug"
                   params={{ slug: article.slug.current }}
                   className="group grid gap-4 border-b border-black/20 py-7 sm:grid-cols-[60px_1fr_auto] sm:items-center sm:py-9"
                 >

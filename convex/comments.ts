@@ -67,7 +67,7 @@ export const sendCommentNotification = internalAction({
   handler: async (_ctx, args) => {
     const resend = new Resend(process.env.RESEND_API_KEY)
     const siteUrl = process.env.SITE_URL || 'https://aliabbas.dev'
-    const articleUrl = `${siteUrl}/article/${args.articleSlug}`
+    const noteUrl = `${siteUrl}/notes/${args.articleSlug}`
 
     await resend.emails.send({
       from: 'Ali Abbas <noreply@mail.aliabbas.dev>',
@@ -76,7 +76,7 @@ export const sendCommentNotification = internalAction({
       html: `
         <div style="font-family: system-ui, sans-serif; max-width: 500px; margin: 0 auto; padding: 40px 20px;">
           <h2 style="margin-bottom: 24px; color: #171717;">
-            New comment on your article
+            New comment on your note
           </h2>
           <p style="color: #525252; margin-bottom: 8px;">
             <strong>${args.userName}</strong> (${args.userEmail}) commented:
@@ -84,8 +84,8 @@ export const sendCommentNotification = internalAction({
           <div style="background: #f5f5f5; padding: 16px; border-radius: 8px; margin-bottom: 24px;">
             <p style="color: #171717; margin: 0; white-space: pre-wrap;">${args.content}</p>
           </div>
-          <a href="${articleUrl}" style="display: inline-block; background: #171717; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500;">
-            View Article
+          <a href="${noteUrl}" style="display: inline-block; background: #171717; color: #ffffff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: 500;">
+            View Note
           </a>
         </div>
       `,

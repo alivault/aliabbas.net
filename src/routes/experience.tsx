@@ -33,7 +33,7 @@ function ExperiencePage() {
             <p className="font-mono text-[10px] tracking-[0.2em] text-[#335cff] uppercase">
               Career / teams / products
             </p>
-            <h1 className="font-display mt-5 text-[clamp(5rem,12vw,11rem)] leading-[0.74] tracking-[-0.065em]">
+            <h1 className="font-display mt-5 text-[clamp(3.5rem,10vw,9rem)] leading-[0.74] tracking-[-0.065em]">
               Work that
               <br />
               <em className="text-[#335cff]">shaped me.</em>

@@ -11,7 +11,7 @@ function ArticleListItem({ article }: { article: SanityArticle }) {
   return (
     <li>
       <Link
-        to="/article/$slug"
+        to="/notes/$slug"
         params={{ slug: article.slug.current }}
         className="hover:bg-foreground/10 active:bg-foreground/20 -mx-4 flex flex-col items-start gap-1 rounded-lg p-4 text-lg transition-colors"
       >
@@ -32,14 +32,12 @@ export default function ArticlesSection() {
 
   return (
     <Section>
-      <SectionHeading>Articles</SectionHeading>
+      <SectionHeading>Notes</SectionHeading>
       {isLoading ? (
-        <p className="prose dark:prose-invert opacity-60">
-          Loading articles...
-        </p>
+        <p className="prose dark:prose-invert opacity-60">Loading notes...</p>
       ) : articles.length === 0 ? (
         <p className="prose dark:prose-invert">
-          No articles yet. Check back soon!
+          No notes yet. Check back soon!
         </p>
       ) : (
         <ul className="flex flex-col">
@@ -48,7 +46,7 @@ export default function ArticlesSection() {
           ))}
         </ul>
       )}
-      <SectionButton href="/articles">View All Articles</SectionButton>
+      <SectionButton href="/notes">View All Notes</SectionButton>
     </Section>
   )
 }

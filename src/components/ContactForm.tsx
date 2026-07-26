@@ -113,7 +113,7 @@ export default function ContactForm() {
         <p className="font-mono text-[10px] tracking-[0.2em] text-[#335cff] uppercase">
           Contact / opportunities / collaborations
         </p>
-        <h1 className="mt-6 text-[clamp(3.2rem,9vw,9rem)] leading-[0.74] font-extrabold tracking-[-0.07em] uppercase">
+        <h1 className="mt-6 text-[clamp(2.75rem,12vw,6rem)] leading-[0.74] font-extrabold tracking-[-0.07em] uppercase lg:text-[clamp(3.6rem,5.8vw,6rem)]">
           Let’s build
           <span className="font-display block font-normal text-[#335cff] normal-case italic">
             something
@@ -148,7 +148,7 @@ export default function ContactForm() {
           <Field data-invalid={Boolean(errors.name)}>
             <FieldLabel
               htmlFor="contact-name"
-              className="font-mono text-[9px] tracking-[0.16em] text-black/45 uppercase"
+              className="font-mono text-[11px] tracking-[0.14em] text-black/45 uppercase"
             >
               01 / Your name
             </FieldLabel>
@@ -166,7 +166,7 @@ export default function ContactForm() {
           <Field data-invalid={Boolean(errors.email)}>
             <FieldLabel
               htmlFor="contact-email"
-              className="font-mono text-[9px] tracking-[0.16em] text-black/45 uppercase"
+              className="font-mono text-[11px] tracking-[0.14em] text-black/45 uppercase"
             >
               02 / Email address
             </FieldLabel>
@@ -185,7 +185,7 @@ export default function ContactForm() {
           <Field data-invalid={Boolean(errors.message)}>
             <FieldLabel
               htmlFor="contact-message"
-              className="font-mono text-[9px] tracking-[0.16em] text-black/45 uppercase"
+              className="font-mono text-[11px] tracking-[0.14em] text-black/45 uppercase"
             >
               03 / Tell me about the opportunity
             </FieldLabel>
@@ -203,7 +203,7 @@ export default function ContactForm() {
           <Field data-invalid={Boolean(errors.verification)}>
             <FieldLabel
               htmlFor="contact-verification"
-              className="font-mono text-[9px] tracking-[0.16em] text-black/45 uppercase"
+              className="font-mono text-[11px] tracking-[0.14em] text-black/45 uppercase"
             >
               04 / Human check
               <span className="text-black/30">
