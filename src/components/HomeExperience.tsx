@@ -13,6 +13,7 @@ import {
 } from 'lucide-react'
 import { motion, useScroll, useTransform } from 'motion/react'
 import Footer from './Footer'
+import Logo from './Logo'
 import SiteHeader from './SiteHeader'
 import { clientWork, personalProjects } from '~/data/work'
 import type { WorkItem } from '~/data/work'
@@ -636,11 +637,9 @@ export default function HomeExperience() {
                 whileInView={{ rotate: 8, y: -12 }}
                 viewport={{ once: true }}
                 transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-                className="absolute inset-[20%] flex items-center justify-center border border-white/30 bg-white/10 backdrop-blur-sm"
+                className="absolute inset-[20%] flex items-center justify-center border border-white/30 bg-white/10 backdrop-blur-xl"
               >
-                <span className="font-display text-[clamp(7rem,18vw,15rem)] leading-none text-[#d9ff43]">
-                  A
-                </span>
+                <Logo className="h-auto w-[58%] text-[#d9ff43]" />
               </motion.div>
               <p className="relative font-mono text-[9px] tracking-[0.18em] text-white/55 uppercase">
                 Design engineer · Builder · Collaborator
@@ -651,7 +650,7 @@ export default function HomeExperience() {
                 <p className="font-mono text-[10px] tracking-[0.2em] text-[#d9ff43] uppercase">
                   About Ali
                 </p>
-                <h2 className="font-display mt-7 text-[clamp(4rem,8vw,8rem)] leading-[0.79] tracking-[-0.055em]">
+                <h2 className="font-display mt-7 text-[clamp(3.5rem,7vw,7rem)] leading-[0.79] tracking-[-0.055em]">
                   I don’t hand designs over to engineering.
                   <em className="block text-[#d9ff43]">
                     I am the engineering.
