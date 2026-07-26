@@ -1,39 +1,18 @@
-import React from 'react'
-import { motion } from 'framer-motion'
+import { motion } from 'motion/react'
+import type { ReactNode } from 'react'
 
 interface PageAnimationProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 export default function PageAnimation({ children }: PageAnimationProps) {
-  const containerVariants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: 0.1,
-        delayChildren: 0.1,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-      },
-    },
-  }
-
   return (
-    <motion.div initial="hidden" animate="visible" variants={containerVariants}>
-      {React.Children.map(children, (child, index) => (
-        <motion.div key={index} variants={itemVariants}>
-          {child}
-        </motion.div>
-      ))}
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+    >
+      {children}
     </motion.div>
   )
 }

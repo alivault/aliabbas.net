@@ -136,4 +136,3 @@ export const updateUserName = mutation({
     return userComments.length
   },
 })
-

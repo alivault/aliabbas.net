@@ -1,11 +1,13 @@
 import { useState } from 'react'
-import { useQuery as useTanstackQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  useQuery as useTanstackQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 import { useRouter } from '@tanstack/react-router'
 import { useMutation, useQuery } from 'convex/react'
 import {
   ArrowLeft,
   Check,
-  Github,
   Loader2,
   LogOut,
   Mail,
@@ -16,6 +18,7 @@ import {
 } from 'lucide-react'
 import { api } from '../../convex/_generated/api'
 import { Button } from './ui/button'
+import GitHubIcon from './GitHubIcon'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from './ui/input-otp'
 import type { Id } from '../../convex/_generated/dataModel'
 import { authClient } from '~/lib/auth-client'
@@ -32,7 +35,12 @@ export function Comments({ articleSlug }: CommentsProps) {
 
   // Email auth state
   const [authMode, setAuthMode] = useState<
-    'options' | 'email' | 'verify-signup' | 'verify-unverified' | 'forgot-password' | 'reset-sent'
+    | 'options'
+    | 'email'
+    | 'verify-signup'
+    | 'verify-unverified'
+    | 'forgot-password'
+    | 'reset-sent'
   >('options')
   const [isSignUp, setIsSignUp] = useState(false)
   const [email, setEmail] = useState('')
@@ -64,7 +72,10 @@ export function Comments({ articleSlug }: CommentsProps) {
 
   const handleSignOut = async () => {
     // Optimistically clear session cache first to prevent loading flash
-    queryClient.setQueryData(sessionQueryKey, { userId: undefined, token: undefined })
+    queryClient.setQueryData(sessionQueryKey, {
+      userId: undefined,
+      token: undefined,
+    })
     await authClient.signOut()
     // Invalidate to ensure cache stays in sync, and re-run router guards
     await queryClient.invalidateQueries({ queryKey: sessionQueryKey })
@@ -142,7 +153,7 @@ export function Comments({ articleSlug }: CommentsProps) {
           },
         )
       }
-    } catch (_err) {
+    } catch {
       setAuthError('An unexpected error occurred')
     } finally {
       setIsAuthLoading(false)
@@ -168,7 +179,7 @@ export function Comments({ articleSlug }: CommentsProps) {
         await router.invalidate()
         resetAuthForm()
       }
-    } catch (_err) {
+    } catch {
       setAuthError('An unexpected error occurred')
     } finally {
       setIsVerifyingOtp(false)
@@ -191,7 +202,7 @@ export function Comments({ articleSlug }: CommentsProps) {
         setEmail(user.email)
         setAuthMode('verify-unverified')
       }
-    } catch (_err) {
+    } catch {
       setAuthError('An unexpected error occurred')
     } finally {
       setIsSendingOtp(false)
@@ -210,7 +221,7 @@ export function Comments({ articleSlug }: CommentsProps) {
       if (result.error) {
         setAuthError(result.error.message || 'Failed to resend code')
       }
-    } catch (_err) {
+    } catch {
       setAuthError('An unexpected error occurred')
     } finally {
       setIsSendingOtp(false)
@@ -224,7 +235,7 @@ export function Comments({ articleSlug }: CommentsProps) {
     setAuthError('')
 
     try {
-      const result = await authClient.forgetPassword({
+      const result = await authClient.requestPasswordReset({
         email,
         redirectTo: `${window.location.origin}/reset-password`,
       })
@@ -233,7 +244,7 @@ export function Comments({ articleSlug }: CommentsProps) {
       } else {
         setAuthMode('reset-sent')
       }
-    } catch (_err) {
+    } catch {
       setAuthError('An unexpected error occurred')
     } finally {
       setIsResetLoading(false)
@@ -269,12 +280,12 @@ export function Comments({ articleSlug }: CommentsProps) {
   }
 
   return (
-    <section className="border-t border-neutral-200 pt-8 dark:border-neutral-800">
-      <div className="mb-6 flex items-center gap-2">
-        <MessageCircle className="size-5" />
-        <h2 className="font-serif text-xl font-semibold">Comments</h2>
+    <section className="border-t border-black/20 pt-10">
+      <div className="mb-8 flex items-center gap-3">
+        <MessageCircle className="size-5 text-[#335cff]" />
+        <h2 className="font-display text-3xl tracking-[-0.03em]">Comments</h2>
         {comments && comments.length > 0 && (
-          <span className="rounded-full bg-neutral-100 px-2 py-0.5 text-xs font-medium dark:bg-neutral-800">
+          <span className="rounded-full bg-[#d9ff43] px-2 py-0.5 text-xs font-bold">
             {comments.length}
           </span>
         )}
@@ -311,7 +322,7 @@ export function Comments({ articleSlug }: CommentsProps) {
                     className="w-32 rounded border border-neutral-300 bg-white px-2 py-1 text-sm focus:border-neutral-400 focus:outline-none dark:border-neutral-600 dark:bg-neutral-800"
                     autoFocus
                     onKeyDown={(e) => {
-                      if (e.key === 'Enter') handleSaveName()
+                      if (e.key === 'Enter') void handleSaveName()
                       if (e.key === 'Escape') handleCancelEditName()
                     }}
                   />
@@ -475,7 +486,7 @@ export function Comments({ articleSlug }: CommentsProps) {
           )}
         </div>
       ) : (
-        <div className="mb-6 rounded-lg border border-dashed border-neutral-300 p-6 dark:border-neutral-700">
+        <div className="mb-8 border border-black/20 p-6 sm:p-8">
           {authMode === 'options' ? (
             <div className="text-center">
               <p className="mb-4 text-sm text-neutral-500">
@@ -485,7 +496,7 @@ export function Comments({ articleSlug }: CommentsProps) {
                 <Button
                   onClick={() => {
                     setIsGithubLoading(true)
-                    authClient.signIn.social({
+                    void authClient.signIn.social({
                       provider: 'github',
                       callbackURL: window.location.href,
                     })
@@ -496,14 +507,11 @@ export function Comments({ articleSlug }: CommentsProps) {
                   {isGithubLoading ? (
                     <Loader2 className="mr-2 size-4 animate-spin" />
                   ) : (
-                    <Github className="mr-2 size-4" />
+                    <GitHubIcon className="mr-2 size-4" />
                   )}
                   {isGithubLoading ? 'Redirecting...' : 'Sign in with GitHub'}
                 </Button>
-                <Button
-                  onClick={() => setAuthMode('email')}
-                  variant="outline"
-                >
+                <Button onClick={() => setAuthMode('email')} variant="outline">
                   <Mail className="mr-2 size-4" />
                   Sign in with Email
                 </Button>
@@ -761,7 +769,7 @@ export function Comments({ articleSlug }: CommentsProps) {
           comments.map((comment) => (
             <div
               key={comment._id}
-              className="group rounded-lg bg-neutral-50 p-4 transition-colors dark:bg-neutral-900"
+              className="group border-t border-black/15 py-5 transition-colors"
             >
               <div className="mb-2 flex items-start justify-between">
                 <div className="flex items-center gap-2">
@@ -790,14 +798,14 @@ export function Comments({ articleSlug }: CommentsProps) {
                 {user && user.id === comment.userId && (
                   <button
                     onClick={() => handleDelete(comment._id)}
-                    className="cursor-pointer rounded p-1 text-neutral-400 opacity-0 transition-opacity hover:bg-neutral-200 hover:text-red-500 group-hover:opacity-100 dark:hover:bg-neutral-700"
+                    className="cursor-pointer rounded p-1 text-neutral-400 opacity-0 transition-opacity group-hover:opacity-100 hover:bg-neutral-200 hover:text-red-500 dark:hover:bg-neutral-700"
                     title="Delete comment"
                   >
                     <Trash2 className="size-4" />
                   </button>
                 )}
               </div>
-              <p className="whitespace-pre-wrap text-sm leading-relaxed text-neutral-600 dark:text-neutral-300">
+              <p className="text-sm leading-relaxed whitespace-pre-wrap text-neutral-600 dark:text-neutral-300">
                 {comment.content}
               </p>
             </div>

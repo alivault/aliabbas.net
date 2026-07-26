@@ -11,4 +11,3 @@ export type Article = {
   meta: Meta
   content: ReactElement<unknown, string | JSXElementConstructor<unknown>>
 }
-

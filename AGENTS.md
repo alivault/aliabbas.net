@@ -1,20 +1,23 @@
 # Agent Instructions for aliabbas.dev
 
 ## Commands
-- **Build**: `pnpm run build` or `vite build`
-- **Dev**: `pnpm dev` or `vite`
-- **Deploy**: `pnpm run build && wrangler deploy`
-- **Lint**: `npx eslint src/` (fix with `--fix`)
-- **Type check**: `npx tsc --noEmit`
+
+- **Build**: `vp build`
+- **Dev**: `vp dev`
+- **Deploy**: `vp run deploy`
+- **Check**: `vp check` (fix with `vp check --fix`)
+- **Type check**: `vp check --no-fmt --no-lint`
 - **No test framework configured**
 
 ## Code Style
+
 - **TypeScript**: Strict mode enabled, no unused locals/parameters
-- **Formatting**: Prettier with no semicolons, single quotes, trailing commas
-- **Imports**: Sorted with React first, then local (~/*), then third-party
-- **Components**: PascalCase, default exports, shadcn/ui "new-york" style
+- **Formatting and linting**: Vite+ with Oxfmt and Oxlint
+- **Imports**: Sorted with React first, then local (`~/*`), then third-party
+- **Components**: PascalCase, default exports, shadcn/ui `base-nova` style
+- **Primitives**: Base UI for shadcn/ui components
 - **Styling**: Tailwind CSS with `cn()` utility for class merging
 - **Icons**: Lucide React
+- **Animations**: Motion for React (`motion/react`)
 - **Path aliases**: `~/*` → `./src/*`
-- **Error handling**: TypeScript strict mode, no explicit patterns defined</content>
-<parameter name="filePath">/Users/Ali/code/aliabbas.dev/AGENTS.md
+- **Error handling**: TypeScript strict mode, no explicit patterns defined

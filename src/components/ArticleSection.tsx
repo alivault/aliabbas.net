@@ -3,9 +3,9 @@ import { useQuery } from '@tanstack/react-query'
 import Section from './Section'
 import SectionHeading from './SectionHeading'
 import SectionButton from './SectionButton'
-import type {SanityArticle} from '~/lib/sanity';
+import type { SanityArticle } from '~/lib/sanity'
 import getFormattedDate from '~/lib/getFormattedDate'
-import {  getRecentArticles } from '~/lib/sanity'
+import { getRecentArticles } from '~/lib/sanity'
 
 function ArticleListItem({ article }: { article: SanityArticle }) {
   return (
@@ -13,7 +13,7 @@ function ArticleListItem({ article }: { article: SanityArticle }) {
       <Link
         to="/article/$slug"
         params={{ slug: article.slug.current }}
-        className="-mx-4 flex flex-col items-start gap-1 rounded-lg p-4 text-lg transition-colors hover:bg-foreground/10 active:bg-foreground/20"
+        className="hover:bg-foreground/10 active:bg-foreground/20 -mx-4 flex flex-col items-start gap-1 rounded-lg p-4 text-lg transition-colors"
       >
         {article.title}
         <span className="text-sm opacity-50">
@@ -34,7 +34,9 @@ export default function ArticlesSection() {
     <Section>
       <SectionHeading>Articles</SectionHeading>
       {isLoading ? (
-        <p className="prose dark:prose-invert opacity-60">Loading articles...</p>
+        <p className="prose dark:prose-invert opacity-60">
+          Loading articles...
+        </p>
       ) : articles.length === 0 ? (
         <p className="prose dark:prose-invert">
           No articles yet. Check back soon!

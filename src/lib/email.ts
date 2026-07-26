@@ -10,7 +10,7 @@ interface SendEmailInput {
 }
 
 export const sendContactEmail = createServerFn({ method: 'POST' })
-  .inputValidator((d: SendEmailInput) => d)
+  .validator((d: SendEmailInput) => d)
   .handler(async ({ data }) => {
     const { name, email, message } = data
 

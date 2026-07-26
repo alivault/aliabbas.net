@@ -1,37 +1,41 @@
 import { createFileRoute } from '@tanstack/react-router'
-import ArticlesSection from '~/components/ArticleSection'
-import ExperienceSection from '~/components/ExperienceSection'
-import HeroSection from '~/components/HeroSection'
-import Main from '~/components/Main'
-import PortfolioSection from '~/components/PortfolioSection'
-import ProjectsSection from '~/components/ProjectsSection'
+import HomeExperience from '~/components/HomeExperience'
 
 export const Route = createFileRoute('/')({
   head: () => ({
     meta: [
-      { title: 'Ali Abbas' },
-      { name: 'description', content: 'Designer and front-end developer.' },
-      { property: 'og:title', content: 'Ali Abbas' },
-      { property: 'og:description', content: 'Designer and front-end developer.' },
+      { title: 'Ali Abbas — Full-stack Product Engineer' },
+      {
+        name: 'description',
+        content:
+          'Full-stack product engineer with a strong frontend design background. I design and build expressive digital products.',
+      },
+      {
+        property: 'og:title',
+        content: 'Ali Abbas — Full-stack Product Engineer',
+      },
+      {
+        property: 'og:description',
+        content:
+          'Full-stack product engineer with a strong frontend design background.',
+      },
       { property: 'og:url', content: 'https://aliabbas.dev' },
       { property: 'og:type', content: 'website' },
       { name: 'twitter:card', content: 'summary' },
-      { name: 'twitter:title', content: 'Ali Abbas' },
-      { name: 'twitter:description', content: 'Designer and front-end developer.' },
+      {
+        name: 'twitter:title',
+        content: 'Ali Abbas — Full-stack Product Engineer',
+      },
+      {
+        name: 'twitter:description',
+        content:
+          'I design and build expressive digital products from interface to infrastructure.',
+      },
     ],
   }),
   component: Home,
 })
 
 function Home() {
-  return (
-    <Main>
-      <HeroSection />
-      <PortfolioSection />
-      <ProjectsSection />
-      <ArticlesSection />
-      <ExperienceSection />
-    </Main>
-  )
+  return <HomeExperience />
 }
-

@@ -13,4 +13,3 @@ export default defineSchema({
     .index('by_article', ['articleSlug'])
     .index('by_user', ['userId']),
 })
-

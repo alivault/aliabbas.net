@@ -7,10 +7,11 @@ interface ExperienceListProps {
 
 export default function ExperienceList({ experiences }: ExperienceListProps) {
   return (
-    <ul className="flex flex-col gap-4">
-      {experiences.map((item) => (
+    <ul>
+      {experiences.map((item, index) => (
         <ExperienceItem
           key={item._id}
+          index={index}
           title={item.title}
           company={item.company}
           url={item.url}

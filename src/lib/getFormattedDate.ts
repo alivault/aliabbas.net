@@ -31,7 +31,7 @@ export function formatDistanceToNow(timestamp: number): string {
   return new Intl.DateTimeFormat('en-US', {
     month: 'short',
     day: 'numeric',
-    year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined,
+    year:
+      date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined,
   }).format(date)
 }
-

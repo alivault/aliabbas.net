@@ -1,19 +1,16 @@
+import type { ReactNode } from 'react'
 import Footer from './Footer'
 import PageAnimation from './PageAnimation'
-import type { ReactNode } from 'react'
+import SiteHeader from './SiteHeader'
 
-interface MainProps {
-  children: ReactNode
-}
-
-export default function Main({ children }: MainProps) {
+export default function Main({ children }: { children: ReactNode }) {
   return (
-    <main className="mx-auto w-full max-w-2xl">
+    <div className="min-h-svh overflow-x-hidden bg-[#f1efe8] text-[#151513]">
+      <SiteHeader />
       <PageAnimation>
-        {children}
-        <Footer />
+        <main className="min-h-[70svh] pt-[72px]">{children}</main>
       </PageAnimation>
-    </main>
+      <Footer />
+    </div>
   )
 }
-

@@ -1,73 +1,75 @@
 import { useEffect, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { ArrowUpRight, CircleCheck, Loader2 } from 'lucide-react'
+import { motion } from 'motion/react'
 import { useForm } from 'react-hook-form'
-import * as z from 'zod'
-import Spinner from './Spinner'
+import { z } from 'zod'
 import { Button } from './ui/button'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from './ui/form'
+import { Field, FieldError, FieldGroup, FieldLabel } from './ui/field'
 import { Input } from './ui/input'
-import { AutosizeTextarea } from './AutosizeTextArea'
-import PageHeading from './PageHeading'
+import { Textarea } from './ui/textarea'
 import { sendContactEmail } from '~/lib/email'
+
+const formSchema = z.object({
+  name: z.string().trim().min(1, 'A name is required'),
+  email: z.email('Please provide a valid email address'),
+  message: z.string().trim().min(1, 'A message is required'),
+  verification: z.string().min(1, 'Please answer the verification question'),
+})
+
+type ContactFormValues = z.infer<typeof formSchema>
+
+type Challenge = {
+  first: number
+  second: number
+  ready: boolean
+}
+
+const createChallenge = (): Challenge => ({
+  first: Math.floor(Math.random() * 11),
+  second: Math.floor(Math.random() * 11),
+  ready: true,
+})
+
+const inputClassName =
+  'h-14 rounded-none border-x-0 border-t-0 border-b-black/25 bg-transparent px-0 text-base shadow-none focus-visible:border-[#335cff] focus-visible:ring-0'
 
 export default function ContactForm() {
   const [isSubmitted, setSubmitted] = useState(false)
-  const [number1, setNumber1] = useState<number | null>(null)
-  const [number2, setNumber2] = useState<number | null>(null)
-
-  useEffect(() => {
-    setNumber1(Math.floor(Math.random() * 11))
-    setNumber2(Math.floor(Math.random() * 11))
-  }, [])
-
-  const formSchema = z.object({
-    name: z.string().min(1, { message: 'A name is required' }),
-    email: z
-      .string()
-      .email({ message: 'Please provide a valid email address' }),
-    message: z.string().min(1, { message: 'A message is required' }),
-    verification: z
-      .string()
-      .refine(
-        (str) =>
-          number1 !== null &&
-          number2 !== null &&
-          parseInt(str, 10) === number1 + number2,
-        {
-          message: `Please answer the verification question correctly`,
-        },
-      ),
-    formError: z.string().optional(),
+  const [challenge, setChallenge] = useState<Challenge>({
+    first: 0,
+    second: 0,
+    ready: false,
   })
 
-  const form = useForm<z.infer<typeof formSchema>>({
+  useEffect(() => {
+    setChallenge(createChallenge())
+  }, [])
+
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<ContactFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
       email: '',
       message: '',
       verification: '',
-      formError: '',
     },
   })
 
-  const { setError, clearErrors, setValue } = form
+  const onSubmit = async (values: ContactFormValues) => {
+    if (Number(values.verification) !== challenge.first + challenge.second) {
+      setError('verification', {
+        message: 'That answer is not quite right. Try the new one.',
+      })
+      setChallenge(createChallenge())
+      return
+    }
 
-  const watchedEmail = form.watch('email')
-  const watchedMessage = form.watch('message')
-
-  useEffect(() => {
-    clearErrors('formError')
-  }, [watchedEmail, watchedMessage, clearErrors])
-
-  async function onSubmit(values: z.infer<typeof formSchema>) {
     try {
       await sendContactEmail({
         data: {
@@ -78,114 +80,176 @@ export default function ContactForm() {
       })
       setSubmitted(true)
     } catch {
-      setError('formError', {
+      setError('root', {
         message:
-          'An error occurred while sending your message. Please try again later.',
+          'Something went wrong while sending your message. Please try again.',
       })
     }
   }
 
   if (isSubmitted) {
     return (
-      <section className="flex flex-col gap-4">
-        <span className="rounded-lg bg-green-600 p-5 text-center text-xl font-bold text-white">
-          Thank you for your message. I will respond soon.
+      <motion.section
+        initial={{ opacity: 0, scale: 0.97 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="mx-auto flex min-h-[75svh] max-w-[1440px] flex-col items-center justify-center px-5 text-center sm:px-8 lg:px-12"
+      >
+        <span className="flex size-20 items-center justify-center rounded-full bg-[#d9ff43] text-[#10100f]">
+          <CircleCheck className="size-9" strokeWidth={1.5} />
         </span>
-      </section>
-    )
-  } else {
-    return (
-      <section className="p-5">
-        <PageHeading>Contact</PageHeading>
-        <p className="prose mb-4 max-w-none dark:prose-invert">
-          I'm always open to new collaborations and connections! Feel free to
-          drop me a message if you'd like to chat or work together.
+        <h1 className="font-display mt-8 text-[clamp(4.5rem,10vw,9rem)] leading-[0.8] tracking-[-0.06em]">
+          Message received.
+        </h1>
+        <p className="mt-6 max-w-md text-base leading-7 text-black/50">
+          Thanks for reaching out. I’ll read your note and get back to you soon.
         </p>
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(onSubmit, (errors) => {
-              if (errors.verification) {
-                setValue('verification', '')
-              }
-              setNumber1(Math.floor(Math.random() * 11))
-              setNumber2(Math.floor(Math.random() * 11))
-            })}
-            className="flex flex-col gap-4"
-          >
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input type="text" placeholder="Your name" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <Input type="email" placeholder="Your email" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="message"
-              render={({ field }) => (
-                <FormItem>
-                  <FormControl>
-                    <AutosizeTextarea placeholder="Your message" {...field} />
-                  </FormControl>
-                  <FormMessage>
-                    {form.formState.errors.formError &&
-                      form.formState.errors.formError.message}
-                  </FormMessage>
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="verification"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel className="flex items-center gap-2">
-                    Anti-spam verification:{' '}
-                    {number1 !== null && number2 !== null ? (
-                      `${number1} + ${number2} = ?`
-                    ) : (
-                      <Spinner size="xs" />
-                    )}
-                  </FormLabel>
-                  <FormControl>
-                    <Input
-                      type="number"
-                      className="[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                      {...field}
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <Button
-              type="submit"
-              variant="secondary"
-              disabled={form.formState.isSubmitting}
-            >
-              {form.formState.isSubmitting ? <Spinner size="md" /> : 'Send'}
-            </Button>
-          </form>
-        </Form>
-      </section>
+      </motion.section>
     )
   }
-}
 
+  return (
+    <section className="mx-auto grid max-w-[1440px] gap-14 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[0.9fr_1.1fr] lg:gap-24 lg:px-12 lg:py-32">
+      <div className="flex min-w-0 flex-col">
+        <p className="font-mono text-[10px] tracking-[0.2em] text-[#335cff] uppercase">
+          Contact / opportunities / collaborations
+        </p>
+        <h1 className="mt-6 text-[clamp(3.2rem,9vw,9rem)] leading-[0.74] font-extrabold tracking-[-0.07em] uppercase">
+          Let’s build
+          <span className="font-display block font-normal text-[#335cff] normal-case italic">
+            something
+          </span>
+          remarkable.
+        </h1>
+        <p className="mt-9 max-w-md text-base leading-7 text-black/55">
+          I’m interested in product engineering and creative frontend roles
+          where design quality matters as much as technical execution. If that
+          sounds like your team, I’d like to hear from you.
+        </p>
+        <div className="mt-12 grid grid-cols-2 gap-5 border-t border-black/20 pt-6 text-xs lg:mt-auto">
+          <div>
+            <span className="block text-black/35">Best fit</span>
+            <span className="mt-2 block font-bold">
+              Product & design engineering
+            </span>
+          </div>
+          <div>
+            <span className="block text-black/35">Response time</span>
+            <span className="mt-2 block font-bold">Usually 1–2 days</span>
+          </div>
+        </div>
+      </div>
+
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+        className="border-t border-black/25 pt-8"
+      >
+        <FieldGroup className="gap-8">
+          <Field data-invalid={Boolean(errors.name)}>
+            <FieldLabel
+              htmlFor="contact-name"
+              className="font-mono text-[9px] tracking-[0.16em] text-black/45 uppercase"
+            >
+              01 / Your name
+            </FieldLabel>
+            <Input
+              id="contact-name"
+              autoComplete="name"
+              placeholder="What should I call you?"
+              aria-invalid={Boolean(errors.name)}
+              className={inputClassName}
+              {...register('name')}
+            />
+            <FieldError errors={[errors.name]} />
+          </Field>
+
+          <Field data-invalid={Boolean(errors.email)}>
+            <FieldLabel
+              htmlFor="contact-email"
+              className="font-mono text-[9px] tracking-[0.16em] text-black/45 uppercase"
+            >
+              02 / Email address
+            </FieldLabel>
+            <Input
+              id="contact-email"
+              type="email"
+              autoComplete="email"
+              placeholder="you@company.com"
+              aria-invalid={Boolean(errors.email)}
+              className={inputClassName}
+              {...register('email')}
+            />
+            <FieldError errors={[errors.email]} />
+          </Field>
+
+          <Field data-invalid={Boolean(errors.message)}>
+            <FieldLabel
+              htmlFor="contact-message"
+              className="font-mono text-[9px] tracking-[0.16em] text-black/45 uppercase"
+            >
+              03 / Tell me about the opportunity
+            </FieldLabel>
+            <Textarea
+              id="contact-message"
+              placeholder="The role, team, problem, or idea…"
+              rows={7}
+              aria-invalid={Boolean(errors.message)}
+              className="min-h-44 resize-none rounded-none border-x-0 border-t-0 border-b-black/25 bg-transparent px-0 py-4 text-base shadow-none focus-visible:border-[#335cff] focus-visible:ring-0"
+              {...register('message')}
+            />
+            <FieldError errors={[errors.message]} />
+          </Field>
+
+          <Field data-invalid={Boolean(errors.verification)}>
+            <FieldLabel
+              htmlFor="contact-verification"
+              className="font-mono text-[9px] tracking-[0.16em] text-black/45 uppercase"
+            >
+              04 / Human check
+              <span className="text-black/30">
+                {challenge.ready
+                  ? `${challenge.first} + ${challenge.second} = ?`
+                  : 'Loading…'}
+              </span>
+            </FieldLabel>
+            <Input
+              id="contact-verification"
+              type="number"
+              inputMode="numeric"
+              aria-invalid={Boolean(errors.verification)}
+              className={`${inputClassName} [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
+              {...register('verification')}
+            />
+            <FieldError errors={[errors.verification]} />
+          </Field>
+
+          {errors.root?.message && (
+            <p className="text-destructive text-sm">{errors.root.message}</p>
+          )}
+
+          <Button
+            type="submit"
+            size="lg"
+            disabled={isSubmitting || !challenge.ready}
+            className="group mt-2 h-14 w-full rounded-full bg-[#10100f] px-6 text-white hover:bg-[#335cff]"
+          >
+            {isSubmitting ? (
+              <>
+                <Loader2 className="animate-spin" data-icon="inline-start" />
+                Sending
+              </>
+            ) : (
+              <>
+                Send inquiry
+                <ArrowUpRight
+                  className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"
+                  data-icon="inline-end"
+                />
+              </>
+            )}
+          </Button>
+        </FieldGroup>
+      </form>
+    </section>
+  )
+}

@@ -12,10 +12,9 @@ const sizeClass = {
   xl: 'h-12 w-12',
 }
 
-const Spinner: React.FC<SpinnerProps> = ({ size = 'sm' }) => {
+const Spinner = ({ size = 'sm' }: SpinnerProps) => {
   const sizeClassName = sizeClass[size]
   return <Loader className={`${sizeClassName} animate-spin`} />
 }
 
 export default Spinner
-

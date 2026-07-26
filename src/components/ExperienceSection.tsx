@@ -15,7 +15,9 @@ export default function ExperienceSection() {
     <Section>
       <SectionHeading>Experience</SectionHeading>
       {isLoading ? (
-        <p className="prose dark:prose-invert opacity-60">Loading experience...</p>
+        <p className="prose dark:prose-invert opacity-60">
+          Loading experience...
+        </p>
       ) : experiences.length === 0 ? (
         <p className="prose dark:prose-invert">No experience yet.</p>
       ) : (

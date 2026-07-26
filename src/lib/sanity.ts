@@ -1,9 +1,9 @@
-import { createClient } from "@sanity/client"
+import { createClient } from '@sanity/client'
 
 export const sanityClient = createClient({
-  projectId: "a5xqifrz",
-  dataset: "production",
-  apiVersion: "2025-12-08",
+  projectId: 'a5xqifrz',
+  dataset: 'production',
+  apiVersion: '2025-12-08',
   useCdn: true,
 })
 
@@ -23,11 +23,13 @@ export async function getArticles(): Promise<Array<SanityArticle>> {
       slug,
       date,
       description
-    }`
+    }`,
   )
 }
 
-export async function getRecentArticles(limit = 3): Promise<Array<SanityArticle>> {
+export async function getRecentArticles(
+  limit = 3,
+): Promise<Array<SanityArticle>> {
   return sanityClient.fetch(
     `*[_type == "article"] | order(date desc) [0...$limit] {
       _id,
@@ -36,7 +38,7 @@ export async function getRecentArticles(limit = 3): Promise<Array<SanityArticle>
       date,
       description
     }`,
-    { limit }
+    { limit },
   )
 }
 
@@ -50,7 +52,7 @@ export async function getArticleBySlug(slug: string) {
       description,
       content
     }`,
-    { slug }
+    { slug },
   )
 }
 
@@ -74,11 +76,13 @@ export async function getExperiences(): Promise<Array<SanityExperience>> {
       startDate,
       endDate,
       description
-    }`
+    }`,
   )
 }
 
-export async function getRecentExperiences(limit = 1): Promise<Array<SanityExperience>> {
+export async function getRecentExperiences(
+  limit = 1,
+): Promise<Array<SanityExperience>> {
   return sanityClient.fetch(
     `*[_type == "experience"] | order(startDate desc) [0...$limit] {
       _id,
@@ -89,7 +93,6 @@ export async function getRecentExperiences(limit = 1): Promise<Array<SanityExper
       endDate,
       description
     }`,
-    { limit }
+    { limit },
   )
 }
-

@@ -3,6 +3,7 @@ import { convex, crossDomain } from '@convex-dev/better-auth/plugins'
 import { betterAuth } from 'better-auth'
 import { emailOTP } from 'better-auth/plugins'
 import { Resend } from 'resend'
+import authConfig from './auth.config'
 import { query } from './_generated/server'
 import { components } from './_generated/api'
 import type { GenericCtx } from '@convex-dev/better-auth'
@@ -78,7 +79,7 @@ export const createAuth = (
         : undefined,
     plugins: [
       crossDomain({ siteUrl }),
-      convex(),
+      convex({ authConfig }),
       emailOTP({
         sendVerificationOTP: async ({ email, otp, type }) => {
           const resend = new Resend(process.env.RESEND_API_KEY)

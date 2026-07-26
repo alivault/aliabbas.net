@@ -11,15 +11,12 @@ interface SectionButtonProps {
 export default function SectionButton({ href, children }: SectionButtonProps) {
   return (
     <Button
-      asChild
+      render={<Link to={href} />}
       variant="ghost"
-      className="-mx-4 justify-start rounded-lg px-4 py-8 text-left"
+      className="mt-4 h-10 justify-between rounded-full border border-black/8 px-4 text-left"
     >
-      <Link to={href}>
-        {children}
-        <ChevronsRight size={20} className="opacity-50" />
-      </Link>
+      {children}
+      <ChevronsRight size={16} className="opacity-40" />
     </Button>
   )
 }
-

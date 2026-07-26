@@ -1,6 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
 import Main from '~/components/Main'
-import Nav from '~/components/Nav'
 import ContactForm from '~/components/ContactForm'
 
 export const Route = createFileRoute('/contact')({
@@ -13,9 +12,7 @@ export const Route = createFileRoute('/contact')({
 function ContactPage() {
   return (
     <Main>
-      <Nav />
       <ContactForm />
     </Main>
   )
 }
-

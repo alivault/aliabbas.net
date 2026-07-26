@@ -17,7 +17,7 @@ export default function ProjectItem({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="-mx-4 flex flex-col gap-1 rounded-lg p-4 transition-colors hover:bg-foreground/10 active:bg-foreground/20"
+        className="flex flex-col gap-2 rounded-2xl border border-black/8 bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
       >
         <div className="flex items-center gap-3">
           {image && (
@@ -29,11 +29,10 @@ export default function ProjectItem({
               className="size-6 flex-shrink-0"
             />
           )}
-          <span className="text-lg font-medium">{title}</span>
+          <span className="text-lg font-semibold">{title}</span>
         </div>
-        <span className="prose dark:prose-invert">{description}</span>
+        <span className="text-sm leading-6 text-black/50">{description}</span>
       </a>
     </li>
   )
 }
-
