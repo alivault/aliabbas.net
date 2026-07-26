@@ -63,8 +63,11 @@
   }
 
   html {
-    scroll-behavior: smooth;
     background: #10100f;
+  }
+
+  html:has(.home-page) {
+    scroll-behavior: smooth;
   }
 
   body {

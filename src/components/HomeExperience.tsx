@@ -454,7 +454,7 @@ export default function HomeExperience() {
   const currentRole = experiences[0]
 
   return (
-    <div className="overflow-x-hidden bg-[#f1efe8] text-[#151513]">
+    <div className="home-page overflow-x-hidden bg-[#f1efe8] text-[#151513]">
       <SiteHeader />
       <main>
         <HomeHero />

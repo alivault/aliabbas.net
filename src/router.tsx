@@ -32,6 +32,7 @@ export function getRouter() {
       defaultPreload: 'intent',
       defaultNotFoundComponent: () => <NotFound />,
       scrollRestoration: true,
+      scrollRestorationBehavior: 'instant',
       context: {
         queryClient,
         convexClient: convexQueryClient.convexClient,
