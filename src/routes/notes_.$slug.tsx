@@ -10,6 +10,7 @@ import { ArrowLeft } from 'lucide-react'
 import { CodeBlock } from '~/components/CodeBlock'
 import { Comments } from '~/components/Comments'
 import Main from '~/components/Main'
+import { MermaidDiagram } from '~/components/MermaidDiagram'
 import getFormattedDate from '~/lib/getFormattedDate'
 import { getArticleBySlug, sanityClient } from '~/lib/sanity'
 
@@ -18,6 +19,7 @@ const builder = createImageUrlBuilder(sanityClient)
 const portableTextComponents: PortableTextComponents = {
   types: {
     code: CodeBlock,
+    mermaidDiagram: MermaidDiagram,
     image: ({
       value,
     }: {
