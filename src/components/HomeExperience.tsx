@@ -67,12 +67,25 @@ const stack = [
   { name: 'Better Auth', icon: '/icons/stack/better-auth.svg' },
 ] as const
 
+const chromaginePetals = [
+  '#ff375f',
+  '#ff9f0a',
+  '#ffd60a',
+  '#30d158',
+  '#64d2ff',
+  '#0a84ff',
+  '#bf5af2',
+  '#ff2d95',
+] as const
+
 function ProjectVisual({
   project,
   index,
+  linked = true,
 }: {
   project: WorkItem
   index: number
+  linked?: boolean
 }) {
   return (
     <div
@@ -151,32 +164,62 @@ function ProjectVisual({
       )}
 
       {project.visual === 'chromagine' && (
-        <div className="absolute inset-[16%] grid grid-cols-3 items-center">
-          {['#d9ff43', '#ff694a', '#f1efe8', '#10100f', '#ffb8de'].map(
-            (color, colorIndex) => (
+        <div
+          aria-hidden="true"
+          className="absolute top-1/2 left-1/2 size-[58%] -translate-x-1/2 -translate-y-1/2"
+        >
+          {chromaginePetals.map((color, petalIndex) => (
+            <span
+              key={color}
+              className="pointer-events-none absolute inset-0"
+              style={{ transform: `rotate(${petalIndex * 45}deg)` }}
+            >
               <motion.span
-                key={color}
-                initial={{ scale: 0, opacity: 0 }}
+                initial={{ scale: 0.65, opacity: 0 }}
                 whileInView={{ scale: 1, opacity: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: colorIndex * 0.08, type: 'spring' }}
-                className="-ml-[18%] aspect-square rounded-full border border-white/20 first:ml-0"
-                style={{ backgroundColor: color }}
-              />
-            ),
-          )}
+                transition={{
+                  delay: petalIndex * 0.05,
+                  type: 'spring',
+                  stiffness: 220,
+                  damping: 18,
+                }}
+                className="pointer-events-none absolute inset-0"
+              >
+                <motion.span
+                  whileHover={{ scale: 1.14, y: -10, opacity: 1 }}
+                  transition={{
+                    type: 'spring',
+                    stiffness: 320,
+                    damping: 18,
+                  }}
+                  className="pointer-events-auto absolute top-[2%] left-1/2 h-[43%] w-[29%] origin-bottom -translate-x-1/2 cursor-pointer rounded-[999px] border border-white/35 opacity-90 mix-blend-screen shadow-[0_12px_30px_rgba(16,16,15,0.14)] backdrop-blur-[2px]"
+                  style={{ backgroundColor: color }}
+                />
+              </motion.span>
+            </span>
+          ))}
         </div>
       )}
 
-      <a
-        href={project.href}
-        target="_blank"
-        rel="noreferrer"
-        className="absolute right-5 bottom-5 z-30 flex size-12 items-center justify-center rounded-full bg-[#10100f] text-white transition-transform hover:scale-105 hover:rotate-6 sm:right-7 sm:bottom-7 sm:size-14"
-        aria-label={`Open ${project.title}`}
-      >
-        <ArrowUpRight className="size-5" />
-      </a>
+      {linked ? (
+        <a
+          href={project.href}
+          target="_blank"
+          rel="noreferrer"
+          className="absolute right-5 bottom-5 z-30 flex size-12 items-center justify-center rounded-full bg-[#10100f] text-white transition-transform hover:scale-105 hover:rotate-6 sm:right-7 sm:bottom-7 sm:size-14"
+          aria-label={`Open ${project.title}`}
+        >
+          <ArrowUpRight className="size-5" />
+        </a>
+      ) : (
+        <span
+          aria-hidden="true"
+          className="absolute right-5 bottom-5 z-30 flex size-12 items-center justify-center rounded-full bg-[#10100f] text-white transition-transform group-hover:scale-105 group-hover:rotate-6 sm:right-7 sm:bottom-7 sm:size-14"
+        >
+          <ArrowUpRight className="size-5" />
+        </span>
+      )}
     </div>
   )
 }
@@ -248,15 +291,22 @@ function IndependentProject({
   index: number
 }) {
   return (
-    <motion.article
+    <motion.a
+      href={project.href}
+      target="_blank"
+      rel="noreferrer"
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1 }}
-      className="group"
+      className="group block rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black"
     >
-      <ProjectVisual project={project} index={index + clientWork.length} />
-      <div className="flex items-start justify-between gap-6 py-5">
+      <ProjectVisual
+        project={project}
+        index={index + clientWork.length}
+        linked={false}
+      />
+      <div className="py-5">
         <div>
           <p className="font-mono text-[9px] tracking-[0.16em] text-black/40 uppercase">
             {project.category}
@@ -268,17 +318,8 @@ function IndependentProject({
             {project.description}
           </p>
         </div>
-        <a
-          href={project.href}
-          target="_blank"
-          rel="noreferrer"
-          className="mt-2 flex size-10 shrink-0 items-center justify-center rounded-full border border-black/25 transition-colors group-hover:bg-black group-hover:text-white"
-          aria-label={`Open ${project.title}`}
-        >
-          <ArrowUpRight className="size-4" />
-        </a>
       </div>
-    </motion.article>
+    </motion.a>
   )
 }
 
