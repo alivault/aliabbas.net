@@ -9,8 +9,8 @@ interface ExperienceItemProps {
 }
 
 function formatDateRange(startDate: string, endDate: string | null): string {
-  const startYear = new Date(startDate).getFullYear()
-  const endYear = endDate ? new Date(endDate).getFullYear() : 'Present'
+  const startYear = new Date(startDate).getUTCFullYear()
+  const endYear = endDate ? new Date(endDate).getUTCFullYear() : 'Present'
   return `${startYear} — ${endYear}`
 }
 
