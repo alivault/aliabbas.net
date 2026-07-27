@@ -335,7 +335,7 @@ function HomeHero() {
   return (
     <section
       ref={heroRef}
-      className="site-noise relative flex min-h-svh overflow-hidden bg-[#10100f] pt-[72px] text-[#f1efe8]"
+      className="site-noise relative flex min-h-lvh overflow-hidden bg-[#10100f] pt-[72px] text-[#f1efe8]"
     >
       <div className="hero-grid absolute inset-0" />
       <motion.div
