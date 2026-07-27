@@ -25,12 +25,15 @@ export default function Footer() {
             <ArrowUpRight className="size-9 transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1 sm:size-11" />
           </Link>
         </div>
-        <div className="flex flex-col gap-8 pt-8 text-xs text-white/45 sm:flex-row sm:items-center sm:justify-between">
-          <Link to="/" className="flex items-center gap-3 text-white">
+        <div className="flex flex-col gap-8 pt-8 text-xs text-white/45 min-[685px]:grid min-[685px]:grid-cols-[1fr_auto_1fr] min-[685px]:items-center">
+          <Link
+            to="/"
+            className="flex items-center gap-3 text-white min-[685px]:justify-self-start"
+          >
             <Logo className="h-6 w-7 text-[#d9ff43]" />
             <span className="font-semibold">Ali Abbas</span>
           </Link>
-          <div className="flex flex-wrap gap-x-6 gap-y-3">
+          <div className="flex flex-wrap gap-x-6 gap-y-3 min-[685px]:justify-self-center">
             <Link to="/experience" className="hover:text-white">
               Experience
             </Link>
@@ -46,7 +49,9 @@ export default function Footer() {
               GitHub ↗
             </a>
           </div>
-          <span>Designed & engineered with intent.</span>
+          <span className="min-[685px]:justify-self-end">
+            Designed & engineered with intent.
+          </span>
         </div>
       </div>
     </footer>
