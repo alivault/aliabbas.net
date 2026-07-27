@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useRef, useState } from 'react'
+import type { MouseEvent } from 'react'
 import { Link } from '@tanstack/react-router'
 import { ArrowUpRight, Menu, X } from 'lucide-react'
 import {
@@ -18,9 +19,40 @@ const navigation = [
 
 export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const pendingAnchor = useRef<string | null>(null)
+
+  const closeThenScrollToAnchor = (
+    event: MouseEvent<HTMLAnchorElement>,
+    href: string,
+  ) => {
+    if (window.location.pathname !== '/') {
+      setMenuOpen(false)
+      return
+    }
+
+    event.preventDefault()
+    pendingAnchor.current = href
+    setMenuOpen(false)
+  }
+
+  const handleOpenChangeComplete = (open: boolean) => {
+    if (open || !pendingAnchor.current) return
+
+    const href = pendingAnchor.current
+    pendingAnchor.current = null
+    const hash = new URL(href, window.location.href).hash
+    const target = document.getElementById(hash.slice(1))
+
+    window.history.pushState(null, '', href)
+    target?.scrollIntoView()
+  }
 
   return (
-    <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+    <Sheet
+      open={menuOpen}
+      onOpenChange={setMenuOpen}
+      onOpenChangeComplete={handleOpenChangeComplete}
+    >
       <header className="fixed inset-x-0 top-0 z-[100] h-[72px] border-b border-white/10 bg-[#10100f]/90 text-[#f1efe8] backdrop-blur-xl">
         <div className="mx-auto grid h-full max-w-[1600px] grid-cols-[1fr_auto] items-center px-5 sm:px-8 lg:grid-cols-[1fr_auto_1fr] lg:px-12">
           <Link
@@ -114,7 +146,7 @@ export default function SiteHeader() {
               <a
                 key={item.label}
                 href={item.href}
-                onClick={() => setMenuOpen(false)}
+                onClick={(event) => closeThenScrollToAnchor(event, item.href)}
                 className="flex items-center justify-between border-b border-white/15 py-5"
               >
                 {content}
