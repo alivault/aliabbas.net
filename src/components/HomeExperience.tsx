@@ -511,7 +511,7 @@ export default function HomeExperience() {
               <p className="font-mono text-[10px] tracking-[0.2em] text-black/45 uppercase">
                 Selected work / 2023—2026
               </p>
-              <h2 className="font-display mt-5 text-[clamp(4.5rem,10vw,9rem)] leading-[0.78] tracking-[-0.06em]">
+              <h2 className="font-display mt-5 text-[clamp(4rem,9vw,8rem)] leading-[0.78] tracking-[-0.06em]">
                 Built for the
                 <br />
                 <em className="text-[#335cff]">real world.</em>
