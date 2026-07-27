@@ -329,13 +329,12 @@ function HomeHero() {
     target: heroRef,
     offset: ['start start', 'end start'],
   })
-  const headingY = useTransform(scrollYProgress, [0, 1], [0, 130])
   const orbY = useTransform(scrollYProgress, [0, 1], [0, 240])
 
   return (
     <section
       ref={heroRef}
-      className="site-noise relative flex min-h-lvh overflow-hidden bg-[#10100f] pt-[72px] text-[#f1efe8]"
+      className="site-noise relative flex flex-1 overflow-hidden bg-[#10100f] pt-[72px] text-[#f1efe8]"
     >
       <div className="hero-grid absolute inset-0" />
       <motion.div
@@ -351,8 +350,8 @@ function HomeHero() {
           <span>US / Remote</span>
         </div>
 
-        <motion.div style={{ y: headingY }} className="mt-auto pt-[11vh]">
-          <h1 className="max-w-[1500px] text-[clamp(6rem,11.8vw,12.2rem)] leading-[0.72] font-extrabold tracking-[-0.075em] uppercase">
+        <motion.div className="mt-auto">
+          <h1 className="max-w-[1500px] text-[clamp(5.5rem,10.8vw,11.2rem)] leading-[0.72] font-extrabold tracking-[-0.075em] uppercase">
             <motion.span
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
@@ -499,8 +498,10 @@ export default function HomeExperience() {
     <div className="home-page overflow-x-hidden bg-[#f1efe8] text-[#151513]">
       <SiteHeader />
       <main>
-        <HomeHero />
-        <StackMarquee />
+        <div className="flex min-h-lvh flex-col">
+          <HomeHero />
+          <StackMarquee />
+        </div>
 
         <section
           id="work"
