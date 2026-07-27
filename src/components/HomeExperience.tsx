@@ -395,13 +395,13 @@ function HomeHero() {
             I turn ambitious ideas into fast, expressive software—from the first
             interaction model to the data and systems behind it.
           </p>
-          <Link
-            to="/work"
+          <a
+            href="#work"
             className="flex size-14 items-center justify-center rounded-full border border-white/25 transition-colors hover:bg-[#d9ff43] hover:text-[#10100f]"
             aria-label="See selected work"
           >
             <ArrowDown className="size-5" />
-          </Link>
+          </a>
         </div>
       </div>
     </section>
@@ -498,12 +498,15 @@ export default function HomeExperience() {
     <div className="home-page overflow-x-hidden bg-[#f1efe8] text-[#151513]">
       <SiteHeader />
       <main>
-        <div className="flex min-h-lvh flex-col">
+        <div className="flex min-h-svh flex-col">
           <HomeHero />
           <StackMarquee />
         </div>
 
-        <section className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36">
+        <section
+          id="work"
+          className="mx-auto max-w-[1600px] scroll-mt-16 px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36"
+        >
           <header className="grid gap-7 border-b border-black/20 pb-12 lg:grid-cols-[1fr_1fr] lg:items-end lg:pb-20">
             <div>
               <p className="font-mono text-[10px] tracking-[0.2em] text-black/45 uppercase">
