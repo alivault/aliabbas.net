@@ -34,6 +34,9 @@ export default function Footer() {
             <span className="font-semibold">Ali Abbas</span>
           </Link>
           <div className="flex flex-wrap gap-x-6 gap-y-3 min-[685px]:justify-self-center">
+            <Link to="/capabilities" className="hover:text-white">
+              Capabilities
+            </Link>
             <Link to="/experience" className="hover:text-white">
               Experience
             </Link>
