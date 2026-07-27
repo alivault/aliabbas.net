@@ -29,7 +29,7 @@ const visualStyles = {
   chromagine: 'bg-[#335cff] text-white',
 } satisfies Record<WorkItem['visual'], string>
 
-const capabilities = [
+export const capabilities = [
   {
     number: '01',
     title: 'Product thinking',
@@ -224,7 +224,7 @@ function ProjectVisual({
   )
 }
 
-function FeaturedProject({
+export function FeaturedProject({
   project,
   index,
 }: {
@@ -283,7 +283,7 @@ function FeaturedProject({
   )
 }
 
-function IndependentProject({
+export function IndependentProject({
   project,
   index,
 }: {
@@ -395,13 +395,13 @@ function HomeHero() {
             I turn ambitious ideas into fast, expressive software—from the first
             interaction model to the data and systems behind it.
           </p>
-          <a
-            href="#work"
+          <Link
+            to="/work"
             className="flex size-14 items-center justify-center rounded-full border border-white/25 transition-colors hover:bg-[#d9ff43] hover:text-[#10100f]"
             aria-label="See selected work"
           >
             <ArrowDown className="size-5" />
-          </a>
+          </Link>
         </div>
       </div>
     </section>
@@ -503,10 +503,7 @@ export default function HomeExperience() {
           <StackMarquee />
         </div>
 
-        <section
-          id="work"
-          className="mx-auto max-w-[1600px] scroll-mt-16 px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36"
-        >
+        <section className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36">
           <header className="grid gap-7 border-b border-black/20 pb-12 lg:grid-cols-[1fr_1fr] lg:items-end lg:pb-20">
             <div>
               <p className="font-mono text-[10px] tracking-[0.2em] text-black/45 uppercase">
@@ -566,10 +563,7 @@ export default function HomeExperience() {
           </div>
         </section>
 
-        <section
-          id="capabilities"
-          className="scroll-mt-16 bg-[#10100f] text-[#f1efe8]"
-        >
+        <section className="bg-[#10100f] text-[#f1efe8]">
           <div className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36">
             <header className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
               <div>

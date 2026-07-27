@@ -1,5 +1,4 @@
-import { useRef, useState } from 'react'
-import type { MouseEvent } from 'react'
+import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { ArrowUpRight, Menu, X } from 'lucide-react'
 import {
@@ -11,48 +10,17 @@ import {
 import Logo from './Logo'
 
 const navigation = [
-  { label: 'Work', kind: 'anchor', href: '/#work' },
-  { label: 'Capabilities', kind: 'anchor', href: '/#capabilities' },
-  { label: 'Experience', kind: 'route', to: '/experience' as const },
-  { label: 'Notes', kind: 'route', to: '/notes' as const },
+  { label: 'Work', to: '/work' as const },
+  { label: 'Capabilities', to: '/capabilities' as const },
+  { label: 'Experience', to: '/experience' as const },
+  { label: 'Notes', to: '/notes' as const },
 ] as const
 
 export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
-  const pendingAnchor = useRef<string | null>(null)
-
-  const closeThenScrollToAnchor = (
-    event: MouseEvent<HTMLAnchorElement>,
-    href: string,
-  ) => {
-    if (window.location.pathname !== '/') {
-      setMenuOpen(false)
-      return
-    }
-
-    event.preventDefault()
-    pendingAnchor.current = href
-    setMenuOpen(false)
-  }
-
-  const handleOpenChangeComplete = (open: boolean) => {
-    if (open || !pendingAnchor.current) return
-
-    const href = pendingAnchor.current
-    pendingAnchor.current = null
-    const hash = new URL(href, window.location.href).hash
-    const target = document.getElementById(hash.slice(1))
-
-    window.history.pushState(null, '', href)
-    target?.scrollIntoView()
-  }
 
   return (
-    <Sheet
-      open={menuOpen}
-      onOpenChange={setMenuOpen}
-      onOpenChangeComplete={handleOpenChangeComplete}
-    >
+    <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
       <header className="fixed inset-x-0 top-0 z-[100] h-[72px] border-b border-white/10 bg-[#10100f]/90 text-[#f1efe8] backdrop-blur-xl">
         <div className="mx-auto grid h-full max-w-[1600px] grid-cols-[1fr_auto] items-center px-5 sm:px-8 lg:grid-cols-[1fr_auto_1fr] lg:px-12">
           <Link
@@ -67,26 +35,16 @@ export default function SiteHeader() {
           </Link>
 
           <nav className="hidden items-center gap-8 justify-self-center text-[12px] font-semibold text-white/55 lg:flex">
-            {navigation.map((item) =>
-              item.kind === 'route' ? (
-                <Link
-                  key={item.label}
-                  to={item.to}
-                  className="transition-colors hover:text-white"
-                  activeProps={{ className: 'text-white' }}
-                >
-                  {item.label}
-                </Link>
-              ) : (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className="transition-colors hover:text-white"
-                >
-                  {item.label}
-                </a>
-              ),
-            )}
+            {navigation.map((item) => (
+              <Link
+                key={item.label}
+                to={item.to}
+                className="transition-colors hover:text-white"
+                activeProps={{ className: 'text-white' }}
+              >
+                {item.label}
+              </Link>
+            ))}
           </nav>
 
           <div className="flex items-center gap-3 justify-self-end">
@@ -133,7 +91,7 @@ export default function SiteHeader() {
               </>
             )
 
-            return item.kind === 'route' ? (
+            return (
               <Link
                 key={item.label}
                 to={item.to}
@@ -142,15 +100,6 @@ export default function SiteHeader() {
               >
                 {content}
               </Link>
-            ) : (
-              <a
-                key={item.label}
-                href={item.href}
-                onClick={(event) => closeThenScrollToAnchor(event, item.href)}
-                className="flex items-center justify-between border-b border-white/15 py-5"
-              >
-                {content}
-              </a>
             )
           })}
         </nav>
