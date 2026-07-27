@@ -17,16 +17,13 @@ export default function SiteHeader() {
   useEffect(() => {
     if (!menuOpen) return
 
-    const previousOverflow = document.body.style.overflow
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key === 'Escape') setMenuOpen(false)
     }
 
-    document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', closeOnEscape)
 
     return () => {
-      document.body.style.overflow = previousOverflow
       window.removeEventListener('keydown', closeOnEscape)
     }
   }, [menuOpen])
@@ -104,7 +101,7 @@ export default function SiteHeader() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-0 z-[90] flex flex-col bg-[#10100f] px-5 pt-28 pb-8 text-[#f1efe8] lg:hidden"
+            className="fixed inset-0 z-[90] flex flex-col overflow-y-auto overscroll-contain bg-[#10100f] px-5 pt-28 pb-8 text-[#f1efe8] lg:hidden"
             role="dialog"
             aria-modal="true"
             aria-label="Site navigation"
