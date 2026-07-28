@@ -43,7 +43,7 @@ export default function HomeNotesSection({
                 0{index + 1}
               </span>
               <span>
-                <span className="font-display block text-3xl tracking-[-0.025em] transition-transform duration-500 group-hover:translate-x-2 sm:text-5xl">
+                <span className="font-display block text-3xl leading-[1.1] tracking-[-0.025em] transition-transform duration-500 group-hover:translate-x-2 sm:text-5xl">
                   {article.title}
                 </span>
                 <span className="mt-2 block text-xs text-black/40">

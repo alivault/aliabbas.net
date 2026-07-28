@@ -37,7 +37,7 @@ function NoteListItem({
       >
         <span className="font-mono text-[9px] text-black/35">0{index + 1}</span>
         <span>
-          <span className="font-display block text-3xl leading-none tracking-[-0.03em] transition-transform duration-500 group-hover:translate-x-2 sm:text-5xl">
+          <span className="font-display block text-3xl leading-[1.1] tracking-[-0.03em] transition-transform duration-500 group-hover:translate-x-2 sm:text-5xl">
             {article.title}
           </span>
           {article.description && (

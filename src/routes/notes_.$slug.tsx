@@ -118,7 +118,7 @@ function NotePage() {
           >
             {getFormattedDate(note.date)}
           </time>
-          <h1 className="font-display mt-5 text-[clamp(4rem,6.5vw,6.5rem)] leading-[0.9] tracking-[-0.04em]">
+          <h1 className="font-display mt-5 text-[clamp(4rem,6.5vw,6.5rem)] leading-[1.1] tracking-[-0.04em]">
             {note.title}
           </h1>
           {note.description && (
