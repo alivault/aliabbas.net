@@ -111,6 +111,49 @@
   mask-image: linear-gradient(to bottom, black 20%, transparent 92%);
 }
 
+.hero-tracers {
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(to bottom, black 12%, transparent 94%);
+}
+
+.hero-tracers i {
+  position: absolute;
+  display: block;
+  opacity: 0;
+  filter: drop-shadow(0 0 5px rgb(217 255 67 / 70%));
+  will-change: transform;
+}
+
+.hero-tracers i[data-orientation='x'] {
+  top: calc(var(--tracer-line, 3) * 5.5vw);
+  left: 0;
+  width: 18vw;
+  min-width: 180px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgb(51 92 255 / 20%) 24%,
+    #d9ff43 72%,
+    transparent
+  );
+}
+
+.hero-tracers i[data-orientation='y'] {
+  top: 0;
+  left: calc(var(--tracer-line, 12) * 5.5vw);
+  width: 1px;
+  height: 18vw;
+  min-height: 180px;
+  background: linear-gradient(
+    transparent,
+    rgb(51 92 255 / 20%) 24%,
+    #d9ff43 72%,
+    transparent
+  );
+}
+
 .product-model {
   position: relative;
   width: 100%;
@@ -127,6 +170,12 @@
 
 .product-model-canvas:active {
   cursor: grabbing;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-tracers {
+    display: none;
+  }
 }
 
 .project-lines {
