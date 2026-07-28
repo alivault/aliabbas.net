@@ -179,7 +179,7 @@ export default function ParticleModel({
     const planeGeometry = new THREE.PlaneGeometry(cubeSize, cubeSize)
     const planeHitGeometry = new THREE.BoxGeometry(
       cubeSize * 1.16,
-      planeStep * 0.45,
+      planeStep * 1.05,
       cubeSize * 1.16,
     )
     const planeMeshes: Array<THREE.Mesh> = []
@@ -466,7 +466,10 @@ export default function ParticleModel({
         plane.scale.set(hoverScale, hoverScale, 1)
         plane.position.y = (index * planeStep - cubeSize / 2) * spreadScale
         const hitPlane = planeHitMeshes[index]
-        if (hitPlane) hitPlane.position.y = plane.position.y
+        if (hitPlane) {
+          hitPlane.position.y = plane.position.y
+          hitPlane.scale.y = spreadScale
+        }
         planeMaterials[index]!.opacity = THREE.MathUtils.lerp(
           0.05,
           0.16,
