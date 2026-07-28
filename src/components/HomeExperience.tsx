@@ -351,14 +351,14 @@ function HomeHero() {
         </div>
 
         <motion.div className="mt-auto">
-          <h1 className="max-w-[1500px] text-[clamp(5.5rem,10.8vw,11.2rem)] leading-[0.72] font-extrabold tracking-[-0.075em] uppercase">
+          <h1 className="max-w-[1500px] text-[clamp(3.5rem,8.5vw,9rem)] leading-[0.8] font-extrabold tracking-[-0.02em] uppercase">
             <motion.span
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
               className="block"
             >
-              Code
+              I design and build
             </motion.span>
             <motion.span
               initial={{ opacity: 0, y: 50 }}
@@ -368,9 +368,9 @@ function HomeHero() {
                 duration: 0.8,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="font-display block pl-[9vw] font-normal tracking-[-0.055em] text-[#d9ff43] normal-case italic"
+              className="font-display block pl-[9vw] font-normal text-[#d9ff43] normal-case italic"
             >
-              with
+              full-stack
             </motion.span>
             <motion.span
               initial={{ opacity: 0, y: 50 }}
@@ -382,7 +382,7 @@ function HomeHero() {
               }}
               className="block"
             >
-              care.
+              digital products.
             </motion.span>
           </h1>
         </motion.div>
@@ -392,8 +392,9 @@ function HomeHero() {
             Strategy / UX / Visual systems / Frontend / APIs / Data / Delivery
           </p>
           <p className="max-w-lg text-sm leading-6 text-white/60 sm:text-base sm:leading-7">
-            I turn ambitious ideas into fast, expressive software—from the first
-            interaction model to the data and systems behind it.
+            I turn ambitious ideas into polished, production-ready
+            software—shaping the UX, building the interface, connecting the
+            systems, and carrying it through delivery.
           </p>
           <a
             href="#work"
