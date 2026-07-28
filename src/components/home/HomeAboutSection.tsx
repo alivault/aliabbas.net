@@ -1,8 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { MoveRight } from 'lucide-react'
-import { motion } from 'motion/react'
 import type { SanityExperience } from '~/lib/sanity'
-import Logo from '../Logo'
+import AboutVisual from './AboutVisual'
 
 export default function HomeAboutSection({
   currentRole,
@@ -12,21 +11,7 @@ export default function HomeAboutSection({
   return (
     <section className="overflow-hidden bg-[#335cff] text-white">
       <div className="mx-auto grid max-w-[1600px] lg:grid-cols-2">
-        <div className="relative min-h-[520px] overflow-hidden border-white/20 p-5 sm:p-8 lg:min-h-[760px] lg:border-r lg:p-12">
-          <div className="absolute -right-[25%] -bottom-[15%] size-[80%] rounded-full border-[60px] border-[#d9ff43] opacity-90 sm:border-[90px]" />
-          <div className="absolute top-[18%] left-[16%] size-40 rounded-full bg-[#ff694a] blur-[1px] sm:size-64" />
-          <motion.div
-            whileInView={{ rotate: 8, y: -12 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute inset-[20%] flex items-center justify-center border border-white/30 bg-white/10 backdrop-blur-xl"
-          >
-            <Logo className="h-auto w-[58%] text-[#d9ff43]" />
-          </motion.div>
-          <p className="relative font-mono text-[9px] tracking-[0.18em] text-white/55 uppercase">
-            Design engineer · Builder · Collaborator
-          </p>
-        </div>
+        <AboutVisual />
         <div className="flex flex-col justify-between px-5 py-16 sm:px-8 sm:py-20 lg:p-12 lg:py-16">
           <div>
             <p className="font-mono text-[10px] tracking-[0.2em] text-[#d9ff43] uppercase">
