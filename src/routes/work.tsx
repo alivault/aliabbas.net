@@ -3,7 +3,7 @@ import { ArrowUpRight } from 'lucide-react'
 import {
   FeaturedProject,
   IndependentProject,
-} from '~/components/HomeExperience'
+} from '~/components/home/ProjectCards'
 import Main from '~/components/Main'
 import { clientWork, personalProjects } from '~/data/work'
 

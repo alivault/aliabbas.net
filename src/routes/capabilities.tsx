@@ -1,8 +1,8 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Braces, Cloud, Database, Layers3 } from 'lucide-react'
 import { motion } from 'motion/react'
-import { capabilities } from '~/components/HomeExperience'
 import Main from '~/components/Main'
+import { capabilities } from '~/data/capabilities'
 
 const architecture = [
   {
