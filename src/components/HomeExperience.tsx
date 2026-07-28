@@ -25,8 +25,8 @@ export default function HomeExperience() {
       <main>
         <div className="flex min-h-svh flex-col">
           <HomeHero />
-          <StackMarquee />
         </div>
+        <StackMarquee />
         <HomeWorkSection />
         <HomeCapabilitiesSection />
         <StackMarquee />
