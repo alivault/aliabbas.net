@@ -337,6 +337,11 @@ export default function ParticleModel({
     const planeHoverProgress = new Float32Array(planeCount)
     const raycaster = new THREE.Raycaster()
     const pointer = new THREE.Vector2()
+    const useTapInteraction = window.matchMedia(
+      '(hover: none), (pointer: coarse)',
+    ).matches
+    let pointerDownPlaneIndex = -1
+    let pointerTravel = 0
     let lastPointerX = 0
     let lastPointerY = 0
     let isVisible = true
@@ -365,7 +370,7 @@ export default function ParticleModel({
     })
     intersectionObserver.observe(canvas)
 
-    const updateHoveredPlane = (event: PointerEvent) => {
+    const findPlaneAtPointer = (event: PointerEvent) => {
       const bounds = canvas.getBoundingClientRect()
       pointer.set(
         ((event.clientX - bounds.left) / bounds.width) * 2 - 1,
@@ -375,43 +380,83 @@ export default function ParticleModel({
       raycaster.setFromCamera(pointer, camera)
       const hoveredPlane = raycaster.intersectObjects(planeHitMeshes, false)[0]
         ?.object
-      hoveredPlaneIndex = hoveredPlane
+      return hoveredPlane
         ? planeHitMeshes.indexOf(hoveredPlane as THREE.Mesh)
         : -1
-      if (hoveredPlaneIndex !== reportedPlaneIndex) {
-        reportedPlaneIndex = hoveredPlaneIndex
-        onPlaneHover(hoveredPlaneIndex >= 0 ? hoveredPlaneIndex : null)
+    }
+
+    const setActivePlane = (planeIndex: number) => {
+      hoveredPlaneIndex = planeIndex
+      if (planeIndex !== reportedPlaneIndex) {
+        reportedPlaneIndex = planeIndex
+        onPlaneHover(planeIndex >= 0 ? planeIndex : null)
       }
-      spreadTarget = hoveredPlaneIndex >= 0 ? 1 : 0
-      return hoveredPlaneIndex >= 0
     }
 
     const handlePointerDown = (event: PointerEvent) => {
-      if (!updateHoveredPlane(event)) return
+      const planeIndex = findPlaneAtPointer(event)
+      if (planeIndex < 0 && (!useTapInteraction || spreadTarget <= 0)) return
+      if (!useTapInteraction) {
+        setActivePlane(planeIndex)
+        spreadTarget = 1
+      }
       isDragging = true
+      pointerDownPlaneIndex = planeIndex
+      pointerTravel = 0
       lastPointerX = event.clientX
       lastPointerY = event.clientY
-      interactionTarget.setPointerCapture(event.pointerId)
+      if (planeIndex >= 0) interactionTarget.setPointerCapture(event.pointerId)
     }
 
     const handlePointerLeave = () => {
+      if (useTapInteraction) return
       spreadTarget = 0
-      hoveredPlaneIndex = -1
-      reportedPlaneIndex = -1
-      onPlaneHover(null)
+      setActivePlane(-1)
     }
 
     const handlePointerMove = (event: PointerEvent) => {
-      updateHoveredPlane(event)
+      if (!useTapInteraction) {
+        const planeIndex = findPlaneAtPointer(event)
+        setActivePlane(planeIndex)
+        spreadTarget = planeIndex >= 0 ? 1 : 0
+      }
 
       if (!isDragging) return
-      planeStack.rotation.y += (event.clientX - lastPointerX) * 0.008
-      planeStack.rotation.x += (event.clientY - lastPointerY) * 0.008
+      const deltaX = event.clientX - lastPointerX
+      const deltaY = event.clientY - lastPointerY
+      pointerTravel += Math.hypot(deltaX, deltaY)
+      if (pointerDownPlaneIndex < 0) {
+        lastPointerX = event.clientX
+        lastPointerY = event.clientY
+        return
+      }
+      if (useTapInteraction && pointerTravel >= 8 && spreadTarget > 0) {
+        spreadTarget = 0
+        setActivePlane(-1)
+      }
+      planeStack.rotation.y += deltaX * 0.008
+      planeStack.rotation.x += deltaY * 0.008
       lastPointerX = event.clientX
       lastPointerY = event.clientY
     }
 
     const handlePointerUp = (event: PointerEvent) => {
+      if (useTapInteraction && isDragging && pointerTravel < 8) {
+        if (pointerDownPlaneIndex >= 0) {
+          spreadTarget = 1
+          setActivePlane(pointerDownPlaneIndex)
+        } else {
+          spreadTarget = 0
+          setActivePlane(-1)
+        }
+      }
+      isDragging = false
+      if (interactionTarget.hasPointerCapture(event.pointerId)) {
+        interactionTarget.releasePointerCapture(event.pointerId)
+      }
+    }
+
+    const handlePointerCancel = (event: PointerEvent) => {
       isDragging = false
       if (interactionTarget.hasPointerCapture(event.pointerId)) {
         interactionTarget.releasePointerCapture(event.pointerId)
@@ -422,7 +467,7 @@ export default function ParticleModel({
     interactionTarget.addEventListener('pointerleave', handlePointerLeave)
     interactionTarget.addEventListener('pointermove', handlePointerMove)
     interactionTarget.addEventListener('pointerup', handlePointerUp)
-    interactionTarget.addEventListener('pointercancel', handlePointerUp)
+    interactionTarget.addEventListener('pointercancel', handlePointerCancel)
 
     renderer.setAnimationLoop(() => {
       const delta = Math.min(clock.getDelta(), 0.05)
@@ -577,7 +622,10 @@ export default function ParticleModel({
       interactionTarget.removeEventListener('pointerleave', handlePointerLeave)
       interactionTarget.removeEventListener('pointermove', handlePointerMove)
       interactionTarget.removeEventListener('pointerup', handlePointerUp)
-      interactionTarget.removeEventListener('pointercancel', handlePointerUp)
+      interactionTarget.removeEventListener(
+        'pointercancel',
+        handlePointerCancel,
+      )
       geometry.dispose()
       material.dispose()
       planeGeometry.dispose()
