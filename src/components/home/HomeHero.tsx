@@ -12,8 +12,8 @@ const productDescriptors = [
   'scalable',
   'resilient',
   'polished',
-  'launch-ready',
-  'end-to-end',
+  'secure',
+  'cohesive',
 ] as const
 
 export function HomeHero() {
