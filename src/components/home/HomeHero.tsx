@@ -33,7 +33,7 @@ export function HomeHero() {
         </div>
 
         <motion.div className="mt-auto lg:grid lg:grid-cols-[minmax(0,1fr)_clamp(260px,25vw,410px)] lg:items-center lg:gap-8">
-          <h1 className="max-w-[960px] text-[clamp(2.75rem,5vw,5.5rem)] leading-[0.8] font-extrabold tracking-[-0.02em] uppercase">
+          <h1 className="mx-auto max-w-[960px] text-center text-[clamp(2.75rem,5vw,5.5rem)] leading-[0.8] font-extrabold tracking-[-0.02em] uppercase lg:mx-0 lg:text-left">
             <motion.span
               initial={{ opacity: 0, y: 50 }}
               animate={{ opacity: 1, y: 0 }}
@@ -50,7 +50,7 @@ export function HomeHero() {
                 duration: 0.8,
                 ease: [0.22, 1, 0.36, 1],
               }}
-              className="font-display block pl-[9vw] font-normal text-[#d9ff43] normal-case italic"
+              className="font-display block font-normal text-[#d9ff43] normal-case italic lg:pl-[9vw]"
             >
               full-stack
             </motion.span>
@@ -67,21 +67,21 @@ export function HomeHero() {
               digital products.
             </motion.span>
           </h1>
-          <ParticleModel />
+          <ParticleModel heroRef={heroRef} />
         </motion.div>
 
         <div className="mt-auto grid gap-8 border-t border-white/15 pt-5 sm:grid-cols-[1fr_auto] sm:items-end lg:grid-cols-[1fr_1fr_auto]">
           <p className="hidden max-w-xs font-mono text-[9px] leading-5 tracking-[0.14em] text-white/35 uppercase lg:block">
             Strategy / UX / Visual systems / Frontend / APIs / Data / Delivery
           </p>
-          <p className="max-w-lg text-sm leading-6 text-white/60 sm:text-base sm:leading-7">
+          <p className="mx-auto max-w-lg text-center text-sm leading-6 text-white/60 sm:text-base sm:leading-7 lg:mx-0 lg:text-left">
             I turn ambitious ideas into polished, production-ready
             software—shaping the UX, building the interface, connecting the
             systems, and carrying it through delivery.
           </p>
           <a
             href="#work"
-            className="flex size-14 items-center justify-center rounded-full border border-white/25 transition-colors hover:bg-[#d9ff43] hover:text-[#10100f]"
+            className="mx-auto flex size-14 items-center justify-center rounded-full border border-white/25 transition-colors hover:bg-[#d9ff43] hover:text-[#10100f] sm:mx-0"
             aria-label="See selected work"
           >
             <ArrowDown className="size-5" />
