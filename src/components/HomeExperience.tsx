@@ -506,7 +506,7 @@ export default function HomeExperience() {
 
         <section
           id="work"
-          className="mx-auto max-w-[1600px] scroll-mt-16 px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36"
+        className="mx-auto max-w-[1600px] scroll-mt-[71px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36"
         >
           <header className="grid gap-7 border-b border-black/20 pb-12 lg:grid-cols-[1fr_1fr] lg:items-end lg:pb-20">
             <div>
