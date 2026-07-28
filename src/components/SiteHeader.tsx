@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { ArrowUpRight, Menu, X } from 'lucide-react'
-import { motion } from 'motion/react'
+import { ArrowUpRight } from 'lucide-react'
+import { motion, useReducedMotion } from 'motion/react'
 import type { Variants } from 'motion/react'
 import {
   Sheet,
@@ -67,6 +67,76 @@ const mobileContactVariants: Variants = {
   },
 }
 
+function SpinMenuIcon({ open }: { open: boolean }) {
+  const reduceMotion = useReducedMotion()
+  const instantTransition = { duration: 0 }
+
+  return (
+    <span aria-hidden="true" className="relative block h-[14px] w-[18px]">
+      <motion.span
+        animate={{ rotate: open ? 225 : 0 }}
+        transition={
+          reduceMotion
+            ? instantTransition
+            : open
+              ? {
+                  delay: 0.12,
+                  duration: 0.22,
+                  ease: [0.215, 0.61, 0.355, 1],
+                }
+              : {
+                  duration: 0.22,
+                  ease: [0.55, 0.055, 0.675, 0.19],
+                }
+        }
+        className="absolute top-[6px] left-0 block h-[1.5px] w-full rounded-full bg-current"
+      >
+        <motion.span
+          animate={{ y: open ? 5 : 0, opacity: open ? 0 : 1 }}
+          transition={
+            reduceMotion
+              ? instantTransition
+              : open
+                ? {
+                    y: { duration: 0.1, ease: 'easeOut' },
+                    opacity: { delay: 0.12, duration: 0.1, ease: 'easeOut' },
+                  }
+                : {
+                    y: { delay: 0.25, duration: 0.1, ease: 'easeIn' },
+                    opacity: { duration: 0.1, ease: 'easeIn' },
+                  }
+          }
+          className="absolute -top-[5px] left-0 block h-[1.5px] w-full rounded-full bg-current"
+        />
+        <motion.span
+          animate={{ y: open ? -5 : 0, rotate: open ? -90 : 0 }}
+          transition={
+            reduceMotion
+              ? instantTransition
+              : open
+                ? {
+                    y: { duration: 0.1, ease: 'easeOut' },
+                    rotate: {
+                      delay: 0.12,
+                      duration: 0.22,
+                      ease: [0.215, 0.61, 0.355, 1],
+                    },
+                  }
+                : {
+                    y: { delay: 0.25, duration: 0.1, ease: 'easeIn' },
+                    rotate: {
+                      duration: 0.22,
+                      ease: [0.55, 0.055, 0.675, 0.19],
+                    },
+                  }
+          }
+          className="absolute -bottom-[5px] left-0 block h-[1.5px] w-full rounded-full bg-current"
+        />
+      </motion.span>
+    </span>
+  )
+}
+
 export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -113,11 +183,7 @@ export default function SiteHeader() {
               className="flex size-9 items-center justify-center rounded-full border border-white/15 text-white lg:hidden"
               aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
             >
-              {menuOpen ? (
-                <X className="size-4" />
-              ) : (
-                <Menu className="size-4" />
-              )}
+              <SpinMenuIcon open={menuOpen} />
             </SheetTrigger>
           </div>
         </div>
