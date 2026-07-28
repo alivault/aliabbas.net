@@ -87,8 +87,10 @@ function sampleTracerPath(
 
 export default function ParticleModel({
   heroRef,
+  onPlaneHover,
 }: {
   heroRef: RefObject<HTMLElement | null>
+  onPlaneHover: (planeIndex: number | null) => void
 }) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -175,7 +177,20 @@ export default function ParticleModel({
     scene.add(planeStack)
 
     const planeGeometry = new THREE.PlaneGeometry(cubeSize, cubeSize)
+    const planeHitGeometry = new THREE.BoxGeometry(
+      cubeSize * 1.16,
+      planeStep * 0.45,
+      cubeSize * 1.16,
+    )
     const planeMeshes: Array<THREE.Mesh> = []
+    const planeHitMeshes: Array<THREE.Mesh> = []
+    const planeHitMaterial = new THREE.MeshBasicMaterial({
+      transparent: true,
+      opacity: 0,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+      colorWrite: false,
+    })
     const planeMaterials = Array.from({ length: planeCount }, (_, index) => {
       const planeMaterial = new THREE.MeshBasicMaterial({
         color: color.clone().lerp(accent, (index / (planeCount - 1)) * 0.45),
@@ -189,6 +204,11 @@ export default function ParticleModel({
       plane.rotation.x = -Math.PI / 2
       planeStack.add(plane)
       planeMeshes.push(plane)
+
+      const hitPlane = new THREE.Mesh(planeHitGeometry, planeHitMaterial)
+      hitPlane.position.y = plane.position.y
+      planeStack.add(hitPlane)
+      planeHitMeshes.push(hitPlane)
       return planeMaterial
     })
 
@@ -313,6 +333,7 @@ export default function ParticleModel({
     let spreadTarget = 0
     let spreadScale = 1
     let hoveredPlaneIndex = -1
+    let reportedPlaneIndex = -1
     const planeHoverProgress = new Float32Array(planeCount)
     const raycaster = new THREE.Raycaster()
     const pointer = new THREE.Vector2()
@@ -352,11 +373,15 @@ export default function ParticleModel({
       )
       planeStack.updateMatrixWorld(true)
       raycaster.setFromCamera(pointer, camera)
-      const hoveredPlane = raycaster.intersectObjects(planeMeshes, false)[0]
+      const hoveredPlane = raycaster.intersectObjects(planeHitMeshes, false)[0]
         ?.object
       hoveredPlaneIndex = hoveredPlane
-        ? planeMeshes.indexOf(hoveredPlane as THREE.Mesh)
+        ? planeHitMeshes.indexOf(hoveredPlane as THREE.Mesh)
         : -1
+      if (hoveredPlaneIndex !== reportedPlaneIndex) {
+        reportedPlaneIndex = hoveredPlaneIndex
+        onPlaneHover(hoveredPlaneIndex >= 0 ? hoveredPlaneIndex : null)
+      }
       spreadTarget = hoveredPlaneIndex >= 0 ? 1 : 0
       return hoveredPlaneIndex >= 0
     }
@@ -372,6 +397,8 @@ export default function ParticleModel({
     const handlePointerLeave = () => {
       spreadTarget = 0
       hoveredPlaneIndex = -1
+      reportedPlaneIndex = -1
+      onPlaneHover(null)
     }
 
     const handlePointerMove = (event: PointerEvent) => {
@@ -438,6 +465,8 @@ export default function ParticleModel({
         const hoverScale = 1 + easedHover * 0.1
         plane.scale.set(hoverScale, hoverScale, 1)
         plane.position.y = (index * planeStep - cubeSize / 2) * spreadScale
+        const hitPlane = planeHitMeshes[index]
+        if (hitPlane) hitPlane.position.y = plane.position.y
         planeMaterials[index]!.opacity = THREE.MathUtils.lerp(
           0.05,
           0.16,
@@ -530,7 +559,7 @@ export default function ParticleModel({
         })
       }
 
-      if (!isDragging && !reduceMotion) {
+      if (!isDragging && hoveredPlaneIndex < 0 && !reduceMotion) {
         planeStack.rotation.y += 0.132 * delta
         planeStack.rotation.x += 0.036 * delta
       }
@@ -549,6 +578,8 @@ export default function ParticleModel({
       geometry.dispose()
       material.dispose()
       planeGeometry.dispose()
+      planeHitGeometry.dispose()
+      planeHitMaterial.dispose()
       planeMaterials.forEach((planeMaterial) => planeMaterial.dispose())
       tracers.forEach((tracer) => {
         tracer.trailGeometry.dispose()
@@ -558,7 +589,7 @@ export default function ParticleModel({
       })
       renderer.dispose()
     }
-  }, [heroRef])
+  }, [heroRef, onPlaneHover])
 
   return (
     <div

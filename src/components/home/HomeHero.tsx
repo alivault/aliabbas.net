@@ -1,16 +1,33 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { ArrowDown } from 'lucide-react'
-import { motion, useScroll, useTransform } from 'motion/react'
+import { AnimatePresence, motion, useScroll, useTransform } from 'motion/react'
 import HeroTracers from './HeroTracers'
 import ParticleModel from './ParticleModel'
 
+const productDescriptors = [
+  'thoughtful',
+  'intuitive',
+  'accessible',
+  'performant',
+  'scalable',
+  'resilient',
+  'polished',
+  'launch-ready',
+  'end-to-end',
+] as const
+
 export function HomeHero() {
   const heroRef = useRef<HTMLElement>(null)
+  const [hoveredPlane, setHoveredPlane] = useState<number | null>(null)
   const { scrollYProgress } = useScroll({
     target: heroRef,
     offset: ['start start', 'end start'],
   })
   const orbY = useTransform(scrollYProgress, [0, 1], [0, 240])
+  const productDescriptor =
+    hoveredPlane === null
+      ? 'full-stack'
+      : (productDescriptors[hoveredPlane] ?? 'full-stack')
 
   return (
     <section
@@ -52,7 +69,18 @@ export function HomeHero() {
               }}
               className="font-display block font-normal text-[#d9ff43] normal-case italic lg:pl-[9vw]"
             >
-              full-stack
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={productDescriptor}
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -12 }}
+                  transition={{ duration: 0.18 }}
+                  className="block"
+                >
+                  {productDescriptor}
+                </motion.span>
+              </AnimatePresence>
             </motion.span>
             <motion.span
               initial={{ opacity: 0, y: 50 }}
@@ -67,7 +95,7 @@ export function HomeHero() {
               digital products.
             </motion.span>
           </h1>
-          <ParticleModel heroRef={heroRef} />
+          <ParticleModel heroRef={heroRef} onPlaneHover={setHoveredPlane} />
         </motion.div>
 
         <div className="mt-auto grid gap-8 border-t border-white/15 pt-5 sm:grid-cols-[1fr_auto] sm:items-end lg:grid-cols-[1fr_1fr_auto]">
