@@ -111,6 +111,24 @@
   mask-image: linear-gradient(to bottom, black 20%, transparent 92%);
 }
 
+.product-model {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.product-model-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+
+.product-model-canvas:active {
+  cursor: grabbing;
+}
+
 .project-lines {
   background-image:
     linear-gradient(rgb(255 255 255 / 10%) 1px, transparent 1px),
