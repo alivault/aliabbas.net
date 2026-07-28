@@ -218,7 +218,7 @@ export default function ParticleModel() {
   }, [])
 
   return (
-    <div className="product-model hidden lg:block">
+    <div className="product-model mx-auto mt-4 max-w-[250px] sm:max-w-[300px] lg:mt-0 lg:max-w-none">
       <canvas
         ref={canvasRef}
         className="product-model-canvas"
