@@ -190,7 +190,7 @@ export function FeaturedProject({
           <span>{project.category}</span>
           <span>{project.year}</span>
         </div>
-        <h3 className="font-display mt-7 text-[clamp(3.8rem,7vw,7rem)] leading-[0.8] tracking-[-0.05em]">
+        <h3 className="font-display mt-7 text-[clamp(3.25rem,6vw,6rem)] leading-[0.82] tracking-[-0.05em]">
           {project.title}
         </h3>
         <p className="mt-7 max-w-md text-base leading-7 text-black/60">
