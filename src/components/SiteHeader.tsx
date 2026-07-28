@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { ArrowUpRight, Menu, X } from 'lucide-react'
 import { motion } from 'motion/react'
+import type { Variants } from 'motion/react'
 import {
   Sheet,
   SheetContent,
@@ -16,6 +17,55 @@ const navigation = [
   { label: 'Experience', to: '/experience' as const },
   { label: 'Notes', to: '/notes' as const },
 ] as const
+
+const mobileMenuVariants: Variants = {
+  open: {
+    transition: {
+      delayChildren: 0.36,
+      staggerChildren: 0.075,
+    },
+  },
+  closed: {
+    transition: {
+      staggerChildren: 0.04,
+      staggerDirection: -1,
+    },
+  },
+}
+
+const mobileLinkVariants: Variants = {
+  open: {
+    y: 0,
+    transition: {
+      duration: 0.68,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+  closed: {
+    y: '110%',
+    transition: {
+      duration: 0.2,
+      ease: [0.64, 0, 0.78, 0],
+    },
+  },
+}
+
+const mobileContactVariants: Variants = {
+  open: {
+    y: 0,
+    transition: {
+      duration: 0.68,
+      ease: [0.22, 1, 0.36, 1],
+    },
+  },
+  closed: {
+    y: 'calc(100% + 2rem)',
+    transition: {
+      duration: 0.2,
+      ease: [0.64, 0, 0.78, 0],
+    },
+  },
+}
 
 export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -76,70 +126,50 @@ export default function SiteHeader() {
       <SheetContent
         side="top"
         showCloseButton={false}
-        className="z-[90] h-dvh max-h-none gap-0 overflow-y-auto overscroll-contain border-0 bg-[#10100f] px-5 pt-28 pb-8 text-[#f1efe8] shadow-none duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] data-[side=top]:h-dvh data-[side=top]:data-ending-style:translate-y-[-100%] data-[side=top]:data-starting-style:translate-y-[-100%] lg:hidden"
+        className="z-[90] h-dvh max-h-none gap-0 overflow-y-auto overscroll-contain border-0 bg-[#10100f] px-5 pt-28 pb-8 text-[#f1efe8] shadow-none duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] data-ending-style:delay-300 data-[side=top]:h-dvh data-[side=top]:border-b-0 data-[side=top]:data-ending-style:translate-y-[-100%] data-[side=top]:data-starting-style:translate-y-[-100%] lg:hidden"
       >
         <SheetTitle className="sr-only">Site navigation</SheetTitle>
-        <nav className="flex flex-col border-t border-white/15">
-          {navigation.map((item, index) => (
-            <div
-              key={item.label}
-              className="overflow-hidden border-b border-white/15"
-            >
-              <motion.div
-                initial={{ y: '110%' }}
-                animate={{ y: menuOpen ? 0 : '110%' }}
-                transition={
-                  menuOpen
-                    ? {
-                        delay: 0.36 + index * 0.075,
-                        duration: 0.68,
-                        ease: [0.22, 1, 0.36, 1],
-                      }
-                    : {
-                        duration: 0.2,
-                        ease: [0.64, 0, 0.78, 0],
-                      }
-                }
+        <motion.div
+          initial="closed"
+          animate={menuOpen ? 'open' : 'closed'}
+          variants={mobileMenuVariants}
+          className="flex min-h-0 flex-1 flex-col"
+        >
+          <nav className="flex flex-col border-t border-white/15">
+            {navigation.map((item, index) => (
+              <div
+                key={item.label}
+                className="overflow-hidden border-b border-white/15"
               >
-                <Link
-                  to={item.to}
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center justify-between py-5"
-                >
-                  <span className="font-display text-5xl tracking-[-0.03em]">
-                    {item.label}
-                  </span>
-                  <span className="font-mono text-[10px] text-white/30">
-                    0{index + 1}
-                  </span>
-                </Link>
-              </motion.div>
-            </div>
-          ))}
-        </nav>
-        <div className="mt-auto">
-          <motion.div
-            initial={{ y: 'calc(100% + 2rem)' }}
-            animate={{ y: menuOpen ? 0 : 'calc(100% + 2rem)' }}
-            transition={
-              menuOpen
-                ? {
-                    delay: 0.72,
-                    duration: 0.68,
-                    ease: [0.22, 1, 0.36, 1],
-                  }
-                : { duration: 0.2, ease: [0.64, 0, 0.78, 0] }
-            }
-          >
-            <Link
-              to="/contact"
-              onClick={() => setMenuOpen(false)}
-              className="flex items-center justify-between rounded-full bg-[#d9ff43] px-6 py-4 text-sm font-bold text-[#10100f]"
-            >
-              Start a conversation <ArrowUpRight className="size-4" />
-            </Link>
-          </motion.div>
-        </div>
+                <motion.div variants={mobileLinkVariants}>
+                  <Link
+                    to={item.to}
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center justify-between py-5"
+                  >
+                    <span className="font-display text-5xl tracking-[-0.03em]">
+                      {item.label}
+                    </span>
+                    <span className="font-mono text-[10px] text-white/30">
+                      0{index + 1}
+                    </span>
+                  </Link>
+                </motion.div>
+              </div>
+            ))}
+          </nav>
+          <div className="mt-auto">
+            <motion.div variants={mobileContactVariants}>
+              <Link
+                to="/contact"
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center justify-between rounded-full bg-[#d9ff43] px-6 py-4 text-sm font-bold text-[#10100f]"
+              >
+                Start a conversation <ArrowUpRight className="size-4" />
+              </Link>
+            </motion.div>
+          </div>
+        </motion.div>
       </SheetContent>
     </Sheet>
   )
