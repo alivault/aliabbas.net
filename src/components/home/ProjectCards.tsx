@@ -26,11 +26,9 @@ const chromaginePetals = [
 function ProjectVisual({
   project,
   index,
-  linked = true,
 }: {
   project: WorkItem
   index: number
-  linked?: boolean
 }) {
   return (
     <div
@@ -54,7 +52,7 @@ function ProjectVisual({
             transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
             className="absolute top-1/2 left-1/2 size-[65%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-[#faff00]/35"
           />
-          <div className="absolute top-1/2 left-1/2 flex size-[44%] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#10100f] shadow-[0_40px_100px_rgba(0,0,0,0.35)]">
+          <div className="absolute top-1/2 left-1/2 flex aspect-square w-[44%] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#10100f] shadow-[0_40px_100px_rgba(0,0,0,0.35)] transition-transform duration-500 group-hover:scale-[1.04] group-hover:rotate-3">
             <img
               src={project.image}
               alt=""
@@ -66,31 +64,51 @@ function ProjectVisual({
 
       {project.visual === 'superverse' && (
         <>
-          <div className="absolute -right-[15%] -bottom-[38%] size-[90%] rounded-full border-[clamp(35px,7vw,90px)] border-[#10100f]" />
+          <svg
+            viewBox="0 0 330 330"
+            aria-hidden="true"
+            className="absolute top-1/2 left-1/2 w-[88%] -translate-x-1/2 -translate-y-1/2 text-[#10100f] opacity-[0.09]"
+          >
+            <path
+              fill="currentColor"
+              d="M143.309 96.708V50.43h-46.29L59.942 87.495v67.973l-16.902 16.898v46.278h46.29l36.099-36.088v-67.974z"
+            />
+            <path
+              fill="currentColor"
+              d="M240.773 55.313h-46.29l-62.132 62.156v67.974l-43.02 42.966v46.278h46.333l62.131-62.157v-67.973l42.978-42.966z"
+            />
+            <path
+              fill="currentColor"
+              d="M287.107 111.356h-46.291l-36.098 36.088v67.974l-17.964 17.959v46.278h46.29l37.16-37.15v-67.973l16.903-16.898z"
+            />
+          </svg>
           <motion.img
             src={project.image}
             alt=""
-            initial={{ rotate: -8, scale: 0.9 }}
-            whileInView={{ rotate: 3, scale: 1 }}
+            initial={{ scale: 0.9 }}
+            whileInView={{ scale: 1 }}
             viewport={{ once: true }}
             transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute top-1/2 left-1/2 w-[42%] -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_30px_35px_rgba(0,0,0,0.22)]"
+            className="absolute top-1/2 left-1/2 w-[42%] -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_30px_35px_rgba(0,0,0,0.22)] transition-transform duration-500 group-hover:scale-[1.04] group-hover:rotate-3"
           />
         </>
       )}
 
       {project.visual === 'impostors' && (
         <>
-          <div className="absolute top-[15%] right-[10%] size-20 rounded-full bg-[#20c9ed] sm:size-32" />
-          <div className="absolute bottom-[12%] left-[8%] size-16 rounded-full bg-[#ffe66d] sm:size-24" />
+          <img
+            src="/impostors-bg-pattern.svg"
+            alt=""
+            className="absolute inset-0 size-full object-cover opacity-20"
+          />
           <motion.img
             src={project.image}
             alt=""
-            initial={{ y: 35, rotate: -4 }}
-            whileInView={{ y: 0, rotate: 2 }}
+            initial={{ y: 35 }}
+            whileInView={{ y: 0 }}
             viewport={{ once: true }}
             transition={{ type: 'spring', stiffness: 120, damping: 18 }}
-            className="absolute right-[12%] bottom-[3%] w-[70%] drop-shadow-[0_35px_35px_rgba(71,18,8,0.25)]"
+            className="absolute top-1/2 left-1/2 z-10 w-[56%] -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_25px_30px_rgba(71,18,8,0.22)] transition-transform duration-500 group-hover:scale-[1.04] group-hover:rotate-3"
           />
         </>
       )}
@@ -99,11 +117,10 @@ function ProjectVisual({
         <>
           <div className="absolute inset-[12%] border border-black/20" />
           <div className="absolute top-[12%] bottom-[12%] left-1/2 w-px bg-black/20" />
-          <motion.img
+          <img
             src={project.image}
             alt=""
-            whileHover={{ scale: 1.08, rotate: -4 }}
-            className="absolute top-1/2 left-1/2 w-[29%] -translate-x-1/2 -translate-y-1/2 rounded-[18%] shadow-[0_30px_60px_rgba(0,0,0,0.25)]"
+            className="absolute top-1/2 left-1/2 w-[29%] -translate-x-1/2 -translate-y-1/2 rounded-[18%] shadow-[0_30px_60px_rgba(0,0,0,0.25)] transition-transform duration-500 group-hover:scale-[1.08] group-hover:-rotate-3"
           />
         </>
       )}
@@ -147,24 +164,12 @@ function ProjectVisual({
         </div>
       )}
 
-      {linked ? (
-        <a
-          href={project.href}
-          target="_blank"
-          rel="noreferrer"
-          className="absolute right-5 bottom-5 z-30 flex size-12 items-center justify-center rounded-full bg-[#10100f] text-white transition-transform hover:scale-105 hover:rotate-6 sm:right-7 sm:bottom-7 sm:size-14"
-          aria-label={`Open ${project.title}`}
-        >
-          <ArrowUpRight className="size-5" />
-        </a>
-      ) : (
-        <span
-          aria-hidden="true"
-          className="absolute right-5 bottom-5 z-30 flex size-12 items-center justify-center rounded-full bg-[#10100f] text-white transition-transform group-hover:scale-105 group-hover:rotate-6 sm:right-7 sm:bottom-7 sm:size-14"
-        >
-          <ArrowUpRight className="size-5" />
-        </span>
-      )}
+      <span
+        aria-hidden="true"
+        className="absolute right-5 bottom-5 z-30 flex size-12 items-center justify-center rounded-full bg-[#10100f] text-white transition-transform group-hover:scale-105 group-hover:rotate-6 sm:right-7 sm:bottom-7 sm:size-14"
+      >
+        <ArrowUpRight className="size-5" />
+      </span>
     </div>
   )
 }
@@ -184,7 +189,15 @@ export function FeaturedProject({
       transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
       className="grid gap-7 border-t border-black/20 py-10 first:border-t-0 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)] lg:gap-12 lg:py-16"
     >
-      <ProjectVisual project={project} index={index} />
+      <a
+        href={project.href}
+        target="_blank"
+        rel="noreferrer"
+        className="group block rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black"
+        aria-label={`Open ${project.title}`}
+      >
+        <ProjectVisual project={project} index={index} />
+      </a>
       <div className="flex flex-col lg:py-3">
         <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.16em] text-black/45 uppercase">
           <span>{project.category}</span>
@@ -246,11 +259,7 @@ export function IndependentProject({
       transition={{ delay: index * 0.1 }}
       className="group block rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black"
     >
-      <ProjectVisual
-        project={project}
-        index={index + clientWork.length}
-        linked={false}
-      />
+      <ProjectVisual project={project} index={index + clientWork.length} />
       <div className="py-5">
         <div>
           <p className="font-mono text-[9px] tracking-[0.16em] text-black/40 uppercase">

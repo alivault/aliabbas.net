@@ -44,8 +44,8 @@ export const clientWork = [
       'A character-led digital world where playful motion and tactile interactions make the brand feel alive on every screen.',
     contribution:
       'Frontend development, responsive behavior, animation, and interaction polish.',
-    href: 'https://impostors.gg/',
-    image: '/impostors.png',
+    href: 'https://impostors-3-preview.superfarm.workers.dev/',
+    image: '/impostors.svg',
     year: '2023',
     tools: ['React', 'Motion', 'Tailwind CSS'],
     visual: 'impostors',

@@ -17,10 +17,10 @@ const portfolio = [
     image: '/superverse.svg',
   },
   {
-    href: 'https://impostors.gg/',
+    href: 'https://impostors-3-preview.superfarm.workers.dev/',
     title: 'Impostors',
     description: 'motion.dev, Next.js, TypeScript, Tailwind CSS, Shadcn UI',
-    image: '/impostors.png',
+    image: '/impostors.svg',
   },
 ]
 
