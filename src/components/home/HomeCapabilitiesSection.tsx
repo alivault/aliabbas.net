@@ -1,5 +1,5 @@
 import { Braces, Cloud, Database, Layers3 } from 'lucide-react'
-import { motion } from 'motion/react'
+import ScrollReveal from '~/components/ScrollReveal'
 import { capabilities } from '~/data/capabilities'
 
 const architecture = [
@@ -29,7 +29,10 @@ export default function HomeCapabilitiesSection() {
   return (
     <section className="bg-[#10100f] text-[#f1efe8]">
       <div className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36">
-        <header className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
+        <ScrollReveal
+          as="header"
+          className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end"
+        >
           <div>
             <p className="font-mono text-[10px] tracking-[0.2em] text-[#d9ff43] uppercase">
               One brain, both sides of the build
@@ -51,15 +54,14 @@ export default function HomeCapabilitiesSection() {
             survives implementation—and the implementation holds up after
             launch.
           </p>
-        </header>
+        </ScrollReveal>
 
         <div className="mt-20 border-t border-white/15 lg:mt-28">
-          {capabilities.map((capability) => (
-            <motion.article
+          {capabilities.map((capability, index) => (
+            <ScrollReveal
               key={capability.number}
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              as="article"
+              delay={index * 0.04}
               className="group grid gap-4 border-b border-white/15 py-7 transition-colors hover:text-[#d9ff43] sm:grid-cols-[80px_1fr_1fr] sm:items-center sm:py-9"
             >
               <span className="font-mono text-[10px] text-white/30">
@@ -71,11 +73,11 @@ export default function HomeCapabilitiesSection() {
               <p className="max-w-xl text-sm leading-6 text-white/45 transition-colors group-hover:text-[#d9ff43]/60 sm:justify-self-end">
                 {capability.description}
               </p>
-            </motion.article>
+            </ScrollReveal>
           ))}
         </div>
 
-        <div className="mt-20 rounded-[2px] border border-white/15 bg-white/[0.03] p-5 sm:p-8 lg:mt-28 lg:p-10">
+        <ScrollReveal className="mt-20 rounded-[2px] border border-white/15 bg-white/[0.03] p-5 sm:p-8 lg:mt-28 lg:p-10">
           <div className="flex flex-col justify-between gap-5 border-b border-white/15 pb-7 sm:flex-row sm:items-center">
             <div>
               <p className="flex items-center gap-2 text-xs font-bold">
@@ -101,7 +103,7 @@ export default function HomeCapabilitiesSection() {
               </div>
             ))}
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   )

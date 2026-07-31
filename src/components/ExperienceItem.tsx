@@ -1,3 +1,5 @@
+import ScrollReveal from './ScrollReveal'
+
 interface ExperienceItemProps {
   index: number
   title: string
@@ -24,7 +26,11 @@ export default function ExperienceItem({
   description,
 }: ExperienceItemProps) {
   return (
-    <li className="grid gap-5 border-b border-black/20 py-10 sm:grid-cols-[60px_180px_1fr] sm:py-14 lg:grid-cols-[80px_240px_1fr]">
+    <ScrollReveal
+      as="li"
+      delay={index * 0.05}
+      className="grid gap-5 border-b border-black/20 py-10 sm:grid-cols-[60px_180px_1fr] sm:py-14 lg:grid-cols-[80px_240px_1fr]"
+    >
       <span className="font-mono text-[9px] text-black/30">0{index + 1}</span>
       <div>
         <span className="font-mono text-[9px] tracking-[0.12em] text-black/40 uppercase">
@@ -51,6 +57,6 @@ export default function ExperienceItem({
           {description}
         </p>
       </div>
-    </li>
+    </ScrollReveal>
   )
 }

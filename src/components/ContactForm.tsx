@@ -4,6 +4,7 @@ import { ArrowUpRight, CircleCheck, Loader2 } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import ScrollReveal from './ScrollReveal'
 import { Button } from './ui/button'
 import { Field, FieldError, FieldGroup, FieldLabel } from './ui/field'
 import { Input } from './ui/input'
@@ -109,7 +110,7 @@ export default function ContactForm() {
 
   return (
     <section className="mx-auto grid max-w-[1440px] gap-14 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[0.9fr_1.1fr] lg:gap-24 lg:px-12 lg:py-32">
-      <div className="flex min-w-0 flex-col">
+      <ScrollReveal className="flex min-w-0 flex-col">
         <p className="font-mono text-[10px] tracking-[0.2em] text-[#335cff] uppercase">
           Contact / opportunities / collaborations
         </p>
@@ -137,119 +138,121 @@ export default function ContactForm() {
             <span className="mt-2 block font-bold">Usually 1–2 days</span>
           </div>
         </div>
-      </div>
+      </ScrollReveal>
 
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        noValidate
-        className="border-t border-black/25 pt-8"
-      >
-        <FieldGroup className="gap-8">
-          <Field data-invalid={Boolean(errors.name)}>
-            <FieldLabel
-              htmlFor="contact-name"
-              className="font-mono text-[11px] tracking-[0.14em] text-black/45 uppercase"
-            >
-              01 / Your name
-            </FieldLabel>
-            <Input
-              id="contact-name"
-              autoComplete="name"
-              placeholder="What should I call you?"
-              aria-invalid={Boolean(errors.name)}
-              className={inputClassName}
-              {...register('name')}
-            />
-            <FieldError errors={[errors.name]} />
-          </Field>
+      <ScrollReveal delay={0.08}>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          className="border-t border-black/25 pt-8"
+        >
+          <FieldGroup className="gap-8">
+            <Field data-invalid={Boolean(errors.name)}>
+              <FieldLabel
+                htmlFor="contact-name"
+                className="font-mono text-[11px] tracking-[0.14em] text-black/45 uppercase"
+              >
+                01 / Your name
+              </FieldLabel>
+              <Input
+                id="contact-name"
+                autoComplete="name"
+                placeholder="What should I call you?"
+                aria-invalid={Boolean(errors.name)}
+                className={inputClassName}
+                {...register('name')}
+              />
+              <FieldError errors={[errors.name]} />
+            </Field>
 
-          <Field data-invalid={Boolean(errors.email)}>
-            <FieldLabel
-              htmlFor="contact-email"
-              className="font-mono text-[11px] tracking-[0.14em] text-black/45 uppercase"
-            >
-              02 / Email address
-            </FieldLabel>
-            <Input
-              id="contact-email"
-              type="email"
-              autoComplete="email"
-              placeholder="you@company.com"
-              aria-invalid={Boolean(errors.email)}
-              className={inputClassName}
-              {...register('email')}
-            />
-            <FieldError errors={[errors.email]} />
-          </Field>
+            <Field data-invalid={Boolean(errors.email)}>
+              <FieldLabel
+                htmlFor="contact-email"
+                className="font-mono text-[11px] tracking-[0.14em] text-black/45 uppercase"
+              >
+                02 / Email address
+              </FieldLabel>
+              <Input
+                id="contact-email"
+                type="email"
+                autoComplete="email"
+                placeholder="you@company.com"
+                aria-invalid={Boolean(errors.email)}
+                className={inputClassName}
+                {...register('email')}
+              />
+              <FieldError errors={[errors.email]} />
+            </Field>
 
-          <Field data-invalid={Boolean(errors.message)}>
-            <FieldLabel
-              htmlFor="contact-message"
-              className="font-mono text-[11px] tracking-[0.14em] text-black/45 uppercase"
-            >
-              03 / Tell me about the opportunity
-            </FieldLabel>
-            <Textarea
-              id="contact-message"
-              placeholder="The role, team, problem, or idea…"
-              rows={7}
-              aria-invalid={Boolean(errors.message)}
-              className="min-h-44 resize-none rounded-none border-x-0 border-t-0 border-b-black/25 bg-transparent px-0 py-4 text-base shadow-none focus-visible:border-[#335cff] focus-visible:ring-0"
-              {...register('message')}
-            />
-            <FieldError errors={[errors.message]} />
-          </Field>
+            <Field data-invalid={Boolean(errors.message)}>
+              <FieldLabel
+                htmlFor="contact-message"
+                className="font-mono text-[11px] tracking-[0.14em] text-black/45 uppercase"
+              >
+                03 / Tell me about the opportunity
+              </FieldLabel>
+              <Textarea
+                id="contact-message"
+                placeholder="The role, team, problem, or idea…"
+                rows={7}
+                aria-invalid={Boolean(errors.message)}
+                className="min-h-44 resize-none rounded-none border-x-0 border-t-0 border-b-black/25 bg-transparent px-0 py-4 text-base shadow-none focus-visible:border-[#335cff] focus-visible:ring-0"
+                {...register('message')}
+              />
+              <FieldError errors={[errors.message]} />
+            </Field>
 
-          <Field data-invalid={Boolean(errors.verification)}>
-            <FieldLabel
-              htmlFor="contact-verification"
-              className="font-mono text-[11px] tracking-[0.14em] text-black/45 uppercase"
-            >
-              04 / Human check
-              <span className="text-black/30">
-                {challenge.ready
-                  ? `${challenge.first} + ${challenge.second} = ?`
-                  : 'Loading…'}
-              </span>
-            </FieldLabel>
-            <Input
-              id="contact-verification"
-              type="number"
-              inputMode="numeric"
-              aria-invalid={Boolean(errors.verification)}
-              className={`${inputClassName} [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
-              {...register('verification')}
-            />
-            <FieldError errors={[errors.verification]} />
-          </Field>
+            <Field data-invalid={Boolean(errors.verification)}>
+              <FieldLabel
+                htmlFor="contact-verification"
+                className="font-mono text-[11px] tracking-[0.14em] text-black/45 uppercase"
+              >
+                04 / Human check
+                <span className="text-black/30">
+                  {challenge.ready
+                    ? `${challenge.first} + ${challenge.second} = ?`
+                    : 'Loading…'}
+                </span>
+              </FieldLabel>
+              <Input
+                id="contact-verification"
+                type="number"
+                inputMode="numeric"
+                aria-invalid={Boolean(errors.verification)}
+                className={`${inputClassName} [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
+                {...register('verification')}
+              />
+              <FieldError errors={[errors.verification]} />
+            </Field>
 
-          {errors.root?.message && (
-            <p className="text-destructive text-sm">{errors.root.message}</p>
-          )}
-
-          <Button
-            type="submit"
-            size="lg"
-            disabled={isSubmitting || !challenge.ready}
-            className="group mt-2 h-14 w-full rounded-full bg-[#10100f] px-6 text-white hover:bg-[#335cff]"
-          >
-            {isSubmitting ? (
-              <>
-                <Loader2 className="animate-spin" data-icon="inline-start" />
-                Sending
-              </>
-            ) : (
-              <>
-                Send inquiry
-                <ArrowUpRight
-                  className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"
-                  data-icon="inline-end"
-                />
-              </>
+            {errors.root?.message && (
+              <p className="text-destructive text-sm">{errors.root.message}</p>
             )}
-          </Button>
-        </FieldGroup>
-      </form>
+
+            <Button
+              type="submit"
+              size="lg"
+              disabled={isSubmitting || !challenge.ready}
+              className="group mt-2 h-14 w-full rounded-full bg-[#10100f] px-6 text-white hover:bg-[#335cff]"
+            >
+              {isSubmitting ? (
+                <>
+                  <Loader2 className="animate-spin" data-icon="inline-start" />
+                  Sending
+                </>
+              ) : (
+                <>
+                  Send inquiry
+                  <ArrowUpRight
+                    className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"
+                    data-icon="inline-end"
+                  />
+                </>
+              )}
+            </Button>
+          </FieldGroup>
+        </form>
+      </ScrollReveal>
     </section>
   )
 }

@@ -11,6 +11,7 @@ import { CodeBlock } from '~/components/CodeBlock'
 import { Comments } from '~/components/Comments'
 import Main from '~/components/Main'
 import { MermaidDiagram } from '~/components/MermaidDiagram'
+import ScrollReveal from '~/components/ScrollReveal'
 import getFormattedDate from '~/lib/getFormattedDate'
 import { getArticleBySlug, sanityClient } from '~/lib/sanity'
 
@@ -111,7 +112,10 @@ function NotePage() {
         >
           <ArrowLeft className="size-4" /> Back to field notes
         </Link>
-        <header className="mx-auto max-w-3xl border-b border-black/20 pb-12 sm:pb-16">
+        <ScrollReveal
+          as="header"
+          className="mx-auto max-w-3xl border-b border-black/20 pb-12 sm:pb-16"
+        >
           <time
             className="font-mono text-[9px] tracking-[0.18em] text-[#335cff] uppercase"
             dateTime={note.date}
@@ -126,17 +130,17 @@ function NotePage() {
               {note.description}
             </p>
           )}
-        </header>
-        <div className="prose prose-lg prose-neutral prose-headings:font-display prose-headings:tracking-[-0.03em] prose-a:text-[#335cff] prose-pre:p-0 mx-auto mt-12 max-w-3xl sm:mt-16">
+        </ScrollReveal>
+        <ScrollReveal className="prose prose-lg prose-neutral prose-headings:font-display prose-headings:tracking-[-0.03em] prose-a:text-[#335cff] prose-pre:p-0 mx-auto mt-12 max-w-3xl sm:mt-16">
           <PortableText
             value={note.content}
             components={portableTextComponents}
           />
-        </div>
+        </ScrollReveal>
       </article>
-      <div className="mx-auto max-w-3xl px-5 pb-20 sm:px-8 sm:pb-28">
+      <ScrollReveal className="mx-auto max-w-3xl px-5 pb-20 sm:px-8 sm:pb-28">
         <Comments articleSlug={slug} />
-      </div>
+      </ScrollReveal>
     </Main>
   )
 }

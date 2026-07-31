@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { ArrowUpRight } from 'lucide-react'
 import Main from '~/components/Main'
+import ScrollReveal from '~/components/ScrollReveal'
 import Section from '~/components/Section'
 import getFormattedDate from '~/lib/getFormattedDate'
 import { getArticles } from '~/lib/sanity'
@@ -29,7 +30,7 @@ function NoteListItem({
   index: number
 }) {
   return (
-    <li>
+    <ScrollReveal as="li" delay={index * 0.05}>
       <Link
         to="/notes/$slug"
         params={{ slug: article.slug.current }}
@@ -54,7 +55,7 @@ function NoteListItem({
         </time>
         <ArrowUpRight className="hidden size-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 sm:block" />
       </Link>
-    </li>
+    </ScrollReveal>
   )
 }
 
@@ -67,7 +68,10 @@ function NotesPage() {
   return (
     <Main>
       <Section>
-        <header className="grid gap-8 border-b border-black/20 pb-12 lg:grid-cols-[1fr_0.65fr] lg:items-end lg:pb-16">
+        <ScrollReveal
+          as="header"
+          className="grid gap-8 border-b border-black/20 pb-12 lg:grid-cols-[1fr_0.65fr] lg:items-end lg:pb-16"
+        >
           <div>
             <p className="font-mono text-[10px] tracking-[0.2em] text-[#335cff] uppercase">
               Notes on making digital things
@@ -82,7 +86,7 @@ function NotesPage() {
             Notes on software, interaction design, developer tools, and the
             small decisions that make products feel considered.
           </p>
-        </header>
+        </ScrollReveal>
 
         {isLoading ? (
           <div className="divide-y divide-black/15">

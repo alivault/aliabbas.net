@@ -5,6 +5,7 @@ import {
   IndependentProject,
 } from '~/components/home/ProjectCards'
 import Main from '~/components/Main'
+import ScrollReveal from '~/components/ScrollReveal'
 import { clientWork, personalProjects } from '~/data/work'
 
 export const Route = createFileRoute('/work')({
@@ -25,7 +26,10 @@ function WorkPage() {
   return (
     <Main>
       <section className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36">
-        <header className="grid gap-7 border-b border-black/20 pb-12 lg:grid-cols-[1fr_1fr] lg:items-end lg:pb-20">
+        <ScrollReveal
+          as="header"
+          className="grid gap-7 border-b border-black/20 pb-12 lg:grid-cols-[1fr_1fr] lg:items-end lg:pb-20"
+        >
           <div>
             <p className="font-mono text-[10px] tracking-[0.2em] text-black/45 uppercase">
               Selected work / 2023—2026
@@ -41,7 +45,7 @@ function WorkPage() {
             to coexist. I care about the concept, the system, and the final 2px
             in production.
           </p>
-        </header>
+        </ScrollReveal>
 
         <div>
           {clientWork.map((project, index) => (
@@ -54,7 +58,7 @@ function WorkPage() {
         </div>
 
         <div className="mt-16 border-t border-black/20 pt-8 lg:mt-24 lg:pt-12">
-          <div className="mb-10 flex items-end justify-between gap-6">
+          <ScrollReveal className="mb-10 flex items-end justify-between gap-6">
             <div>
               <p className="font-mono text-[10px] tracking-[0.2em] text-black/40 uppercase">
                 Self-directed
@@ -71,7 +75,7 @@ function WorkPage() {
             >
               More on GitHub <ArrowUpRight className="size-4" />
             </a>
-          </div>
+          </ScrollReveal>
           <div className="grid gap-10 lg:grid-cols-2">
             {personalProjects.map((project, index) => (
               <IndependentProject

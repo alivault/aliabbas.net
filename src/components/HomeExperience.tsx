@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import Footer from './Footer'
+import ScrollReveal from './ScrollReveal'
 import HomeAboutSection from './home/HomeAboutSection'
 import HomeCapabilitiesSection from './home/HomeCapabilitiesSection'
 import { HomeHero } from './home/HomeHero'
@@ -26,10 +27,14 @@ export default function HomeExperience() {
         <div className="flex min-h-svh flex-col">
           <HomeHero />
         </div>
-        <StackMarquee />
+        <ScrollReveal amount={0.4}>
+          <StackMarquee />
+        </ScrollReveal>
         <HomeWorkSection />
         <HomeCapabilitiesSection />
-        <StackMarquee />
+        <ScrollReveal amount={0.4}>
+          <StackMarquee />
+        </ScrollReveal>
         <HomeAboutSection currentRole={experiences[0]} />
         <HomeNotesSection articles={articles} />
       </main>

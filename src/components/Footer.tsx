@@ -1,12 +1,13 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowUpRight } from 'lucide-react'
 import Logo from './Logo'
+import ScrollReveal from './ScrollReveal'
 
 export default function Footer() {
   return (
     <footer className="overflow-hidden bg-[#10100f] text-[#f1efe8]">
       <div className="mx-auto max-w-[1600px] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
-        <div className="grid gap-10 border-b border-white/15 pb-16 lg:grid-cols-[1fr_auto] lg:items-end lg:pb-24">
+        <ScrollReveal className="grid gap-10 border-b border-white/15 pb-16 lg:grid-cols-[1fr_auto] lg:items-end lg:pb-24">
           <div>
             <p className="font-mono text-[10px] tracking-[0.2em] text-[#d9ff43] uppercase">
               Have an ambitious brief?
@@ -24,8 +25,11 @@ export default function Footer() {
           >
             <ArrowUpRight className="size-9 transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1 sm:size-11" />
           </Link>
-        </div>
-        <div className="flex flex-col gap-8 pt-8 text-xs text-white/45 min-[685px]:grid min-[685px]:grid-cols-[1fr_auto_1fr] min-[685px]:items-center">
+        </ScrollReveal>
+        <ScrollReveal
+          delay={0.08}
+          className="flex flex-col gap-8 pt-8 text-xs text-white/45 min-[685px]:grid min-[685px]:grid-cols-[1fr_auto_1fr] min-[685px]:items-center"
+        >
           <Link
             to="/"
             className="flex items-center gap-3 text-white min-[685px]:justify-self-start"
@@ -55,7 +59,7 @@ export default function Footer() {
           <span className="min-[685px]:justify-self-end">
             Designed & engineered with intent.
           </span>
-        </div>
+        </ScrollReveal>
       </div>
     </footer>
   )

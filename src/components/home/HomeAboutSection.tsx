@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { MoveRight } from 'lucide-react'
+import ScrollReveal from '~/components/ScrollReveal'
 import type { SanityExperience } from '~/lib/sanity'
 import AboutVisual from './AboutVisual'
 
@@ -12,7 +13,7 @@ export default function HomeAboutSection({
     <section className="overflow-hidden bg-[#335cff] text-white">
       <div className="mx-auto grid max-w-[1600px] lg:grid-cols-2">
         <AboutVisual />
-        <div className="flex flex-col justify-between px-5 py-16 sm:px-8 sm:py-20 lg:p-12 lg:py-16">
+        <ScrollReveal className="flex flex-col justify-between px-5 py-16 sm:px-8 sm:py-20 lg:p-12 lg:py-16">
           <div>
             <p className="font-mono text-[10px] tracking-[0.2em] text-[#d9ff43] uppercase">
               About Ali
@@ -52,7 +53,7 @@ export default function HomeAboutSection({
               <MoveRight className="size-5 transition-transform group-hover:translate-x-2" />
             </Link>
           </div>
-        </div>
+        </ScrollReveal>
       </div>
     </section>
   )

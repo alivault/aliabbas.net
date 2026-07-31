@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import ExperienceList from '~/components/ExperienceList'
 import Main from '~/components/Main'
+import ScrollReveal from '~/components/ScrollReveal'
 import Section from '~/components/Section'
 import { getExperiences } from '~/lib/sanity'
 
@@ -28,7 +29,10 @@ function ExperiencePage() {
   return (
     <Main>
       <Section>
-        <header className="grid gap-8 border-b border-black/20 pb-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-end lg:pb-16">
+        <ScrollReveal
+          as="header"
+          className="grid gap-8 border-b border-black/20 pb-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-end lg:pb-16"
+        >
           <div>
             <p className="font-mono text-[10px] tracking-[0.2em] text-[#335cff] uppercase">
               Career / teams / products
@@ -43,7 +47,7 @@ function ExperiencePage() {
             A path through product teams, creative development, frontend
             systems, and the problems that taught me how to ship better work.
           </p>
-        </header>
+        </ScrollReveal>
 
         {isLoading ? (
           <div className="divide-y divide-black/15">
