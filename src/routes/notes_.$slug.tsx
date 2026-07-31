@@ -131,7 +131,11 @@ function NotePage() {
             </p>
           )}
         </ScrollReveal>
-        <ScrollReveal className="prose prose-lg prose-neutral prose-headings:font-display prose-headings:tracking-[-0.03em] prose-a:text-[#335cff] prose-pre:p-0 mx-auto mt-12 max-w-3xl sm:mt-16">
+        <ScrollReveal
+          trigger="mount"
+          delay={0.2}
+          className="prose prose-lg prose-neutral prose-headings:font-display prose-headings:tracking-[-0.03em] prose-a:text-[#335cff] prose-pre:p-0 mx-auto mt-12 max-w-3xl sm:mt-16"
+        >
           <PortableText
             value={note.content}
             components={portableTextComponents}

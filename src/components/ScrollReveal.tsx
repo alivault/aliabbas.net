@@ -18,6 +18,7 @@ type ScrollRevealProps = {
   className?: string
   delay?: number
   amount?: number
+  trigger?: 'mount' | 'viewport'
 }
 
 export default function ScrollReveal({
@@ -26,6 +27,7 @@ export default function ScrollReveal({
   className,
   delay = 0,
   amount = 0.15,
+  trigger = 'viewport',
 }: ScrollRevealProps) {
   const reduceMotion = useReducedMotion()
   const Component = revealElements[as]
@@ -33,7 +35,8 @@ export default function ScrollReveal({
   return (
     <Component
       initial={reduceMotion ? false : { opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      animate={trigger === 'mount' ? { opacity: 1, y: 0 } : undefined}
+      whileInView={trigger === 'viewport' ? { opacity: 1, y: 0 } : undefined}
       viewport={{ once: true, amount }}
       transition={{
         delay,
