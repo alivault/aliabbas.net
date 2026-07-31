@@ -4,11 +4,20 @@ import type { CSSProperties } from 'react'
 const stack = [
   { name: 'React', icon: '/icons/stack/react.svg' },
   { name: 'TypeScript', icon: '/icons/stack/typescript.svg' },
+  { name: 'Next.js', icon: '/icons/stack/nextjs.svg' },
   { name: 'TanStack', icon: '/icons/stack/tanstack.svg' },
+  { name: 'Swift', icon: '/icons/stack/swift.svg' },
+  { name: 'Tailwind CSS', icon: '/icons/stack/tailwindcss.svg' },
   { name: 'Motion', icon: '/icons/stack/motion.svg' },
+  { name: 'GSAP', icon: '/icons/stack/gsap.svg' },
+  { name: 'Figma', icon: '/icons/stack/figma.svg' },
+  { name: 'Three.js', icon: '/icons/stack/threejs.svg' },
   { name: 'Convex', icon: '/icons/stack/convex.svg' },
   { name: 'Sanity', icon: '/icons/stack/sanity.svg' },
+  { name: 'Zod', icon: '/icons/stack/zod.svg' },
+  { name: 'RainbowKit', icon: '/icons/stack/rainbowkit.svg' },
   { name: 'Cloudflare', icon: '/icons/stack/cloudflare.svg' },
+  { name: 'Vite+', icon: '/icons/stack/vite-plus.svg' },
   { name: 'Better Auth', icon: '/icons/stack/better-auth.svg' },
 ] as const
 
