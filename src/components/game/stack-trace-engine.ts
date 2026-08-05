@@ -1,0 +1,1226 @@
+import * as THREE from 'three'
+import type {
+  GameHudState,
+  GameResult,
+  MissionPhase,
+  StackFrame,
+} from './stack-trace-types'
+import {
+  createBugVisual,
+  createFaultVisual,
+  createLevelWorld,
+  createRootVisual,
+  enemySpecs,
+  exitPosition,
+  faultSpecs,
+  rootPosition,
+  startPosition,
+} from './stack-trace-world'
+import type {
+  EnemySpec,
+  FaultSpec,
+  LevelWorld,
+  RoomId,
+} from './stack-trace-world'
+
+type EngineCallbacks = {
+  onHudChange: (hud: GameHudState) => void
+  onPauseChange: (paused: boolean) => void
+  onEnd: (result: GameResult) => void
+}
+
+type BugVisual = ReturnType<typeof createBugVisual>
+type FaultVisual = ReturnType<typeof createFaultVisual>
+type RootVisual = ReturnType<typeof createRootVisual>
+
+type Enemy = {
+  spec: EnemySpec
+  visual: BugVisual
+  home: THREE.Vector3
+  health: number
+  maxHealth: number
+  alive: boolean
+  lastShot: number
+  collisionCooldown: number
+}
+
+type Fault = {
+  spec: FaultSpec
+  visual: FaultVisual
+  health: number
+  maxHealth: number
+  alive: boolean
+}
+
+type RootBug = {
+  visual: RootVisual
+  health: number
+  maxHealth: number
+  alive: boolean
+  lastShot: number
+}
+
+type Projectile = {
+  mesh: THREE.Mesh
+  owner: 'player' | 'enemy'
+  velocity: THREE.Vector3
+  active: boolean
+  life: number
+}
+
+type Burst = {
+  points: THREE.Points
+  positions: Float32Array
+  velocities: Array<THREE.Vector3>
+  material: THREE.PointsMaterial
+  active: boolean
+  life: number
+}
+
+const PLAYER_RADIUS = 0.58
+const PLAYER_SPEED = 10
+const PLAYER_ACCELERATION = 25
+const SHOT_COOLDOWN = 0.16
+const ESCAPE_DURATION = 45
+
+const faultColors = ['#335cff', '#d9ff43', '#ff694a'] as const
+
+function setObjectOpacity(object: THREE.Object3D, opacity: number) {
+  object.traverse((child) => {
+    if (!(child instanceof THREE.Mesh)) return
+    const materials = Array.isArray(child.material)
+      ? child.material
+      : [child.material]
+    materials.forEach((material) => {
+      material.transparent = true
+      material.opacity = opacity
+    })
+  })
+}
+
+export default class StackTraceEngine {
+  private readonly canvas: HTMLCanvasElement
+  private readonly callbacks: EngineCallbacks
+  private readonly scene = new THREE.Scene()
+  private readonly camera = new THREE.PerspectiveCamera(72, 1, 0.06, 140)
+  private readonly renderer: THREE.WebGLRenderer
+  private readonly clock = new THREE.Clock()
+  private readonly world: LevelWorld
+  private readonly keys = new Set<string>()
+  private readonly velocity = new THREE.Vector3()
+  private readonly moveVector = new THREE.Vector3()
+  private readonly forward = new THREE.Vector3()
+  private readonly right = new THREE.Vector3()
+  private readonly up = new THREE.Vector3()
+  private readonly candidate = new THREE.Vector3()
+  private readonly previousProjectilePosition = new THREE.Vector3()
+  private readonly segment = new THREE.Line3()
+  private readonly closestPoint = new THREE.Vector3()
+  private readonly enemies: Array<Enemy>
+  private readonly faults: Array<Fault>
+  private readonly root: RootBug
+  private readonly projectiles: Array<Projectile> = []
+  private readonly bursts: Array<Burst> = []
+  private readonly traceGeometry = new THREE.BufferGeometry()
+  private readonly traceMaterial = new THREE.LineBasicMaterial({
+    color: '#ff694a',
+    transparent: true,
+    opacity: 0.72,
+    depthTest: false,
+    depthWrite: false,
+    toneMapped: false,
+  })
+  private readonly traceLine: THREE.Line
+  private readonly tracePulse: THREE.Mesh
+  private readonly tracePoints: Array<THREE.Vector3> = []
+  private readonly traceLengths: Array<number> = []
+  private readonly resizeObserver: ResizeObserver
+
+  private mode: MissionPhase = 'idle'
+  private paused = true
+  private doorLocked = true
+  private firing = false
+  private yaw = 0
+  private pitch = 0
+  private roll = 0
+  private elapsed = 0
+  private escapeTime = ESCAPE_DURATION
+  private fireCooldown = 0
+  private traceRefreshCooldown = 0
+  private hudRefreshCooldown = 0
+  private playerDamageCooldown = 0
+  private shotsFired = 0
+  private shotsHit = 0
+  private bugsPurged = 0
+  private hitPulse = 0
+  private damagePulse = 0
+  private traceFromRoom: RoomId | null = null
+  private currentTargetFaultId: string | null = null
+  private currentTargetPosition = new THREE.Vector3()
+  private currentTargetLabel = 'Follow the failure to its source'
+  private disposed = false
+  private lockRequestTimer: number | undefined
+
+  constructor(canvas: HTMLCanvasElement, callbacks: EngineCallbacks) {
+    this.canvas = canvas
+    this.callbacks = callbacks
+    this.scene.background = new THREE.Color('#050608')
+    this.scene.fog = new THREE.Fog('#050608', 12, 72)
+
+    this.renderer = new THREE.WebGLRenderer({
+      canvas,
+      antialias: true,
+      powerPreference: 'high-performance',
+    })
+    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.6))
+    this.renderer.outputColorSpace = THREE.SRGBColorSpace
+    this.renderer.toneMapping = THREE.ACESFilmicToneMapping
+    this.renderer.toneMappingExposure = 1.15
+
+    this.scene.add(new THREE.HemisphereLight('#8da4ff', '#10100f', 1.15))
+    this.scene.add(new THREE.AmbientLight('#cbd3ff', 0.55))
+    this.addZoneLight('#335cff', new THREE.Vector3(0, 0, -28))
+    this.addZoneLight('#d9ff43', new THREE.Vector3(0, -24, -28))
+    this.addZoneLight('#ff694a', new THREE.Vector3(0, -24, -56))
+    this.addZoneLight('#8da4ff', new THREE.Vector3(0, -48, -56))
+
+    this.world = createLevelWorld(this.scene)
+    this.faults = faultSpecs.map((spec, index) => {
+      const visual = createFaultVisual(faultColors[index] ?? '#ff694a')
+      visual.group.position.set(
+        spec.position[0],
+        spec.position[1],
+        spec.position[2],
+      )
+      this.scene.add(visual.group)
+      return {
+        spec,
+        visual,
+        health: 5,
+        maxHealth: 5,
+        alive: true,
+      }
+    })
+    this.enemies = enemySpecs.map((spec) => {
+      const visual = createBugVisual(
+        spec.kind === 'crawler' ? '#ff694a' : '#d9ff43',
+      )
+      const home = new THREE.Vector3(...spec.position)
+      visual.group.position.copy(home)
+      visual.group.scale.setScalar(spec.kind === 'crawler' ? 0.9 : 0.78)
+      this.scene.add(visual.group)
+      return {
+        spec,
+        visual,
+        home,
+        health: spec.kind === 'crawler' ? 3 : 2,
+        maxHealth: spec.kind === 'crawler' ? 3 : 2,
+        alive: true,
+        lastShot: -10,
+        collisionCooldown: 0,
+      }
+    })
+
+    const rootVisual = createRootVisual()
+    rootVisual.group.position.copy(rootPosition)
+    this.scene.add(rootVisual.group)
+    this.root = {
+      visual: rootVisual,
+      health: 18,
+      maxHealth: 18,
+      alive: true,
+      lastShot: -10,
+    }
+
+    this.traceLine = new THREE.Line(this.traceGeometry, this.traceMaterial)
+    this.traceLine.renderOrder = 50
+    this.scene.add(this.traceLine)
+    const tracePulseMaterial = new THREE.MeshBasicMaterial({
+      color: '#ff694a',
+      depthTest: false,
+      depthWrite: false,
+      toneMapped: false,
+    })
+    this.tracePulse = new THREE.Mesh(
+      new THREE.OctahedronGeometry(0.17, 0),
+      tracePulseMaterial,
+    )
+    this.tracePulse.renderOrder = 51
+    this.scene.add(this.tracePulse)
+
+    this.createProjectilePool()
+    this.createBurstPool()
+    this.camera.position.copy(startPosition)
+    this.camera.rotation.set(0, 0, 0, 'YXZ')
+    this.refreshTrace(true)
+    this.emitHud()
+
+    this.resizeObserver = new ResizeObserver(this.resize)
+    this.resizeObserver.observe(canvas.parentElement ?? canvas)
+    this.resize()
+
+    window.addEventListener('keydown', this.handleKeyDown)
+    window.addEventListener('keyup', this.handleKeyUp)
+    window.addEventListener('mousedown', this.handleMouseDown)
+    window.addEventListener('mouseup', this.handleMouseUp)
+    window.addEventListener('mousemove', this.handleMouseMove)
+    window.addEventListener('blur', this.handleBlur)
+    canvas.addEventListener('contextmenu', this.handleContextMenu)
+    document.addEventListener('pointerlockchange', this.handlePointerLockChange)
+    this.renderer.setAnimationLoop(this.animate)
+  }
+
+  start = () => {
+    this.resetMission()
+    this.mode = 'hunt'
+    this.emitHud()
+    this.requestPointerLock()
+  }
+
+  resume = () => {
+    if (this.mode !== 'hunt' && this.mode !== 'escape') return
+    this.requestPointerLock()
+  }
+
+  dispose = () => {
+    if (this.disposed) return
+    this.disposed = true
+    this.renderer.setAnimationLoop(null)
+    this.resizeObserver.disconnect()
+    window.removeEventListener('keydown', this.handleKeyDown)
+    window.removeEventListener('keyup', this.handleKeyUp)
+    window.removeEventListener('mousedown', this.handleMouseDown)
+    window.removeEventListener('mouseup', this.handleMouseUp)
+    window.removeEventListener('mousemove', this.handleMouseMove)
+    window.removeEventListener('blur', this.handleBlur)
+    this.canvas.removeEventListener('contextmenu', this.handleContextMenu)
+    document.removeEventListener(
+      'pointerlockchange',
+      this.handlePointerLockChange,
+    )
+    if (this.lockRequestTimer !== undefined) {
+      window.clearTimeout(this.lockRequestTimer)
+    }
+    if (document.pointerLockElement === this.canvas) {
+      document.exitPointerLock()
+    }
+
+    const geometries = new Set<THREE.BufferGeometry>()
+    const materials = new Set<THREE.Material>()
+    this.scene.traverse((object) => {
+      if (
+        !(
+          object instanceof THREE.Mesh ||
+          object instanceof THREE.Line ||
+          object instanceof THREE.Points
+        )
+      )
+        return
+      geometries.add(object.geometry)
+      const objectMaterials = Array.isArray(object.material)
+        ? object.material
+        : [object.material]
+      objectMaterials.forEach((material) => materials.add(material))
+    })
+    geometries.forEach((geometry) => geometry.dispose())
+    materials.forEach((material) => material.dispose())
+    this.renderer.dispose()
+  }
+
+  private readonly resize = () => {
+    const parent = this.canvas.parentElement
+    const width = Math.max(parent?.clientWidth ?? window.innerWidth, 1)
+    const height = Math.max(parent?.clientHeight ?? window.innerHeight, 1)
+    this.renderer.setSize(width, height, false)
+    this.camera.aspect = width / height
+    this.camera.updateProjectionMatrix()
+  }
+
+  private addZoneLight(color: string, position: THREE.Vector3) {
+    const light = new THREE.PointLight(color, 22, 30, 1.7)
+    light.position.copy(position)
+    this.scene.add(light)
+  }
+
+  private createProjectilePool() {
+    const geometry = new THREE.SphereGeometry(0.12, 6, 6)
+    const playerMaterial = new THREE.MeshBasicMaterial({
+      color: '#d9ff43',
+      toneMapped: false,
+    })
+    const enemyMaterial = new THREE.MeshBasicMaterial({
+      color: '#ff694a',
+      toneMapped: false,
+    })
+
+    for (let index = 0; index < 72; index += 1) {
+      const owner = index < 38 ? 'player' : 'enemy'
+      const mesh = new THREE.Mesh(
+        geometry,
+        owner === 'player' ? playerMaterial : enemyMaterial,
+      )
+      mesh.visible = false
+      this.scene.add(mesh)
+      this.projectiles.push({
+        mesh,
+        owner,
+        velocity: new THREE.Vector3(),
+        active: false,
+        life: 0,
+      })
+    }
+  }
+
+  private createBurstPool() {
+    for (let burstIndex = 0; burstIndex < 10; burstIndex += 1) {
+      const positions = new Float32Array(18 * 3)
+      const geometry = new THREE.BufferGeometry()
+      geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+      const material = new THREE.PointsMaterial({
+        color: '#ff694a',
+        size: 0.2,
+        transparent: true,
+        opacity: 0,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
+        toneMapped: false,
+      })
+      const points = new THREE.Points(geometry, material)
+      points.visible = false
+      this.scene.add(points)
+      this.bursts.push({
+        points,
+        positions,
+        velocities: Array.from({ length: 18 }, () =>
+          new THREE.Vector3(
+            Math.random() - 0.5,
+            Math.random() - 0.5,
+            Math.random() - 0.5,
+          )
+            .normalize()
+            .multiplyScalar(2.5 + Math.random() * 4),
+        ),
+        material,
+        active: false,
+        life: 0,
+      })
+    }
+  }
+
+  private resetMission() {
+    this.mode = 'idle'
+    this.paused = true
+    this.doorLocked = true
+    this.firing = false
+    this.keys.clear()
+    this.yaw = 0
+    this.pitch = 0
+    this.roll = 0
+    this.elapsed = 0
+    this.escapeTime = ESCAPE_DURATION
+    this.fireCooldown = 0
+    this.traceRefreshCooldown = 0
+    this.hudRefreshCooldown = 0
+    this.playerDamageCooldown = 0
+    this.shotsFired = 0
+    this.shotsHit = 0
+    this.bugsPurged = 0
+    this.hitPulse = 0
+    this.damagePulse = 0
+    this.integrity = 100
+    this.traceFromRoom = null
+    this.velocity.set(0, 0, 0)
+    this.camera.position.copy(startPosition)
+    this.camera.rotation.set(0, 0, 0, 'YXZ')
+    this.world.door.group.visible = true
+
+    this.faults.forEach((fault) => {
+      fault.health = fault.maxHealth
+      fault.alive = true
+      fault.visual.group.visible = true
+      fault.visual.group.scale.setScalar(1)
+      setObjectOpacity(fault.visual.group, 1)
+    })
+    this.enemies.forEach((enemy) => {
+      enemy.health = enemy.maxHealth
+      enemy.alive = true
+      enemy.lastShot = -10
+      enemy.collisionCooldown = 0
+      enemy.visual.group.visible = true
+      enemy.visual.group.position.copy(enemy.home)
+      setObjectOpacity(enemy.visual.group, 1)
+    })
+    this.root.health = this.root.maxHealth
+    this.root.alive = true
+    this.root.lastShot = -10
+    this.root.visual.group.visible = true
+    this.root.visual.group.scale.setScalar(1)
+    setObjectOpacity(this.root.visual.group, 1)
+    this.projectiles.forEach((projectile) =>
+      this.deactivateProjectile(projectile),
+    )
+    this.bursts.forEach((burst) => {
+      burst.active = false
+      burst.points.visible = false
+      burst.material.opacity = 0
+    })
+    this.refreshTrace(true)
+  }
+
+  private requestPointerLock() {
+    try {
+      this.canvas.focus()
+      void this.canvas.requestPointerLock().catch(() => {
+        if (this.mode !== 'hunt' && this.mode !== 'escape') return
+        this.paused = true
+        this.callbacks.onPauseChange(true)
+      })
+      if (this.lockRequestTimer !== undefined) {
+        window.clearTimeout(this.lockRequestTimer)
+      }
+      this.lockRequestTimer = window.setTimeout(() => {
+        if (
+          document.pointerLockElement !== this.canvas &&
+          (this.mode === 'hunt' || this.mode === 'escape')
+        ) {
+          this.paused = true
+          this.callbacks.onPauseChange(true)
+        }
+      }, 350)
+    } catch {
+      this.paused = true
+      this.callbacks.onPauseChange(true)
+    }
+  }
+
+  private readonly handlePointerLockChange = () => {
+    if (this.mode !== 'hunt' && this.mode !== 'escape') return
+    this.paused = document.pointerLockElement !== this.canvas
+    if (this.paused) {
+      this.firing = false
+      this.keys.clear()
+    }
+    this.callbacks.onPauseChange(this.paused)
+  }
+
+  private readonly handleKeyDown = (event: KeyboardEvent) => {
+    if (this.mode !== 'hunt' && this.mode !== 'escape') return
+    if (
+      [
+        'KeyW',
+        'KeyA',
+        'KeyS',
+        'KeyD',
+        'KeyQ',
+        'KeyE',
+        'Space',
+        'KeyC',
+      ].includes(event.code)
+    ) {
+      event.preventDefault()
+    }
+    this.keys.add(event.code)
+    if (event.code === 'Enter') this.firing = true
+  }
+
+  private readonly handleKeyUp = (event: KeyboardEvent) => {
+    this.keys.delete(event.code)
+    if (event.code === 'Enter') this.firing = false
+  }
+
+  private readonly handleMouseDown = (event: MouseEvent) => {
+    if (
+      event.button === 0 &&
+      document.pointerLockElement === this.canvas &&
+      (this.mode === 'hunt' || this.mode === 'escape')
+    ) {
+      this.firing = true
+    }
+  }
+
+  private readonly handleMouseUp = (event: MouseEvent) => {
+    if (event.button === 0) this.firing = false
+  }
+
+  private readonly handleMouseMove = (event: MouseEvent) => {
+    if (
+      document.pointerLockElement !== this.canvas ||
+      (this.mode !== 'hunt' && this.mode !== 'escape')
+    ) {
+      return
+    }
+    this.yaw -= event.movementX * 0.00165
+    this.pitch -= event.movementY * 0.00165
+    this.pitch = THREE.MathUtils.clamp(this.pitch, -1.48, 1.48)
+  }
+
+  private readonly handleBlur = () => {
+    this.firing = false
+    this.keys.clear()
+  }
+
+  private readonly handleContextMenu = (event: MouseEvent) => {
+    event.preventDefault()
+  }
+
+  private readonly animate = () => {
+    const delta = Math.min(this.clock.getDelta(), 0.04)
+    const time = this.clock.elapsedTime
+    this.animateWorld(time, delta)
+
+    if (!this.paused && (this.mode === 'hunt' || this.mode === 'escape')) {
+      this.elapsed += delta
+      this.fireCooldown = Math.max(0, this.fireCooldown - delta)
+      this.traceRefreshCooldown -= delta
+      this.hudRefreshCooldown -= delta
+      this.playerDamageCooldown = Math.max(0, this.playerDamageCooldown - delta)
+      this.updateMovement(delta)
+      this.updateEnemies(time, delta)
+      this.updateProjectiles(delta)
+      this.updateBursts(delta)
+
+      if (this.firing && this.fireCooldown <= 0) this.firePlayerProjectile()
+      if (this.traceRefreshCooldown <= 0) {
+        this.refreshTrace()
+        this.traceRefreshCooldown = 0.3
+      }
+      if (this.mode === 'escape') {
+        this.escapeTime = Math.max(0, this.escapeTime - delta)
+        if (this.camera.position.distanceTo(exitPosition) < 3.2) {
+          this.finishMission('won', 'Stack resolved. Build shipped.')
+        } else if (this.escapeTime <= 0) {
+          this.finishMission('failed', 'Deployment rolled back.')
+        }
+      }
+      if (this.hudRefreshCooldown <= 0) {
+        this.emitHud()
+        this.hudRefreshCooldown = 0.1
+      }
+    } else {
+      this.updateBursts(delta)
+    }
+
+    this.updateTracePulse(time)
+    this.renderer.render(this.scene, this.camera)
+  }
+
+  private animateWorld(time: number, delta: number) {
+    this.world.ambientNodes.forEach(({ mesh, phase }) => {
+      const scale = 0.85 + Math.sin(time * 2 + phase) * 0.18
+      mesh.scale.setScalar(scale)
+    })
+    this.world.door.group.children.forEach((child, index) => {
+      child.scale.y = 0.85 + Math.sin(time * 5 + index) * 0.15
+    })
+
+    this.faults.forEach((fault, index) => {
+      if (!fault.alive) return
+      fault.visual.core.rotation.x += delta * (0.35 + index * 0.08)
+      fault.visual.core.rotation.y -= delta * 0.5
+      fault.visual.shell.rotation.y += delta * (0.25 + index * 0.04)
+      const pulse = 1 + Math.sin(time * 3 + index) * 0.045
+      fault.visual.group.scale.setScalar(pulse)
+    })
+    this.enemies.forEach((enemy, enemyIndex) => {
+      if (!enemy.alive) return
+      enemy.visual.core.rotation.x += delta * 0.8
+      enemy.visual.core.rotation.y += delta * 1.1
+      enemy.visual.rings.forEach((ring, ringIndex) => {
+        ring.rotation.z +=
+          delta * (0.6 + ringIndex * 0.22) * (enemyIndex % 2 ? -1 : 1)
+      })
+    })
+    if (this.root.alive) {
+      this.root.visual.core.rotation.x += delta * 0.34
+      this.root.visual.core.rotation.y -= delta * 0.48
+      this.root.visual.shell.rotation.y += delta * 0.22
+      this.root.visual.rings.forEach((ring, index) => {
+        ring.rotation.z += delta * (0.2 + index * 0.12)
+      })
+      const rootPulse = 1 + Math.sin(time * 2.4) * 0.035
+      this.root.visual.group.scale.setScalar(rootPulse)
+    }
+  }
+
+  private updateMovement(delta: number) {
+    const rollInput =
+      (this.keys.has('KeyE') ? 1 : 0) - (this.keys.has('KeyQ') ? 1 : 0)
+    if (rollInput !== 0) {
+      this.roll += rollInput * delta * 1.25
+      this.roll = THREE.MathUtils.clamp(this.roll, -0.62, 0.62)
+    } else {
+      this.roll = THREE.MathUtils.damp(this.roll, 0, 4.5, delta)
+    }
+    this.camera.rotation.set(this.pitch, this.yaw, this.roll, 'YXZ')
+
+    this.forward.set(0, 0, -1).applyQuaternion(this.camera.quaternion)
+    this.right.set(1, 0, 0).applyQuaternion(this.camera.quaternion)
+    this.up.set(0, 1, 0).applyQuaternion(this.camera.quaternion)
+    this.moveVector.set(0, 0, 0)
+    if (this.keys.has('KeyW')) this.moveVector.add(this.forward)
+    if (this.keys.has('KeyS')) this.moveVector.sub(this.forward)
+    if (this.keys.has('KeyD')) this.moveVector.add(this.right)
+    if (this.keys.has('KeyA')) this.moveVector.sub(this.right)
+    if (this.keys.has('Space')) this.moveVector.add(this.up)
+    if (this.keys.has('KeyC')) this.moveVector.sub(this.up)
+    if (this.moveVector.lengthSq() > 0) {
+      this.moveVector.normalize()
+      this.velocity.addScaledVector(
+        this.moveVector,
+        PLAYER_ACCELERATION * delta,
+      )
+    }
+    const damping = Math.exp(-4.5 * delta)
+    this.velocity.multiplyScalar(damping)
+    if (this.velocity.length() > PLAYER_SPEED) {
+      this.velocity.setLength(PLAYER_SPEED)
+    }
+
+    const movement = this.moveVector.copy(this.velocity).multiplyScalar(delta)
+    ;(['x', 'y', 'z'] as const).forEach((axis) => {
+      this.candidate.copy(this.camera.position)
+      this.candidate[axis] += movement[axis]
+      if (this.canOccupy(this.candidate, PLAYER_RADIUS)) {
+        this.camera.position[axis] = this.candidate[axis]
+      } else {
+        this.velocity[axis] = 0
+      }
+    })
+  }
+
+  private canOccupy(position: THREE.Vector3, radius: number) {
+    if (
+      this.doorLocked &&
+      this.world.door.bounds.distanceToPoint(position) < radius
+    ) {
+      return false
+    }
+    return this.world.volumes.some(
+      (volume) =>
+        position.x >= volume.min.x + radius &&
+        position.x <= volume.max.x - radius &&
+        position.y >= volume.min.y + radius &&
+        position.y <= volume.max.y - radius &&
+        position.z >= volume.min.z + radius &&
+        position.z <= volume.max.z - radius,
+    )
+  }
+
+  private updateEnemies(time: number, delta: number) {
+    this.enemies.forEach((enemy) => {
+      if (!enemy.alive) return
+      enemy.collisionCooldown = Math.max(0, enemy.collisionCooldown - delta)
+      const position = enemy.visual.group.position
+      const distance = position.distanceTo(this.camera.position)
+
+      if (enemy.spec.kind === 'wisp' && distance < 15 && distance > 1.2) {
+        this.moveVector
+          .copy(this.camera.position)
+          .sub(position)
+          .normalize()
+          .multiplyScalar(delta * 1.45)
+        this.candidate.copy(position).add(this.moveVector)
+        if (this.canOccupy(this.candidate, 0.72)) {
+          position.copy(this.candidate)
+        }
+      }
+
+      enemy.visual.group.lookAt(this.camera.position)
+      if (
+        distance < 17 &&
+        time - enemy.lastShot > (enemy.spec.kind === 'crawler' ? 1.65 : 2.25)
+      ) {
+        this.forward.copy(this.camera.position).sub(position).normalize()
+        this.spawnProjectile(
+          'enemy',
+          position,
+          this.forward,
+          enemy.spec.kind === 'crawler' ? 10 : 8,
+        )
+        enemy.lastShot = time
+      }
+
+      if (distance < 1.25 && enemy.collisionCooldown <= 0) {
+        this.damagePlayer(14)
+        enemy.collisionCooldown = 1.1
+        this.forward.copy(position).sub(this.camera.position).normalize()
+        this.candidate.copy(position).addScaledVector(this.forward, 2)
+        if (this.canOccupy(this.candidate, 0.72)) position.copy(this.candidate)
+      }
+    })
+
+    if (
+      !this.doorLocked &&
+      this.root.alive &&
+      this.camera.position.distanceTo(rootPosition) < 20 &&
+      time - this.root.lastShot > 1.15
+    ) {
+      this.forward.copy(this.camera.position).sub(rootPosition).normalize()
+      this.spawnProjectile('enemy', rootPosition, this.forward, 11)
+      this.root.lastShot = time
+    }
+  }
+
+  private firePlayerProjectile() {
+    this.forward.set(0, 0, -1).applyQuaternion(this.camera.quaternion)
+    this.candidate.copy(this.camera.position).addScaledVector(this.forward, 0.9)
+    this.spawnProjectile('player', this.candidate, this.forward, 32)
+    this.shotsFired += 1
+    this.fireCooldown = SHOT_COOLDOWN
+  }
+
+  private spawnProjectile(
+    owner: Projectile['owner'],
+    origin: THREE.Vector3,
+    direction: THREE.Vector3,
+    speed: number,
+  ) {
+    const projectile = this.projectiles.find(
+      (item) => !item.active && item.owner === owner,
+    )
+    if (!projectile) return
+    projectile.active = true
+    projectile.life = owner === 'player' ? 2.2 : 3.2
+    projectile.mesh.visible = true
+    projectile.mesh.position.copy(origin)
+    projectile.velocity.copy(direction).multiplyScalar(speed)
+  }
+
+  private deactivateProjectile(projectile: Projectile) {
+    projectile.active = false
+    projectile.life = 0
+    projectile.mesh.visible = false
+    projectile.velocity.set(0, 0, 0)
+  }
+
+  private updateProjectiles(delta: number) {
+    this.projectiles.forEach((projectile) => {
+      if (!projectile.active) return
+      this.previousProjectilePosition.copy(projectile.mesh.position)
+      projectile.mesh.position.addScaledVector(projectile.velocity, delta)
+      projectile.life -= delta
+      if (
+        projectile.life <= 0 ||
+        !this.canOccupy(projectile.mesh.position, 0.08)
+      ) {
+        this.deactivateProjectile(projectile)
+        return
+      }
+
+      this.segment.set(
+        this.previousProjectilePosition,
+        projectile.mesh.position,
+      )
+      if (projectile.owner === 'enemy') {
+        this.segment.closestPointToPoint(
+          this.camera.position,
+          true,
+          this.closestPoint,
+        )
+        if (this.closestPoint.distanceTo(this.camera.position) < 0.72) {
+          this.damagePlayer(11)
+          this.deactivateProjectile(projectile)
+        }
+        return
+      }
+
+      const hitEnemy = this.enemies.find(
+        (enemy) =>
+          enemy.alive &&
+          this.segmentDistanceTo(enemy.visual.group.position) < 0.9,
+      )
+      if (hitEnemy) {
+        this.shotsHit += 1
+        this.hitPulse += 1
+        hitEnemy.health -= 1
+        if (hitEnemy.health <= 0) {
+          hitEnemy.alive = false
+          hitEnemy.visual.group.visible = false
+          this.bugsPurged += 1
+          this.spawnBurst(
+            hitEnemy.visual.group.position,
+            hitEnemy.spec.kind === 'crawler' ? '#ff694a' : '#d9ff43',
+          )
+        }
+        this.deactivateProjectile(projectile)
+        return
+      }
+
+      const hitFault = this.faults.find(
+        (fault) =>
+          fault.alive &&
+          this.segmentDistanceTo(fault.visual.group.position) < 1.35,
+      )
+      if (hitFault) {
+        this.shotsHit += 1
+        this.hitPulse += 1
+        hitFault.health -= 1
+        const scale = THREE.MathUtils.lerp(
+          0.65,
+          1,
+          hitFault.health / hitFault.maxHealth,
+        )
+        hitFault.visual.group.scale.setScalar(scale)
+        if (hitFault.health <= 0) {
+          hitFault.alive = false
+          hitFault.visual.group.visible = false
+          this.bugsPurged += 1
+          this.spawnBurst(hitFault.visual.group.position, '#ff694a')
+          if (this.faults.every((fault) => !fault.alive)) {
+            this.doorLocked = false
+            this.world.door.group.visible = false
+          }
+          this.refreshTrace(true)
+          this.emitHud()
+        }
+        this.deactivateProjectile(projectile)
+        return
+      }
+
+      if (
+        !this.doorLocked &&
+        this.root.alive &&
+        this.segmentDistanceTo(rootPosition) < 2.35
+      ) {
+        this.shotsHit += 1
+        this.hitPulse += 1
+        this.root.health -= 1
+        if (this.root.health <= 0) {
+          this.root.alive = false
+          this.root.visual.group.visible = false
+          this.bugsPurged += 1
+          this.spawnBurst(rootPosition, '#8da4ff')
+          this.beginEscape()
+        }
+        this.deactivateProjectile(projectile)
+      }
+    })
+  }
+
+  private segmentDistanceTo(position: THREE.Vector3) {
+    this.segment.closestPointToPoint(position, true, this.closestPoint)
+    return this.closestPoint.distanceTo(position)
+  }
+
+  private damagePlayer(amount: number) {
+    if (this.playerDamageCooldown > 0) return
+    this.playerDamageCooldown = 0.42
+    this.damagePulse += 1
+    const integrity = this.currentIntegrity() - amount
+    this.setCurrentIntegrity(integrity)
+    this.emitHud()
+    if (integrity <= 0) {
+      this.finishMission('failed', 'Build integrity lost.')
+    }
+  }
+
+  private integrity = 100
+
+  private currentIntegrity() {
+    return this.integrity
+  }
+
+  private setCurrentIntegrity(value: number) {
+    this.integrity = THREE.MathUtils.clamp(value, 0, 100)
+  }
+
+  private spawnBurst(position: THREE.Vector3, color: string) {
+    const burst = this.bursts.find((item) => !item.active)
+    if (!burst) return
+    burst.active = true
+    burst.life = 0.75
+    burst.points.visible = true
+    burst.points.position.copy(position)
+    burst.material.color.set(color)
+    burst.material.opacity = 1
+    burst.positions.fill(0)
+    burst.velocities.forEach((velocity) => {
+      velocity
+        .set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5)
+        .normalize()
+        .multiplyScalar(2.5 + Math.random() * 4)
+    })
+    const attribute = burst.points.geometry.getAttribute('position')
+    if (attribute instanceof THREE.BufferAttribute) attribute.needsUpdate = true
+  }
+
+  private updateBursts(delta: number) {
+    this.bursts.forEach((burst) => {
+      if (!burst.active) return
+      burst.life -= delta
+      burst.velocities.forEach((velocity, index) => {
+        const offset = index * 3
+        burst.positions[offset] =
+          (burst.positions[offset] ?? 0) + velocity.x * delta
+        burst.positions[offset + 1] =
+          (burst.positions[offset + 1] ?? 0) + velocity.y * delta
+        burst.positions[offset + 2] =
+          (burst.positions[offset + 2] ?? 0) + velocity.z * delta
+        velocity.multiplyScalar(Math.exp(-2.4 * delta))
+      })
+      burst.material.opacity = THREE.MathUtils.clamp(burst.life / 0.75, 0, 1)
+      const attribute = burst.points.geometry.getAttribute('position')
+      if (attribute instanceof THREE.BufferAttribute)
+        attribute.needsUpdate = true
+      if (burst.life <= 0) {
+        burst.active = false
+        burst.points.visible = false
+      }
+    })
+  }
+
+  private beginEscape() {
+    this.mode = 'escape'
+    this.escapeTime = ESCAPE_DURATION
+    this.refreshTrace(true)
+    this.emitHud()
+  }
+
+  private finishMission(status: GameResult['status'], reason: string) {
+    if (this.mode === 'won' || this.mode === 'failed') return
+    this.mode = status
+    this.paused = true
+    this.firing = false
+    this.keys.clear()
+    if (document.pointerLockElement === this.canvas) {
+      document.exitPointerLock()
+    }
+    const accuracy =
+      this.shotsFired === 0 ? 0 : (this.shotsHit / this.shotsFired) * 100
+    const score = Math.max(
+      0,
+      Math.round(
+        (status === 'won' ? 5000 : 500) +
+          this.currentIntegrity() * 24 +
+          this.bugsPurged * 140 +
+          this.faultsResolved() * 350 +
+          (status === 'won' ? this.escapeTime * 55 : 0) +
+          accuracy * 8,
+      ),
+    )
+    this.emitHud()
+    this.callbacks.onEnd({
+      status,
+      reason,
+      score,
+      elapsed: this.elapsed,
+      integrity: this.currentIntegrity(),
+      bugsPurged: this.bugsPurged,
+      faultsResolved: this.faultsResolved(),
+      accuracy,
+    })
+  }
+
+  private nearestRoomId(position: THREE.Vector3) {
+    let nearest: RoomId = 'surface'
+    let nearestDistance = Number.POSITIVE_INFINITY
+    this.world.rooms.forEach((room, roomId) => {
+      const distance = position.distanceToSquared(
+        this.candidate.set(...room.center),
+      )
+      if (distance < nearestDistance) {
+        nearest = roomId
+        nearestDistance = distance
+      }
+    })
+    return nearest
+  }
+
+  private routeBetween(from: RoomId, to: RoomId) {
+    const queue: Array<RoomId> = [from]
+    const previous = new Map<RoomId, RoomId | null>([[from, null]])
+    while (queue.length > 0) {
+      const room = queue.shift()
+      if (!room || room === to) break
+      ;(this.world.graph.get(room) ?? []).forEach((neighbor) => {
+        if (previous.has(neighbor)) return
+        previous.set(neighbor, room)
+        queue.push(neighbor)
+      })
+    }
+    const route: Array<RoomId> = []
+    let cursor: RoomId | null = to
+    while (cursor) {
+      route.unshift(cursor)
+      cursor = previous.get(cursor) ?? null
+    }
+    return route[0] === from ? route : [from]
+  }
+
+  private findTarget(fromRoom: RoomId) {
+    if (this.mode === 'escape') {
+      return {
+        roomId: 'surface' as const,
+        position: exitPosition,
+        label: 'Stack unwinding — return to /surface',
+        faultId: null,
+      }
+    }
+    const aliveFaults = this.faults.filter((fault) => fault.alive)
+    if (aliveFaults.length === 0) {
+      return {
+        roomId: 'deploy' as const,
+        position: rootPosition,
+        label: 'Root cause located — destroy /deploy/core',
+        faultId: null,
+      }
+    }
+    const target = [...aliveFaults].sort((a, b) => {
+      const routeA = this.routeBetween(fromRoom, a.spec.roomId).length
+      const routeB = this.routeBetween(fromRoom, b.spec.roomId).length
+      if (routeA !== routeB) return routeA - routeB
+      return (
+        this.camera.position.distanceToSquared(
+          this.candidate.set(
+            a.spec.position[0],
+            a.spec.position[1],
+            a.spec.position[2],
+          ),
+        ) -
+        this.camera.position.distanceToSquared(
+          this.candidate.set(
+            b.spec.position[0],
+            b.spec.position[1],
+            b.spec.position[2],
+          ),
+        )
+      )
+    })[0]
+    if (!target) {
+      return {
+        roomId: 'deploy' as const,
+        position: rootPosition,
+        label: 'Root cause located — destroy /deploy/core',
+        faultId: null,
+      }
+    }
+    return {
+      roomId: target.spec.roomId,
+      position: target.visual.group.position,
+      label: `Trace and purge ${target.spec.frame}`,
+      faultId: target.spec.id,
+    }
+  }
+
+  private refreshTrace(force = false) {
+    const fromRoom = this.nearestRoomId(this.camera.position)
+    const target = this.findTarget(fromRoom)
+    if (
+      !force &&
+      fromRoom === this.traceFromRoom &&
+      target.faultId === this.currentTargetFaultId &&
+      target.position.equals(this.currentTargetPosition)
+    ) {
+      return
+    }
+    this.traceFromRoom = fromRoom
+    this.currentTargetFaultId = target.faultId
+    this.currentTargetPosition.copy(target.position)
+    this.currentTargetLabel = target.label
+    const route = this.routeBetween(fromRoom, target.roomId)
+    const points = route
+      .map((roomId) => this.world.rooms.get(roomId))
+      .filter((room) => !!room)
+      .map((room) => new THREE.Vector3(...room.center))
+    if (
+      points.length === 0 ||
+      !points.at(-1)?.equals(this.currentTargetPosition)
+    ) {
+      points.push(this.currentTargetPosition.clone())
+    }
+    this.tracePoints.splice(0, this.tracePoints.length, ...points)
+    this.traceGeometry.setFromPoints(this.tracePoints)
+    this.traceLengths.splice(0, this.traceLengths.length)
+    let totalLength = 0
+    this.traceLengths.push(totalLength)
+    for (let index = 1; index < this.tracePoints.length; index += 1) {
+      totalLength +=
+        this.tracePoints[index - 1]?.distanceTo(this.tracePoints[index]!) ?? 0
+      this.traceLengths.push(totalLength)
+    }
+    const traceColor = this.mode === 'escape' ? '#d9ff43' : '#ff694a'
+    this.traceMaterial.color.set(traceColor)
+    const pulseMaterial = this.tracePulse.material
+    if (pulseMaterial instanceof THREE.MeshBasicMaterial) {
+      pulseMaterial.color.set(traceColor)
+    }
+  }
+
+  private updateTracePulse(time: number) {
+    const totalLength = this.traceLengths.at(-1) ?? 0
+    if (totalLength <= 0 || this.tracePoints.length < 2) {
+      this.tracePulse.visible = false
+      return
+    }
+    this.tracePulse.visible = true
+    const distance = (time * 5) % totalLength
+    let segmentIndex = 1
+    while (
+      segmentIndex < this.traceLengths.length &&
+      (this.traceLengths[segmentIndex] ?? 0) < distance
+    ) {
+      segmentIndex += 1
+    }
+    segmentIndex = Math.min(segmentIndex, this.tracePoints.length - 1)
+    const segmentStart = this.traceLengths[segmentIndex - 1] ?? 0
+    const segmentEnd = this.traceLengths[segmentIndex] ?? totalLength
+    const progress =
+      segmentEnd === segmentStart
+        ? 0
+        : (distance - segmentStart) / (segmentEnd - segmentStart)
+    this.tracePulse.position.lerpVectors(
+      this.tracePoints[segmentIndex - 1]!,
+      this.tracePoints[segmentIndex]!,
+      progress,
+    )
+    const pulseScale = 0.8 + Math.sin(time * 8) * 0.2
+    this.tracePulse.scale.setScalar(pulseScale)
+  }
+
+  private faultsResolved() {
+    return this.faults.filter((fault) => !fault.alive).length
+  }
+
+  private createFrames(): Array<StackFrame> {
+    const frames = this.faults.map((fault, index): StackFrame => {
+      const status = !fault.alive
+        ? 'resolved'
+        : this.currentTargetFaultId === fault.spec.id
+          ? 'active'
+          : 'pending'
+      return {
+        number: `0${index + 1}`,
+        label: fault.spec.frame,
+        status,
+      }
+    })
+    frames.push({
+      number: '04',
+      label: '/deploy/core',
+      status: !this.root.alive
+        ? 'resolved'
+        : this.faults.every((fault) => !fault.alive)
+          ? 'active'
+          : 'pending',
+    })
+    return frames
+  }
+
+  private emitHud() {
+    this.callbacks.onHudChange({
+      phase: this.mode,
+      objective: this.currentTargetLabel,
+      targetDistance: this.camera.position.distanceTo(
+        this.currentTargetPosition,
+      ),
+      integrity: Math.round(this.currentIntegrity()),
+      faultsResolved: this.faultsResolved(),
+      totalFaults: this.faults.length,
+      bugsPurged: this.bugsPurged,
+      escapeTime: this.escapeTime,
+      frames: this.createFrames(),
+      hitPulse: this.hitPulse,
+      damagePulse: this.damagePulse,
+    })
+  }
+}

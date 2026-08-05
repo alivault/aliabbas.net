@@ -16,6 +16,7 @@ import { Route as ChatRouteImport } from './routes/chat'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ExperienceRouteImport } from './routes/experience'
 import { Route as NotesRouteImport } from './routes/notes'
+import { Route as PlayRouteImport } from './routes/play'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as WorkRouteImport } from './routes/work'
 import { Route as ApiChatRouteImport } from './routes/api.chat'
@@ -58,6 +59,11 @@ const NotesRoute = NotesRouteImport.update({
   path: '/notes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlayRoute = PlayRouteImport.update({
+  id: '/play',
+  path: '/play',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -97,6 +103,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
   '/notes': typeof NotesRoute
+  '/play': typeof PlayRoute
   '/reset-password': typeof ResetPasswordRoute
   '/work': typeof WorkRoute
   '/api/chat': typeof ApiChatRoute
@@ -112,6 +119,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
   '/notes': typeof NotesRoute
+  '/play': typeof PlayRoute
   '/reset-password': typeof ResetPasswordRoute
   '/work': typeof WorkRoute
   '/api/chat': typeof ApiChatRoute
@@ -128,6 +136,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
   '/notes': typeof NotesRoute
+  '/play': typeof PlayRoute
   '/reset-password': typeof ResetPasswordRoute
   '/work': typeof WorkRoute
   '/api/chat': typeof ApiChatRoute
@@ -145,6 +154,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/experience'
     | '/notes'
+    | '/play'
     | '/reset-password'
     | '/work'
     | '/api/chat'
@@ -160,6 +170,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/experience'
     | '/notes'
+    | '/play'
     | '/reset-password'
     | '/work'
     | '/api/chat'
@@ -175,6 +186,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/experience'
     | '/notes'
+    | '/play'
     | '/reset-password'
     | '/work'
     | '/api/chat'
@@ -191,6 +203,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   ExperienceRoute: typeof ExperienceRoute
   NotesRoute: typeof NotesRoute
+  PlayRoute: typeof PlayRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   WorkRoute: typeof WorkRoute
   ApiChatRoute: typeof ApiChatRoute
@@ -250,6 +263,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/play': {
+      id: '/play'
+      path: '/play'
+      fullPath: '/play'
+      preLoaderRoute: typeof PlayRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -303,6 +323,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   ExperienceRoute: ExperienceRoute,
   NotesRoute: NotesRoute,
+  PlayRoute: PlayRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   WorkRoute: WorkRoute,
   ApiChatRoute: ApiChatRoute,
