@@ -13,6 +13,7 @@ export default function StackTraceScene({
   onError,
   onHudChange,
   onPauseChange,
+  onMapChange,
   onEnd,
 }: {
   apiRef: RefObject<StackTraceGameApi | null>
@@ -20,6 +21,7 @@ export default function StackTraceScene({
   onError: () => void
   onHudChange: (hud: GameHudState) => void
   onPauseChange: (paused: boolean) => void
+  onMapChange: (open: boolean) => void
   onEnd: (result: GameResult) => void
 }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -28,6 +30,7 @@ export default function StackTraceScene({
     onError,
     onHudChange,
     onPauseChange,
+    onMapChange,
     onEnd,
   })
   callbacksRef.current = {
@@ -35,6 +38,7 @@ export default function StackTraceScene({
     onError,
     onHudChange,
     onPauseChange,
+    onMapChange,
     onEnd,
   }
 
@@ -46,6 +50,7 @@ export default function StackTraceScene({
       engine = new StackTraceEngine(canvas, {
         onHudChange: (hud) => callbacksRef.current.onHudChange(hud),
         onPauseChange: (paused) => callbacksRef.current.onPauseChange(paused),
+        onMapChange: (open) => callbacksRef.current.onMapChange(open),
         onEnd: (result) => callbacksRef.current.onEnd(result),
       })
     } catch {
@@ -56,6 +61,7 @@ export default function StackTraceScene({
       start: engine.start,
       resume: engine.resume,
       pause: engine.pause,
+      toggleMap: engine.toggleMap,
       setTouchInput: engine.setTouchInput,
       addTouchLook: engine.addTouchLook,
       setTouchFiring: engine.setTouchFiring,
@@ -72,7 +78,7 @@ export default function StackTraceScene({
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 size-full outline-none"
+      className="absolute inset-0 size-full touch-none outline-none"
       tabIndex={-1}
       aria-label="Stack Trace, a three-dimensional zero-gravity labyrinth game"
     />

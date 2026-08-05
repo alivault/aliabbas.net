@@ -1,6 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { ArrowLeft, Crosshair, RotateCcw } from 'lucide-react'
+import {
+  ArrowLeft,
+  Crosshair,
+  Map as MapIcon,
+  RotateCcw,
+  X,
+} from 'lucide-react'
 import Logo from '~/components/Logo'
 import StackTraceScene from './StackTraceScene'
 import StackTraceTouchControls from './StackTraceTouchControls'
@@ -20,10 +26,12 @@ type ScreenState =
 function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="border-l border-white/15 pl-4">
-      <p className="font-mono text-[8px] tracking-[0.16em] text-white/35 uppercase">
+      <p className="font-mono text-[10px] tracking-[0.14em] text-white/40 uppercase sm:text-[11px]">
         {label}
       </p>
-      <p className="mt-1 text-sm font-semibold text-white">{value}</p>
+      <p className="mt-1 text-base font-semibold text-white sm:text-lg">
+        {value}
+      </p>
     </div>
   )
 }
@@ -60,6 +68,7 @@ function MissionBriefing({
         ['Space / C', 'Rise / descend'],
         ['Q / E', 'Roll'],
         ['Mouse', 'Aim / fire'],
+        ['M', 'Wireframe map'],
       ]
 
   return (
@@ -79,21 +88,21 @@ function MissionBriefing({
       </div>
 
       <div
-        className={`my-auto w-full ${
+        className={`mx-auto my-auto w-full ${
           isTouchPortrait
-            ? 'mx-auto max-w-xl py-6'
+            ? 'max-w-xl py-6'
             : isTouch
               ? 'grid max-w-5xl grid-cols-[0.8fr_1.2fr] items-center gap-8 py-8'
               : 'max-w-[780px] py-8 sm:py-12'
         }`}
       >
         <div>
-          <div className="flex items-center gap-3 font-mono text-[9px] tracking-[0.2em] text-[#ff694a] uppercase sm:text-[10px]">
+          <div className="flex items-center justify-center gap-3 text-center font-mono text-[9px] tracking-[0.2em] text-[#ff694a] uppercase sm:text-[10px]">
             <Logo className="h-7 w-8 text-[#d9ff43]" />
             Interactive systems failure
           </div>
           <h1
-            className={`leading-[0.72] font-extrabold tracking-[-0.075em] uppercase ${
+            className={`text-center leading-[0.72] font-extrabold tracking-[-0.075em] uppercase ${
               isTouchPortrait
                 ? 'mt-5 text-[clamp(4.5rem,24vw,7rem)]'
                 : isTouch
@@ -110,7 +119,7 @@ function MissionBriefing({
 
         <div>
           <p
-            className={`max-w-xl text-white/58 ${
+            className={`mx-auto max-w-xl text-center text-white/58 ${
               isTouch
                 ? `${isTouchPortrait ? 'mt-7' : ''} text-sm leading-6`
                 : 'mt-9 text-base leading-7 sm:text-lg sm:leading-8'
@@ -121,21 +130,25 @@ function MissionBriefing({
           </p>
 
           <div
-            className={`grid max-w-xl grid-cols-2 gap-px border border-white/15 bg-white/15 sm:grid-cols-4 ${isTouch ? 'mt-4' : 'mt-9'}`}
+            className={`mx-auto grid max-w-xl grid-cols-2 gap-px border border-white/15 bg-white/15 ${isTouch ? 'mt-4 sm:grid-cols-4' : 'mt-9 sm:grid-cols-5'}`}
           >
             {controls.map(([control, action]) => (
               <div
                 key={control}
-                className={`bg-[#08090b]/90 ${isTouch ? 'p-2.5' : 'p-4'}`}
+                className={`bg-[#08090b]/90 text-center ${isTouch ? 'p-2.5' : 'p-4'}`}
               >
-                <p className="font-mono text-[9px] text-[#d9ff43]">{control}</p>
-                <p className="mt-1 text-[10px] text-white/35">{action}</p>
+                <p className="font-mono text-[11px] text-[#d9ff43] sm:text-xs">
+                  {control}
+                </p>
+                <p className="mt-1 text-[11px] text-white/40 sm:text-xs">
+                  {action}
+                </p>
               </div>
             ))}
           </div>
 
           {isTouch && (
-            <div className="mt-4 max-w-xl font-mono text-[8px] tracking-[0.12em] text-white/40 uppercase">
+            <div className="mx-auto mt-4 max-w-xl font-mono text-[8px] tracking-[0.12em] text-white/40 uppercase">
               <label className="flex items-center gap-3">
                 Look sensitivity
                 <input
@@ -157,7 +170,7 @@ function MissionBriefing({
             type="button"
             onClick={onLaunch}
             disabled={!canLaunch}
-            className={`group flex w-full max-w-xl items-center justify-between rounded-full bg-[#d9ff43] px-6 text-xs font-bold text-[#10100f] transition-colors hover:bg-white disabled:cursor-not-allowed disabled:bg-white/15 disabled:text-white/35 ${isTouch ? 'mt-4 h-12' : 'mt-7 h-14'}`}
+            className={`group mx-auto flex w-full max-w-xl items-center justify-between rounded-full bg-[#d9ff43] px-6 text-xs font-bold text-[#10100f] transition-colors hover:bg-white disabled:cursor-not-allowed disabled:bg-white/15 disabled:text-white/35 ${isTouch ? 'mt-4 h-12' : 'mt-7 h-14'}`}
           >
             {renderingFailed
               ? 'WebGL is unavailable'
@@ -193,22 +206,22 @@ function MissionHud({
     <div className="stack-trace-hud pointer-events-none absolute inset-0 z-20 p-4 text-[#f1efe8] sm:p-6">
       <div className="flex items-start justify-between gap-8">
         <div>
-          <p className="font-mono text-[9px] tracking-[0.2em] text-[#d9ff43] uppercase">
+          <p className="font-mono text-[11px] tracking-[0.18em] text-[#d9ff43] uppercase sm:text-xs">
             Stack Trace
           </p>
-          <p className="mt-1 font-mono text-[8px] tracking-[0.16em] text-white/30 uppercase">
+          <p className="mt-1 font-mono text-[9px] tracking-[0.14em] text-white/35 uppercase sm:text-[10px]">
             Incident 001 / Trace active
           </p>
         </div>
 
         <div className="max-w-[50vw] text-right">
-          <p className="font-mono text-[8px] tracking-[0.16em] text-white/30 uppercase">
+          <p className="font-mono text-[9px] tracking-[0.14em] text-white/35 uppercase sm:text-[10px]">
             Current instruction
           </p>
-          <p className="mt-1 text-xs font-semibold sm:text-sm">
+          <p className="mt-1 text-sm font-semibold sm:text-base">
             {hud.objective}
           </p>
-          <p className="mt-1 font-mono text-[8px] text-white/30">
+          <p className="mt-1 font-mono text-[10px] text-white/35 sm:text-[11px]">
             {Math.round(hud.targetDistance)}m
           </p>
         </div>
@@ -231,14 +244,14 @@ function MissionHud({
       {!isTouch && (
         <div className="absolute right-4 bottom-4 left-4 flex items-end justify-between gap-6 sm:right-6 sm:bottom-6 sm:left-6">
           <div className="hidden w-56 border border-white/12 bg-black/35 p-4 backdrop-blur-sm sm:block">
-            <p className="font-mono text-[8px] tracking-[0.16em] text-white/30 uppercase">
+            <p className="font-mono text-[10px] tracking-[0.14em] text-white/35 uppercase">
               Captured frames
             </p>
             <div className="mt-3 space-y-2">
               {hud.frames.map((frame) => (
                 <div
                   key={frame.number}
-                  className="grid grid-cols-[24px_1fr_auto] items-center gap-2 font-mono text-[8px]"
+                  className="grid grid-cols-[24px_1fr_auto] items-center gap-2 font-mono text-[10px]"
                 >
                   <span className="text-white/25">{frame.number}</span>
                   <span
@@ -252,7 +265,7 @@ function MissionHud({
                   >
                     {frame.label}
                   </span>
-                  <span className="text-[7px] tracking-[0.12em] text-white/25 uppercase">
+                  <span className="text-[9px] tracking-[0.1em] text-white/30 uppercase">
                     {frame.status}
                   </span>
                 </div>
@@ -357,6 +370,65 @@ function PauseScreen({
   )
 }
 
+function AutomapOverlay({
+  inputMode,
+  onClose,
+}: {
+  inputMode: GameInputMode
+  onClose: () => void
+}) {
+  return (
+    <div className="pointer-events-none absolute inset-0 z-40 flex flex-col justify-between p-5 text-[#f1efe8] sm:p-8">
+      <div className="flex items-start justify-between gap-6">
+        <div>
+          <div className="flex items-center gap-2 font-mono text-[9px] tracking-[0.2em] text-[#d9ff43] uppercase">
+            <MapIcon className="size-4" />
+            Complete stack geometry
+          </div>
+          <h2 className="font-display mt-2 text-3xl tracking-[-0.04em] sm:text-5xl">
+            Wireframe map
+          </h2>
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 font-mono text-[7px] tracking-[0.12em] text-white/40 uppercase sm:text-[8px]">
+            {[
+              ['#d9ff43', 'Player'],
+              ['#ff694a', 'Hostile target'],
+              ['#f1efe8', 'Traversed'],
+              ['#335cff', 'Untraversed'],
+            ].map(([color, label]) => (
+              <span key={label} className="flex items-center gap-1.5">
+                <span
+                  className="size-1.5 rounded-full"
+                  style={{ backgroundColor: color }}
+                />
+                {label}
+              </span>
+            ))}
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="pointer-events-auto flex size-11 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white/70 backdrop-blur-sm transition-colors hover:border-white/45 hover:text-white"
+          aria-label="Close wireframe map"
+        >
+          <X className="size-4" />
+        </button>
+      </div>
+
+      <div className="flex items-end justify-between gap-6 font-mono text-[8px] tracking-[0.14em] text-white/35 uppercase sm:text-[9px]">
+        <span>
+          {inputMode === 'touch'
+            ? 'Drag to rotate'
+            : 'Drag to rotate / Wheel to zoom'}
+        </span>
+        <span>
+          {inputMode === 'touch' ? 'Tap close to resume' : 'M or Esc to close'}
+        </span>
+      </div>
+    </div>
+  )
+}
+
 function ResultScreen({
   result,
   onRestart,
@@ -432,6 +504,7 @@ export default function StackTraceGame() {
   const [ready, setReady] = useState(false)
   const [renderingFailed, setRenderingFailed] = useState(false)
   const [paused, setPaused] = useState(false)
+  const [mapOpen, setMapOpen] = useState(false)
   const [hud, setHud] = useState(initialHudState)
   const [screen, setScreen] = useState<ScreenState>({ status: 'briefing' })
   const [inputMode, setInputMode] = useState<GameInputMode>('pointer')
@@ -454,19 +527,32 @@ export default function StackTraceGame() {
     }
   }, [])
 
-  const requestMobileFullscreen = () => {
+  const requestMobileFullscreen = useCallback(() => {
     const page = pageRef.current
     if (!page?.requestFullscreen || document.fullscreenElement) return
     void page.requestFullscreen().catch(() => undefined)
-  }
+  }, [])
 
-  const launch = () => {
-    if (!apiRef.current || renderingFailed) return
+  const launch = useCallback(() => {
+    if (!ready || !apiRef.current || renderingFailed) return
     if (inputMode === 'touch') requestMobileFullscreen()
     setPaused(false)
+    setMapOpen(false)
     setScreen({ status: 'playing' })
     apiRef.current.start(inputMode, { sensitivity })
-  }
+  }, [inputMode, ready, renderingFailed, requestMobileFullscreen, sensitivity])
+
+  useEffect(() => {
+    if (screen.status !== 'briefing') return
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.code !== 'Enter' || event.repeat) return
+      event.preventDefault()
+      event.stopImmediatePropagation()
+      launch()
+    }
+    window.addEventListener('keydown', handleKeyDown, true)
+    return () => window.removeEventListener('keydown', handleKeyDown, true)
+  }, [launch, screen.status])
 
   const resume = () => {
     setPaused(false)
@@ -488,8 +574,10 @@ export default function StackTraceGame() {
           onError={() => setRenderingFailed(true)}
           onHudChange={setHud}
           onPauseChange={setPaused}
+          onMapChange={setMapOpen}
           onEnd={(result) => {
             setPaused(false)
+            setMapOpen(false)
             setScreen({ status: 'result', result })
           }}
         />
@@ -509,17 +597,27 @@ export default function StackTraceGame() {
           onLaunch={launch}
         />
       )}
-      {screen.status === 'playing' && (
+      {screen.status === 'playing' && !mapOpen && (
         <MissionHud hud={hud} inputMode={inputMode} />
       )}
-      {screen.status === 'playing' && inputMode === 'touch' && !paused && (
-        <StackTraceTouchControls
-          apiRef={apiRef}
-          isPortrait={isPortrait}
-          onPause={() => apiRef.current?.pause()}
+      {screen.status === 'playing' &&
+        inputMode === 'touch' &&
+        !paused &&
+        !mapOpen && (
+          <StackTraceTouchControls
+            apiRef={apiRef}
+            isPortrait={isPortrait}
+            onPause={() => apiRef.current?.pause()}
+            onMap={() => apiRef.current?.toggleMap()}
+          />
+        )}
+      {screen.status === 'playing' && mapOpen && (
+        <AutomapOverlay
+          inputMode={inputMode}
+          onClose={() => apiRef.current?.toggleMap()}
         />
       )}
-      {screen.status === 'playing' && paused && (
+      {screen.status === 'playing' && paused && !mapOpen && (
         <PauseScreen inputMode={inputMode} onResume={resume} />
       )}
       {screen.status === 'result' && (

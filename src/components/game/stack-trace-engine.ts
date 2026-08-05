@@ -9,10 +9,17 @@ import type {
   TouchGameSettings,
 } from './stack-trace-types'
 import {
+  createStackTraceAutomap,
+  disposeStackTraceAutomap,
+  updateStackTraceAutomap,
+} from './stack-trace-map'
+import type { StackTraceAutomap } from './stack-trace-map'
+import {
   createBugVisual,
   createFaultVisual,
   createLevelWorld,
   createRootVisual,
+  connections,
   enemySpecs,
   exitPosition,
   faultSpecs,
@@ -29,6 +36,7 @@ import type {
 type EngineCallbacks = {
   onHudChange: (hud: GameHudState) => void
   onPauseChange: (paused: boolean) => void
+  onMapChange: (open: boolean) => void
   onEnd: (result: GameResult) => void
 }
 
@@ -81,11 +89,13 @@ type Burst = {
 }
 
 const PLAYER_RADIUS = 0.58
-const PLAYER_SPEED = 10
-const PLAYER_ACCELERATION = 25
+const PLAYER_SPEED = 12
+const PLAYER_ACCELERATION = 30
 const SHOT_COOLDOWN = 0.16
 const DESKTOP_ESCAPE_DURATION = 45
 const TOUCH_ESCAPE_DURATION = 60
+const MAP_CHAMBER_HALF = 5.25
+const MAP_TUNNEL_RADIUS = 3.4
 
 const faultColors = ['#335cff', '#d9ff43', '#ff694a'] as const
 
@@ -111,7 +121,10 @@ export default class StackTraceEngine {
   private readonly renderer: THREE.WebGLRenderer
   private readonly clock = new THREE.Clock()
   private readonly world: LevelWorld
+  private readonly automap: StackTraceAutomap
   private readonly keys = new Set<string>()
+  private readonly discoveredRooms = new Set<RoomId>()
+  private readonly discoveredTunnels = new Set<number>()
   private readonly velocity = new THREE.Vector3()
   private readonly moveVector = new THREE.Vector3()
   private readonly forward = new THREE.Vector3()
@@ -122,6 +135,10 @@ export default class StackTraceEngine {
   private readonly segment = new THREE.Line3()
   private readonly closestPoint = new THREE.Vector3()
   private readonly aimDirection = new THREE.Vector3()
+  private readonly mapCenter = new THREE.Vector3()
+  private readonly mapBounds = new THREE.Box3()
+  private readonly mapBoundsSize = new THREE.Vector3()
+  private readonly mapCameraOffset = new THREE.Vector3()
   private readonly enemies: Array<Enemy>
   private readonly faults: Array<Fault>
   private readonly root: RootBug
@@ -138,6 +155,13 @@ export default class StackTraceEngine {
   }
   private touchSensitivity = 1
   private paused = true
+  private mapOpen = false
+  private mapPointerId: number | null = null
+  private mapPointerX = 0
+  private mapPointerY = 0
+  private mapOrbitYaw = 0.72
+  private mapOrbitPitch = 0.62
+  private mapDistance = 48
   private doorLocked = true
   private firing = false
   private yaw = 0
@@ -193,6 +217,7 @@ export default class StackTraceEngine {
     }
 
     this.world = createLevelWorld(this.scene)
+    this.automap = createStackTraceAutomap()
     this.faults = faultSpecs.map((spec, index) => {
       const visual = createFaultVisual(faultColors[index] ?? '#ff694a')
       visual.group.position.set(
@@ -258,6 +283,11 @@ export default class StackTraceEngine {
     window.addEventListener('mousemove', this.handleMouseMove)
     window.addEventListener('blur', this.handleBlur)
     canvas.addEventListener('contextmenu', this.handleContextMenu)
+    canvas.addEventListener('pointerdown', this.handleMapPointerDown)
+    canvas.addEventListener('pointermove', this.handleMapPointerMove)
+    canvas.addEventListener('pointerup', this.handleMapPointerUp)
+    canvas.addEventListener('pointercancel', this.handleMapPointerUp)
+    canvas.addEventListener('wheel', this.handleMapWheel, { passive: false })
     document.addEventListener('pointerlockchange', this.handlePointerLockChange)
     document.addEventListener('visibilitychange', this.handleVisibilityChange)
     this.renderer.setAnimationLoop(this.animate)
@@ -275,6 +305,7 @@ export default class StackTraceEngine {
     this.resize()
     this.resetMission()
     this.mode = 'hunt'
+    this.callbacks.onMapChange(false)
     this.emitHud()
     if (this.inputMode === 'touch') {
       this.paused = false
@@ -296,6 +327,11 @@ export default class StackTraceEngine {
 
   pause = () => {
     if (this.mode !== 'hunt' && this.mode !== 'escape') return
+    if (this.mapOpen) {
+      this.mapOpen = false
+      this.mapPointerId = null
+      this.callbacks.onMapChange(false)
+    }
     this.paused = true
     this.firing = false
     this.keys.clear()
@@ -304,6 +340,35 @@ export default class StackTraceEngine {
       document.exitPointerLock()
     }
     this.callbacks.onPauseChange(true)
+  }
+
+  toggleMap = () => {
+    if (this.mode !== 'hunt' && this.mode !== 'escape') return
+    if (this.mapOpen) {
+      this.mapOpen = false
+      this.mapPointerId = null
+      this.callbacks.onMapChange(false)
+      if (this.inputMode === 'touch') {
+        this.paused = false
+        this.callbacks.onPauseChange(false)
+      } else {
+        this.requestPointerLock()
+      }
+      return
+    }
+    if (this.paused) return
+
+    this.mapOpen = true
+    this.paused = true
+    this.firing = false
+    this.keys.clear()
+    this.resetTouchInput()
+    this.updateMapDiscovery()
+    this.fitAutomap()
+    this.callbacks.onMapChange(true)
+    if (document.pointerLockElement === this.canvas) {
+      document.exitPointerLock()
+    }
   }
 
   setTouchInput = (input: Partial<TouchFlightInput>) => {
@@ -370,6 +435,11 @@ export default class StackTraceEngine {
     window.removeEventListener('mousemove', this.handleMouseMove)
     window.removeEventListener('blur', this.handleBlur)
     this.canvas.removeEventListener('contextmenu', this.handleContextMenu)
+    this.canvas.removeEventListener('pointerdown', this.handleMapPointerDown)
+    this.canvas.removeEventListener('pointermove', this.handleMapPointerMove)
+    this.canvas.removeEventListener('pointerup', this.handleMapPointerUp)
+    this.canvas.removeEventListener('pointercancel', this.handleMapPointerUp)
+    this.canvas.removeEventListener('wheel', this.handleMapWheel)
     document.removeEventListener(
       'pointerlockchange',
       this.handlePointerLockChange,
@@ -408,6 +478,7 @@ export default class StackTraceEngine {
       material.dispose()
     })
     textures.forEach((texture) => texture.dispose())
+    disposeStackTraceAutomap(this.automap)
     this.renderer.dispose()
   }
 
@@ -418,6 +489,9 @@ export default class StackTraceEngine {
     this.renderer.setSize(width, height, false)
     this.camera.aspect = width / height
     this.camera.updateProjectionMatrix()
+    this.automap.camera.aspect = width / height
+    this.automap.camera.updateProjectionMatrix()
+    if (this.mapOpen) this.fitAutomap()
   }
 
   private applyRendererPixelRatio() {
@@ -531,6 +605,11 @@ export default class StackTraceEngine {
   private resetMission() {
     this.mode = 'idle'
     this.paused = true
+    this.mapOpen = false
+    this.mapPointerId = null
+    this.discoveredRooms.clear()
+    this.discoveredRooms.add('surface')
+    this.discoveredTunnels.clear()
     this.doorLocked = true
     this.firing = false
     this.keys.clear()
@@ -580,6 +659,7 @@ export default class StackTraceEngine {
     this.root.visual.group.visible = true
     this.root.visual.group.scale.setScalar(1)
     setObjectOpacity(this.root.visual.group, 1)
+    this.syncAutomap()
     this.projectiles.forEach((projectile) =>
       this.deactivateProjectile(projectile),
     )
@@ -620,6 +700,7 @@ export default class StackTraceEngine {
   private readonly handlePointerLockChange = () => {
     if (this.inputMode !== 'pointer') return
     if (this.mode !== 'hunt' && this.mode !== 'escape') return
+    if (this.mapOpen) return
     this.paused = document.pointerLockElement !== this.canvas
     if (this.paused) {
       this.firing = false
@@ -630,6 +711,18 @@ export default class StackTraceEngine {
 
   private readonly handleKeyDown = (event: KeyboardEvent) => {
     if (this.mode !== 'hunt' && this.mode !== 'escape') return
+    if (
+      !event.repeat &&
+      (event.code === 'KeyM' || (this.mapOpen && event.code === 'Escape'))
+    ) {
+      event.preventDefault()
+      this.toggleMap()
+      return
+    }
+    if (this.mapOpen) {
+      event.preventDefault()
+      return
+    }
     if (
       [
         'KeyW',
@@ -696,6 +789,46 @@ export default class StackTraceEngine {
     event.preventDefault()
   }
 
+  private readonly handleMapPointerDown = (event: PointerEvent) => {
+    if (!this.mapOpen || this.mapPointerId !== null) return
+    this.mapPointerId = event.pointerId
+    this.mapPointerX = event.clientX
+    this.mapPointerY = event.clientY
+    this.canvas.setPointerCapture(event.pointerId)
+  }
+
+  private readonly handleMapPointerMove = (event: PointerEvent) => {
+    if (!this.mapOpen || this.mapPointerId !== event.pointerId) return
+    const deltaX = event.clientX - this.mapPointerX
+    const deltaY = event.clientY - this.mapPointerY
+    this.mapPointerX = event.clientX
+    this.mapPointerY = event.clientY
+    this.mapOrbitYaw += deltaX * 0.006
+    this.mapOrbitPitch = THREE.MathUtils.clamp(
+      this.mapOrbitPitch + deltaY * 0.005,
+      -1.3,
+      1.3,
+    )
+  }
+
+  private readonly handleMapPointerUp = (event: PointerEvent) => {
+    if (this.mapPointerId !== event.pointerId) return
+    this.mapPointerId = null
+    if (this.canvas.hasPointerCapture(event.pointerId)) {
+      this.canvas.releasePointerCapture(event.pointerId)
+    }
+  }
+
+  private readonly handleMapWheel = (event: WheelEvent) => {
+    if (!this.mapOpen) return
+    event.preventDefault()
+    this.mapDistance = THREE.MathUtils.clamp(
+      this.mapDistance * Math.exp(event.deltaY * 0.001),
+      18,
+      220,
+    )
+  }
+
   private readonly animate = () => {
     const frameDelta = this.clock.getDelta()
     const delta = Math.min(frameDelta, 0.04)
@@ -735,7 +868,119 @@ export default class StackTraceEngine {
       this.updateBursts(delta)
     }
 
-    this.renderer.render(this.scene, this.camera)
+    if (this.mapOpen) {
+      this.renderAutomap()
+    } else {
+      this.renderer.render(this.scene, this.camera)
+    }
+  }
+
+  private updateMapDiscovery() {
+    this.world.rooms.forEach((room, roomId) => {
+      const [x, y, z] = room.center
+      if (
+        Math.abs(this.camera.position.x - x) <= MAP_CHAMBER_HALF &&
+        Math.abs(this.camera.position.y - y) <= MAP_CHAMBER_HALF &&
+        Math.abs(this.camera.position.z - z) <= MAP_CHAMBER_HALF
+      ) {
+        this.discoveredRooms.add(roomId)
+      }
+    })
+
+    connections.forEach(([fromId, toId], index) => {
+      const from = this.world.rooms.get(fromId)
+      const to = this.world.rooms.get(toId)
+      if (!from || !to) return
+      const fromCenter = from.center
+      const toCenter = to.center
+      const axisIndex =
+        fromCenter[0] !== toCenter[0]
+          ? 0
+          : fromCenter[1] !== toCenter[1]
+            ? 1
+            : 2
+      const coordinate = this.camera.position.getComponent(axisIndex)
+      const minimum =
+        Math.min(fromCenter[axisIndex], toCenter[axisIndex]) + MAP_CHAMBER_HALF
+      const maximum =
+        Math.max(fromCenter[axisIndex], toCenter[axisIndex]) - MAP_CHAMBER_HALF
+      if (coordinate < minimum || coordinate > maximum) return
+
+      const transverseAxes = [0, 1, 2].filter(
+        (candidate) => candidate !== axisIndex,
+      )
+      const transverseDistance = Math.hypot(
+        this.camera.position.getComponent(transverseAxes[0] ?? 0) -
+          fromCenter[transverseAxes[0] ?? 0],
+        this.camera.position.getComponent(transverseAxes[1] ?? 1) -
+          fromCenter[transverseAxes[1] ?? 1],
+      )
+      if (transverseDistance <= MAP_TUNNEL_RADIUS) {
+        this.discoveredTunnels.add(index)
+      }
+    })
+  }
+
+  private fitAutomap() {
+    this.mapBounds.makeEmpty()
+    this.world.rooms.forEach((room) => {
+      this.mapCameraOffset.set(...room.center)
+      this.mapBounds.expandByPoint(this.mapCameraOffset)
+    })
+    this.mapBounds.expandByPoint(this.camera.position)
+    this.mapBounds.expandByScalar(6)
+    this.mapBounds.getCenter(this.mapCenter)
+    this.mapBounds.getSize(this.mapBoundsSize)
+
+    const verticalFov = THREE.MathUtils.degToRad(this.automap.camera.fov)
+    const horizontalFov =
+      2 *
+      Math.atan(
+        Math.tan(verticalFov / 2) * Math.max(this.automap.camera.aspect, 0.1),
+      )
+    const fittingFov = Math.min(verticalFov, horizontalFov)
+    const radius = Math.max(this.mapBoundsSize.length() / 2, 8)
+    this.mapDistance = THREE.MathUtils.clamp(
+      (radius / Math.sin(fittingFov / 2)) * 1.08,
+      28,
+      220,
+    )
+  }
+
+  private syncAutomap() {
+    updateStackTraceAutomap(
+      this.automap,
+      this.discoveredRooms,
+      this.discoveredTunnels,
+      this.camera.position,
+      this.camera.quaternion,
+    )
+    this.automap.enemies.forEach((marker, index) => {
+      const enemy = this.enemies[index]
+      marker.visible = enemy?.alive ?? false
+      if (enemy) marker.position.copy(enemy.visual.group.position)
+    })
+    this.automap.faults.forEach((marker, index) => {
+      const fault = this.faults[index]
+      marker.visible = fault?.alive ?? false
+      if (fault) marker.position.copy(fault.visual.group.position)
+    })
+    this.automap.rootEnemy.visible = this.root.alive
+    this.automap.rootEnemy.position.copy(rootPosition)
+  }
+
+  private renderAutomap() {
+    this.syncAutomap()
+    const horizontalDistance = Math.cos(this.mapOrbitPitch) * this.mapDistance
+    this.mapCameraOffset.set(
+      Math.cos(this.mapOrbitYaw) * horizontalDistance,
+      Math.sin(this.mapOrbitPitch) * this.mapDistance,
+      Math.sin(this.mapOrbitYaw) * horizontalDistance,
+    )
+    this.automap.camera.position.copy(this.mapCenter).add(this.mapCameraOffset)
+    this.automap.camera.up.set(0, 1, 0)
+    this.automap.camera.lookAt(this.mapCenter)
+    this.renderer.render(this.automap.scene, this.automap.camera)
   }
 
   private animateWorld(time: number, delta: number) {
@@ -830,6 +1075,7 @@ export default class StackTraceEngine {
         this.velocity[axis] = 0
       }
     })
+    this.updateMapDiscovery()
   }
 
   private canOccupy(position: THREE.Vector3, radius: number) {

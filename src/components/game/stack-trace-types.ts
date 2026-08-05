@@ -49,6 +49,7 @@ export type StackTraceGameApi = {
   start: (mode: GameInputMode, settings?: TouchGameSettings) => void
   resume: () => void
   pause: () => void
+  toggleMap: () => void
   setTouchInput: (input: Partial<TouchFlightInput>) => void
   addTouchLook: (deltaX: number, deltaY: number) => void
   setTouchFiring: (firing: boolean) => void

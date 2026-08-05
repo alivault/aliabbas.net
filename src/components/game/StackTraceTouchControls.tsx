@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent, RefObject } from 'react'
-import { ChevronDown, ChevronUp, Crosshair, Pause } from 'lucide-react'
+import {
+  ChevronDown,
+  ChevronUp,
+  Crosshair,
+  Map as MapIcon,
+  Pause,
+} from 'lucide-react'
 import type { StackTraceGameApi } from './stack-trace-types'
 
 const JOYSTICK_RADIUS = 42
@@ -9,10 +15,12 @@ export default function StackTraceTouchControls({
   apiRef,
   isPortrait,
   onPause,
+  onMap,
 }: {
   apiRef: RefObject<StackTraceGameApi | null>
   isPortrait: boolean
   onPause: () => void
+  onMap: () => void
 }) {
   const joystickRef = useRef<HTMLDivElement>(null)
   const joystickPointer = useRef<number | null>(null)
@@ -131,14 +139,26 @@ export default function StackTraceTouchControls({
         onPointerCancel={cancelLook}
       />
 
-      <button
-        type="button"
-        onClick={onPause}
-        className={`pointer-events-auto absolute left-1/2 flex -translate-x-1/2 items-center justify-center rounded-full border border-white/20 bg-black/35 text-white/65 backdrop-blur-sm ${pausePosition} ${isPortrait ? 'size-9' : 'size-10'}`}
-        aria-label="Pause Stack Trace"
+      <div
+        className={`pointer-events-auto absolute left-1/2 flex -translate-x-1/2 gap-2 ${pausePosition}`}
       >
-        <Pause className="size-4" fill="currentColor" />
-      </button>
+        <button
+          type="button"
+          onClick={onMap}
+          className={`flex items-center justify-center rounded-full border border-white/20 bg-black/35 text-white/65 backdrop-blur-sm ${isPortrait ? 'size-9' : 'size-10'}`}
+          aria-label="Open wireframe map"
+        >
+          <MapIcon className="size-4" />
+        </button>
+        <button
+          type="button"
+          onClick={onPause}
+          className={`flex items-center justify-center rounded-full border border-white/20 bg-black/35 text-white/65 backdrop-blur-sm ${isPortrait ? 'size-9' : 'size-10'}`}
+          aria-label="Pause Stack Trace"
+        >
+          <Pause className="size-4" fill="currentColor" />
+        </button>
+      </div>
 
       <div
         ref={joystickRef}
