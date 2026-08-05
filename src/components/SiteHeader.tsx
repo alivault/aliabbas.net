@@ -16,6 +16,7 @@ const navigation = [
   { label: 'Capabilities', to: '/capabilities' as const },
   { label: 'Experience', to: '/experience' as const },
   { label: 'Notes', to: '/notes' as const },
+  { label: 'Ask AI', to: '/chat' as const },
 ] as const
 
 const mobileMenuVariants: Variants = {

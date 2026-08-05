@@ -4,6 +4,20 @@
   "compatibility_date": "2025-12-09",
   "compatibility_flags": ["nodejs_compat"],
   "main": "@tanstack/react-start/server-entry",
+  "ai": {
+    "binding": "AI",
+    "remote": true,
+  },
+  "ratelimits": [
+    {
+      "name": "CHAT_RATE_LIMITER",
+      "namespace_id": "2026032601",
+      "simple": {
+        "limit": 12,
+        "period": 60,
+      },
+    },
+  ],
   "routes": [
     {
       "pattern": "aliabbas.dev",

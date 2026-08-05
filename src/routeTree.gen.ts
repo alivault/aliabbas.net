@@ -12,11 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArticlesRouteImport } from './routes/articles'
 import { Route as CapabilitiesRouteImport } from './routes/capabilities'
+import { Route as ChatRouteImport } from './routes/chat'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ExperienceRouteImport } from './routes/experience'
 import { Route as NotesRouteImport } from './routes/notes'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as WorkRouteImport } from './routes/work'
+import { Route as ApiChatRouteImport } from './routes/api.chat'
 import { Route as ArticleSlugRouteImport } from './routes/article.$slug'
 import { Route as NotesSlugRouteImport } from './routes/notes_.$slug'
 import { Route as ApiAuthSplatRouteImport } from './routes/api.auth.$'
@@ -34,6 +36,11 @@ const ArticlesRoute = ArticlesRouteImport.update({
 const CapabilitiesRoute = CapabilitiesRouteImport.update({
   id: '/capabilities',
   path: '/capabilities',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -61,6 +68,11 @@ const WorkRoute = WorkRouteImport.update({
   path: '/work',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiChatRoute = ApiChatRouteImport.update({
+  id: '/api/chat',
+  path: '/api/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ArticleSlugRoute = ArticleSlugRouteImport.update({
   id: '/article/$slug',
   path: '/article/$slug',
@@ -81,11 +93,13 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/articles': typeof ArticlesRoute
   '/capabilities': typeof CapabilitiesRoute
+  '/chat': typeof ChatRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
   '/notes': typeof NotesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/work': typeof WorkRoute
+  '/api/chat': typeof ApiChatRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -94,11 +108,13 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/articles': typeof ArticlesRoute
   '/capabilities': typeof CapabilitiesRoute
+  '/chat': typeof ChatRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
   '/notes': typeof NotesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/work': typeof WorkRoute
+  '/api/chat': typeof ApiChatRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -108,11 +124,13 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/articles': typeof ArticlesRoute
   '/capabilities': typeof CapabilitiesRoute
+  '/chat': typeof ChatRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
   '/notes': typeof NotesRoute
   '/reset-password': typeof ResetPasswordRoute
   '/work': typeof WorkRoute
+  '/api/chat': typeof ApiChatRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/notes_/$slug': typeof NotesSlugRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -123,11 +141,13 @@ export interface FileRouteTypes {
     | '/'
     | '/articles'
     | '/capabilities'
+    | '/chat'
     | '/contact'
     | '/experience'
     | '/notes'
     | '/reset-password'
     | '/work'
+    | '/api/chat'
     | '/article/$slug'
     | '/notes/$slug'
     | '/api/auth/$'
@@ -136,11 +156,13 @@ export interface FileRouteTypes {
     | '/'
     | '/articles'
     | '/capabilities'
+    | '/chat'
     | '/contact'
     | '/experience'
     | '/notes'
     | '/reset-password'
     | '/work'
+    | '/api/chat'
     | '/article/$slug'
     | '/notes/$slug'
     | '/api/auth/$'
@@ -149,11 +171,13 @@ export interface FileRouteTypes {
     | '/'
     | '/articles'
     | '/capabilities'
+    | '/chat'
     | '/contact'
     | '/experience'
     | '/notes'
     | '/reset-password'
     | '/work'
+    | '/api/chat'
     | '/article/$slug'
     | '/notes_/$slug'
     | '/api/auth/$'
@@ -163,11 +187,13 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ArticlesRoute: typeof ArticlesRoute
   CapabilitiesRoute: typeof CapabilitiesRoute
+  ChatRoute: typeof ChatRoute
   ContactRoute: typeof ContactRoute
   ExperienceRoute: typeof ExperienceRoute
   NotesRoute: typeof NotesRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   WorkRoute: typeof WorkRoute
+  ApiChatRoute: typeof ApiChatRoute
   ArticleSlugRoute: typeof ArticleSlugRoute
   NotesSlugRoute: typeof NotesSlugRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -194,6 +220,13 @@ declare module '@tanstack/react-router' {
       path: '/capabilities'
       fullPath: '/capabilities'
       preLoaderRoute: typeof CapabilitiesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -231,6 +264,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/chat': {
+      id: '/api/chat'
+      path: '/api/chat'
+      fullPath: '/api/chat'
+      preLoaderRoute: typeof ApiChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/article/$slug': {
       id: '/article/$slug'
       path: '/article/$slug'
@@ -259,11 +299,13 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ArticlesRoute: ArticlesRoute,
   CapabilitiesRoute: CapabilitiesRoute,
+  ChatRoute: ChatRoute,
   ContactRoute: ContactRoute,
   ExperienceRoute: ExperienceRoute,
   NotesRoute: NotesRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   WorkRoute: WorkRoute,
+  ApiChatRoute: ApiChatRoute,
   ArticleSlugRoute: ArticleSlugRoute,
   NotesSlugRoute: NotesSlugRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
