@@ -1,9 +1,12 @@
 import * as THREE from 'three'
 import type {
+  GameInputMode,
   GameHudState,
   GameResult,
   MissionPhase,
   StackFrame,
+  TouchFlightInput,
+  TouchGameSettings,
 } from './stack-trace-types'
 import {
   createBugVisual,
@@ -81,13 +84,14 @@ const PLAYER_RADIUS = 0.58
 const PLAYER_SPEED = 10
 const PLAYER_ACCELERATION = 25
 const SHOT_COOLDOWN = 0.16
-const ESCAPE_DURATION = 45
+const DESKTOP_ESCAPE_DURATION = 45
+const TOUCH_ESCAPE_DURATION = 60
 
 const faultColors = ['#335cff', '#d9ff43', '#ff694a'] as const
 
 function setObjectOpacity(object: THREE.Object3D, opacity: number) {
   object.traverse((child) => {
-    if (!(child instanceof THREE.Mesh)) return
+    if (!(child instanceof THREE.Mesh || child instanceof THREE.Sprite)) return
     const materials = Array.isArray(child.material)
       ? child.material
       : [child.material]
@@ -101,6 +105,7 @@ function setObjectOpacity(object: THREE.Object3D, opacity: number) {
 export default class StackTraceEngine {
   private readonly canvas: HTMLCanvasElement
   private readonly callbacks: EngineCallbacks
+  private readonly likelyTouchDevice: boolean
   private readonly scene = new THREE.Scene()
   private readonly camera = new THREE.PerspectiveCamera(72, 1, 0.06, 140)
   private readonly renderer: THREE.WebGLRenderer
@@ -116,27 +121,22 @@ export default class StackTraceEngine {
   private readonly previousProjectilePosition = new THREE.Vector3()
   private readonly segment = new THREE.Line3()
   private readonly closestPoint = new THREE.Vector3()
+  private readonly aimDirection = new THREE.Vector3()
   private readonly enemies: Array<Enemy>
   private readonly faults: Array<Fault>
   private readonly root: RootBug
   private readonly projectiles: Array<Projectile> = []
   private readonly bursts: Array<Burst> = []
-  private readonly traceGeometry = new THREE.BufferGeometry()
-  private readonly traceMaterial = new THREE.LineBasicMaterial({
-    color: '#ff694a',
-    transparent: true,
-    opacity: 0.72,
-    depthTest: false,
-    depthWrite: false,
-    toneMapped: false,
-  })
-  private readonly traceLine: THREE.Line
-  private readonly tracePulse: THREE.Mesh
-  private readonly tracePoints: Array<THREE.Vector3> = []
-  private readonly traceLengths: Array<number> = []
   private readonly resizeObserver: ResizeObserver
 
   private mode: MissionPhase = 'idle'
+  private inputMode: GameInputMode = 'pointer'
+  private touchInput: TouchFlightInput = {
+    forward: 0,
+    strafe: 0,
+    vertical: 0,
+  }
+  private touchSensitivity = 1
   private paused = true
   private doorLocked = true
   private firing = false
@@ -144,9 +144,9 @@ export default class StackTraceEngine {
   private pitch = 0
   private roll = 0
   private elapsed = 0
-  private escapeTime = ESCAPE_DURATION
+  private escapeTime = DESKTOP_ESCAPE_DURATION
   private fireCooldown = 0
-  private traceRefreshCooldown = 0
+  private objectiveRefreshCooldown = 0
   private hudRefreshCooldown = 0
   private playerDamageCooldown = 0
   private shotsFired = 0
@@ -154,25 +154,31 @@ export default class StackTraceEngine {
   private bugsPurged = 0
   private hitPulse = 0
   private damagePulse = 0
-  private traceFromRoom: RoomId | null = null
+  private objectiveFromRoom: RoomId | null = null
   private currentTargetFaultId: string | null = null
   private currentTargetPosition = new THREE.Vector3()
   private currentTargetLabel = 'Follow the failure to its source'
   private disposed = false
   private lockRequestTimer: number | undefined
+  private renderScale = 1
+  private performanceElapsed = 0
+  private performanceFrames = 0
 
   constructor(canvas: HTMLCanvasElement, callbacks: EngineCallbacks) {
     this.canvas = canvas
     this.callbacks = callbacks
+    this.likelyTouchDevice = window.matchMedia(
+      '(hover: none), (pointer: coarse)',
+    ).matches
     this.scene.background = new THREE.Color('#050608')
     this.scene.fog = new THREE.Fog('#050608', 12, 72)
 
     this.renderer = new THREE.WebGLRenderer({
       canvas,
-      antialias: true,
+      antialias: !this.likelyTouchDevice,
       powerPreference: 'high-performance',
     })
-    this.renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.6))
+    this.applyRendererPixelRatio()
     this.renderer.outputColorSpace = THREE.SRGBColorSpace
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping
     this.renderer.toneMappingExposure = 1.15
@@ -180,9 +186,11 @@ export default class StackTraceEngine {
     this.scene.add(new THREE.HemisphereLight('#8da4ff', '#10100f', 1.15))
     this.scene.add(new THREE.AmbientLight('#cbd3ff', 0.55))
     this.addZoneLight('#335cff', new THREE.Vector3(0, 0, -28))
-    this.addZoneLight('#d9ff43', new THREE.Vector3(0, -24, -28))
     this.addZoneLight('#ff694a', new THREE.Vector3(0, -24, -56))
-    this.addZoneLight('#8da4ff', new THREE.Vector3(0, -48, -56))
+    if (!this.likelyTouchDevice) {
+      this.addZoneLight('#d9ff43', new THREE.Vector3(0, -24, -28))
+      this.addZoneLight('#8da4ff', new THREE.Vector3(0, -48, -56))
+    }
 
     this.world = createLevelWorld(this.scene)
     this.faults = faultSpecs.map((spec, index) => {
@@ -232,27 +240,11 @@ export default class StackTraceEngine {
       lastShot: -10,
     }
 
-    this.traceLine = new THREE.Line(this.traceGeometry, this.traceMaterial)
-    this.traceLine.renderOrder = 50
-    this.scene.add(this.traceLine)
-    const tracePulseMaterial = new THREE.MeshBasicMaterial({
-      color: '#ff694a',
-      depthTest: false,
-      depthWrite: false,
-      toneMapped: false,
-    })
-    this.tracePulse = new THREE.Mesh(
-      new THREE.OctahedronGeometry(0.17, 0),
-      tracePulseMaterial,
-    )
-    this.tracePulse.renderOrder = 51
-    this.scene.add(this.tracePulse)
-
     this.createProjectilePool()
     this.createBurstPool()
     this.camera.position.copy(startPosition)
     this.camera.rotation.set(0, 0, 0, 'YXZ')
-    this.refreshTrace(true)
+    this.refreshObjective(true)
     this.emitHud()
 
     this.resizeObserver = new ResizeObserver(this.resize)
@@ -267,19 +259,103 @@ export default class StackTraceEngine {
     window.addEventListener('blur', this.handleBlur)
     canvas.addEventListener('contextmenu', this.handleContextMenu)
     document.addEventListener('pointerlockchange', this.handlePointerLockChange)
+    document.addEventListener('visibilitychange', this.handleVisibilityChange)
     this.renderer.setAnimationLoop(this.animate)
   }
 
-  start = () => {
+  start = (mode: GameInputMode, settings?: TouchGameSettings) => {
+    this.inputMode = mode
+    this.touchSensitivity = THREE.MathUtils.clamp(
+      settings?.sensitivity ?? 1,
+      0.65,
+      1.5,
+    )
+    this.renderScale = 1
+    this.applyRendererPixelRatio()
+    this.resize()
     this.resetMission()
     this.mode = 'hunt'
     this.emitHud()
-    this.requestPointerLock()
+    if (this.inputMode === 'touch') {
+      this.paused = false
+      this.callbacks.onPauseChange(false)
+    } else {
+      this.requestPointerLock()
+    }
   }
 
   resume = () => {
     if (this.mode !== 'hunt' && this.mode !== 'escape') return
-    this.requestPointerLock()
+    if (this.inputMode === 'touch') {
+      this.paused = false
+      this.callbacks.onPauseChange(false)
+    } else {
+      this.requestPointerLock()
+    }
+  }
+
+  pause = () => {
+    if (this.mode !== 'hunt' && this.mode !== 'escape') return
+    this.paused = true
+    this.firing = false
+    this.keys.clear()
+    this.resetTouchInput()
+    if (document.pointerLockElement === this.canvas) {
+      document.exitPointerLock()
+    }
+    this.callbacks.onPauseChange(true)
+  }
+
+  setTouchInput = (input: Partial<TouchFlightInput>) => {
+    if (this.inputMode !== 'touch') return
+    this.touchInput = {
+      forward: THREE.MathUtils.clamp(
+        input.forward ?? this.touchInput.forward,
+        -1,
+        1,
+      ),
+      strafe: THREE.MathUtils.clamp(
+        input.strafe ?? this.touchInput.strafe,
+        -1,
+        1,
+      ),
+      vertical: THREE.MathUtils.clamp(
+        input.vertical ?? this.touchInput.vertical,
+        -1,
+        1,
+      ),
+    }
+  }
+
+  addTouchLook = (deltaX: number, deltaY: number) => {
+    if (
+      this.inputMode !== 'touch' ||
+      this.paused ||
+      (this.mode !== 'hunt' && this.mode !== 'escape')
+    ) {
+      return
+    }
+    const sensitivity = 0.0032 * this.touchSensitivity
+    this.yaw -= deltaX * sensitivity
+    this.pitch -= deltaY * sensitivity
+    this.pitch = THREE.MathUtils.clamp(this.pitch, -1.48, 1.48)
+  }
+
+  setTouchFiring = (firing: boolean) => {
+    if (this.inputMode !== 'touch') return
+    this.firing = firing
+  }
+
+  fireTouch = () => {
+    if (
+      this.inputMode !== 'touch' ||
+      this.paused ||
+      this.fireCooldown > 0 ||
+      (this.mode !== 'hunt' && this.mode !== 'escape')
+    ) {
+      return
+    }
+    this.firePlayerProjectile()
   }
 
   dispose = () => {
@@ -298,6 +374,10 @@ export default class StackTraceEngine {
       'pointerlockchange',
       this.handlePointerLockChange,
     )
+    document.removeEventListener(
+      'visibilitychange',
+      this.handleVisibilityChange,
+    )
     if (this.lockRequestTimer !== undefined) {
       window.clearTimeout(this.lockRequestTimer)
     }
@@ -305,25 +385,29 @@ export default class StackTraceEngine {
       document.exitPointerLock()
     }
 
-    const geometries = new Set<THREE.BufferGeometry>()
     const materials = new Set<THREE.Material>()
+    const geometries = new Set<THREE.BufferGeometry>()
+    const textures = new Set<THREE.Texture>()
     this.scene.traverse((object) => {
-      if (
-        !(
-          object instanceof THREE.Mesh ||
-          object instanceof THREE.Line ||
-          object instanceof THREE.Points
-        )
-      )
-        return
-      geometries.add(object.geometry)
+      const hasGeometry =
+        object instanceof THREE.Mesh ||
+        object instanceof THREE.Line ||
+        object instanceof THREE.Points
+      if (hasGeometry) geometries.add(object.geometry)
+      if (!(hasGeometry || object instanceof THREE.Sprite)) return
       const objectMaterials = Array.isArray(object.material)
         ? object.material
         : [object.material]
       objectMaterials.forEach((material) => materials.add(material))
     })
     geometries.forEach((geometry) => geometry.dispose())
-    materials.forEach((material) => material.dispose())
+    materials.forEach((material) => {
+      const map = (material as THREE.Material & { map?: THREE.Texture | null })
+        .map
+      if (map) textures.add(map)
+      material.dispose()
+    })
+    textures.forEach((texture) => texture.dispose())
     this.renderer.dispose()
   }
 
@@ -334,6 +418,41 @@ export default class StackTraceEngine {
     this.renderer.setSize(width, height, false)
     this.camera.aspect = width / height
     this.camera.updateProjectionMatrix()
+  }
+
+  private applyRendererPixelRatio() {
+    const mobileRendering = this.likelyTouchDevice || this.inputMode === 'touch'
+    const cap = mobileRendering ? 1.25 : 1.6
+    this.renderer?.setPixelRatio(
+      Math.min(window.devicePixelRatio, cap) * this.renderScale,
+    )
+  }
+
+  private updateAdaptiveRendering(frameDelta: number) {
+    if (this.inputMode !== 'touch' || this.renderScale <= 0.72) return
+    this.performanceElapsed += frameDelta
+    this.performanceFrames += 1
+    if (this.performanceElapsed < 2.5) return
+
+    const framesPerSecond =
+      this.performanceFrames / Math.max(this.performanceElapsed, 0.001)
+    if (framesPerSecond < 45) {
+      this.renderScale = Math.max(0.72, this.renderScale - 0.14)
+      this.applyRendererPixelRatio()
+      this.resize()
+    }
+    this.performanceElapsed = 0
+    this.performanceFrames = 0
+  }
+
+  private resetTouchInput() {
+    this.touchInput = { forward: 0, strafe: 0, vertical: 0 }
+  }
+
+  private escapeDuration() {
+    return this.inputMode === 'touch'
+      ? TOUCH_ESCAPE_DURATION
+      : DESKTOP_ESCAPE_DURATION
   }
 
   private addZoneLight(color: string, position: THREE.Vector3) {
@@ -372,8 +491,10 @@ export default class StackTraceEngine {
   }
 
   private createBurstPool() {
-    for (let burstIndex = 0; burstIndex < 10; burstIndex += 1) {
-      const positions = new Float32Array(18 * 3)
+    const burstCount = this.likelyTouchDevice ? 6 : 10
+    const particleCount = this.likelyTouchDevice ? 12 : 18
+    for (let burstIndex = 0; burstIndex < burstCount; burstIndex += 1) {
+      const positions = new Float32Array(particleCount * 3)
       const geometry = new THREE.BufferGeometry()
       geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
       const material = new THREE.PointsMaterial({
@@ -391,7 +512,7 @@ export default class StackTraceEngine {
       this.bursts.push({
         points,
         positions,
-        velocities: Array.from({ length: 18 }, () =>
+        velocities: Array.from({ length: particleCount }, () =>
           new THREE.Vector3(
             Math.random() - 0.5,
             Math.random() - 0.5,
@@ -417,9 +538,9 @@ export default class StackTraceEngine {
     this.pitch = 0
     this.roll = 0
     this.elapsed = 0
-    this.escapeTime = ESCAPE_DURATION
+    this.escapeTime = this.escapeDuration()
     this.fireCooldown = 0
-    this.traceRefreshCooldown = 0
+    this.objectiveRefreshCooldown = 0
     this.hudRefreshCooldown = 0
     this.playerDamageCooldown = 0
     this.shotsFired = 0
@@ -428,7 +549,10 @@ export default class StackTraceEngine {
     this.hitPulse = 0
     this.damagePulse = 0
     this.integrity = 100
-    this.traceFromRoom = null
+    this.objectiveFromRoom = null
+    this.performanceElapsed = 0
+    this.performanceFrames = 0
+    this.resetTouchInput()
     this.velocity.set(0, 0, 0)
     this.camera.position.copy(startPosition)
     this.camera.rotation.set(0, 0, 0, 'YXZ')
@@ -464,7 +588,7 @@ export default class StackTraceEngine {
       burst.points.visible = false
       burst.material.opacity = 0
     })
-    this.refreshTrace(true)
+    this.refreshObjective(true)
   }
 
   private requestPointerLock() {
@@ -494,6 +618,7 @@ export default class StackTraceEngine {
   }
 
   private readonly handlePointerLockChange = () => {
+    if (this.inputMode !== 'pointer') return
     if (this.mode !== 'hunt' && this.mode !== 'escape') return
     this.paused = document.pointerLockElement !== this.canvas
     if (this.paused) {
@@ -544,6 +669,7 @@ export default class StackTraceEngine {
 
   private readonly handleMouseMove = (event: MouseEvent) => {
     if (
+      this.inputMode !== 'pointer' ||
       document.pointerLockElement !== this.canvas ||
       (this.mode !== 'hunt' && this.mode !== 'escape')
     ) {
@@ -557,6 +683,13 @@ export default class StackTraceEngine {
   private readonly handleBlur = () => {
     this.firing = false
     this.keys.clear()
+    this.resetTouchInput()
+  }
+
+  private readonly handleVisibilityChange = () => {
+    if (document.hidden && (this.mode === 'hunt' || this.mode === 'escape')) {
+      this.pause()
+    }
   }
 
   private readonly handleContextMenu = (event: MouseEvent) => {
@@ -564,14 +697,16 @@ export default class StackTraceEngine {
   }
 
   private readonly animate = () => {
-    const delta = Math.min(this.clock.getDelta(), 0.04)
+    const frameDelta = this.clock.getDelta()
+    const delta = Math.min(frameDelta, 0.04)
     const time = this.clock.elapsedTime
+    this.updateAdaptiveRendering(frameDelta)
     this.animateWorld(time, delta)
 
     if (!this.paused && (this.mode === 'hunt' || this.mode === 'escape')) {
       this.elapsed += delta
       this.fireCooldown = Math.max(0, this.fireCooldown - delta)
-      this.traceRefreshCooldown -= delta
+      this.objectiveRefreshCooldown -= delta
       this.hudRefreshCooldown -= delta
       this.playerDamageCooldown = Math.max(0, this.playerDamageCooldown - delta)
       this.updateMovement(delta)
@@ -580,9 +715,9 @@ export default class StackTraceEngine {
       this.updateBursts(delta)
 
       if (this.firing && this.fireCooldown <= 0) this.firePlayerProjectile()
-      if (this.traceRefreshCooldown <= 0) {
-        this.refreshTrace()
-        this.traceRefreshCooldown = 0.3
+      if (this.objectiveRefreshCooldown <= 0) {
+        this.refreshObjective()
+        this.objectiveRefreshCooldown = 0.3
       }
       if (this.mode === 'escape') {
         this.escapeTime = Math.max(0, this.escapeTime - delta)
@@ -600,15 +735,10 @@ export default class StackTraceEngine {
       this.updateBursts(delta)
     }
 
-    this.updateTracePulse(time)
     this.renderer.render(this.scene, this.camera)
   }
 
   private animateWorld(time: number, delta: number) {
-    this.world.ambientNodes.forEach(({ mesh, phase }) => {
-      const scale = 0.85 + Math.sin(time * 2 + phase) * 0.18
-      mesh.scale.setScalar(scale)
-    })
     this.world.door.group.children.forEach((child, index) => {
       child.scale.y = 0.85 + Math.sin(time * 5 + index) * 0.15
     })
@@ -623,17 +753,11 @@ export default class StackTraceEngine {
     })
     this.enemies.forEach((enemy, enemyIndex) => {
       if (!enemy.alive) return
-      enemy.visual.core.rotation.x += delta * 0.8
-      enemy.visual.core.rotation.y += delta * 1.1
-      enemy.visual.rings.forEach((ring, ringIndex) => {
-        ring.rotation.z +=
-          delta * (0.6 + ringIndex * 0.22) * (enemyIndex % 2 ? -1 : 1)
-      })
+      enemy.visual.icon.material.rotation =
+        Math.sin(time * 2.8 + enemyIndex) * 0.055
     })
     if (this.root.alive) {
-      this.root.visual.core.rotation.x += delta * 0.34
-      this.root.visual.core.rotation.y -= delta * 0.48
-      this.root.visual.shell.rotation.y += delta * 0.22
+      this.root.visual.icon.material.rotation = Math.sin(time * 1.8) * 0.04
       this.root.visual.rings.forEach((ring, index) => {
         ring.rotation.z += delta * (0.2 + index * 0.12)
       })
@@ -644,7 +768,9 @@ export default class StackTraceEngine {
 
   private updateMovement(delta: number) {
     const rollInput =
-      (this.keys.has('KeyE') ? 1 : 0) - (this.keys.has('KeyQ') ? 1 : 0)
+      this.inputMode === 'touch'
+        ? 0
+        : (this.keys.has('KeyE') ? 1 : 0) - (this.keys.has('KeyQ') ? 1 : 0)
     if (rollInput !== 0) {
       this.roll += rollInput * delta * 1.25
       this.roll = THREE.MathUtils.clamp(this.roll, -0.62, 0.62)
@@ -657,12 +783,30 @@ export default class StackTraceEngine {
     this.right.set(1, 0, 0).applyQuaternion(this.camera.quaternion)
     this.up.set(0, 1, 0).applyQuaternion(this.camera.quaternion)
     this.moveVector.set(0, 0, 0)
-    if (this.keys.has('KeyW')) this.moveVector.add(this.forward)
-    if (this.keys.has('KeyS')) this.moveVector.sub(this.forward)
-    if (this.keys.has('KeyD')) this.moveVector.add(this.right)
-    if (this.keys.has('KeyA')) this.moveVector.sub(this.right)
-    if (this.keys.has('Space')) this.moveVector.add(this.up)
-    if (this.keys.has('KeyC')) this.moveVector.sub(this.up)
+    const forwardInput =
+      (this.keys.has('KeyW') ? 1 : 0) -
+      (this.keys.has('KeyS') ? 1 : 0) +
+      this.touchInput.forward
+    const strafeInput =
+      (this.keys.has('KeyD') ? 1 : 0) -
+      (this.keys.has('KeyA') ? 1 : 0) +
+      this.touchInput.strafe
+    const verticalInput =
+      (this.keys.has('Space') ? 1 : 0) -
+      (this.keys.has('KeyC') ? 1 : 0) +
+      this.touchInput.vertical
+    this.moveVector.addScaledVector(
+      this.forward,
+      THREE.MathUtils.clamp(forwardInput, -1, 1),
+    )
+    this.moveVector.addScaledVector(
+      this.right,
+      THREE.MathUtils.clamp(strafeInput, -1, 1),
+    )
+    this.moveVector.addScaledVector(
+      this.up,
+      THREE.MathUtils.clamp(verticalInput, -1, 1),
+    )
     if (this.moveVector.lengthSq() > 0) {
       this.moveVector.normalize()
       this.velocity.addScaledVector(
@@ -695,15 +839,37 @@ export default class StackTraceEngine {
     ) {
       return false
     }
-    return this.world.volumes.some(
-      (volume) =>
-        position.x >= volume.min.x + radius &&
-        position.x <= volume.max.x - radius &&
-        position.y >= volume.min.y + radius &&
-        position.y <= volume.max.y - radius &&
-        position.z >= volume.min.z + radius &&
-        position.z <= volume.max.z - radius,
-    )
+    return this.world.volumes.some((volume) => {
+      if (volume.kind === 'box') {
+        return (
+          position.x >= volume.bounds.min.x + radius &&
+          position.x <= volume.bounds.max.x - radius &&
+          position.y >= volume.bounds.min.y + radius &&
+          position.y <= volume.bounds.max.y - radius &&
+          position.z >= volume.bounds.min.z + radius &&
+          position.z <= volume.bounds.max.z - radius
+        )
+      }
+
+      const axialPosition = position[volume.axis]
+      if (axialPosition < volume.min || axialPosition > volume.max) return false
+      const transverseDistance =
+        volume.axis === 'x'
+          ? Math.hypot(
+              position.y - volume.center.y,
+              position.z - volume.center.z,
+            )
+          : volume.axis === 'y'
+            ? Math.hypot(
+                position.x - volume.center.x,
+                position.z - volume.center.z,
+              )
+            : Math.hypot(
+                position.x - volume.center.x,
+                position.y - volume.center.y,
+              )
+      return transverseDistance + radius <= volume.radius
+    })
   }
 
   private updateEnemies(time: number, delta: number) {
@@ -718,18 +884,17 @@ export default class StackTraceEngine {
           .copy(this.camera.position)
           .sub(position)
           .normalize()
-          .multiplyScalar(delta * 1.45)
+          .multiplyScalar(delta * (this.inputMode === 'touch' ? 1.05 : 1.45))
         this.candidate.copy(position).add(this.moveVector)
         if (this.canOccupy(this.candidate, 0.72)) {
           position.copy(this.candidate)
         }
       }
 
-      enemy.visual.group.lookAt(this.camera.position)
-      if (
-        distance < 17 &&
-        time - enemy.lastShot > (enemy.spec.kind === 'crawler' ? 1.65 : 2.25)
-      ) {
+      const fireInterval =
+        (enemy.spec.kind === 'crawler' ? 1.65 : 2.25) *
+        (this.inputMode === 'touch' ? 1.35 : 1)
+      if (distance < 17 && time - enemy.lastShot > fireInterval) {
         this.forward.copy(this.camera.position).sub(position).normalize()
         this.spawnProjectile(
           'enemy',
@@ -741,7 +906,7 @@ export default class StackTraceEngine {
       }
 
       if (distance < 1.25 && enemy.collisionCooldown <= 0) {
-        this.damagePlayer(14)
+        this.damagePlayer(this.inputMode === 'touch' ? 10 : 14)
         enemy.collisionCooldown = 1.1
         this.forward.copy(position).sub(this.camera.position).normalize()
         this.candidate.copy(position).addScaledVector(this.forward, 2)
@@ -753,7 +918,7 @@ export default class StackTraceEngine {
       !this.doorLocked &&
       this.root.alive &&
       this.camera.position.distanceTo(rootPosition) < 20 &&
-      time - this.root.lastShot > 1.15
+      time - this.root.lastShot > (this.inputMode === 'touch' ? 1.55 : 1.15)
     ) {
       this.forward.copy(this.camera.position).sub(rootPosition).normalize()
       this.spawnProjectile('enemy', rootPosition, this.forward, 11)
@@ -763,10 +928,35 @@ export default class StackTraceEngine {
 
   private firePlayerProjectile() {
     this.forward.set(0, 0, -1).applyQuaternion(this.camera.quaternion)
+    if (this.inputMode === 'touch') this.applyTouchAimAssist()
     this.candidate.copy(this.camera.position).addScaledVector(this.forward, 0.9)
     this.spawnProjectile('player', this.candidate, this.forward, 32)
     this.shotsFired += 1
     this.fireCooldown = SHOT_COOLDOWN
+  }
+
+  private applyTouchAimAssist() {
+    let bestAlignment = 0.972
+    this.aimDirection.copy(this.forward)
+    const considerTarget = (position: THREE.Vector3) => {
+      if (position.distanceToSquared(this.camera.position) > 30 * 30) return
+      this.right.copy(position).sub(this.camera.position).normalize()
+      const alignment = this.forward.dot(this.right)
+      if (alignment <= bestAlignment) return
+      bestAlignment = alignment
+      this.aimDirection.copy(this.right)
+    }
+
+    this.enemies.forEach((enemy) => {
+      if (enemy.alive) considerTarget(enemy.visual.group.position)
+    })
+    this.faults.forEach((fault) => {
+      if (fault.alive) considerTarget(fault.visual.group.position)
+    })
+    if (!this.doorLocked && this.root.alive) considerTarget(rootPosition)
+    if (bestAlignment > 0.972) {
+      this.forward.lerp(this.aimDirection, 0.32).normalize()
+    }
   }
 
   private spawnProjectile(
@@ -818,7 +1008,7 @@ export default class StackTraceEngine {
           this.closestPoint,
         )
         if (this.closestPoint.distanceTo(this.camera.position) < 0.72) {
-          this.damagePlayer(11)
+          this.damagePlayer(this.inputMode === 'touch' ? 8 : 11)
           this.deactivateProjectile(projectile)
         }
         return
@@ -827,11 +1017,13 @@ export default class StackTraceEngine {
       const hitEnemy = this.enemies.find(
         (enemy) =>
           enemy.alive &&
-          this.segmentDistanceTo(enemy.visual.group.position) < 0.9,
+          this.segmentDistanceTo(enemy.visual.group.position) <
+            (this.inputMode === 'touch' ? 1.15 : 0.9),
       )
       if (hitEnemy) {
         this.shotsHit += 1
         this.hitPulse += 1
+        this.touchImpactFeedback()
         hitEnemy.health -= 1
         if (hitEnemy.health <= 0) {
           hitEnemy.alive = false
@@ -849,11 +1041,13 @@ export default class StackTraceEngine {
       const hitFault = this.faults.find(
         (fault) =>
           fault.alive &&
-          this.segmentDistanceTo(fault.visual.group.position) < 1.35,
+          this.segmentDistanceTo(fault.visual.group.position) <
+            (this.inputMode === 'touch' ? 1.6 : 1.35),
       )
       if (hitFault) {
         this.shotsHit += 1
         this.hitPulse += 1
+        this.touchImpactFeedback()
         hitFault.health -= 1
         const scale = THREE.MathUtils.lerp(
           0.65,
@@ -870,7 +1064,7 @@ export default class StackTraceEngine {
             this.doorLocked = false
             this.world.door.group.visible = false
           }
-          this.refreshTrace(true)
+          this.refreshObjective(true)
           this.emitHud()
         }
         this.deactivateProjectile(projectile)
@@ -880,10 +1074,12 @@ export default class StackTraceEngine {
       if (
         !this.doorLocked &&
         this.root.alive &&
-        this.segmentDistanceTo(rootPosition) < 2.35
+        this.segmentDistanceTo(rootPosition) <
+          (this.inputMode === 'touch' ? 2.7 : 2.35)
       ) {
         this.shotsHit += 1
         this.hitPulse += 1
+        this.touchImpactFeedback()
         this.root.health -= 1
         if (this.root.health <= 0) {
           this.root.alive = false
@@ -900,6 +1096,12 @@ export default class StackTraceEngine {
   private segmentDistanceTo(position: THREE.Vector3) {
     this.segment.closestPointToPoint(position, true, this.closestPoint)
     return this.closestPoint.distanceTo(position)
+  }
+
+  private touchImpactFeedback() {
+    if (this.inputMode === 'touch' && 'vibrate' in navigator) {
+      navigator.vibrate(12)
+    }
   }
 
   private damagePlayer(amount: number) {
@@ -971,8 +1173,8 @@ export default class StackTraceEngine {
 
   private beginEscape() {
     this.mode = 'escape'
-    this.escapeTime = ESCAPE_DURATION
-    this.refreshTrace(true)
+    this.escapeTime = this.escapeDuration()
+    this.refreshObjective(true)
     this.emitHud()
   }
 
@@ -1102,79 +1304,21 @@ export default class StackTraceEngine {
     }
   }
 
-  private refreshTrace(force = false) {
+  private refreshObjective(force = false) {
     const fromRoom = this.nearestRoomId(this.camera.position)
     const target = this.findTarget(fromRoom)
     if (
       !force &&
-      fromRoom === this.traceFromRoom &&
+      fromRoom === this.objectiveFromRoom &&
       target.faultId === this.currentTargetFaultId &&
       target.position.equals(this.currentTargetPosition)
     ) {
       return
     }
-    this.traceFromRoom = fromRoom
+    this.objectiveFromRoom = fromRoom
     this.currentTargetFaultId = target.faultId
     this.currentTargetPosition.copy(target.position)
     this.currentTargetLabel = target.label
-    const route = this.routeBetween(fromRoom, target.roomId)
-    const points = route
-      .map((roomId) => this.world.rooms.get(roomId))
-      .filter((room) => !!room)
-      .map((room) => new THREE.Vector3(...room.center))
-    if (
-      points.length === 0 ||
-      !points.at(-1)?.equals(this.currentTargetPosition)
-    ) {
-      points.push(this.currentTargetPosition.clone())
-    }
-    this.tracePoints.splice(0, this.tracePoints.length, ...points)
-    this.traceGeometry.setFromPoints(this.tracePoints)
-    this.traceLengths.splice(0, this.traceLengths.length)
-    let totalLength = 0
-    this.traceLengths.push(totalLength)
-    for (let index = 1; index < this.tracePoints.length; index += 1) {
-      totalLength +=
-        this.tracePoints[index - 1]?.distanceTo(this.tracePoints[index]!) ?? 0
-      this.traceLengths.push(totalLength)
-    }
-    const traceColor = this.mode === 'escape' ? '#d9ff43' : '#ff694a'
-    this.traceMaterial.color.set(traceColor)
-    const pulseMaterial = this.tracePulse.material
-    if (pulseMaterial instanceof THREE.MeshBasicMaterial) {
-      pulseMaterial.color.set(traceColor)
-    }
-  }
-
-  private updateTracePulse(time: number) {
-    const totalLength = this.traceLengths.at(-1) ?? 0
-    if (totalLength <= 0 || this.tracePoints.length < 2) {
-      this.tracePulse.visible = false
-      return
-    }
-    this.tracePulse.visible = true
-    const distance = (time * 5) % totalLength
-    let segmentIndex = 1
-    while (
-      segmentIndex < this.traceLengths.length &&
-      (this.traceLengths[segmentIndex] ?? 0) < distance
-    ) {
-      segmentIndex += 1
-    }
-    segmentIndex = Math.min(segmentIndex, this.tracePoints.length - 1)
-    const segmentStart = this.traceLengths[segmentIndex - 1] ?? 0
-    const segmentEnd = this.traceLengths[segmentIndex] ?? totalLength
-    const progress =
-      segmentEnd === segmentStart
-        ? 0
-        : (distance - segmentStart) / (segmentEnd - segmentStart)
-    this.tracePulse.position.lerpVectors(
-      this.tracePoints[segmentIndex - 1]!,
-      this.tracePoints[segmentIndex]!,
-      progress,
-    )
-    const pulseScale = 0.8 + Math.sin(time * 8) * 0.2
-    this.tracePulse.scale.setScalar(pulseScale)
   }
 
   private faultsResolved() {

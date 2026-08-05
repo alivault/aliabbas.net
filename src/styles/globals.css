@@ -186,6 +186,20 @@ html:has(.stack-trace-page) body {
   touch-action: none;
 }
 
+.stack-trace-hud {
+  padding-top: max(1rem, env(safe-area-inset-top));
+  padding-right: max(1rem, env(safe-area-inset-right));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  padding-left: max(1rem, env(safe-area-inset-left));
+}
+
+.stack-trace-touch-controls,
+.stack-trace-touch-controls * {
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 .stack-trace-grid {
   opacity: 0.18;
   background-image:

@@ -10,12 +10,14 @@ import type {
 export default function StackTraceScene({
   apiRef,
   onReady,
+  onError,
   onHudChange,
   onPauseChange,
   onEnd,
 }: {
   apiRef: RefObject<StackTraceGameApi | null>
   onReady: () => void
+  onError: () => void
   onHudChange: (hud: GameHudState) => void
   onPauseChange: (paused: boolean) => void
   onEnd: (result: GameResult) => void
@@ -23,23 +25,41 @@ export default function StackTraceScene({
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const callbacksRef = useRef({
     onReady,
+    onError,
     onHudChange,
     onPauseChange,
     onEnd,
   })
-  callbacksRef.current = { onReady, onHudChange, onPauseChange, onEnd }
+  callbacksRef.current = {
+    onReady,
+    onError,
+    onHudChange,
+    onPauseChange,
+    onEnd,
+  }
 
   useEffect(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const engine = new StackTraceEngine(canvas, {
-      onHudChange: (hud) => callbacksRef.current.onHudChange(hud),
-      onPauseChange: (paused) => callbacksRef.current.onPauseChange(paused),
-      onEnd: (result) => callbacksRef.current.onEnd(result),
-    })
+    let engine: StackTraceEngine
+    try {
+      engine = new StackTraceEngine(canvas, {
+        onHudChange: (hud) => callbacksRef.current.onHudChange(hud),
+        onPauseChange: (paused) => callbacksRef.current.onPauseChange(paused),
+        onEnd: (result) => callbacksRef.current.onEnd(result),
+      })
+    } catch {
+      callbacksRef.current.onError()
+      return
+    }
     apiRef.current = {
       start: engine.start,
       resume: engine.resume,
+      pause: engine.pause,
+      setTouchInput: engine.setTouchInput,
+      addTouchLook: engine.addTouchLook,
+      setTouchFiring: engine.setTouchFiring,
+      fireTouch: engine.fireTouch,
     }
     callbacksRef.current.onReady()
 

@@ -1,5 +1,17 @@
 export type MissionPhase = 'idle' | 'hunt' | 'escape' | 'won' | 'failed'
 
+export type GameInputMode = 'pointer' | 'touch'
+
+export type TouchFlightInput = {
+  forward: number
+  strafe: number
+  vertical: number
+}
+
+export type TouchGameSettings = {
+  sensitivity: number
+}
+
 export type StackFrameStatus = 'pending' | 'active' | 'resolved'
 
 export type StackFrame = {
@@ -34,8 +46,13 @@ export type GameResult = {
 }
 
 export type StackTraceGameApi = {
-  start: () => void
+  start: (mode: GameInputMode, settings?: TouchGameSettings) => void
   resume: () => void
+  pause: () => void
+  setTouchInput: (input: Partial<TouchFlightInput>) => void
+  addTouchLook: (deltaX: number, deltaY: number) => void
+  setTouchFiring: (firing: boolean) => void
+  fireTouch: () => void
 }
 
 export const initialHudState: GameHudState = {

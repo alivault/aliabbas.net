@@ -25,7 +25,7 @@ export const Route = createFileRoute('/play')({
 
 function GameFallback() {
   return (
-    <main className="grid h-svh min-h-[560px] place-items-center bg-[#050608] p-5 text-[#f1efe8]">
+    <main className="grid h-svh min-h-[320px] place-items-center bg-[#050608] p-5 text-[#f1efe8]">
       <div className="text-center">
         <span className="mx-auto block size-2 animate-pulse rounded-full bg-[#d9ff43] shadow-[0_0_18px_#d9ff43]" />
         <p className="mt-5 font-mono text-[9px] tracking-[0.2em] text-white/35 uppercase">

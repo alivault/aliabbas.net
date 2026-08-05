@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js'
 
 export type RoomId =
   | 'surface'
@@ -12,6 +13,11 @@ export type RoomId =
 
 type RoomTheme = 'surface' | 'interface' | 'application' | 'data' | 'deploy'
 type VectorTuple = readonly [number, number, number]
+type RoomMaterials = {
+  chamber: THREE.Material
+  tunnel: THREE.Material
+  line: THREE.Material
+}
 
 export type RoomSpec = {
   id: RoomId
@@ -48,21 +54,36 @@ export type LevelWorld = {
   group: THREE.Group
   rooms: Map<RoomId, RoomSpec>
   graph: Map<RoomId, Array<RoomId>>
-  volumes: Array<THREE.Box3>
+  volumes: Array<
+    | { kind: 'box'; bounds: THREE.Box3 }
+    | {
+        kind: 'tube'
+        axis: 'x' | 'y' | 'z'
+        center: THREE.Vector3
+        min: number
+        max: number
+        radius: number
+      }
+  >
   door: LevelDoor
-  ambientNodes: Array<{ mesh: THREE.Mesh; phase: number }>
 }
 
+const JUNCTION_SIZE = 10
 const OPENING_SIZE = 6
+const TUNNEL_RADIUS = OPENING_SIZE / 2
+const TUNNEL_SEGMENTS = 64
 const WALL_THICKNESS = 0.24
 
 const themeColors = {
-  surface: { wall: '#121522', accent: '#f1efe8' },
-  interface: { wall: '#111a39', accent: '#335cff' },
-  application: { wall: '#172016', accent: '#d9ff43' },
-  data: { wall: '#291716', accent: '#ff694a' },
-  deploy: { wall: '#171426', accent: '#8da4ff' },
-} as const satisfies Record<RoomTheme, { wall: string; accent: string }>
+  surface: { wall: '#242a40', chamber: '#292d42', accent: '#f1efe8' },
+  interface: { wall: '#111a39', chamber: '#172b64', accent: '#335cff' },
+  application: { wall: '#172016', chamber: '#2b3926', accent: '#d9ff43' },
+  data: { wall: '#291716', chamber: '#502720', accent: '#ff694a' },
+  deploy: { wall: '#171426', chamber: '#302752', accent: '#8da4ff' },
+} as const satisfies Record<
+  RoomTheme,
+  { wall: string; chamber: string; accent: string }
+>
 
 export const rooms = [
   {
@@ -147,21 +168,21 @@ export const faultSpecs = [
     roomId: 'ui-fault',
     frame: '/ui/interaction',
     label: 'Interaction fault',
-    position: [-24, 0, -31],
+    position: [-24, 0, -30],
   },
   {
     id: 'state-fault',
     roomId: 'state-fault',
     frame: '/app/state',
     label: 'State fault',
-    position: [24, -24, -31],
+    position: [24, -24, -30],
   },
   {
     id: 'session-fault',
     roomId: 'data-fault',
     frame: '/data/session',
     label: 'Session fault',
-    position: [-24, -24, -59],
+    position: [-24, -24, -58],
   },
 ] as const satisfies ReadonlyArray<FaultSpec>
 
@@ -206,13 +227,13 @@ export const enemySpecs = [
     id: 'crawler-deploy',
     roomId: 'deploy',
     kind: 'crawler',
-    position: [4, -45, -51],
+    position: [3, -46, -54],
   },
 ] as const satisfies ReadonlyArray<EnemySpec>
 
-export const startPosition = new THREE.Vector3(0, 0, 5)
-export const exitPosition = new THREE.Vector3(0, 0, 6)
-export const rootPosition = new THREE.Vector3(0, -48, -61)
+export const startPosition = new THREE.Vector3(0, 0, 4)
+export const exitPosition = new THREE.Vector3(0, 0, 4)
+export const rootPosition = new THREE.Vector3(0, -48, -57.5)
 
 function vector(tuple: VectorTuple | readonly [number, number, number]) {
   return new THREE.Vector3(tuple[0], tuple[1], tuple[2])
@@ -365,14 +386,108 @@ function directionBetween(from: RoomSpec, to: RoomSpec) {
   return delta.z > 0 ? 'z+' : 'z-'
 }
 
+function addCircularOpeningWall(
+  group: THREE.Group,
+  axis: 'x' | 'y' | 'z',
+  sign: -1 | 1,
+  material: THREE.Material,
+) {
+  const half = JUNCTION_SIZE / 2
+  const shape = new THREE.Shape()
+  shape.moveTo(-half, -half)
+  shape.lineTo(half, -half)
+  shape.lineTo(half, half)
+  shape.lineTo(-half, half)
+  shape.closePath()
+  const opening = new THREE.Path()
+  opening.absarc(0, 0, TUNNEL_RADIUS, 0, Math.PI * 2, true)
+  shape.holes.push(opening)
+
+  const wall = new THREE.Mesh(
+    new THREE.ShapeGeometry(shape, TUNNEL_SEGMENTS),
+    material,
+  )
+  const face = sign * (half - WALL_THICKNESS / 2)
+  if (axis === 'x') {
+    wall.position.x = face
+    wall.rotation.y = Math.PI / 2
+  } else if (axis === 'y') {
+    wall.position.y = face
+    wall.rotation.x = Math.PI / 2
+  } else {
+    wall.position.z = face
+  }
+  group.add(wall)
+}
+
+function addChamberWall(
+  group: THREE.Group,
+  room: RoomSpec,
+  axis: 'x' | 'y' | 'z',
+  sign: -1 | 1,
+  isOpen: boolean,
+  material: THREE.Material,
+) {
+  if (isOpen) {
+    addCircularOpeningWall(group, axis, sign, material)
+  } else if (axis === 'x') {
+    addXWall(group, room, sign, false, material)
+  } else if (axis === 'y') {
+    addYWall(group, room, sign, false, material)
+  } else {
+    addZWall(group, room, sign, false, material)
+  }
+}
+
+function addChamberGrid(
+  group: THREE.Group,
+  axis: 'x' | 'y' | 'z',
+  sign: -1 | 1,
+  isOpen: boolean,
+  material: THREE.Material,
+) {
+  const half = JUNCTION_SIZE / 2
+  const face = sign * (half - WALL_THICKNESS / 2 - 0.012)
+  const positions: Array<number> = []
+  const point = (u: number, v: number): VectorTuple => {
+    if (axis === 'x') return [face, u, v]
+    if (axis === 'y') return [u, face, v]
+    return [u, v, face]
+  }
+  const segment = (u1: number, v1: number, u2: number, v2: number) => {
+    positions.push(...point(u1, v1), ...point(u2, v2))
+  }
+  const gridCoordinates = [-half, -2.5, 0, 2.5, half]
+
+  gridCoordinates.forEach((coordinate) => {
+    if (isOpen && Math.abs(coordinate) < TUNNEL_RADIUS) {
+      const openingEdge = Math.sqrt(
+        TUNNEL_RADIUS * TUNNEL_RADIUS - coordinate * coordinate,
+      )
+      segment(coordinate, -half, coordinate, -openingEdge)
+      segment(coordinate, openingEdge, coordinate, half)
+      segment(-half, coordinate, -openingEdge, coordinate)
+      segment(openingEdge, coordinate, half, coordinate)
+      return
+    }
+    segment(coordinate, -half, coordinate, half)
+    segment(-half, coordinate, half, coordinate)
+  })
+
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute(positions, 3),
+  )
+  const grid = new THREE.LineSegments(geometry, material)
+  grid.name = 'Room surface grid'
+  group.add(grid)
+}
+
 function createRoom(
   room: RoomSpec,
   roomConnections: Array<RoomSpec>,
-  materials: Map<
-    RoomTheme,
-    { wall: THREE.Material; accent: THREE.Material; line: THREE.Material }
-  >,
-  ambientNodes: LevelWorld['ambientNodes'],
+  materials: Map<RoomTheme, RoomMaterials>,
 ) {
   const group = new THREE.Group()
   group.position.copy(vector(room.center))
@@ -386,48 +501,65 @@ function createRoom(
     ),
   )
 
-  addXWall(group, room, -1, exits.has('x-'), roomMaterials.wall)
-  addXWall(group, room, 1, exits.has('x+'), roomMaterials.wall)
-  addYWall(group, room, -1, exits.has('y-'), roomMaterials.wall)
-  addYWall(group, room, 1, exits.has('y+'), roomMaterials.wall)
-  addZWall(group, room, -1, exits.has('z-'), roomMaterials.wall)
-  addZWall(group, room, 1, exits.has('z+'), roomMaterials.wall)
-
-  const outlineSource = new THREE.BoxGeometry(
-    room.size[0] - 0.1,
-    room.size[1] - 0.1,
-    room.size[2] - 0.1,
+  const junctionRoom: RoomSpec = {
+    ...room,
+    center: [0, 0, 0],
+    size: [JUNCTION_SIZE, JUNCTION_SIZE, JUNCTION_SIZE],
+  }
+  addChamberWall(
+    group,
+    junctionRoom,
+    'x',
+    -1,
+    exits.has('x-'),
+    roomMaterials.chamber,
   )
-  const outlineGeometry = new THREE.EdgesGeometry(outlineSource)
-  outlineSource.dispose()
-  const outline = new THREE.LineSegments(outlineGeometry, roomMaterials.line)
-  group.add(outline)
-
-  const nodeMaterial = new THREE.MeshBasicMaterial({
-    color: themeColors[room.theme].accent,
-    toneMapped: false,
-  })
-  const nodeGeometry = new THREE.OctahedronGeometry(0.12, 0)
-  const corners = [
-    [-1, -1, -1],
-    [1, -1, -1],
-    [-1, 1, -1],
-    [1, 1, -1],
-    [-1, -1, 1],
-    [1, -1, 1],
-    [-1, 1, 1],
-    [1, 1, 1],
-  ] as const
-  corners.forEach((corner, index) => {
-    const node = new THREE.Mesh(nodeGeometry, nodeMaterial)
-    node.position.set(
-      corner[0] * (room.size[0] / 2 - 0.35),
-      corner[1] * (room.size[1] / 2 - 0.35),
-      corner[2] * (room.size[2] / 2 - 0.35),
-    )
-    group.add(node)
-    ambientNodes.push({ mesh: node, phase: index * 0.7 + room.center[2] })
-  })
+  addChamberWall(
+    group,
+    junctionRoom,
+    'x',
+    1,
+    exits.has('x+'),
+    roomMaterials.chamber,
+  )
+  addChamberWall(
+    group,
+    junctionRoom,
+    'y',
+    -1,
+    exits.has('y-'),
+    roomMaterials.chamber,
+  )
+  addChamberWall(
+    group,
+    junctionRoom,
+    'y',
+    1,
+    exits.has('y+'),
+    roomMaterials.chamber,
+  )
+  addChamberWall(
+    group,
+    junctionRoom,
+    'z',
+    -1,
+    exits.has('z-'),
+    roomMaterials.chamber,
+  )
+  addChamberWall(
+    group,
+    junctionRoom,
+    'z',
+    1,
+    exits.has('z+'),
+    roomMaterials.chamber,
+  )
+  addChamberGrid(group, 'x', -1, exits.has('x-'), roomMaterials.line)
+  addChamberGrid(group, 'x', 1, exits.has('x+'), roomMaterials.line)
+  addChamberGrid(group, 'y', -1, exits.has('y-'), roomMaterials.line)
+  addChamberGrid(group, 'y', 1, exits.has('y+'), roomMaterials.line)
+  addChamberGrid(group, 'z', -1, exits.has('z-'), roomMaterials.line)
+  addChamberGrid(group, 'z', 1, exits.has('z+'), roomMaterials.line)
 
   return group
 }
@@ -438,185 +570,90 @@ function corridorAxis(from: RoomSpec, to: RoomSpec): 'x' | 'y' | 'z' {
   return 'z'
 }
 
+function addTunnelCircle(
+  group: THREE.Group,
+  axis: 'x' | 'y' | 'z',
+  offset: number,
+  material: THREE.Material,
+) {
+  const positions: Array<number> = []
+  const radius = TUNNEL_RADIUS - 0.01
+  for (let index = 0; index < TUNNEL_SEGMENTS; index += 1) {
+    const angle = (index / TUNNEL_SEGMENTS) * Math.PI * 2
+    const u = Math.cos(angle) * radius
+    const v = Math.sin(angle) * radius
+    if (axis === 'x') positions.push(offset, u, v)
+    else if (axis === 'y') positions.push(u, offset, v)
+    else positions.push(u, v, offset)
+  }
+
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute(positions, 3),
+  )
+  const circle = new THREE.LineLoop(geometry, material)
+  circle.name = 'Tunnel surface grid circle'
+  group.add(circle)
+}
+
+function addCorridorShell(
+  group: THREE.Group,
+  axis: 'x' | 'y' | 'z',
+  length: number,
+  material: THREE.Material,
+) {
+  const tunnel = new THREE.Mesh(
+    new THREE.CylinderGeometry(
+      TUNNEL_RADIUS,
+      TUNNEL_RADIUS,
+      length,
+      TUNNEL_SEGMENTS,
+      1,
+      true,
+    ),
+    material,
+  )
+  if (axis === 'x') tunnel.rotation.z = Math.PI / 2
+  if (axis === 'z') tunnel.rotation.x = Math.PI / 2
+  group.add(tunnel)
+}
+
+function addCorridorGridCircles(
+  group: THREE.Group,
+  axis: 'x' | 'y' | 'z',
+  length: number,
+  material: THREE.Material,
+) {
+  const frameCount = Math.max(1, Math.floor(length / 3.5))
+  for (let index = 0; index <= frameCount; index += 1) {
+    const offset = -length / 2 + (index / frameCount) * length
+    addTunnelCircle(group, axis, offset, material)
+  }
+}
+
 function createCorridor(
   from: RoomSpec,
   to: RoomSpec,
   material: THREE.Material,
-  accent: THREE.Material,
+  lineMaterial: THREE.Material,
 ) {
   const group = new THREE.Group()
   const fromCenter = vector(from.center)
   const toCenter = vector(to.center)
   const axis = corridorAxis(from, to)
   const axisIndex = axis === 'x' ? 0 : axis === 'y' ? 1 : 2
-  const fromHalf = from.size[axisIndex] / 2
-  const toHalf = to.size[axisIndex] / 2
   const direction = Math.sign(to.center[axisIndex] - from.center[axisIndex])
-  const start = from.center[axisIndex] + direction * fromHalf
-  const end = to.center[axisIndex] - direction * toHalf
+  const junctionHalf = JUNCTION_SIZE / 2
+  const start = from.center[axisIndex] + direction * junctionHalf
+  const end = to.center[axisIndex] - direction * junctionHalf
   const length = Math.abs(end - start) + WALL_THICKNESS
   const midpoint = fromCenter.clone().add(toCenter).multiplyScalar(0.5)
   midpoint.setComponent(axisIndex, (start + end) / 2)
   group.position.copy(midpoint)
 
-  if (axis === 'z') {
-    addBox(
-      group,
-      [WALL_THICKNESS, OPENING_SIZE, length],
-      [-OPENING_SIZE / 2, 0, 0],
-      material,
-    )
-    addBox(
-      group,
-      [WALL_THICKNESS, OPENING_SIZE, length],
-      [OPENING_SIZE / 2, 0, 0],
-      material,
-    )
-    addBox(
-      group,
-      [OPENING_SIZE, WALL_THICKNESS, length],
-      [0, -OPENING_SIZE / 2, 0],
-      material,
-    )
-    addBox(
-      group,
-      [OPENING_SIZE, WALL_THICKNESS, length],
-      [0, OPENING_SIZE / 2, 0],
-      material,
-    )
-  } else if (axis === 'x') {
-    addBox(
-      group,
-      [length, OPENING_SIZE, WALL_THICKNESS],
-      [0, 0, -OPENING_SIZE / 2],
-      material,
-    )
-    addBox(
-      group,
-      [length, OPENING_SIZE, WALL_THICKNESS],
-      [0, 0, OPENING_SIZE / 2],
-      material,
-    )
-    addBox(
-      group,
-      [length, WALL_THICKNESS, OPENING_SIZE],
-      [0, -OPENING_SIZE / 2, 0],
-      material,
-    )
-    addBox(
-      group,
-      [length, WALL_THICKNESS, OPENING_SIZE],
-      [0, OPENING_SIZE / 2, 0],
-      material,
-    )
-  } else {
-    addBox(
-      group,
-      [WALL_THICKNESS, length, OPENING_SIZE],
-      [-OPENING_SIZE / 2, 0, 0],
-      material,
-    )
-    addBox(
-      group,
-      [WALL_THICKNESS, length, OPENING_SIZE],
-      [OPENING_SIZE / 2, 0, 0],
-      material,
-    )
-    addBox(
-      group,
-      [OPENING_SIZE, length, WALL_THICKNESS],
-      [0, 0, -OPENING_SIZE / 2],
-      material,
-    )
-    addBox(
-      group,
-      [OPENING_SIZE, length, WALL_THICKNESS],
-      [0, 0, OPENING_SIZE / 2],
-      material,
-    )
-  }
-
-  const frameCount = Math.max(1, Math.floor(length / 3.5))
-  for (let index = 0; index <= frameCount; index += 1) {
-    const offset = -length / 2 + (index / frameCount) * length
-    const beam = 0.12
-    if (axis === 'z') {
-      addBox(
-        group,
-        [beam, OPENING_SIZE + 0.2, beam],
-        [-OPENING_SIZE / 2 + beam / 2, 0, offset],
-        accent,
-      )
-      addBox(
-        group,
-        [beam, OPENING_SIZE + 0.2, beam],
-        [OPENING_SIZE / 2 - beam / 2, 0, offset],
-        accent,
-      )
-      addBox(
-        group,
-        [OPENING_SIZE, beam, beam],
-        [0, -OPENING_SIZE / 2 + beam / 2, offset],
-        accent,
-      )
-      addBox(
-        group,
-        [OPENING_SIZE, beam, beam],
-        [0, OPENING_SIZE / 2 - beam / 2, offset],
-        accent,
-      )
-    } else if (axis === 'x') {
-      addBox(
-        group,
-        [beam, OPENING_SIZE + 0.2, beam],
-        [offset, 0, -OPENING_SIZE / 2 + beam / 2],
-        accent,
-      )
-      addBox(
-        group,
-        [beam, OPENING_SIZE + 0.2, beam],
-        [offset, 0, OPENING_SIZE / 2 - beam / 2],
-        accent,
-      )
-      addBox(
-        group,
-        [beam, beam, OPENING_SIZE],
-        [offset, -OPENING_SIZE / 2 + beam / 2, 0],
-        accent,
-      )
-      addBox(
-        group,
-        [beam, beam, OPENING_SIZE],
-        [offset, OPENING_SIZE / 2 - beam / 2, 0],
-        accent,
-      )
-    } else {
-      addBox(
-        group,
-        [beam, beam, OPENING_SIZE + 0.2],
-        [-OPENING_SIZE / 2 + beam / 2, offset, 0],
-        accent,
-      )
-      addBox(
-        group,
-        [beam, beam, OPENING_SIZE + 0.2],
-        [OPENING_SIZE / 2 - beam / 2, offset, 0],
-        accent,
-      )
-      addBox(
-        group,
-        [OPENING_SIZE, beam, beam],
-        [0, offset, -OPENING_SIZE / 2 + beam / 2],
-        accent,
-      )
-      addBox(
-        group,
-        [OPENING_SIZE, beam, beam],
-        [0, offset, OPENING_SIZE / 2 - beam / 2],
-        accent,
-      )
-    }
-  }
+  addCorridorShell(group, axis, length, material)
+  addCorridorGridCircles(group, axis, length, lineMaterial)
 
   return group
 }
@@ -662,6 +699,38 @@ function createDoor(from: RoomSpec, to: RoomSpec) {
   }
 }
 
+function mergeStaticWorldMeshes(group: THREE.Group) {
+  group.updateMatrixWorld(true)
+  const geometriesByMaterial = new Map<
+    THREE.Material,
+    Array<THREE.BufferGeometry>
+  >()
+  const sourceMeshes: Array<THREE.Mesh> = []
+
+  group.traverse((object) => {
+    if (!(object instanceof THREE.Mesh)) return
+    if (Array.isArray(object.material)) return
+    const geometry = object.geometry.clone().applyMatrix4(object.matrixWorld)
+    const geometries = geometriesByMaterial.get(object.material) ?? []
+    geometries.push(geometry)
+    geometriesByMaterial.set(object.material, geometries)
+    sourceMeshes.push(object)
+  })
+
+  sourceMeshes.forEach((mesh) => {
+    mesh.removeFromParent()
+    mesh.geometry.dispose()
+  })
+  geometriesByMaterial.forEach((geometries, material) => {
+    const mergedGeometry = mergeGeometries(geometries, false)
+    geometries.forEach((geometry) => geometry.dispose())
+    if (!mergedGeometry) return
+    const mesh = new THREE.Mesh(mergedGeometry, material)
+    mesh.name = 'Merged labyrinth structure'
+    group.add(mesh)
+  })
+}
+
 export function createLevelWorld(scene: THREE.Scene): LevelWorld {
   const group = new THREE.Group()
   group.name = 'Stack Trace labyrinth'
@@ -677,28 +746,24 @@ export function createLevelWorld(scene: THREE.Scene): LevelWorld {
     graph.get(to)?.push(from)
   })
 
-  const materials = new Map<
-    RoomTheme,
-    {
-      wall: THREE.Material
-      accent: THREE.Material
-      line: THREE.Material
-    }
-  >()
+  const materials = new Map<RoomTheme, RoomMaterials>()
   Object.entries(themeColors).forEach(([theme, colors]) => {
     materials.set(theme as RoomTheme, {
-      wall: new THREE.MeshStandardMaterial({
+      chamber: new THREE.MeshStandardMaterial({
+        color: colors.chamber,
+        emissive: colors.chamber,
+        emissiveIntensity: 0.72,
+        metalness: 0.42,
+        roughness: 0.78,
+        side: THREE.DoubleSide,
+      }),
+      tunnel: new THREE.MeshStandardMaterial({
         color: colors.wall,
         emissive: colors.wall,
-        emissiveIntensity: 0.35,
-        metalness: 0.55,
-        roughness: 0.72,
-      }),
-      accent: new THREE.MeshBasicMaterial({
-        color: colors.accent,
-        transparent: true,
-        opacity: 0.48,
-        toneMapped: false,
+        emissiveIntensity: 0.48,
+        metalness: 0.5,
+        roughness: 0.74,
+        side: THREE.BackSide,
       }),
       line: new THREE.LineBasicMaterial({
         color: colors.accent,
@@ -709,12 +774,11 @@ export function createLevelWorld(scene: THREE.Scene): LevelWorld {
     })
   })
 
-  const ambientNodes: LevelWorld['ambientNodes'] = []
   rooms.forEach((room) => {
     const connectedRooms = (graph.get(room.id) ?? [])
       .map((roomId) => roomMap.get(roomId))
       .filter((connectedRoom): connectedRoom is RoomSpec => !!connectedRoom)
-    group.add(createRoom(room, connectedRooms, materials, ambientNodes))
+    group.add(createRoom(room, connectedRooms, materials))
   })
 
   connections.forEach(([fromId, toId]) => {
@@ -724,39 +788,39 @@ export function createLevelWorld(scene: THREE.Scene): LevelWorld {
     const targetMaterials = materials.get(to.theme)
     if (!targetMaterials) return
     group.add(
-      createCorridor(from, to, targetMaterials.wall, targetMaterials.accent),
+      createCorridor(from, to, targetMaterials.tunnel, targetMaterials.line),
     )
   })
 
-  const volumes = rooms.map((room) => {
+  mergeStaticWorldMeshes(group)
+
+  const volumes: LevelWorld['volumes'] = rooms.map((room) => {
     const center = vector(room.center)
-    const halfSize = vector(room.size).multiplyScalar(0.5)
-    return new THREE.Box3(center.clone().sub(halfSize), center.add(halfSize))
+    const halfSize = new THREE.Vector3(1, 1, 1).multiplyScalar(
+      JUNCTION_SIZE / 2 - WALL_THICKNESS,
+    )
+    return {
+      kind: 'box',
+      bounds: new THREE.Box3(
+        center.clone().sub(halfSize),
+        center.add(halfSize),
+      ),
+    }
   })
   connections.forEach(([fromId, toId]) => {
     const from = roomMap.get(fromId)
     const to = roomMap.get(toId)
     if (!from || !to) return
     const axis = corridorAxis(from, to)
-    const min = vector(from.center)
-    const max = vector(from.center)
-    const target = vector(to.center)
-    min.min(target)
-    max.max(target)
-    const crossHalf = OPENING_SIZE / 2 - WALL_THICKNESS
-    if (axis !== 'x') {
-      min.x = from.center[0] - crossHalf
-      max.x = from.center[0] + crossHalf
-    }
-    if (axis !== 'y') {
-      min.y = from.center[1] - crossHalf
-      max.y = from.center[1] + crossHalf
-    }
-    if (axis !== 'z') {
-      min.z = from.center[2] - crossHalf
-      max.z = from.center[2] + crossHalf
-    }
-    volumes.push(new THREE.Box3(min, max))
+    const axisIndex = axis === 'x' ? 0 : axis === 'y' ? 1 : 2
+    volumes.push({
+      kind: 'tube',
+      axis,
+      center: vector(from.center),
+      min: Math.min(from.center[axisIndex], to.center[axisIndex]),
+      max: Math.max(from.center[axisIndex], to.center[axisIndex]),
+      radius: TUNNEL_RADIUS - WALL_THICKNESS / 2,
+    })
   })
 
   const dataRoom = roomMap.get('data')
@@ -767,51 +831,73 @@ export function createLevelWorld(scene: THREE.Scene): LevelWorld {
   const door = createDoor(dataRoom, deployRoom)
   group.add(door.group)
 
-  return { group, rooms: roomMap, graph, volumes, door, ambientNodes }
+  return { group, rooms: roomMap, graph, volumes, door }
+}
+
+// Official Lucide `bug` icon paths, rendered to a canvas texture so the icon
+// stays crisp and camera-facing inside the WebGL scene.
+const lucideBugPaths = [
+  'M12 20v-9',
+  'M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z',
+  'M14.12 3.88 16 2',
+  'M21 21a4 4 0 0 0-3.81-4',
+  'M21 5a4 4 0 0 1-3.55 3.97',
+  'M22 13h-4',
+  'M3 21a4 4 0 0 1 3.81-4',
+  'M3 5a4 4 0 0 0 3.55 3.97',
+  'M6 13H2',
+  'm8 2 1.88 1.88',
+  'M9 7.13V6a3 3 0 1 1 6 0v1.13',
+] as const
+
+function createLucideBugSprite(color: string, size = 2.7) {
+  const canvas = document.createElement('canvas')
+  canvas.width = 128
+  canvas.height = 128
+  const context = canvas.getContext('2d')
+  if (!context) throw new Error('Stack Trace could not render bug icons')
+
+  context.fillStyle = 'rgb(5 6 8 / 88%)'
+  context.beginPath()
+  context.arc(64, 64, 57, 0, Math.PI * 2)
+  context.fill()
+  context.strokeStyle = color
+  context.globalAlpha = 0.38
+  context.lineWidth = 2
+  context.stroke()
+
+  context.globalAlpha = 1
+  context.strokeStyle = color
+  context.lineWidth = 2
+  context.lineCap = 'round'
+  context.lineJoin = 'round'
+  context.shadowColor = color
+  context.shadowBlur = 3
+  context.translate(16, 16)
+  context.scale(4, 4)
+  lucideBugPaths.forEach((path) => context.stroke(new Path2D(path)))
+
+  const texture = new THREE.CanvasTexture(canvas)
+  texture.colorSpace = THREE.SRGBColorSpace
+  texture.generateMipmaps = false
+  texture.minFilter = THREE.LinearFilter
+  texture.magFilter = THREE.LinearFilter
+  const material = new THREE.SpriteMaterial({
+    map: texture,
+    transparent: true,
+    depthWrite: false,
+    toneMapped: false,
+  })
+  const sprite = new THREE.Sprite(material)
+  sprite.scale.set(size, size, 1)
+  return sprite
 }
 
 export function createBugVisual(color = '#ff694a') {
   const group = new THREE.Group()
-  const coreMaterial = new THREE.MeshStandardMaterial({
-    color: '#140807',
-    emissive: color,
-    emissiveIntensity: 1.4,
-    metalness: 0.4,
-    roughness: 0.35,
-    flatShading: true,
-  })
-  const lineMaterial = new THREE.MeshBasicMaterial({
-    color,
-    wireframe: true,
-    transparent: true,
-    opacity: 0.9,
-    toneMapped: false,
-  })
-  const core = new THREE.Mesh(
-    new THREE.IcosahedronGeometry(0.58, 0),
-    coreMaterial,
-  )
-  group.add(core)
-
-  const rings = [0, 1, 2].map((index) => {
-    const ring = new THREE.Mesh(
-      new THREE.TorusGeometry(0.82, 0.035, 5, 24),
-      lineMaterial,
-    )
-    ring.rotation.set(index * 0.8, index * 1.1, index * 0.4)
-    group.add(ring)
-    return ring
-  })
-
-  const wingGeometry = new THREE.TetrahedronGeometry(0.32, 0)
-  ;[-1, 1].forEach((sign) => {
-    const wing = new THREE.Mesh(wingGeometry, lineMaterial)
-    wing.position.x = sign * 0.92
-    wing.scale.set(1.6, 0.45, 0.8)
-    group.add(wing)
-  })
-
-  return { group, core, rings }
+  const icon = createLucideBugSprite(color)
+  group.add(icon)
+  return { group, icon }
 }
 
 export function createFaultVisual(color: string) {
@@ -862,39 +948,24 @@ export function createFaultVisual(color: string) {
 
 export function createRootVisual() {
   const group = new THREE.Group()
-  const coreMaterial = new THREE.MeshStandardMaterial({
-    color: '#0c0718',
-    emissive: '#8da4ff',
-    emissiveIntensity: 1.8,
-    metalness: 0.65,
-    roughness: 0.18,
-    flatShading: true,
-  })
   const shellMaterial = new THREE.MeshBasicMaterial({
-    color: '#ff694a',
+    color: '#8da4ff',
     wireframe: true,
     transparent: true,
-    opacity: 0.85,
+    opacity: 0.72,
     toneMapped: false,
   })
-  const core = new THREE.Mesh(
-    new THREE.OctahedronGeometry(1.45, 1),
-    coreMaterial,
-  )
-  const shell = new THREE.Mesh(
-    new THREE.DodecahedronGeometry(2.25, 0),
-    shellMaterial,
-  )
-  group.add(core, shell)
+  const icon = createLucideBugSprite('#ff694a', 5.2)
+  group.add(icon)
 
-  const rings = [0, 1, 2].map((index) => {
+  const rings = [0, 1].map((index) => {
     const ring = new THREE.Mesh(
-      new THREE.TorusGeometry(2.65, 0.055, 6, 36),
+      new THREE.TorusGeometry(3 + index * 0.34, 0.045, 6, 40),
       shellMaterial,
     )
-    ring.rotation.set(index * 0.9, index * 0.65, index * 0.45)
+    ring.rotation.set(index * 0.65, index * 0.4, index * 0.8)
     group.add(ring)
     return ring
   })
-  return { group, core, shell, rings }
+  return { group, icon, rings }
 }
