@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import StackTraceAudio from './stack-trace-audio'
 import type {
   GameInputMode,
   GameHudState,
@@ -122,6 +123,7 @@ export default class StackTraceEngine {
   private readonly camera = new THREE.PerspectiveCamera(72, 1, 0.06, 140)
   private readonly renderer: THREE.WebGLRenderer
   private readonly clock = new THREE.Clock()
+  private readonly audio = new StackTraceAudio()
   private readonly world: LevelWorld
   private readonly automap: StackTraceAutomap
   private readonly keys = new Set<string>()
@@ -307,6 +309,7 @@ export default class StackTraceEngine {
     this.resize()
     this.resetMission()
     this.mode = 'hunt'
+    this.audio.playMissionStart()
     this.callbacks.onMapChange(false)
     this.emitHud()
     if (this.inputMode === 'touch') {
@@ -319,6 +322,7 @@ export default class StackTraceEngine {
 
   resume = () => {
     if (this.mode !== 'hunt' && this.mode !== 'escape') return
+    if (this.paused) this.audio.playResume()
     if (this.inputMode === 'touch') {
       this.paused = false
       this.callbacks.onPauseChange(false)
@@ -329,6 +333,7 @@ export default class StackTraceEngine {
 
   pause = () => {
     if (this.mode !== 'hunt' && this.mode !== 'escape') return
+    if (!this.paused) this.audio.playPause()
     if (this.mapOpen) {
       this.mapOpen = false
       this.mapPointerId = null
@@ -349,6 +354,7 @@ export default class StackTraceEngine {
     if (this.mapOpen) {
       this.mapOpen = false
       this.mapPointerId = null
+      this.audio.playMap(false)
       this.callbacks.onMapChange(false)
       if (this.inputMode === 'touch') {
         this.paused = false
@@ -362,6 +368,7 @@ export default class StackTraceEngine {
 
     this.mapOpen = true
     this.paused = true
+    this.audio.playMap(true)
     this.firing = false
     this.keys.clear()
     this.resetTouchInput()
@@ -481,6 +488,7 @@ export default class StackTraceEngine {
     })
     textures.forEach((texture) => texture.dispose())
     disposeStackTraceAutomap(this.automap)
+    this.audio.dispose()
     this.renderer.dispose()
   }
 
@@ -705,11 +713,13 @@ export default class StackTraceEngine {
     if (this.inputMode !== 'pointer') return
     if (this.mode !== 'hunt' && this.mode !== 'escape') return
     if (this.mapOpen) return
+    const wasPaused = this.paused
     this.paused = document.pointerLockElement !== this.canvas
     if (this.paused) {
       this.firing = false
       this.keys.clear()
     }
+    if (this.paused && !wasPaused) this.audio.playPause()
     this.callbacks.onPauseChange(this.paused)
   }
 
@@ -1150,6 +1160,7 @@ export default class StackTraceEngine {
           this.forward,
           enemy.spec.kind === 'crawler' ? 10 : 8,
         )
+        this.audio.playEnemyShot(1 - distance / 17)
         enemy.lastShot = time
       }
 
@@ -1170,6 +1181,9 @@ export default class StackTraceEngine {
     ) {
       this.forward.copy(this.camera.position).sub(rootPosition).normalize()
       this.spawnProjectile('enemy', rootPosition, this.forward, 11)
+      this.audio.playEnemyShot(
+        1 - this.camera.position.distanceTo(rootPosition) / 20,
+      )
       this.root.lastShot = time
     }
   }
@@ -1183,6 +1197,7 @@ export default class StackTraceEngine {
       .applyQuaternion(this.camera.quaternion)
       .multiplyScalar(0.58)
     this.spawnProjectile('player', this.candidate, this.forward, 32, this.up)
+    this.audio.playPlayerShot()
     this.shotsFired += 1
     this.fireCooldown = SHOT_COOLDOWN
   }
@@ -1284,12 +1299,14 @@ export default class StackTraceEngine {
       if (hitEnemy) {
         this.shotsHit += 1
         this.hitPulse += 1
+        this.audio.playImpact()
         this.touchImpactFeedback()
         hitEnemy.health -= 1
         if (hitEnemy.health <= 0) {
           hitEnemy.alive = false
           hitEnemy.visual.group.visible = false
           this.bugsPurged += 1
+          this.audio.playDestroy()
           this.spawnBurst(
             hitEnemy.visual.group.position,
             hitEnemy.spec.kind === 'crawler' ? '#ff694a' : '#d9ff43',
@@ -1308,6 +1325,7 @@ export default class StackTraceEngine {
       if (hitFault) {
         this.shotsHit += 1
         this.hitPulse += 1
+        this.audio.playImpact()
         this.touchImpactFeedback()
         hitFault.health -= 1
         const scale = THREE.MathUtils.lerp(
@@ -1320,10 +1338,12 @@ export default class StackTraceEngine {
           hitFault.alive = false
           hitFault.visual.group.visible = false
           this.bugsPurged += 1
+          this.audio.playDestroy()
           this.spawnBurst(hitFault.visual.group.position, '#ff694a')
           if (this.faults.every((fault) => !fault.alive)) {
             this.doorLocked = false
             this.world.door.group.visible = false
+            this.audio.playObjectiveResolved()
           }
           this.refreshObjective(true)
           this.emitHud()
@@ -1340,12 +1360,14 @@ export default class StackTraceEngine {
       ) {
         this.shotsHit += 1
         this.hitPulse += 1
+        this.audio.playImpact()
         this.touchImpactFeedback()
         this.root.health -= 1
         if (this.root.health <= 0) {
           this.root.alive = false
           this.root.visual.group.visible = false
           this.bugsPurged += 1
+          this.audio.playDestroy(true)
           this.spawnBurst(rootPosition, '#8da4ff')
           this.beginEscape()
         }
@@ -1369,6 +1391,7 @@ export default class StackTraceEngine {
     if (this.playerDamageCooldown > 0) return
     this.playerDamageCooldown = 0.42
     this.damagePulse += 1
+    this.audio.playDamage()
     const integrity = this.currentIntegrity() - amount
     this.setCurrentIntegrity(integrity)
     this.emitHud()
@@ -1435,6 +1458,7 @@ export default class StackTraceEngine {
   private beginEscape() {
     this.mode = 'escape'
     this.escapeTime = this.escapeDuration()
+    this.audio.playEscape()
     this.refreshObjective(true)
     this.emitHud()
   }
@@ -1445,6 +1469,7 @@ export default class StackTraceEngine {
     this.paused = true
     this.firing = false
     this.keys.clear()
+    this.audio.playMissionEnd(status)
     if (document.pointerLockElement === this.canvas) {
       document.exitPointerLock()
     }

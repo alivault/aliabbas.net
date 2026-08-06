@@ -267,6 +267,9 @@ importers:
       input-otp:
         specifier: ^1.4.2
         version: 1.4.2(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      jsfxr:
+        specifier: ^1.4.1
+        version: 1.4.1
       lucide-react:
         specifier: ^1.26.0
         version: 1.26.0(react@19.2.8)
@@ -3531,6 +3534,10 @@ packages:
   jsesc@3.1.0:
     resolution: {integrity: sha512-/sM3dO2FOzXjKQhJuo0Q173wf2KOo8t4I8vHy6lF9poUp7bKT0/NHE8fPX23PwfhnykfqnC2xRxOnVw5XuGIaA==}
     engines: {node: '>=6'}
+    hasBin: true
+
+  jsfxr@1.4.1:
+    resolution: {integrity: sha512-Xbamo2dpLF5B+ssyv6TUEIoHJ/KRt4SRK2J3JOOmUG+45XBjkGKTjR/KOyQ9sqjrx/uea/UTWI0+p5pOVm1bUw==}
     hasBin: true
 
   json5@2.2.3:
@@ -7058,6 +7065,8 @@ snapshots:
       argparse: 2.0.1
 
   jsesc@3.1.0: {}
+
+  jsfxr@1.4.1: {}
 
   json5@2.2.3: {}
 
