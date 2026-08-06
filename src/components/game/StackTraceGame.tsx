@@ -1,13 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import {
-  ArrowLeft,
-  Crosshair,
-  Map as MapIcon,
-  RotateCcw,
-  X,
-} from 'lucide-react'
+import { ArrowLeft, Map as MapIcon, RotateCcw, X } from 'lucide-react'
 import Logo from '~/components/Logo'
+import { Kbd } from '~/components/ui/kbd'
 import StackTraceScene from './StackTraceScene'
 import StackTraceTouchControls from './StackTraceTouchControls'
 import { initialHudState } from './stack-trace-types'
@@ -175,9 +170,11 @@ function MissionBriefing({
             {renderingFailed
               ? 'WebGL is unavailable'
               : ready
-                ? 'Launch diagnostic drone'
+                ? 'Start game'
                 : 'Initializing labyrinth'}
-            <Crosshair className="size-4 transition-transform group-hover:rotate-45" />
+            <Kbd className="h-7 rounded-full bg-[#10100f]/10 px-2.5 font-mono text-[10px] font-bold text-[#10100f] group-disabled:bg-white/10 group-disabled:text-white/35">
+              Enter
+            </Kbd>
           </button>
         </div>
       </div>
@@ -212,6 +209,14 @@ function MissionHud({
           <p className="mt-1 font-mono text-[9px] tracking-[0.14em] text-white/35 uppercase sm:text-[10px]">
             Incident 001 / Trace active
           </p>
+          {!isTouch && (
+            <div className="mt-4 flex items-center gap-2 font-mono text-[10px] tracking-[0.12em] text-white/45 uppercase">
+              <Kbd className="size-6 border border-white/20 bg-black/35 font-mono text-xs text-white/75">
+                ?
+              </Kbd>
+              Keybinds
+            </div>
+          )}
         </div>
 
         <div className="max-w-[50vw] text-right">
@@ -332,6 +337,69 @@ function MissionHud({
   )
 }
 
+const keybinds = [
+  ['W A S D', 'Fly / strafe'],
+  ['Space / C', 'Rise / descend'],
+  ['Q / E', 'Roll'],
+  ['Mouse', 'Aim / fire'],
+  ['M', 'Wireframe map'],
+  ['Esc', 'Pause'],
+  ['Enter', 'Resume game'],
+  ['?', 'Toggle keybinds'],
+] as const
+
+function KeybindsScreen({ onClose }: { onClose: () => void }) {
+  return (
+    <div className="pointer-events-auto absolute inset-0 z-50 grid place-items-center overflow-y-auto bg-[#050608]/82 p-5 text-[#f1efe8] backdrop-blur-sm">
+      <div className="w-full max-w-2xl border border-white/15 bg-[#090a0d] p-6 sm:p-8">
+        <div className="flex items-start justify-between gap-6">
+          <div>
+            <p className="font-mono text-[10px] tracking-[0.2em] text-[#d9ff43] uppercase">
+              Input reference
+            </p>
+            <h2 className="font-display mt-3 text-4xl tracking-[-0.045em] sm:text-6xl">
+              Flight controls
+            </h2>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex size-11 shrink-0 items-center justify-center rounded-full border border-white/20 text-white/60 transition-colors hover:border-white/45 hover:text-white"
+            aria-label="Close keybinds"
+          >
+            <X className="size-4" />
+          </button>
+        </div>
+
+        <div className="mt-7 grid gap-px border border-white/15 bg-white/15 sm:grid-cols-2">
+          {keybinds.map(([keybind, action]) => (
+            <div
+              key={keybind}
+              className="flex min-h-16 items-center justify-between gap-4 bg-[#08090b] px-4 py-3"
+            >
+              <span className="text-sm text-white/55">{action}</span>
+              <Kbd className="h-6 shrink-0 bg-white/8 px-2 font-mono text-xs font-semibold text-[#d9ff43]">
+                {keybind}
+              </Kbd>
+            </div>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={onClose}
+          className="mt-7 flex h-12 w-full items-center justify-between rounded-full bg-[#d9ff43] px-5 text-xs font-bold text-[#10100f] transition-colors hover:bg-white"
+        >
+          Resume game
+          <Kbd className="h-7 rounded-full bg-[#10100f]/10 px-2.5 font-mono text-[10px] font-bold text-[#10100f]">
+            Enter
+          </Kbd>
+        </button>
+      </div>
+    </div>
+  )
+}
+
 function PauseScreen({
   inputMode,
   onResume,
@@ -357,7 +425,10 @@ function PauseScreen({
           onClick={onResume}
           className="mt-7 flex h-12 w-full items-center justify-between rounded-full bg-[#d9ff43] px-5 text-xs font-bold text-[#10100f] hover:bg-white"
         >
-          Resume trace <Crosshair className="size-4" />
+          Resume game
+          <Kbd className="h-7 rounded-full bg-[#10100f]/10 px-2.5 font-mono text-[10px] font-bold text-[#10100f]">
+            Enter
+          </Kbd>
         </button>
         <Link
           to="/"
@@ -505,6 +576,7 @@ export default function StackTraceGame() {
   const [renderingFailed, setRenderingFailed] = useState(false)
   const [paused, setPaused] = useState(false)
   const [mapOpen, setMapOpen] = useState(false)
+  const [keybindsOpen, setKeybindsOpen] = useState(false)
   const [hud, setHud] = useState(initialHudState)
   const [screen, setScreen] = useState<ScreenState>({ status: 'briefing' })
   const [inputMode, setInputMode] = useState<GameInputMode>('pointer')
@@ -538,6 +610,7 @@ export default function StackTraceGame() {
     if (inputMode === 'touch') requestMobileFullscreen()
     setPaused(false)
     setMapOpen(false)
+    setKeybindsOpen(false)
     setScreen({ status: 'playing' })
     apiRef.current.start(inputMode, { sensitivity })
   }, [inputMode, ready, renderingFailed, requestMobileFullscreen, sensitivity])
@@ -554,10 +627,50 @@ export default function StackTraceGame() {
     return () => window.removeEventListener('keydown', handleKeyDown, true)
   }, [launch, screen.status])
 
-  const resume = () => {
+  const resume = useCallback(() => {
     setPaused(false)
     apiRef.current?.resume()
-  }
+  }, [])
+
+  const closeKeybinds = useCallback(() => {
+    setKeybindsOpen(false)
+    resume()
+  }, [resume])
+
+  useEffect(() => {
+    if (screen.status !== 'playing' || inputMode !== 'pointer') return
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const togglesKeybinds = event.key === '?' && !event.repeat
+      const closesKeybinds = keybindsOpen && event.code === 'Escape'
+      const resumesGame = paused && event.code === 'Enter'
+      if ((!togglesKeybinds && !closesKeybinds && !resumesGame) || mapOpen) {
+        return
+      }
+
+      event.preventDefault()
+      event.stopImmediatePropagation()
+      if (closesKeybinds) {
+        setKeybindsOpen(false)
+      } else if (keybindsOpen) {
+        closeKeybinds()
+      } else if (resumesGame) {
+        resume()
+      } else {
+        setKeybindsOpen(true)
+        apiRef.current?.pause()
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown, true)
+    return () => window.removeEventListener('keydown', handleKeyDown, true)
+  }, [
+    closeKeybinds,
+    inputMode,
+    keybindsOpen,
+    mapOpen,
+    paused,
+    resume,
+    screen.status,
+  ])
 
   return (
     <main
@@ -578,6 +691,7 @@ export default function StackTraceGame() {
           onEnd={(result) => {
             setPaused(false)
             setMapOpen(false)
+            setKeybindsOpen(false)
             setScreen({ status: 'result', result })
           }}
         />
@@ -597,13 +711,14 @@ export default function StackTraceGame() {
           onLaunch={launch}
         />
       )}
-      {screen.status === 'playing' && !mapOpen && (
+      {screen.status === 'playing' && !mapOpen && !keybindsOpen && (
         <MissionHud hud={hud} inputMode={inputMode} />
       )}
       {screen.status === 'playing' &&
         inputMode === 'touch' &&
         !paused &&
-        !mapOpen && (
+        !mapOpen &&
+        !keybindsOpen && (
           <StackTraceTouchControls
             apiRef={apiRef}
             isPortrait={isPortrait}
@@ -617,7 +732,10 @@ export default function StackTraceGame() {
           onClose={() => apiRef.current?.toggleMap()}
         />
       )}
-      {screen.status === 'playing' && paused && !mapOpen && (
+      {screen.status === 'playing' && keybindsOpen && (
+        <KeybindsScreen onClose={closeKeybinds} />
+      )}
+      {screen.status === 'playing' && paused && !mapOpen && !keybindsOpen && (
         <PauseScreen inputMode={inputMode} onResume={resume} />
       )}
       {screen.status === 'result' && (

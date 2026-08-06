@@ -74,6 +74,8 @@ type RootBug = {
 type Projectile = {
   mesh: THREE.Mesh
   owner: 'player' | 'enemy'
+  position: THREE.Vector3
+  visualOffset: THREE.Vector3
   velocity: THREE.Vector3
   active: boolean
   life: number
@@ -557,6 +559,8 @@ export default class StackTraceEngine {
       this.projectiles.push({
         mesh,
         owner,
+        position: new THREE.Vector3(),
+        visualOffset: new THREE.Vector3(),
         velocity: new THREE.Vector3(),
         active: false,
         life: 0,
@@ -738,12 +742,10 @@ export default class StackTraceEngine {
       event.preventDefault()
     }
     this.keys.add(event.code)
-    if (event.code === 'Enter') this.firing = true
   }
 
   private readonly handleKeyUp = (event: KeyboardEvent) => {
     this.keys.delete(event.code)
-    if (event.code === 'Enter') this.firing = false
   }
 
   private readonly handleMouseDown = (event: MouseEvent) => {
@@ -1176,7 +1178,11 @@ export default class StackTraceEngine {
     this.forward.set(0, 0, -1).applyQuaternion(this.camera.quaternion)
     if (this.inputMode === 'touch') this.applyTouchAimAssist()
     this.candidate.copy(this.camera.position).addScaledVector(this.forward, 0.9)
-    this.spawnProjectile('player', this.candidate, this.forward, 32)
+    this.up
+      .set(0, -1, 0)
+      .applyQuaternion(this.camera.quaternion)
+      .multiplyScalar(0.58)
+    this.spawnProjectile('player', this.candidate, this.forward, 32, this.up)
     this.shotsFired += 1
     this.fireCooldown = SHOT_COOLDOWN
   }
@@ -1210,6 +1216,7 @@ export default class StackTraceEngine {
     origin: THREE.Vector3,
     direction: THREE.Vector3,
     speed: number,
+    visualOffset?: THREE.Vector3,
   ) {
     const projectile = this.projectiles.find(
       (item) => !item.active && item.owner === owner,
@@ -1218,7 +1225,15 @@ export default class StackTraceEngine {
     projectile.active = true
     projectile.life = owner === 'player' ? 2.2 : 3.2
     projectile.mesh.visible = true
-    projectile.mesh.position.copy(origin)
+    projectile.position.copy(origin)
+    if (visualOffset) {
+      projectile.visualOffset.copy(visualOffset)
+    } else {
+      projectile.visualOffset.set(0, 0, 0)
+    }
+    projectile.mesh.position
+      .copy(projectile.position)
+      .add(projectile.visualOffset)
     projectile.velocity.copy(direction).multiplyScalar(speed)
   }
 
@@ -1226,27 +1241,27 @@ export default class StackTraceEngine {
     projectile.active = false
     projectile.life = 0
     projectile.mesh.visible = false
+    projectile.position.set(0, 0, 0)
+    projectile.visualOffset.set(0, 0, 0)
     projectile.velocity.set(0, 0, 0)
   }
 
   private updateProjectiles(delta: number) {
     this.projectiles.forEach((projectile) => {
       if (!projectile.active) return
-      this.previousProjectilePosition.copy(projectile.mesh.position)
-      projectile.mesh.position.addScaledVector(projectile.velocity, delta)
+      this.previousProjectilePosition.copy(projectile.position)
+      projectile.position.addScaledVector(projectile.velocity, delta)
+      projectile.visualOffset.multiplyScalar(Math.exp(-5.5 * delta))
+      projectile.mesh.position
+        .copy(projectile.position)
+        .add(projectile.visualOffset)
       projectile.life -= delta
-      if (
-        projectile.life <= 0 ||
-        !this.canOccupy(projectile.mesh.position, 0.08)
-      ) {
+      if (projectile.life <= 0 || !this.canOccupy(projectile.position, 0.08)) {
         this.deactivateProjectile(projectile)
         return
       }
 
-      this.segment.set(
-        this.previousProjectilePosition,
-        projectile.mesh.position,
-      )
+      this.segment.set(this.previousProjectilePosition, projectile.position)
       if (projectile.owner === 'enemy') {
         this.segment.closestPointToPoint(
           this.camera.position,
