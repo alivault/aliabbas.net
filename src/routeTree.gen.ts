@@ -17,11 +17,14 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ExperienceRouteImport } from './routes/experience'
 import { Route as NotesRouteImport } from './routes/notes'
 import { Route as PlayRouteImport } from './routes/play'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as WorkRouteImport } from './routes/work'
+import { Route as AdminConversationsRouteImport } from './routes/admin.conversations'
 import { Route as ApiChatRouteImport } from './routes/api.chat'
 import { Route as ArticleSlugRouteImport } from './routes/article.$slug'
 import { Route as NotesSlugRouteImport } from './routes/notes_.$slug'
+import { Route as ApiAdminConversationsRouteImport } from './routes/api.admin.conversations'
 import { Route as ApiAuthSplatRouteImport } from './routes/api.auth.$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -64,6 +67,11 @@ const PlayRoute = PlayRouteImport.update({
   path: '/play',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
   path: '/reset-password',
@@ -72,6 +80,11 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
 const WorkRoute = WorkRouteImport.update({
   id: '/work',
   path: '/work',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminConversationsRoute = AdminConversationsRouteImport.update({
+  id: '/admin/conversations',
+  path: '/admin/conversations',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiChatRoute = ApiChatRouteImport.update({
@@ -89,6 +102,11 @@ const NotesSlugRoute = NotesSlugRouteImport.update({
   path: '/notes/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminConversationsRoute = ApiAdminConversationsRouteImport.update({
+  id: '/api/admin/conversations',
+  path: '/api/admin/conversations',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -104,11 +122,14 @@ export interface FileRoutesByFullPath {
   '/experience': typeof ExperienceRoute
   '/notes': typeof NotesRoute
   '/play': typeof PlayRoute
+  '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/work': typeof WorkRoute
+  '/admin/conversations': typeof AdminConversationsRoute
   '/api/chat': typeof ApiChatRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
+  '/api/admin/conversations': typeof ApiAdminConversationsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
@@ -120,11 +141,14 @@ export interface FileRoutesByTo {
   '/experience': typeof ExperienceRoute
   '/notes': typeof NotesRoute
   '/play': typeof PlayRoute
+  '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/work': typeof WorkRoute
+  '/admin/conversations': typeof AdminConversationsRoute
   '/api/chat': typeof ApiChatRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
+  '/api/admin/conversations': typeof ApiAdminConversationsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
@@ -137,11 +161,14 @@ export interface FileRoutesById {
   '/experience': typeof ExperienceRoute
   '/notes': typeof NotesRoute
   '/play': typeof PlayRoute
+  '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/work': typeof WorkRoute
+  '/admin/conversations': typeof AdminConversationsRoute
   '/api/chat': typeof ApiChatRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/notes_/$slug': typeof NotesSlugRoute
+  '/api/admin/conversations': typeof ApiAdminConversationsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
@@ -155,11 +182,14 @@ export interface FileRouteTypes {
     | '/experience'
     | '/notes'
     | '/play'
+    | '/privacy'
     | '/reset-password'
     | '/work'
+    | '/admin/conversations'
     | '/api/chat'
     | '/article/$slug'
     | '/notes/$slug'
+    | '/api/admin/conversations'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -171,11 +201,14 @@ export interface FileRouteTypes {
     | '/experience'
     | '/notes'
     | '/play'
+    | '/privacy'
     | '/reset-password'
     | '/work'
+    | '/admin/conversations'
     | '/api/chat'
     | '/article/$slug'
     | '/notes/$slug'
+    | '/api/admin/conversations'
     | '/api/auth/$'
   id:
     | '__root__'
@@ -187,11 +220,14 @@ export interface FileRouteTypes {
     | '/experience'
     | '/notes'
     | '/play'
+    | '/privacy'
     | '/reset-password'
     | '/work'
+    | '/admin/conversations'
     | '/api/chat'
     | '/article/$slug'
     | '/notes_/$slug'
+    | '/api/admin/conversations'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
@@ -204,11 +240,14 @@ export interface RootRouteChildren {
   ExperienceRoute: typeof ExperienceRoute
   NotesRoute: typeof NotesRoute
   PlayRoute: typeof PlayRoute
+  PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   WorkRoute: typeof WorkRoute
+  AdminConversationsRoute: typeof AdminConversationsRoute
   ApiChatRoute: typeof ApiChatRoute
   ArticleSlugRoute: typeof ArticleSlugRoute
   NotesSlugRoute: typeof NotesSlugRoute
+  ApiAdminConversationsRoute: typeof ApiAdminConversationsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -270,6 +309,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlayRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/reset-password': {
       id: '/reset-password'
       path: '/reset-password'
@@ -282,6 +328,13 @@ declare module '@tanstack/react-router' {
       path: '/work'
       fullPath: '/work'
       preLoaderRoute: typeof WorkRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/conversations': {
+      id: '/admin/conversations'
+      path: '/admin/conversations'
+      fullPath: '/admin/conversations'
+      preLoaderRoute: typeof AdminConversationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/chat': {
@@ -305,6 +358,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/conversations': {
+      id: '/api/admin/conversations'
+      path: '/api/admin/conversations'
+      fullPath: '/api/admin/conversations'
+      preLoaderRoute: typeof ApiAdminConversationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -324,11 +384,14 @@ const rootRouteChildren: RootRouteChildren = {
   ExperienceRoute: ExperienceRoute,
   NotesRoute: NotesRoute,
   PlayRoute: PlayRoute,
+  PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   WorkRoute: WorkRoute,
+  AdminConversationsRoute: AdminConversationsRoute,
   ApiChatRoute: ApiChatRoute,
   ArticleSlugRoute: ArticleSlugRoute,
   NotesSlugRoute: NotesSlugRoute,
+  ApiAdminConversationsRoute: ApiAdminConversationsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

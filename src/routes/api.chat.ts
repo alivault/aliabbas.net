@@ -1,6 +1,15 @@
 import aliKnowledge from '~/data/ali-knowledge.md?raw'
+import {
+  deleteConversation,
+  ensureConversation,
+  getConversationMetadata,
+  hashDeleteToken,
+  purgeExpiredConversations,
+  storeMessage,
+  updateConversationStatus,
+} from '~/lib/chat-storage'
 import { createFileRoute } from '@tanstack/react-router'
-import { env } from 'cloudflare:workers'
+import { env, waitUntil } from 'cloudflare:workers'
 import { z } from 'zod'
 
 const MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast'
@@ -18,6 +27,15 @@ const ChatMessageSchema = z.discriminatedUnion('role', [
 
 const ChatRequestSchema = z.object({
   messages: z.array(ChatMessageSchema).min(1).max(9),
+  conversation: z.object({
+    id: z.string().regex(/^[A-Za-z0-9_-]{16,120}$/),
+    deleteToken: z.string().regex(/^[A-Za-z0-9_-]{24,200}$/),
+  }),
+  requestId: z.string().regex(/^[A-Za-z0-9_-]{8,160}$/),
+})
+
+const DeleteConversationSchema = z.object({
+  conversation: ChatRequestSchema.shape.conversation,
 })
 
 const SYSTEM_PROMPT = `You are the AI portfolio guide for Ali Abbas. You are not Ali, and you must never imply that you are speaking as him. Your audience is primarily employers, hiring managers, collaborators, and prospective clients.
@@ -55,14 +73,84 @@ function errorResponse(error: string, status: number) {
   )
 }
 
+function isSameOrigin(request: Request) {
+  const requestOrigin = request.headers.get('Origin')
+  return !requestOrigin || requestOrigin === new URL(request.url).origin
+}
+
+function getSseData(event: string) {
+  return event
+    .split(/\r?\n/)
+    .filter((line) => line.startsWith('data:'))
+    .map((line) => line.slice(5).trimStart())
+    .join('\n')
+}
+
+async function persistAssistantResponse(
+  stream: ReadableStream<Uint8Array>,
+  input: {
+    conversationId: string
+    messageId: string
+  },
+) {
+  const reader = stream.getReader()
+  const decoder = new TextDecoder()
+  let buffer = ''
+  let content = ''
+
+  try {
+    while (true) {
+      const { done, value } = await reader.read()
+      buffer += decoder.decode(value, { stream: !done })
+      const events = buffer.split(/\r?\n\r?\n/)
+      buffer = events.pop() ?? ''
+
+      for (const event of events) {
+        const data = getSseData(event)
+        if (!data || data === '[DONE]') continue
+
+        const payload: unknown = JSON.parse(data)
+        if (
+          payload &&
+          typeof payload === 'object' &&
+          'response' in payload &&
+          typeof payload.response === 'string'
+        ) {
+          content += payload.response
+        }
+      }
+
+      if (done) break
+    }
+
+    if (!content.trim()) {
+      await updateConversationStatus(env.CHAT_DB, input.conversationId, 'empty')
+      return
+    }
+
+    await storeMessage(env.CHAT_DB, {
+      id: `${input.conversationId}:${input.messageId}:assistant`,
+      conversationId: input.conversationId,
+      role: 'assistant',
+      content,
+      createdAt: Date.now(),
+      status: 'complete',
+    })
+  } catch (error) {
+    console.error('Unable to persist assistant response', error)
+    await updateConversationStatus(
+      env.CHAT_DB,
+      input.conversationId,
+      'failed',
+    ).catch(() => undefined)
+  }
+}
+
 export const Route = createFileRoute('/api/chat')({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const requestOrigin = request.headers.get('Origin')
-        const expectedOrigin = new URL(request.url).origin
-
-        if (requestOrigin && requestOrigin !== expectedOrigin) {
+        if (!isSameOrigin(request)) {
           return errorResponse(
             'This chat is only available on aliabbas.dev.',
             403,
@@ -107,7 +195,7 @@ export const Route = createFileRoute('/api/chat')({
           return errorResponse('The conversation format is not valid.', 400)
         }
 
-        const { messages } = parsed.data
+        const { conversation, messages, requestId } = parsed.data
         const hasValidTurnOrder = messages.every(
           (message, index) =>
             message.role === (index % 2 === 0 ? 'user' : 'assistant'),
@@ -125,6 +213,38 @@ export const Route = createFileRoute('/api/chat')({
           return errorResponse('The conversation format is not valid.', 400)
         }
 
+        const now = Date.now()
+        const deleteTokenHash = await hashDeleteToken(conversation.deleteToken)
+
+        try {
+          const canUseConversation = await ensureConversation(env.CHAT_DB, {
+            id: conversation.id,
+            deleteTokenHash,
+            metadata: getConversationMetadata(request),
+            now,
+          })
+
+          if (!canUseConversation) {
+            return errorResponse('That conversation could not be resumed.', 409)
+          }
+
+          await storeMessage(env.CHAT_DB, {
+            id: `${conversation.id}:${requestId}:user`,
+            conversationId: conversation.id,
+            role: 'user',
+            content: messages.at(-1)!.content,
+            createdAt: now,
+            status: 'complete',
+          })
+          waitUntil(purgeExpiredConversations(env.CHAT_DB))
+        } catch (error) {
+          console.error('Unable to persist chat question', error)
+          return errorResponse(
+            'The assistant is unavailable right now. Please try again shortly.',
+            503,
+          )
+        }
+
         try {
           const stream = await env.AI.run(MODEL, {
             messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages],
@@ -133,7 +253,17 @@ export const Route = createFileRoute('/api/chat')({
             stream: true,
           })
 
-          return new Response(stream, {
+          const [clientStream, persistenceStream] = (
+            stream as ReadableStream<Uint8Array>
+          ).tee()
+          waitUntil(
+            persistAssistantResponse(persistenceStream, {
+              conversationId: conversation.id,
+              messageId: requestId,
+            }),
+          )
+
+          return new Response(clientStream, {
             headers: {
               'Cache-Control': 'no-cache, no-store',
               'Content-Type': 'text/event-stream',
@@ -142,11 +272,55 @@ export const Route = createFileRoute('/api/chat')({
           })
         } catch (error) {
           console.error('Workers AI request failed', error)
+          waitUntil(
+            updateConversationStatus(env.CHAT_DB, conversation.id, 'failed'),
+          )
           return errorResponse(
             'The assistant is unavailable right now. Please try again shortly.',
             502,
           )
         }
+      },
+      DELETE: async ({ request }) => {
+        if (!isSameOrigin(request)) {
+          return errorResponse(
+            'This chat is only available on aliabbas.dev.',
+            403,
+          )
+        }
+
+        if (
+          !request.headers.get('Content-Type')?.includes('application/json')
+        ) {
+          return errorResponse('Expected a JSON request.', 415)
+        }
+
+        const contentLength = Number(request.headers.get('Content-Length') ?? 0)
+        if (contentLength > 2_000) {
+          return errorResponse('That request is too large.', 413)
+        }
+
+        let body: unknown
+        try {
+          body = await request.json()
+        } catch {
+          return errorResponse('The request body is not valid JSON.', 400)
+        }
+
+        const parsed = DeleteConversationSchema.safeParse(body)
+        if (!parsed.success) {
+          return errorResponse('The conversation format is not valid.', 400)
+        }
+
+        const { conversation } = parsed.data
+        const deleteTokenHash = await hashDeleteToken(conversation.deleteToken)
+
+        await deleteConversation(env.CHAT_DB, conversation.id, deleteTokenHash)
+
+        return new Response(null, {
+          status: 204,
+          headers: { 'Cache-Control': 'no-store' },
+        })
       },
     },
   },

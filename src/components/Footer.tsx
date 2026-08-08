@@ -50,6 +50,9 @@ export default function Footer() {
             <Link to="/chat" className="hover:text-white">
               Ask AI
             </Link>
+            <Link to="/privacy" className="hover:text-white">
+              Privacy
+            </Link>
             <a
               href="https://github.com/alivault"
               target="_blank"

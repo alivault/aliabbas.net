@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import { ArrowUp, Bot, LoaderCircle, RotateCcw, UserRound } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import {
+  ArrowUp,
+  Bot,
+  LoaderCircle,
+  RotateCcw,
+  Trash2,
+  UserRound,
+} from 'lucide-react'
 import {
   MessageScroller,
   MessageScrollerButton,
@@ -31,6 +39,11 @@ type RequestState =
   | { status: 'streaming'; assistantId: string }
   | { status: 'error'; message: string }
 
+type ConversationIdentity = {
+  id: string
+  deleteToken: string
+}
+
 const welcomeMessage = {
   id: 'welcome',
   role: 'assistant',
@@ -46,6 +59,29 @@ const suggestedQuestions = [
 ] as const
 
 let messageSequence = 0
+
+function createRandomHex(byteLength: number) {
+  const values = new Uint8Array(byteLength)
+
+  if (globalThis.crypto?.getRandomValues) {
+    globalThis.crypto.getRandomValues(values)
+  } else {
+    for (let index = 0; index < values.length; index += 1) {
+      values[index] = Math.floor(Math.random() * 256)
+    }
+  }
+
+  return Array.from(values, (value) =>
+    value.toString(16).padStart(2, '0'),
+  ).join('')
+}
+
+function createConversationIdentity(): ConversationIdentity {
+  return {
+    id: `conversation_${createRandomHex(12)}`,
+    deleteToken: createRandomHex(24),
+  }
+}
 
 function createMessageId(role: ChatMessage['role']) {
   messageSequence += 1
@@ -183,6 +219,10 @@ function getSseData(event: string) {
 export default function PortfolioChat() {
   const [messages, setMessages] = useState<Array<ChatMessage>>([welcomeMessage])
   const [draft, setDraft] = useState('')
+  const [conversation, setConversation] = useState<ConversationIdentity>(
+    createConversationIdentity,
+  )
+  const [isDeleting, setIsDeleting] = useState(false)
   const [requestState, setRequestState] = useState<RequestState>({
     status: 'idle',
   })
@@ -240,7 +280,11 @@ export default function PortfolioChat() {
       const response = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: requestMessages }),
+        body: JSON.stringify({
+          messages: requestMessages,
+          conversation,
+          requestId: userMessage.id,
+        }),
         signal: controller.signal,
       })
 
@@ -323,7 +367,38 @@ export default function PortfolioChat() {
     abortControllerRef.current = null
     setMessages([welcomeMessage])
     setDraft('')
+    setConversation(createConversationIdentity())
     setRequestState({ status: 'idle' })
+  }
+
+  const deleteCurrentConversation = async () => {
+    if (messages.length === 1 || requestState.status === 'streaming') return
+    if (!window.confirm('Permanently delete this conversation?')) return
+
+    setIsDeleting(true)
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ conversation }),
+      })
+
+      if (!response.ok) {
+        throw new Error('The conversation could not be deleted right now.')
+      }
+
+      resetConversation()
+    } catch (error) {
+      setRequestState({
+        status: 'error',
+        message:
+          error instanceof Error
+            ? error.message
+            : 'The conversation could not be deleted right now.',
+      })
+    } finally {
+      setIsDeleting(false)
+    }
   }
 
   const isStreaming = requestState.status === 'streaming'
@@ -368,25 +443,53 @@ export default function PortfolioChat() {
               </p>
             </div>
             <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger
-                  render={
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon-sm"
-                      onClick={resetConversation}
-                      className="text-white/45 hover:bg-white/10 hover:text-white"
-                      aria-label="Start a new conversation"
-                    >
-                      <RotateCcw />
-                    </Button>
-                  }
-                />
-                <TooltipContent side="bottom">
-                  Reset conversation
-                </TooltipContent>
-              </Tooltip>
+              <div className="flex items-center gap-1">
+                {messages.length > 1 && (
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon-sm"
+                          disabled={isStreaming || isDeleting}
+                          onClick={() => void deleteCurrentConversation()}
+                          className="text-white/45 hover:bg-white/10 hover:text-[#ff8b75]"
+                          aria-label="Delete this conversation"
+                        >
+                          {isDeleting ? (
+                            <LoaderCircle className="animate-spin" />
+                          ) : (
+                            <Trash2 />
+                          )}
+                        </Button>
+                      }
+                    />
+                    <TooltipContent side="bottom">
+                      Delete this conversation
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+                <Tooltip>
+                  <TooltipTrigger
+                    render={
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-sm"
+                        onClick={resetConversation}
+                        className="text-white/45 hover:bg-white/10 hover:text-white"
+                        aria-label="Start a new conversation"
+                      >
+                        <RotateCcw />
+                      </Button>
+                    }
+                  />
+                  <TooltipContent side="bottom">
+                    Start a new conversation
+                  </TooltipContent>
+                </Tooltip>
+              </div>
             </TooltipProvider>
           </div>
 
@@ -520,8 +623,16 @@ export default function PortfolioChat() {
                 )}
               </Button>
             </form>
-            <p className="mt-2 text-center font-mono text-[8px] tracking-[0.08em] text-white/20 uppercase">
-              AI can make mistakes · Verify important details with Ali
+            <p className="mt-3 text-center text-xs leading-5 text-white/35">
+              Messages, timestamps, approximate location, and browser/device
+              details are stored for up to 90 days and may be reviewed by Ali.
+              Don’t share confidential or sensitive information.{' '}
+              <Link
+                to="/privacy"
+                className="underline decoration-white/25 underline-offset-4 hover:text-white"
+              >
+                Privacy
+              </Link>
             </p>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { Link } from '@tanstack/react-router'
 import { ArrowUpRight, CircleCheck, Loader2 } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useForm } from 'react-hook-form'
@@ -250,6 +251,15 @@ export default function ContactForm() {
                 </>
               )}
             </Button>
+            <p className="text-center text-xs leading-5 text-black/40">
+              Your name, email, and message are used to respond to this inquiry.{' '}
+              <Link
+                to="/privacy"
+                className="font-semibold text-black/60 underline decoration-black/20 underline-offset-4"
+              >
+                Privacy policy
+              </Link>
+            </p>
           </FieldGroup>
         </form>
       </ScrollReveal>
