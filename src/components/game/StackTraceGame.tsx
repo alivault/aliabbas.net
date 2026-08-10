@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { ArrowLeft, Map as MapIcon, RotateCcw, X } from 'lucide-react'
+import { ArrowLeft, Map as MapIcon, X } from 'lucide-react'
 import Logo from '~/components/Logo'
 import { Kbd } from '~/components/ui/kbd'
 import StackTraceScene from './StackTraceScene'
@@ -585,7 +585,10 @@ function ResultScreen({
             onClick={onRestart}
             className="flex h-12 flex-1 items-center justify-between rounded-full bg-[#d9ff43] px-5 text-xs font-bold text-[#10100f] hover:bg-white"
           >
-            Run trace again <RotateCcw className="size-4" />
+            Run trace again
+            <Kbd className="h-7 rounded-full bg-[#10100f]/10 px-2.5 font-mono text-[10px] font-bold text-[#10100f]">
+              Enter
+            </Kbd>
           </button>
           <Link
             to="/"
@@ -646,7 +649,7 @@ export default function StackTraceGame() {
   }, [inputMode, ready, renderingFailed, requestMobileFullscreen, sensitivity])
 
   useEffect(() => {
-    if (screen.status !== 'briefing') return
+    if (screen.status !== 'briefing' && screen.status !== 'result') return
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.code !== 'Enter' || event.repeat) return
       event.preventDefault()

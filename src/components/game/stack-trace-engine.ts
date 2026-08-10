@@ -17,6 +17,7 @@ import {
 import type { StackTraceAutomap } from './stack-trace-map'
 import {
   createBugVisual,
+  createExitVisual,
   createFaultVisual,
   createLevelWorld,
   createRootVisual,
@@ -29,6 +30,7 @@ import {
 } from './stack-trace-world'
 import type {
   EnemySpec,
+  ExitVisual,
   FaultSpec,
   LevelWorld,
   RoomId,
@@ -125,6 +127,7 @@ export default class StackTraceEngine {
   private readonly clock = new THREE.Clock()
   private readonly audio = new StackTraceAudio()
   private readonly world: LevelWorld
+  private readonly exit: ExitVisual
   private readonly automap: StackTraceAutomap
   private readonly keys = new Set<string>()
   private readonly discoveredRooms = new Set<RoomId>()
@@ -221,6 +224,10 @@ export default class StackTraceEngine {
     }
 
     this.world = createLevelWorld(this.scene)
+    this.exit = createExitVisual()
+    this.exit.group.position.copy(exitPosition)
+    this.exit.group.visible = false
+    this.scene.add(this.exit.group)
     this.automap = createStackTraceAutomap()
     this.faults = faultSpecs.map((spec, index) => {
       const visual = createFaultVisual(faultColors[index] ?? '#ff694a')
@@ -648,6 +655,8 @@ export default class StackTraceEngine {
     this.camera.position.copy(startPosition)
     this.camera.rotation.set(0, 0, 0, 'YXZ')
     this.world.door.group.visible = true
+    this.exit.group.visible = false
+    this.exit.group.scale.setScalar(1)
 
     this.faults.forEach((fault) => {
       fault.health = fault.maxHealth
@@ -979,6 +988,7 @@ export default class StackTraceEngine {
     })
     this.automap.rootEnemy.visible = this.root.alive
     this.automap.rootEnemy.position.copy(rootPosition)
+    this.automap.exit.visible = this.mode === 'escape'
   }
 
   private renderAutomap() {
@@ -1020,6 +1030,14 @@ export default class StackTraceEngine {
       })
       const rootPulse = 1 + Math.sin(time * 2.4) * 0.035
       this.root.visual.group.scale.setScalar(rootPulse)
+    }
+    if (this.exit.group.visible) {
+      const exitPulse = 1 + Math.sin(time * 6) * 0.08
+      this.exit.group.scale.setScalar(exitPulse)
+      const material = this.exit.field.material
+      if (material instanceof THREE.MeshBasicMaterial) {
+        material.opacity = 0.07 + (Math.sin(time * 6) + 1) * 0.035
+      }
     }
   }
 
@@ -1458,6 +1476,7 @@ export default class StackTraceEngine {
   private beginEscape() {
     this.mode = 'escape'
     this.escapeTime = this.escapeDuration()
+    this.exit.group.visible = true
     this.audio.playEscape()
     this.refreshObjective(true)
     this.emitHud()

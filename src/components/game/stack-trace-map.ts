@@ -1,5 +1,11 @@
 import * as THREE from 'three'
-import { connections, enemySpecs, faultSpecs, rooms } from './stack-trace-world'
+import {
+  connections,
+  enemySpecs,
+  exitPosition,
+  faultSpecs,
+  rooms,
+} from './stack-trace-world'
 import type { RoomId } from './stack-trace-world'
 
 const CHAMBER_SIZE = 10
@@ -26,6 +32,7 @@ export type StackTraceAutomap = {
   enemies: Array<THREE.LineSegments>
   faults: Array<THREE.LineSegments>
   rootEnemy: THREE.LineSegments
+  exit: THREE.LineLoop
 }
 
 function roomCenter(roomId: RoomId) {
@@ -154,6 +161,25 @@ function createEnemyMarker(radius: number, kind: 'enemy' | 'fault' = 'enemy') {
   return marker
 }
 
+function createExitMarker() {
+  const points = Array.from({ length: 64 }, (_, index) => {
+    const angle = (index / 64) * Math.PI * 2
+    return new THREE.Vector3(Math.cos(angle) * 2.2, Math.sin(angle) * 2.2, 0)
+  })
+  const geometry = new THREE.BufferGeometry().setFromPoints(points)
+  const material = new THREE.LineBasicMaterial({
+    color: '#ff694a',
+    depthTest: false,
+    depthWrite: false,
+    toneMapped: false,
+  })
+  const marker = new THREE.LineLoop(geometry, material)
+  marker.position.copy(exitPosition)
+  marker.renderOrder = 10
+  marker.visible = false
+  return marker
+}
+
 export function createStackTraceAutomap(): StackTraceAutomap {
   const scene = new THREE.Scene()
   scene.background = new THREE.Color('#020304')
@@ -188,6 +214,8 @@ export function createStackTraceAutomap(): StackTraceAutomap {
   })
   const rootEnemy = createEnemyMarker(1.15)
   scene.add(rootEnemy)
+  const exit = createExitMarker()
+  scene.add(exit)
 
   return {
     scene,
@@ -198,6 +226,7 @@ export function createStackTraceAutomap(): StackTraceAutomap {
     enemies,
     faults,
     rootEnemy,
+    exit,
   }
 }
 

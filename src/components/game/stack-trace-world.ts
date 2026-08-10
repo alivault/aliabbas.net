@@ -50,6 +50,11 @@ export type LevelDoor = {
   bounds: THREE.Box3
 }
 
+export type ExitVisual = {
+  group: THREE.Group
+  field: THREE.Mesh
+}
+
 export type LevelWorld = {
   group: THREE.Group
   rooms: Map<RoomId, RoomSpec>
@@ -232,7 +237,10 @@ export const enemySpecs = [
 ] as const satisfies ReadonlyArray<EnemySpec>
 
 export const startPosition = new THREE.Vector3(0, 0, 4)
-export const exitPosition = new THREE.Vector3(0, 0, 4)
+// The extraction point sits just inside the surface chamber's tunnel opening,
+// so reaching /surface completes the mission instead of requiring the player
+// to find the exact starting coordinate at the far side of the room.
+export const exitPosition = new THREE.Vector3(0, 0, -4.15)
 export const rootPosition = new THREE.Vector3(0, -48, -57.5)
 
 function vector(tuple: VectorTuple | readonly [number, number, number]) {
@@ -968,4 +976,48 @@ export function createRootVisual() {
     return ring
   })
   return { group, icon, rings }
+}
+
+export function createExitVisual(): ExitVisual {
+  const group = new THREE.Group()
+  group.name = 'Surface extraction target'
+
+  const ringMaterial = new THREE.MeshBasicMaterial({
+    color: '#ff694a',
+    transparent: true,
+    opacity: 0.95,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    toneMapped: false,
+  })
+  const innerRingMaterial = ringMaterial.clone()
+  innerRingMaterial.opacity = 0.5
+  const fieldMaterial = new THREE.MeshBasicMaterial({
+    color: '#ff694a',
+    transparent: true,
+    opacity: 0.08,
+    blending: THREE.AdditiveBlending,
+    depthWrite: false,
+    side: THREE.DoubleSide,
+    toneMapped: false,
+  })
+
+  const outerRing = new THREE.Mesh(
+    new THREE.TorusGeometry(2.45, 0.07, 8, TUNNEL_SEGMENTS),
+    ringMaterial,
+  )
+  const innerRing = new THREE.Mesh(
+    new THREE.TorusGeometry(2.08, 0.035, 6, TUNNEL_SEGMENTS),
+    innerRingMaterial,
+  )
+  const field = new THREE.Mesh(
+    new THREE.CircleGeometry(2.4, TUNNEL_SEGMENTS),
+    fieldMaterial,
+  )
+  field.position.z = 0.02
+
+  const light = new THREE.PointLight('#ff694a', 18, 12, 1.8)
+  light.position.z = 0.4
+  group.add(field, outerRing, innerRing, light)
+  return { group, field }
 }
