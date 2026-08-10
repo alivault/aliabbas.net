@@ -101,6 +101,7 @@ const DESKTOP_ESCAPE_DURATION = 45
 const TOUCH_ESCAPE_DURATION = 60
 const MAP_CHAMBER_HALF = 5.25
 const MAP_TUNNEL_RADIUS = 3.4
+const PROJECTILE_AXIS = new THREE.Vector3(0, 1, 0)
 
 const faultColors = ['#335cff', '#d9ff43', '#ff694a'] as const
 
@@ -553,9 +554,32 @@ export default class StackTraceEngine {
   }
 
   private createProjectilePool() {
-    const geometry = new THREE.SphereGeometry(0.12, 6, 6)
+    const playerGeometry = new THREE.SphereGeometry(0.065, 8, 8)
+    const enemyGeometry = new THREE.SphereGeometry(0.1, 6, 6)
+    const playerTailLength = 1.35
+    const playerTailGeometry = new THREE.CylinderGeometry(
+      0.05,
+      0.004,
+      playerTailLength,
+      8,
+      1,
+      true,
+    )
+    playerTailGeometry.translate(0, -playerTailLength / 2, 0)
     const playerMaterial = new THREE.MeshBasicMaterial({
       color: '#d9ff43',
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      toneMapped: false,
+    })
+    const playerTailMaterial = new THREE.MeshBasicMaterial({
+      color: '#d9ff43',
+      transparent: true,
+      opacity: 0.42,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      side: THREE.DoubleSide,
       toneMapped: false,
     })
     const enemyMaterial = new THREE.MeshBasicMaterial({
@@ -566,9 +590,12 @@ export default class StackTraceEngine {
     for (let index = 0; index < 72; index += 1) {
       const owner = index < 38 ? 'player' : 'enemy'
       const mesh = new THREE.Mesh(
-        geometry,
+        owner === 'player' ? playerGeometry : enemyGeometry,
         owner === 'player' ? playerMaterial : enemyMaterial,
       )
+      if (owner === 'player') {
+        mesh.add(new THREE.Mesh(playerTailGeometry, playerTailMaterial))
+      }
       mesh.visible = false
       this.scene.add(mesh)
       this.projectiles.push({
@@ -1267,6 +1294,7 @@ export default class StackTraceEngine {
     projectile.mesh.position
       .copy(projectile.position)
       .add(projectile.visualOffset)
+    projectile.mesh.quaternion.setFromUnitVectors(PROJECTILE_AXIS, direction)
     projectile.velocity.copy(direction).multiplyScalar(speed)
   }
 
