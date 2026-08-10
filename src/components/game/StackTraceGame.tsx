@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { ArrowLeft, Map as MapIcon, X } from 'lucide-react'
-import Logo from '~/components/Logo'
 import { Kbd } from '~/components/ui/kbd'
 import StackTraceScene from './StackTraceScene'
 import StackTraceTouchControls from './StackTraceTouchControls'
@@ -92,8 +91,7 @@ function MissionBriefing({
         }`}
       >
         <div>
-          <div className="flex items-center justify-center gap-3 text-center font-mono text-[9px] tracking-[0.2em] text-[#ff694a] uppercase sm:text-[10px]">
-            <Logo className="h-7 w-8 text-[#d9ff43]" />
+          <div className="text-center font-mono text-[9px] tracking-[0.2em] text-[#ff694a] uppercase sm:text-[10px]">
             Single-player 3D labyrinth game
           </div>
           <h1
