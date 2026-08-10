@@ -168,7 +168,7 @@ function createExitMarker() {
   })
   const geometry = new THREE.BufferGeometry().setFromPoints(points)
   const material = new THREE.LineBasicMaterial({
-    color: '#ff694a',
+    color: '#d9ff43',
     depthTest: false,
     depthWrite: false,
     toneMapped: false,

@@ -983,7 +983,7 @@ export function createExitVisual(): ExitVisual {
   group.name = 'Surface extraction target'
 
   const ringMaterial = new THREE.MeshBasicMaterial({
-    color: '#ff694a',
+    color: '#d9ff43',
     transparent: true,
     opacity: 0.95,
     blending: THREE.AdditiveBlending,
@@ -993,7 +993,7 @@ export function createExitVisual(): ExitVisual {
   const innerRingMaterial = ringMaterial.clone()
   innerRingMaterial.opacity = 0.5
   const fieldMaterial = new THREE.MeshBasicMaterial({
-    color: '#ff694a',
+    color: '#d9ff43',
     transparent: true,
     opacity: 0.08,
     blending: THREE.AdditiveBlending,
@@ -1016,7 +1016,7 @@ export function createExitVisual(): ExitVisual {
   )
   field.position.z = 0.02
 
-  const light = new THREE.PointLight('#ff694a', 18, 12, 1.8)
+  const light = new THREE.PointLight('#d9ff43', 18, 12, 1.8)
   light.position.z = 0.4
   group.add(field, outerRing, innerRing, light)
   return { group, field }
