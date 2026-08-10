@@ -94,7 +94,7 @@ function MissionBriefing({
         <div>
           <div className="flex items-center justify-center gap-3 text-center font-mono text-[9px] tracking-[0.2em] text-[#ff694a] uppercase sm:text-[10px]">
             <Logo className="h-7 w-8 text-[#d9ff43]" />
-            Interactive systems failure
+            Single-player 3D labyrinth game
           </div>
           <h1
             className={`text-center leading-[0.72] font-extrabold tracking-[-0.075em] uppercase ${
@@ -120,8 +120,9 @@ function MissionBriefing({
                 : 'mt-9 text-base leading-7 sm:text-lg sm:leading-8'
             }`}
           >
-            Follow the failure through the stack. Purge three corrupted frames,
-            destroy the root bug, and escape before the build rolls back.
+            Pilot a diagnostic drone through a zero-gravity codebase. Explore
+            connected chambers, shoot corrupted frames and bugs, destroy the
+            root bug, then escape before the build rolls back.
           </p>
 
           <div
@@ -181,7 +182,7 @@ function MissionBriefing({
 
       <div className="flex items-end justify-between border-t border-white/15 pt-4 font-mono text-[8px] tracking-[0.16em] text-white/25 uppercase sm:text-[9px]">
         <span>
-          {isTouch ? 'Touch diagnostic flight' : 'Six-axis diagnostic flight'}
+          {isTouch ? 'Touch controls / 3D game' : 'Six-axis controls / 3D game'}
         </span>
         <span>Aliabbas.dev / Play</span>
       </div>
@@ -231,6 +232,35 @@ function MissionHud({
           </p>
         </div>
       </div>
+
+      {hud.phase === 'escape' && (
+        <>
+          <div
+            className="stack-trace-escape-frame absolute inset-2 border-2 border-[#ff694a]/70 sm:inset-3"
+            data-critical={hud.escapeTime <= 10 ? 'true' : 'false'}
+          />
+          <div
+            className={`stack-trace-escape-alert absolute left-1/2 flex -translate-x-1/2 items-center gap-4 border border-[#ff694a]/75 bg-[#160906]/88 px-4 py-3 text-left shadow-[0_0_28px_rgba(255,105,74,.24)] backdrop-blur-sm ${isTouch ? 'top-[max(8rem,calc(env(safe-area-inset-top)+7rem))] w-[min(19rem,calc(100vw-2rem))]' : 'top-[max(6.25rem,calc(env(safe-area-inset-top)+5rem))] min-w-80'}`}
+            data-critical={hud.escapeTime <= 10 ? 'true' : 'false'}
+          >
+            <span className="size-2 shrink-0 rounded-full bg-[#ff694a] shadow-[0_0_14px_#ff694a]" />
+            <div className="min-w-0 flex-1">
+              <p className="font-mono text-[8px] tracking-[0.18em] text-[#ff694a] uppercase sm:text-[9px]">
+                Rollback active
+              </p>
+              <p className="mt-0.5 text-sm font-extrabold tracking-[0.04em] text-white uppercase sm:text-base">
+                Return to surface
+              </p>
+              <p className="mt-0.5 text-[10px] text-white/50 sm:text-xs">
+                Hurry—reach the exit before rollback.
+              </p>
+            </div>
+            <span className="font-mono text-2xl font-bold text-[#ff694a] tabular-nums sm:text-3xl">
+              {Math.ceil(hud.escapeTime)}s
+            </span>
+          </div>
+        </>
+      )}
 
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <div

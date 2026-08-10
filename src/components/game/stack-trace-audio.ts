@@ -29,6 +29,46 @@ const ENEMY_EXPLOSION =
 const PLAYER_DAMAGE =
   '11111CybJTSaLy3Bouzj5CmE9BpWRpZhTHT3e1FPbThDpNxF4zyFud7vgd7pTaQ4vzVjR4DRX6qbEP8DjQ8WZbZmHMH7LG1WcHHBZEeuHiBCLH11GvKKFhEX'
 
+const ESCAPE_ALARM = {
+  oldParams: true,
+  wave_type: 1,
+  p_env_attack: 0.08,
+  p_env_sustain: 0.26,
+  p_env_punch: 0.4,
+  p_env_decay: 0.58,
+  p_base_freq: 0.22,
+  p_freq_limit: 0,
+  p_freq_ramp: 0.16,
+  p_freq_dramp: 0,
+  p_vib_strength: 0.012,
+  p_vib_speed: 0.22,
+  p_arp_mod: 0,
+  p_arp_speed: 0,
+  p_duty: 0.75,
+  p_duty_ramp: -0.08,
+  p_repeat_speed: 0,
+  p_pha_offset: 0.08,
+  p_pha_ramp: 0.02,
+  p_lpf_freq: 0.65,
+  p_lpf_ramp: 0,
+  p_lpf_resonance: 0.22,
+  p_hpf_freq: 0.025,
+  p_hpf_ramp: 0,
+  sound_vol: 0.13,
+  sample_rate: 44100,
+  sample_size: 16,
+} as const
+
+const ESCAPE_ALARM_LAYER = {
+  ...ESCAPE_ALARM,
+  p_base_freq: 0.228,
+  p_freq_ramp: 0.153,
+  p_vib_strength: 0.008,
+  p_pha_offset: -0.07,
+  p_pha_ramp: -0.015,
+  sound_vol: 0.09,
+} as const
+
 export default class StackTraceAudio {
   private context: AudioContext | null = null
   private master: GainNode | null = null
@@ -40,6 +80,9 @@ export default class StackTraceAudio {
   private ambientGain: GainNode | null = null
   private ambientNoiseBuffer: AudioBuffer | null = null
   private readonly ambientSources: Array<AudioScheduledSourceNode> = []
+  private alarmGain: GainNode | null = null
+  private alarmSource: AudioBufferSourceNode | null = null
+  private alarmRequired = false
 
   private ready() {
     if (typeof AudioContext === 'undefined') return null
@@ -153,6 +196,55 @@ export default class StackTraceAudio {
     )
   }
 
+  private ensureAlarm(context: AudioContext, master: GainNode) {
+    if (this.alarmGain) return this.alarmGain
+    const pulse = sfxr.toWebAudio(ESCAPE_ALARM, context)?.buffer
+    const layer = sfxr.toWebAudio(ESCAPE_ALARM_LAYER, context)?.buffer
+    if (!pulse) return null
+
+    const loopDuration = 1.02
+    const loopBuffer = context.createBuffer(
+      1,
+      Math.ceil(pulse.sampleRate * loopDuration),
+      pulse.sampleRate,
+    )
+    const loopData = loopBuffer.getChannelData(0)
+    const pulseData = pulse.getChannelData(0)
+    const layerData = layer?.getChannelData(0)
+    for (let index = 0; index < loopData.length; index += 1) {
+      const sample = (pulseData[index] ?? 0) + (layerData?.[index] ?? 0) * 0.42
+      loopData[index] = Math.max(-1, Math.min(sample, 1))
+    }
+
+    const source = context.createBufferSource()
+    const gain = context.createGain()
+    source.buffer = loopBuffer
+    source.loop = true
+    gain.gain.value = 0.0001
+    source.connect(gain).connect(master)
+    source.start()
+    this.alarmSource = source
+    this.alarmGain = gain
+    return gain
+  }
+
+  private setAlarm(active: boolean) {
+    if (!active && !this.alarmGain) return
+    const audio = this.ready()
+    if (!audio) return
+    const { context, master } = audio
+    const gain = this.ensureAlarm(context, master)
+    if (!gain) return
+    const now = context.currentTime
+    const current = Math.max(gain.gain.value, 0.0001)
+    gain.gain.cancelScheduledValues(now)
+    gain.gain.setValueAtTime(current, now)
+    gain.gain.exponentialRampToValueAtTime(
+      active ? 0.62 : 0.0001,
+      now + (active ? 0.08 : 0.14),
+    )
+  }
+
   private tone({
     frequency,
     endFrequency,
@@ -219,6 +311,8 @@ export default class StackTraceAudio {
   }
 
   playMissionStart() {
+    this.alarmRequired = false
+    this.setAlarm(false)
     this.setAmbient(true)
     this.tone({
       frequency: 170,
@@ -332,6 +426,8 @@ export default class StackTraceAudio {
   }
 
   playEscape() {
+    this.alarmRequired = true
+    this.setAlarm(true)
     this.tone({
       frequency: 440,
       endFrequency: 880,
@@ -349,6 +445,7 @@ export default class StackTraceAudio {
 
   playMap(open: boolean) {
     this.setAmbient(!open)
+    this.setAlarm(!open && this.alarmRequired)
     this.tone({
       frequency: open ? 240 : 520,
       endFrequency: open ? 520 : 240,
@@ -360,6 +457,7 @@ export default class StackTraceAudio {
 
   playPause() {
     this.setAmbient(false)
+    this.setAlarm(false)
     this.tone({
       frequency: 310,
       endFrequency: 155,
@@ -371,6 +469,7 @@ export default class StackTraceAudio {
 
   playResume() {
     this.setAmbient(true)
+    this.setAlarm(this.alarmRequired)
     this.tone({
       frequency: 155,
       endFrequency: 390,
@@ -381,6 +480,8 @@ export default class StackTraceAudio {
   }
 
   playMissionEnd(status: 'won' | 'failed') {
+    this.alarmRequired = false
+    this.setAlarm(false)
     this.setAmbient(false)
     const frequencies =
       status === 'won' ? [330, 495, 660, 990] : [260, 195, 130, 65]
@@ -398,6 +499,7 @@ export default class StackTraceAudio {
 
   dispose() {
     const context = this.context
+    this.alarmSource?.stop()
     this.ambientSources.forEach((source) => source.stop())
     this.ambientSources.length = 0
     this.context = null
@@ -409,6 +511,9 @@ export default class StackTraceAudio {
     this.playerDamageBuffer = null
     this.ambientGain = null
     this.ambientNoiseBuffer = null
+    this.alarmGain = null
+    this.alarmSource = null
+    this.alarmRequired = false
     if (context && context.state !== 'closed') {
       void context.close().catch(() => undefined)
     }

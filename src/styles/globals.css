@@ -240,6 +240,21 @@ html:has(.stack-trace-page) body {
   animation: stack-trace-damage 420ms ease-out forwards;
 }
 
+.stack-trace-escape-alert {
+  animation: stack-trace-escape-alert 900ms ease-in-out infinite;
+}
+
+.stack-trace-escape-frame {
+  background: radial-gradient(circle, transparent 58%, rgb(255 105 74 / 10%));
+  box-shadow: inset 0 0 34px rgb(255 105 74 / 10%);
+  animation: stack-trace-escape-frame 900ms ease-in-out infinite;
+}
+
+.stack-trace-escape-alert[data-critical='true'],
+.stack-trace-escape-frame[data-critical='true'] {
+  animation-duration: 420ms;
+}
+
 @keyframes stack-trace-hit {
   50% {
     scale: 1.45;
@@ -254,6 +269,20 @@ html:has(.stack-trace-page) body {
 
   to {
     opacity: 0;
+  }
+}
+
+@keyframes stack-trace-escape-alert {
+  50% {
+    opacity: 0.48;
+    border-color: rgb(255 105 74 / 35%);
+    box-shadow: 0 0 8px rgb(255 105 74 / 10%);
+  }
+}
+
+@keyframes stack-trace-escape-frame {
+  50% {
+    opacity: 0.25;
   }
 }
 
