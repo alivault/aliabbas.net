@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { Link } from '@tanstack/react-router'
 import {
   ArrowUp,
   Bot,
@@ -623,17 +622,6 @@ export default function PortfolioChat() {
                 )}
               </Button>
             </form>
-            <p className="mt-3 text-center text-xs leading-5 text-white/35">
-              Messages, timestamps, approximate location, and browser/device
-              details are stored for up to 90 days and may be reviewed by Ali.
-              Don’t share confidential or sensitive information.{' '}
-              <Link
-                to="/privacy"
-                className="underline decoration-white/25 underline-offset-4 hover:text-white"
-              >
-                Privacy
-              </Link>
-            </p>
           </div>
         </div>
       </div>

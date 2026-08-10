@@ -17,6 +17,12 @@ import remarkGfm from 'remark-gfm'
 import GitHubIcon from '~/components/GitHubIcon'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '~/components/ui/tooltip'
 import type {
   ConversationSummary,
   StoredConversation,
@@ -403,29 +409,47 @@ export default function ConversationAdmin() {
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-1">
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            disabled={isLoading}
-            onClick={() => void loadConversations()}
-            className="text-white/45 hover:bg-white/10 hover:text-white"
-            aria-label="Refresh conversations"
-          >
-            <RefreshCw className={cn(isLoading && 'animate-spin')} />
-          </Button>
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            onClick={() => void signOut()}
-            className="text-white/45 hover:bg-white/10 hover:text-white"
-            aria-label="Sign out"
-          >
-            <LogOut />
-          </Button>
-        </div>
+        <TooltipProvider>
+          <div className="flex items-center gap-1">
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    disabled={isLoading}
+                    onClick={() => void loadConversations()}
+                    className="text-white/45 hover:bg-white/10 hover:text-white"
+                    aria-label="Refresh conversations"
+                  >
+                    <RefreshCw className={cn(isLoading && 'animate-spin')} />
+                  </Button>
+                }
+              />
+              <TooltipContent side="bottom">
+                Refresh conversations
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger
+                render={
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon-sm"
+                    onClick={() => void signOut()}
+                    className="text-white/45 hover:bg-white/10 hover:text-white"
+                    aria-label="Sign out"
+                  >
+                    <LogOut />
+                  </Button>
+                }
+              />
+              <TooltipContent side="bottom">Sign out</TooltipContent>
+            </Tooltip>
+          </div>
+        </TooltipProvider>
       </header>
 
       {error && (
