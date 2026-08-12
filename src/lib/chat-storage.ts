@@ -38,6 +38,8 @@ export type StoredConversation = ConversationMetadata & {
   messages: Array<StoredMessage>
 }
 
+export type EnsureConversationResult = 'created' | 'existing' | 'invalid-token'
+
 function cleanMetadata(value: unknown, maxLength: number) {
   if (typeof value !== 'string') return null
   const cleaned = value.trim().slice(0, maxLength)
@@ -130,7 +132,7 @@ export async function ensureConversation(
     .first<{ deleteTokenHash: string }>()
 
   if (existing && existing.deleteTokenHash !== input.deleteTokenHash) {
-    return false
+    return 'invalid-token' satisfies EnsureConversationResult
   }
 
   if (!existing) {
@@ -177,7 +179,7 @@ export async function ensureConversation(
       .run()
   }
 
-  return true
+  return (existing ? 'existing' : 'created') satisfies EnsureConversationResult
 }
 
 export async function storeMessage(

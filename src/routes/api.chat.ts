@@ -1,4 +1,5 @@
 import aliKnowledge from '~/data/ali-knowledge.md?raw'
+import { api } from '../../convex/_generated/api'
 import {
   deleteConversation,
   ensureConversation,
@@ -10,9 +11,62 @@ import {
 } from '~/lib/chat-storage'
 import { createFileRoute } from '@tanstack/react-router'
 import { env, waitUntil } from 'cloudflare:workers'
+import { ConvexHttpClient } from 'convex/browser'
 import { z } from 'zod'
 
 const MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast'
+
+async function notifyAboutNewConversation(
+  conversationId: string,
+  firstQuestion: string,
+  metadata: ReturnType<typeof getConversationMetadata>,
+) {
+  const convex = new ConvexHttpClient(env.VITE_CONVEX_URL)
+  const notification = {
+    conversationId,
+    firstQuestion,
+    metadata: {
+      country: metadata.country,
+      region: metadata.region,
+      city: metadata.city,
+      browser: metadata.browser,
+      operatingSystem: metadata.operatingSystem,
+      device: metadata.device,
+    },
+    sentAt: Date.now(),
+  }
+  const signaturePayload = JSON.stringify([
+    notification.conversationId,
+    notification.firstQuestion,
+    notification.metadata.country,
+    notification.metadata.region,
+    notification.metadata.city,
+    notification.metadata.browser,
+    notification.metadata.operatingSystem,
+    notification.metadata.device,
+    notification.sentAt,
+  ])
+  const signingKey = await crypto.subtle.importKey(
+    'raw',
+    new TextEncoder().encode(env.RESEND_API_KEY),
+    { name: 'HMAC', hash: 'SHA-256' },
+    false,
+    ['sign'],
+  )
+  const signatureBytes = await crypto.subtle.sign(
+    'HMAC',
+    signingKey,
+    new TextEncoder().encode(signaturePayload),
+  )
+  const signature = Array.from(new Uint8Array(signatureBytes), (byte) =>
+    byte.toString(16).padStart(2, '0'),
+  ).join('')
+
+  await convex.action(api.chatNotifications.sendNewConversationNotification, {
+    ...notification,
+    signature,
+  })
+}
 
 const ChatMessageSchema = z.discriminatedUnion('role', [
   z.object({
@@ -215,16 +269,17 @@ export const Route = createFileRoute('/api/chat')({
 
         const now = Date.now()
         const deleteTokenHash = await hashDeleteToken(conversation.deleteToken)
+        const metadata = getConversationMetadata(request)
 
         try {
-          const canUseConversation = await ensureConversation(env.CHAT_DB, {
+          const conversationResult = await ensureConversation(env.CHAT_DB, {
             id: conversation.id,
             deleteTokenHash,
-            metadata: getConversationMetadata(request),
+            metadata,
             now,
           })
 
-          if (!canUseConversation) {
+          if (conversationResult === 'invalid-token') {
             return errorResponse('That conversation could not be resumed.', 409)
           }
 
@@ -236,6 +291,19 @@ export const Route = createFileRoute('/api/chat')({
             createdAt: now,
             status: 'complete',
           })
+
+          if (conversationResult === 'created') {
+            waitUntil(
+              notifyAboutNewConversation(
+                conversation.id,
+                messages.at(-1)!.content,
+                metadata,
+              ).catch((error: unknown) => {
+                console.error('Unable to send chat notification', error)
+              }),
+            )
+          }
+
           waitUntil(purgeExpiredConversations(env.CHAT_DB))
         } catch (error) {
           console.error('Unable to persist chat question', error)
