@@ -151,7 +151,7 @@ export default function SiteHeader() {
             className="group flex items-center gap-3 justify-self-start"
             aria-label="Ali Abbas — home"
           >
-            <Logo className="h-7 w-8 text-[#d9ff43] transition-transform duration-500 group-hover:-rotate-6" />
+            <Logo className="h-7 w-8 text-[#f1efe8] transition-transform duration-500 group-hover:-rotate-6" />
             <span className="text-sm font-semibold tracking-[-0.02em]">
               Ali Abbas
             </span>
