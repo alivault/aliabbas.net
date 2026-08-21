@@ -414,10 +414,6 @@ export default function PortfolioChat() {
             Ask about
             <em className="block text-[#d9ff43]">Ali.</em>
           </h1>
-          <p className="mt-8 max-w-md text-base leading-7 text-white/55">
-            Explore Ali’s experience, selected work, technical range, and
-            approach to building products before starting a conversation.
-          </p>
         </div>
 
         <div className="relative z-10 mt-20">
@@ -434,13 +430,7 @@ export default function PortfolioChat() {
 
       <div className="flex h-full min-h-0 min-w-0 items-stretch overflow-hidden">
         <div className="flex h-full max-h-full min-h-0 w-full flex-col overflow-hidden bg-white/[0.04]">
-          <div className="flex h-14 shrink-0 items-center justify-between border-b border-white/15 px-4 sm:px-5">
-            <div>
-              <p className="flex items-center gap-1.5 font-mono text-[8px] tracking-[0.12em] text-white/30 uppercase">
-                <span className="size-1.5 rounded-full bg-[#d9ff43]" />
-                Grounded in public portfolio data
-              </p>
-            </div>
+          <div className="flex h-14 shrink-0 items-center justify-end border-b border-white/15 px-4 sm:px-5">
             <TooltipProvider>
               <div className="flex items-center gap-1">
                 {messages.length > 1 && (
