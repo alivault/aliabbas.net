@@ -67,7 +67,7 @@ function MissionBriefing({
 
   return (
     <div className="pointer-events-auto relative z-30 flex h-svh min-h-[320px] flex-col overflow-y-auto bg-[linear-gradient(90deg,rgba(5,6,8,.94)_0%,rgba(5,6,8,.8)_48%,rgba(5,6,8,.3)_100%)] p-5 text-[#f1efe8] sm:p-8 lg:p-12">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center">
         <Link
           to="/"
           className="group flex items-center gap-3 text-xs font-semibold text-white/60 transition-colors hover:text-white"
@@ -75,10 +75,6 @@ function MissionBriefing({
           <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1" />
           Portfolio
         </Link>
-        <div className="flex items-center gap-2 font-mono text-[9px] tracking-[0.18em] text-white/35 uppercase">
-          <span className="size-1.5 rounded-full bg-[#ff694a] shadow-[0_0_12px_#ff694a]" />
-          Incident 001
-        </div>
       </div>
 
       <div
@@ -91,16 +87,13 @@ function MissionBriefing({
         }`}
       >
         <div>
-          <div className="text-center font-mono text-[9px] tracking-[0.2em] text-[#ff694a] uppercase sm:text-[10px]">
-            Single-player 3D labyrinth game
-          </div>
           <h1
             className={`text-center leading-[0.72] font-extrabold tracking-[-0.075em] uppercase ${
               isTouchPortrait
-                ? 'mt-5 text-[clamp(4.5rem,24vw,7rem)]'
+                ? 'text-[clamp(3rem,16vw,5rem)]'
                 : isTouch
-                  ? 'mt-4 text-[clamp(3.5rem,18vh,6.5rem)]'
-                  : 'mt-7 text-[clamp(4rem,14vw,10rem)]'
+                  ? 'text-[clamp(2.75rem,8vw,5rem)]'
+                  : 'text-[clamp(3rem,9vw,9rem)]'
             }`}
           >
             Stack
@@ -114,8 +107,8 @@ function MissionBriefing({
           <p
             className={`mx-auto max-w-xl text-center text-white/58 ${
               isTouch
-                ? `${isTouchPortrait ? 'mt-7' : ''} text-sm leading-6`
-                : 'mt-9 text-base leading-7 sm:text-lg sm:leading-8'
+                ? `${isTouchPortrait ? 'mt-7' : ''} text-sm leading-5`
+                : 'mt-9 text-base leading-6 sm:text-lg sm:leading-7'
             }`}
           >
             Pilot a diagnostic drone through a zero-gravity codebase. Explore
@@ -129,7 +122,7 @@ function MissionBriefing({
             {controls.map(([control, action]) => (
               <div
                 key={control}
-                className={`bg-[#08090b]/90 text-center ${isTouch ? 'p-2.5' : 'p-4'}`}
+                className={`bg-[#08090b]/90 text-center ${isTouch ? 'px-2.5 py-1.5' : 'px-4 py-2.5'}`}
               >
                 <p className="font-mono text-[11px] text-[#d9ff43] sm:text-xs">
                   {control}
@@ -176,13 +169,6 @@ function MissionBriefing({
             </Kbd>
           </button>
         </div>
-      </div>
-
-      <div className="flex items-end justify-between border-t border-white/15 pt-4 font-mono text-[8px] tracking-[0.16em] text-white/25 uppercase sm:text-[9px]">
-        <span>
-          {isTouch ? 'Touch controls / 3D game' : 'Six-axis controls / 3D game'}
-        </span>
-        <span>Aliabbas.dev / Play</span>
       </div>
     </div>
   )
