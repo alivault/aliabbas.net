@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { ArrowDown } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import type { Variants } from 'motion/react'
@@ -154,7 +154,7 @@ export function HomeHero() {
     [],
   )
 
-  const changeDescriptor = () => {
+  const changeDescriptor = useCallback(() => {
     if (isScrambling) return
 
     const nextIndex = (descriptorIndex + 1) % productDescriptors.length
@@ -189,7 +189,12 @@ export function HomeHero() {
         setIsScrambling(false)
       }
     }, 38)
-  }
+  }, [descriptorIndex, isScrambling, reduceMotion])
+
+  useEffect(() => {
+    const autoplayInterval = window.setInterval(changeDescriptor, 4000)
+    return () => window.clearInterval(autoplayInterval)
+  }, [changeDescriptor])
 
   return (
     <section className="site-noise relative flex flex-1 overflow-hidden bg-[#050607] pt-[72px] text-[#f1efe8]">
