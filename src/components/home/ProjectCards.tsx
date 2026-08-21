@@ -8,6 +8,7 @@ const visualStyles = {
   blackhole: 'bg-[#7867ff] text-[#faff00]',
   superverse: 'bg-[#d8ff52] text-[#10100f]',
   impostors: 'bg-[#ff694a] text-[#10100f]',
+  whimcall: 'bg-[#080b12] text-white',
   pico: 'bg-[#d8d5cd] text-[#10100f]',
   chromagine: 'bg-[#335cff] text-white',
 } satisfies Record<WorkItem['visual'], string>
@@ -125,6 +126,32 @@ function ProjectVisual({
         </>
       )}
 
+      {project.visual === 'whimcall' && (
+        <>
+          <motion.div
+            animate={{ scale: [1, 1.12, 1], opacity: [0.45, 0.7, 0.45] }}
+            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute top-1/2 left-[38%] size-[48%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff2f75]/45 blur-[55px]"
+          />
+          <motion.div
+            animate={{ scale: [1.1, 0.96, 1.1], opacity: [0.5, 0.75, 0.5] }}
+            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+            className="absolute top-1/2 left-[62%] size-[48%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#006dff]/55 blur-[55px]"
+          />
+          <div className="absolute top-1/2 left-1/2 size-[58%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10" />
+          <div className="absolute top-1/2 left-1/2 size-[44%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10" />
+          <motion.img
+            src={project.image}
+            alt=""
+            initial={{ scale: 0.88, opacity: 0 }}
+            whileInView={{ scale: 1, opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute top-1/2 left-1/2 z-10 w-[34%] -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_24px_40px_rgba(50,60,255,0.38)] transition-transform duration-500 group-hover:scale-[1.06]"
+          />
+        </>
+      )}
+
       {project.visual === 'chromagine' && (
         <div
           aria-hidden="true"
@@ -198,12 +225,8 @@ export function FeaturedProject({
       >
         <ProjectVisual project={project} index={index} />
       </a>
-      <div className="flex flex-col lg:py-3">
-        <div className="flex items-center justify-between font-mono text-[10px] tracking-[0.16em] text-black/45 uppercase">
-          <span>{project.category}</span>
-          <span>{project.year}</span>
-        </div>
-        <h3 className="font-display mt-7 text-[clamp(3.25rem,6vw,6rem)] leading-[0.82] tracking-[-0.05em]">
+      <div className="flex flex-col lg:pt-3">
+        <h3 className="font-display text-[clamp(3.25rem,6vw,6rem)] leading-[0.82] tracking-[-0.05em]">
           {project.title}
         </h3>
         <p className="mt-7 max-w-md text-base leading-7 text-black/60">
@@ -231,10 +254,11 @@ export function FeaturedProject({
           href={project.href}
           target="_blank"
           rel="noreferrer"
-          className="group mt-auto flex items-center justify-between border-b border-black/25 pt-10 pb-3 text-xs font-bold uppercase"
+          className="group relative mt-10 flex items-center justify-between overflow-hidden border-b border-black/25 px-3 py-4 text-xs font-bold uppercase transition-colors duration-300 hover:text-white lg:mt-auto"
         >
-          Visit live project
-          <ArrowUpRight className="size-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+          <span className="absolute inset-0 translate-y-full bg-black transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
+          <span className="relative z-10">Visit live project</span>
+          <ArrowUpRight className="relative z-10 size-4 transition-transform group-hover:translate-x-1" />
         </a>
       </div>
     </motion.article>
@@ -261,17 +285,12 @@ export function IndependentProject({
     >
       <ProjectVisual project={project} index={index + clientWork.length} />
       <div className="py-5">
-        <div>
-          <p className="font-mono text-[9px] tracking-[0.16em] text-black/40 uppercase">
-            {project.category}
-          </p>
-          <h3 className="font-display mt-2 text-4xl tracking-[-0.04em] sm:text-5xl">
-            {project.title}
-          </h3>
-          <p className="mt-3 max-w-xl text-sm leading-6 text-black/55">
-            {project.description}
-          </p>
-        </div>
+        <h3 className="font-display text-4xl tracking-[-0.04em] sm:text-5xl">
+          {project.title}
+        </h3>
+        <p className="mt-3 max-w-xl text-sm leading-6 text-black/55">
+          {project.description}
+        </p>
       </div>
     </motion.a>
   )

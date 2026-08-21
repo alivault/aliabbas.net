@@ -186,6 +186,24 @@ Publicly listed tools include React, Motion, and Tailwind CSS.
 
 ## Independent projects
 
+### Whimcall — browser-based video calling (2026)
+
+Live project: https://whimcall.com/
+
+Whimcall is a browser-based video calling product designed to start from a
+shareable link without requiring guests to create an account or install an app.
+It supports camera and microphone calls, screen sharing, picture in picture,
+live captions, ephemeral room chat, and group rooms for up to 100 people. Ali
+handled the product concept, brand and interface design, full-stack development,
+realtime media architecture, and deployment.
+
+The application uses TanStack Start, React, TypeScript, Tailwind CSS, Motion,
+and WebRTC. Cloudflare Workers and hibernating Durable Objects coordinate rooms
+and reconnectable WebSocket signaling. Two-person calls use direct P2P media
+with TURN fallback; group rooms switch to Cloudflare Realtime SFU. Better Auth,
+WebAuthn passkeys, Cloudflare D1 with Drizzle, Plunk transactional email, and
+Stripe billing support accounts and paid room entitlements.
+
 ### Pico — local-first developer tool (2026)
 
 - GitHub: https://github.com/alivault/pico
@@ -345,6 +363,9 @@ variables are intentionally consumed outside the shell file.
   motion direction.
 - Pico demonstrates self-directed product strategy plus browser, server,
   realtime streaming, Git, local-first, TypeScript, and native SwiftUI work.
+- Whimcall demonstrates product strategy, visual design, WebRTC media systems,
+  realtime Cloudflare infrastructure, authentication, billing, and production
+  full-stack delivery.
 - Earlier leadership roles include co-founding a creative company, managing
   client relationships and brand roadmaps, directing a measurable product
   rebrand, and coordinating large live events.

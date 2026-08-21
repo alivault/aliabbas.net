@@ -7,7 +7,13 @@ export type WorkItem = {
   image?: string
   year: string
   tools: Array<string>
-  visual: 'blackhole' | 'superverse' | 'impostors' | 'pico' | 'chromagine'
+  visual:
+    | 'blackhole'
+    | 'superverse'
+    | 'impostors'
+    | 'whimcall'
+    | 'pico'
+    | 'chromagine'
 }
 
 export const clientWork = [
@@ -53,6 +59,19 @@ export const clientWork = [
 ] as const satisfies ReadonlyArray<WorkItem>
 
 export const personalProjects = [
+  {
+    title: 'Whimcall',
+    category: 'Real-time communication',
+    description:
+      'Fast, browser-based video calls that start with a link—no guest account, download, or setup required.',
+    contribution:
+      'Product concept, brand and interface design, full-stack development, realtime media architecture, and deployment.',
+    href: 'https://whimcall.com/',
+    image: '/whimcall.png',
+    year: '2026',
+    tools: ['TanStack Start', 'WebRTC', 'Cloudflare'],
+    visual: 'whimcall',
+  },
   {
     title: 'Pico',
     category: 'Native developer tool',
