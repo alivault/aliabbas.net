@@ -51,10 +51,7 @@ function CapabilitiesPage() {
             className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end"
           >
             <div>
-              <p className="font-mono text-[10px] tracking-[0.2em] text-[#d9ff43] uppercase">
-                One brain, both sides of the build
-              </p>
-              <h1 className="mt-5 text-[clamp(3.1rem,9vw,8.5rem)] leading-[0.76] font-extrabold tracking-[-0.07em] uppercase">
+              <h1 className="text-[clamp(3.1rem,9vw,8.5rem)] leading-[0.76] font-extrabold tracking-[-0.07em] uppercase">
                 Beautiful
                 <br />
                 <span className="font-display font-normal text-[#d9ff43] normal-case italic">

@@ -73,10 +73,7 @@ function NotesPage() {
           className="grid gap-8 border-b border-black/20 pb-12 lg:grid-cols-[1fr_0.65fr] lg:items-end lg:pb-16"
         >
           <div>
-            <p className="font-mono text-[10px] tracking-[0.2em] text-[#335cff] uppercase">
-              Notes on making digital things
-            </p>
-            <h1 className="font-display mt-5 text-[clamp(3.5rem,10vw,9rem)] leading-[0.74] tracking-[-0.065em]">
+            <h1 className="font-display text-[clamp(3.5rem,10vw,9rem)] leading-[0.74] tracking-[-0.065em]">
               Thinking
               <br />
               <em className="text-[#335cff]">in public.</em>

@@ -31,10 +31,7 @@ function WorkPage() {
           className="grid gap-7 border-b border-black/20 pb-12 lg:grid-cols-[1fr_1fr] lg:items-end lg:pb-20"
         >
           <div>
-            <p className="font-mono text-[10px] tracking-[0.2em] text-black/45 uppercase">
-              Selected work / 2023—2026
-            </p>
-            <h1 className="font-display mt-5 text-[clamp(4rem,9vw,8rem)] leading-[0.78] tracking-[-0.06em]">
+            <h1 className="font-display text-[clamp(4rem,9vw,8rem)] leading-[0.78] tracking-[-0.06em]">
               Built for the
               <br />
               <em className="text-[#335cff]">real world.</em>
@@ -60,10 +57,7 @@ function WorkPage() {
         <div className="mt-16 border-t border-black/20 pt-8 lg:mt-24 lg:pt-12">
           <ScrollReveal className="mb-10 flex items-end justify-between gap-6">
             <div>
-              <p className="font-mono text-[10px] tracking-[0.2em] text-black/40 uppercase">
-                Self-directed
-              </p>
-              <h2 className="font-display mt-2 text-5xl tracking-[-0.045em] sm:text-7xl">
+              <h2 className="font-display text-5xl tracking-[-0.045em] sm:text-7xl">
                 Independent builds
               </h2>
             </div>

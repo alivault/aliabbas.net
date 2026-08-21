@@ -13,10 +13,7 @@ export default function HomeNotesSection({
     <section className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36">
       <ScrollReveal className="flex items-end justify-between gap-6 border-b border-black/20 pb-10">
         <div>
-          <p className="font-mono text-[10px] tracking-[0.2em] text-black/40 uppercase">
-            Field notes
-          </p>
-          <h2 className="font-display mt-3 text-[clamp(4rem,9vw,8rem)] leading-[0.8] tracking-[-0.055em]">
+          <h2 className="font-display text-[clamp(4rem,9vw,8rem)] leading-[0.8] tracking-[-0.055em]">
             Thinking in public.
           </h2>
         </div>

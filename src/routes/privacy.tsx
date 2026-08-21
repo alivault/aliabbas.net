@@ -40,10 +40,7 @@ function PrivacyPage() {
     <Main>
       <article className="bg-[#f1efe8]">
         <header className="mx-auto max-w-[1600px] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-32">
-          <p className="font-mono text-[10px] tracking-[0.2em] text-[#335cff] uppercase">
-            Privacy / transparency / control
-          </p>
-          <h1 className="font-display mt-6 text-[clamp(4.5rem,12vw,10rem)] leading-[0.76] tracking-[-0.065em]">
+          <h1 className="font-display text-[clamp(4.5rem,12vw,10rem)] leading-[0.76] tracking-[-0.065em]">
             Privacy
             <em className="block text-[#335cff]">policy.</em>
           </h1>

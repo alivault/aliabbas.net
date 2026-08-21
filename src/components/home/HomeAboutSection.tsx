@@ -15,10 +15,7 @@ export default function HomeAboutSection({
         <AboutVisual />
         <ScrollReveal className="flex flex-col justify-between px-5 py-16 sm:px-8 sm:py-20 lg:p-12 lg:py-16">
           <div>
-            <p className="font-mono text-[10px] tracking-[0.2em] text-[#d9ff43] uppercase">
-              About Ali
-            </p>
-            <h2 className="font-display mt-7 text-[clamp(3.5rem,7vw,7rem)] leading-[0.79] tracking-[-0.055em]">
+            <h2 className="font-display text-[clamp(3.5rem,7vw,7rem)] leading-[0.79] tracking-[-0.055em]">
               I don’t hand designs over to engineering.
               <em className="block text-[#d9ff43]">I am the engineering.</em>
             </h2>

@@ -112,10 +112,7 @@ export default function ContactForm() {
   return (
     <section className="mx-auto grid max-w-[1440px] gap-14 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[0.9fr_1.1fr] lg:gap-24 lg:px-12 lg:py-32">
       <ScrollReveal className="flex min-w-0 flex-col">
-        <p className="font-mono text-[10px] tracking-[0.2em] text-[#335cff] uppercase">
-          Contact / opportunities / collaborations
-        </p>
-        <h1 className="mt-6 text-[clamp(2.75rem,12vw,6rem)] leading-[0.74] font-extrabold tracking-[-0.07em] uppercase lg:text-[clamp(3.6rem,5.8vw,6rem)]">
+        <h1 className="text-[clamp(2.75rem,12vw,6rem)] leading-[0.74] font-extrabold tracking-[-0.07em] uppercase lg:text-[clamp(3.6rem,5.8vw,6rem)]">
           Let’s build
           <span className="font-display block font-normal text-[#335cff] normal-case italic">
             something
