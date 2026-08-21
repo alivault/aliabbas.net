@@ -144,14 +144,14 @@ export default function SiteHeader() {
 
   return (
     <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-      <header className="fixed inset-x-0 top-0 z-[100] h-[72px] border-b border-white/10 bg-[#10100f]/65 text-[#f1efe8] backdrop-blur-xl">
+      <header className="fixed inset-x-0 top-0 z-[100] h-[72px] border-b border-white/10 bg-[#10100f]/90 text-[#f1efe8] backdrop-blur-xl">
         <div className="mx-auto grid h-full max-w-[1600px] grid-cols-[1fr_auto] items-center px-5 sm:px-8 lg:grid-cols-[1fr_auto_1fr] lg:px-12">
           <Link
             to="/"
             className="group flex items-center gap-3 justify-self-start"
             aria-label="Ali Abbas — home"
           >
-            <Logo className="h-7 w-8 text-[#f1efe8] transition-transform duration-500 group-hover:-rotate-6" />
+            <Logo className="h-7 w-8 text-[#f1efe8]" />
             <span className="text-sm font-semibold tracking-[-0.02em]">
               Ali Abbas
             </span>
