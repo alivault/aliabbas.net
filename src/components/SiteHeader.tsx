@@ -209,9 +209,9 @@ export default function SiteHeader() {
                   <Link
                     to={item.to}
                     onClick={() => setMenuOpen(false)}
-                    className="flex items-center justify-between py-5"
+                    className="flex items-center justify-between py-4"
                   >
-                    <span className="font-display text-5xl tracking-[-0.03em]">
+                    <span className="font-display text-4xl tracking-[-0.03em]">
                       {item.label}
                     </span>
                     <span className="font-mono text-[10px] text-white/30">
