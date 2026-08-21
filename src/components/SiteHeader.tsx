@@ -144,7 +144,7 @@ export default function SiteHeader() {
 
   return (
     <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-      <header className="fixed inset-x-0 top-0 z-[100] h-[72px] border-b border-white/10 bg-[#10100f]/90 text-[#f1efe8] backdrop-blur-xl">
+      <header className="fixed inset-x-0 top-0 z-[100] h-[72px] border-b border-white/10 bg-[#10100f]/65 text-[#f1efe8] backdrop-blur-xl">
         <div className="mx-auto grid h-full max-w-[1600px] grid-cols-[1fr_auto] items-center px-5 sm:px-8 lg:grid-cols-[1fr_auto_1fr] lg:px-12">
           <Link
             to="/"
@@ -171,10 +171,6 @@ export default function SiteHeader() {
           </nav>
 
           <div className="flex items-center gap-3 justify-self-end">
-            <span className="hidden items-center gap-2 text-[11px] font-medium text-white/50 sm:flex">
-              <span className="size-1.5 rounded-full bg-[#d9ff43] shadow-[0_0_10px_#d9ff43]" />
-              Open to opportunities
-            </span>
             <Link
               to="/contact"
               className="hidden h-9 items-center gap-2 rounded-full bg-[#f1efe8] px-4 text-[11px] font-bold text-[#10100f] transition-colors hover:bg-[#d9ff43] sm:flex"
