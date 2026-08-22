@@ -62,7 +62,7 @@ export default function StackMarquee() {
       ref={containerRef}
       role="region"
       aria-label={`Technology stack: ${stack.map(({ name }) => name).join(', ')}`}
-      className="overflow-hidden border-y border-black/15 bg-[#d9ff43] py-4 text-[#10100f] sm:py-5"
+      className="text-foreground overflow-hidden py-4 sm:py-5"
     >
       <div
         className="marquee-track flex w-max items-center"
@@ -81,7 +81,7 @@ export default function StackMarquee() {
                   <img
                     src={item.icon}
                     alt=""
-                    className="block max-h-4 max-w-5 object-contain"
+                    className="block max-h-4 max-w-5 object-contain brightness-0 dark:invert"
                   />
                 </span>
                 <span className="px-5 text-sm font-extrabold tracking-[-0.02em] uppercase sm:px-8 sm:text-base">
