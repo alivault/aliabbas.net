@@ -248,9 +248,9 @@ export function HomeHero() {
         <div className="flex justify-center pt-5 sm:mt-auto">
           <motion.a
             variants={introItemVariants}
-            href="#work"
+            href="#stack-marquee"
             className="border-foreground/25 hover:bg-brand hover:text-brand-foreground pointer-events-auto mx-auto flex size-14 items-center justify-center rounded-full border transition-colors"
-            aria-label="See selected work"
+            aria-label="View technology stack"
           >
             <ArrowDown className="size-5" />
           </motion.a>

@@ -1,6 +1,5 @@
 import { ArrowUpRight } from 'lucide-react'
 import { motion } from 'motion/react'
-import { clientWork } from '~/data/work'
 import type { WorkItem } from '~/data/work'
 import { cn } from '~/lib/utils'
 
@@ -24,13 +23,7 @@ const chromaginePetals = [
   '#ff2d95',
 ] as const
 
-function ProjectVisual({
-  project,
-  index,
-}: {
-  project: WorkItem
-  index: number
-}) {
+function ProjectVisual({ project }: { project: WorkItem }) {
   return (
     <div
       className={cn(
@@ -39,13 +32,6 @@ function ProjectVisual({
       )}
     >
       <div className="project-lines absolute inset-0 opacity-40" />
-      <span className="absolute top-5 left-5 z-10 font-mono text-[10px] font-medium tracking-[0.18em] uppercase opacity-55 sm:top-7 sm:left-7">
-        Case study / 0{index + 1}
-      </span>
-      <span className="font-display absolute right-5 bottom-0 text-[clamp(7rem,20vw,17rem)] leading-[0.65] opacity-[0.08] sm:right-8">
-        {index + 1}
-      </span>
-
       {project.visual === 'blackhole' && (
         <>
           <motion.div
@@ -201,13 +187,7 @@ function ProjectVisual({
   )
 }
 
-export function FeaturedProject({
-  project,
-  index,
-}: {
-  project: WorkItem
-  index: number
-}) {
+export function FeaturedProject({ project }: { project: WorkItem }) {
   return (
     <motion.article
       initial={{ opacity: 0, y: 40 }}
@@ -223,7 +203,7 @@ export function FeaturedProject({
         className="group focus-visible:outline-foreground block rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-4"
         aria-label={`Open ${project.title}`}
       >
-        <ProjectVisual project={project} index={index} />
+        <ProjectVisual project={project} />
       </a>
       <div className="flex flex-col lg:pt-3">
         <h3 className="font-display text-[clamp(3.25rem,6vw,6rem)] leading-[0.82] tracking-[-0.05em]">
@@ -283,7 +263,7 @@ export function IndependentProject({
       transition={{ delay: index * 0.1 }}
       className="group focus-visible:outline-foreground block rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-4"
     >
-      <ProjectVisual project={project} index={index + clientWork.length} />
+      <ProjectVisual project={project} />
       <div className="py-5">
         <h3 className="font-display text-4xl tracking-[-0.04em] sm:text-5xl">
           {project.title}

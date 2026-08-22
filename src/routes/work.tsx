@@ -45,12 +45,8 @@ function WorkPage() {
         </ScrollReveal>
 
         <div>
-          {clientWork.map((project, index) => (
-            <FeaturedProject
-              key={project.title}
-              project={project}
-              index={index}
-            />
+          {clientWork.map((project) => (
+            <FeaturedProject key={project.title} project={project} />
           ))}
         </div>
 
