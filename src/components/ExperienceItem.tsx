@@ -29,11 +29,13 @@ export default function ExperienceItem({
     <ScrollReveal
       as="li"
       delay={index * 0.05}
-      className="grid gap-5 border-b border-black/20 py-10 sm:grid-cols-[60px_180px_1fr] sm:py-14 lg:grid-cols-[80px_240px_1fr]"
+      className="border-foreground/20 grid gap-5 border-b py-10 sm:grid-cols-[60px_180px_1fr] sm:py-14 lg:grid-cols-[80px_240px_1fr]"
     >
-      <span className="font-mono text-[9px] text-black/30">0{index + 1}</span>
+      <span className="text-foreground/30 font-mono text-[9px]">
+        0{index + 1}
+      </span>
       <div>
-        <span className="font-mono text-[9px] tracking-[0.12em] text-black/40 uppercase">
+        <span className="text-foreground/40 font-mono text-[9px] tracking-[0.12em] uppercase">
           {formatDateRange(startDate, endDate)}
         </span>
         {url ? (
@@ -41,7 +43,7 @@ export default function ExperienceItem({
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-3 block text-sm font-bold hover:text-[#335cff]"
+            className="hover:text-brand mt-3 block text-sm font-bold"
           >
             {company} ↗
           </a>
@@ -53,7 +55,7 @@ export default function ExperienceItem({
         <h2 className="font-display text-4xl leading-none tracking-[-0.035em] sm:text-5xl">
           {title}
         </h2>
-        <p className="mt-5 max-w-2xl text-sm leading-7 text-black/55 sm:text-base">
+        <p className="text-foreground/55 mt-5 max-w-2xl text-sm leading-7 sm:text-base">
           {description}
         </p>
       </div>

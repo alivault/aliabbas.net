@@ -32,10 +32,10 @@ const portableTextComponents: PortableTextComponents = {
           <img
             src={imageUrl}
             alt={value.alt || ''}
-            className="w-full border border-black/10"
+            className="border-foreground/10 w-full border"
           />
           {value.alt && (
-            <figcaption className="mt-3 font-mono text-[9px] tracking-[0.12em] text-black/40 uppercase">
+            <figcaption className="text-foreground/40 mt-3 font-mono text-[9px] tracking-[0.12em] uppercase">
               {value.alt}
             </figcaption>
           )}
@@ -45,7 +45,7 @@ const portableTextComponents: PortableTextComponents = {
   },
   marks: {
     code: ({ children }) => (
-      <code className="bg-[#335cff]/10 px-1.5 py-0.5 font-mono text-sm text-[#18339f]">
+      <code className="bg-brand/10 text-brand px-1.5 py-0.5 font-mono text-sm">
         {children}
       </code>
     ),
@@ -76,7 +76,7 @@ function NotePage() {
     return (
       <Main>
         <div className="mx-auto max-w-5xl px-5 py-16 sm:px-8 sm:py-24">
-          <div className="h-96 animate-pulse bg-black/5" />
+          <div className="bg-foreground/5 h-96 animate-pulse" />
         </div>
       </Main>
     )
@@ -86,7 +86,7 @@ function NotePage() {
     return (
       <Main>
         <section className="mx-auto flex min-h-[70svh] max-w-5xl flex-col items-center justify-center gap-5 px-5 text-center">
-          <p className="font-mono text-[9px] tracking-[0.2em] text-[#335cff] uppercase">
+          <p className="text-brand font-mono text-[9px] tracking-[0.2em] uppercase">
             Missing note
           </p>
           <h1 className="font-display text-6xl tracking-[-0.04em]">
@@ -94,7 +94,7 @@ function NotePage() {
           </h1>
           <Link
             to="/notes"
-            className="text-xs font-bold uppercase hover:text-[#335cff]"
+            className="hover:text-brand text-xs font-bold uppercase"
           >
             ← Back to notes
           </Link>
@@ -108,16 +108,16 @@ function NotePage() {
       <article className="mx-auto max-w-[1440px] px-5 py-14 sm:px-8 sm:py-20 lg:px-12 lg:py-28">
         <Link
           to="/notes"
-          className="mb-12 inline-flex items-center gap-2 font-mono text-[9px] tracking-[0.15em] text-black/45 uppercase transition-colors hover:text-[#335cff]"
+          className="text-foreground/45 hover:text-brand mb-12 inline-flex items-center gap-2 font-mono text-[9px] tracking-[0.15em] uppercase transition-colors"
         >
           <ArrowLeft className="size-4" /> Back to field notes
         </Link>
         <ScrollReveal
           as="header"
-          className="mx-auto max-w-3xl border-b border-black/20 pb-12 sm:pb-16"
+          className="border-foreground/20 mx-auto max-w-3xl border-b pb-12 sm:pb-16"
         >
           <time
-            className="font-mono text-[9px] tracking-[0.18em] text-[#335cff] uppercase"
+            className="text-brand font-mono text-[9px] tracking-[0.18em] uppercase"
             dateTime={note.date}
           >
             {getFormattedDate(note.date)}
@@ -126,7 +126,7 @@ function NotePage() {
             {note.title}
           </h1>
           {note.description && (
-            <p className="mt-7 max-w-2xl text-base leading-7 text-black/50 sm:text-lg sm:leading-8">
+            <p className="text-foreground/50 mt-7 max-w-2xl text-base leading-7 sm:text-lg sm:leading-8">
               {note.description}
             </p>
           )}
@@ -134,7 +134,7 @@ function NotePage() {
         <ScrollReveal
           trigger="mount"
           delay={0.2}
-          className="prose prose-lg prose-neutral prose-headings:font-display prose-headings:tracking-[-0.03em] prose-a:text-[#335cff] prose-pre:p-0 mx-auto mt-12 max-w-3xl sm:mt-16"
+          className="prose prose-lg prose-neutral prose-headings:font-display prose-headings:tracking-[-0.03em] prose-a:text-brand prose-pre:p-0 dark:prose-invert mx-auto mt-12 max-w-3xl sm:mt-16"
         >
           <PortableText
             value={note.content}

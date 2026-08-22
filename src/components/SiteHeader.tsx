@@ -144,26 +144,26 @@ export default function SiteHeader() {
 
   return (
     <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-      <header className="fixed inset-x-0 top-0 z-[100] h-[72px] border-b border-white/10 bg-[#10100f]/90 text-[#f1efe8] backdrop-blur-xl">
+      <header className="border-foreground/10 bg-background/90 text-foreground fixed inset-x-0 top-0 z-[100] h-[72px] border-b backdrop-blur-xl">
         <div className="mx-auto grid h-full max-w-[1600px] grid-cols-[1fr_auto] items-center px-5 sm:px-8 lg:grid-cols-[1fr_auto_1fr] lg:px-12">
           <Link
             to="/"
             className="group flex items-center gap-3 justify-self-start"
             aria-label="Ali Abbas — home"
           >
-            <Logo className="h-7 w-8 text-[#f1efe8]" />
+            <Logo className="text-foreground h-7 w-8" />
             <span className="text-sm font-semibold tracking-[-0.02em]">
               Ali Abbas
             </span>
           </Link>
 
-          <nav className="hidden items-center gap-8 justify-self-center text-[12px] font-semibold text-white/55 lg:flex">
+          <nav className="text-foreground/55 hidden items-center gap-8 justify-self-center text-[12px] font-semibold lg:flex">
             {navigation.map((item) => (
               <Link
                 key={item.label}
                 to={item.to}
-                className="transition-colors hover:text-white"
-                activeProps={{ className: 'text-white' }}
+                className="hover:text-foreground transition-colors"
+                activeProps={{ className: 'text-foreground' }}
               >
                 {item.label}
               </Link>
@@ -173,12 +173,12 @@ export default function SiteHeader() {
           <div className="flex items-center gap-3 justify-self-end">
             <Link
               to="/contact"
-              className="hidden h-9 items-center gap-2 rounded-full bg-[#f1efe8] px-4 text-[11px] font-bold text-[#10100f] transition-colors hover:bg-[#d9ff43] sm:flex"
+              className="bg-foreground text-background hover:bg-brand hover:text-brand-foreground hidden h-9 items-center gap-2 rounded-full px-4 text-[11px] font-bold transition-colors sm:flex"
             >
               Let’s talk <ArrowUpRight className="size-3.5" />
             </Link>
             <SheetTrigger
-              className="flex size-9 items-center justify-center rounded-full border border-white/15 text-white lg:hidden"
+              className="border-foreground/15 text-foreground flex size-9 items-center justify-center rounded-full border lg:hidden"
               aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
             >
               <SpinMenuIcon open={menuOpen} />
@@ -190,7 +190,7 @@ export default function SiteHeader() {
       <SheetContent
         side="top"
         showCloseButton={false}
-        className="z-[90] h-dvh max-h-none gap-0 overflow-y-auto overscroll-contain border-0 bg-[#10100f] px-5 pt-28 pb-8 text-[#f1efe8] shadow-none duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] data-ending-style:delay-300 data-[side=top]:h-dvh data-[side=top]:border-b-0 data-[side=top]:data-ending-style:translate-y-[-100%] data-[side=top]:data-starting-style:translate-y-[-100%] lg:hidden"
+        className="bg-background text-foreground z-[90] h-dvh max-h-none gap-0 overflow-y-auto overscroll-contain border-0 px-5 pt-28 pb-8 shadow-none duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] data-ending-style:delay-300 data-[side=top]:h-dvh data-[side=top]:border-b-0 data-[side=top]:data-ending-style:translate-y-[-100%] data-[side=top]:data-starting-style:translate-y-[-100%] lg:hidden"
       >
         <SheetTitle className="sr-only">Site navigation</SheetTitle>
         <motion.div
@@ -199,11 +199,11 @@ export default function SiteHeader() {
           variants={mobileMenuVariants}
           className="flex min-h-0 flex-1 flex-col"
         >
-          <nav className="flex flex-col border-t border-white/15">
+          <nav className="border-foreground/15 flex flex-col border-t">
             {navigation.map((item, index) => (
               <div
                 key={item.label}
-                className="overflow-hidden border-b border-white/15"
+                className="border-foreground/15 overflow-hidden border-b"
               >
                 <motion.div variants={mobileLinkVariants}>
                   <Link
@@ -214,7 +214,7 @@ export default function SiteHeader() {
                     <span className="font-display text-4xl tracking-[-0.03em]">
                       {item.label}
                     </span>
-                    <span className="font-mono text-[10px] text-white/30">
+                    <span className="text-foreground/30 font-mono text-[10px]">
                       0{index + 1}
                     </span>
                   </Link>
@@ -227,7 +227,7 @@ export default function SiteHeader() {
               <Link
                 to="/contact"
                 onClick={() => setMenuOpen(false)}
-                className="flex items-center justify-between rounded-full bg-[#d9ff43] px-6 py-4 text-sm font-bold text-[#10100f]"
+                className="bg-brand text-brand-foreground flex items-center justify-between rounded-full px-6 py-4 text-sm font-bold"
               >
                 Start a conversation <ArrowUpRight className="size-4" />
               </Link>

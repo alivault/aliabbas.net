@@ -214,13 +214,13 @@ export function FeaturedProject({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-      className="grid gap-7 border-t border-black/20 py-10 first:border-t-0 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)] lg:gap-12 lg:py-16"
+      className="border-foreground/20 grid gap-7 border-t py-10 first:border-t-0 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)] lg:gap-12 lg:py-16"
     >
       <a
         href={project.href}
         target="_blank"
         rel="noreferrer"
-        className="group block rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black"
+        className="group focus-visible:outline-foreground block rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-4"
         aria-label={`Open ${project.title}`}
       >
         <ProjectVisual project={project} index={index} />
@@ -229,14 +229,14 @@ export function FeaturedProject({
         <h3 className="font-display text-[clamp(3.25rem,6vw,6rem)] leading-[0.82] tracking-[-0.05em]">
           {project.title}
         </h3>
-        <p className="mt-7 max-w-md text-base leading-7 text-black/60">
+        <p className="text-foreground/60 mt-7 max-w-md text-base leading-7">
           {project.description}
         </p>
-        <div className="mt-7 border-l border-black/25 pl-4">
-          <p className="font-mono text-[9px] tracking-[0.16em] text-black/40 uppercase">
+        <div className="border-foreground/25 mt-7 border-l pl-4">
+          <p className="text-foreground/40 font-mono text-[9px] tracking-[0.16em] uppercase">
             Contribution
           </p>
-          <p className="mt-2 max-w-sm text-sm leading-6 text-black/55">
+          <p className="text-foreground/55 mt-2 max-w-sm text-sm leading-6">
             {project.contribution}
           </p>
         </div>
@@ -244,7 +244,7 @@ export function FeaturedProject({
           {project.tools.map((tool) => (
             <span
               key={tool}
-              className="rounded-full border border-black/20 px-3 py-1.5 text-[10px] font-semibold"
+              className="border-foreground/20 rounded-full border px-3 py-1.5 text-[10px] font-semibold"
             >
               {tool}
             </span>
@@ -254,9 +254,9 @@ export function FeaturedProject({
           href={project.href}
           target="_blank"
           rel="noreferrer"
-          className="group relative mt-10 flex items-center justify-between overflow-hidden border-b border-black/25 px-3 py-4 text-xs font-bold uppercase transition-colors duration-300 hover:text-white lg:mt-auto"
+          className="group border-foreground/25 hover:text-background relative mt-10 flex items-center justify-between overflow-hidden border-b px-3 py-4 text-xs font-bold uppercase transition-colors duration-300 lg:mt-auto"
         >
-          <span className="absolute inset-0 translate-y-full bg-black transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
+          <span className="bg-foreground absolute inset-0 translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
           <span className="relative z-10">Visit live project</span>
           <ArrowUpRight className="relative z-10 size-4 transition-transform group-hover:translate-x-1" />
         </a>
@@ -281,14 +281,14 @@ export function IndependentProject({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1 }}
-      className="group block rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-black"
+      className="group focus-visible:outline-foreground block rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-4"
     >
       <ProjectVisual project={project} index={index + clientWork.length} />
       <div className="py-5">
         <h3 className="font-display text-4xl tracking-[-0.04em] sm:text-5xl">
           {project.title}
         </h3>
-        <p className="mt-3 max-w-xl text-sm leading-6 text-black/55">
+        <p className="text-foreground/55 mt-3 max-w-xl text-sm leading-6">
           {project.description}
         </p>
       </div>

@@ -27,7 +27,7 @@ const architecture = [
 
 export default function HomeCapabilitiesSection() {
   return (
-    <section className="bg-[#10100f] text-[#f1efe8]">
+    <section className="bg-background text-foreground">
       <div className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36">
         <ScrollReveal
           as="header"
@@ -37,7 +37,7 @@ export default function HomeCapabilitiesSection() {
             <h2 className="text-[clamp(3.1rem,9vw,8.5rem)] leading-[0.76] font-extrabold tracking-[-0.07em] uppercase">
               Beautiful
               <br />
-              <span className="font-display font-normal text-[#d9ff43] normal-case italic">
+              <span className="font-display text-brand font-normal normal-case italic">
                 on the surface.
               </span>
               <br />
@@ -46,57 +46,57 @@ export default function HomeCapabilitiesSection() {
               underneath.
             </h2>
           </div>
-          <p className="max-w-lg text-base leading-7 text-white/55 lg:justify-self-end lg:text-lg lg:leading-8">
+          <p className="text-foreground/55 max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
             I bridge product design and full-stack engineering, so the idea
             survives implementation—and the implementation holds up after
             launch.
           </p>
         </ScrollReveal>
 
-        <div className="mt-20 border-t border-white/15 lg:mt-28">
+        <div className="border-foreground/15 mt-20 border-t lg:mt-28">
           {capabilities.map((capability, index) => (
             <ScrollReveal
               key={capability.number}
               as="article"
               delay={index * 0.04}
-              className="group grid gap-4 border-b border-white/15 py-7 transition-colors hover:text-[#d9ff43] sm:grid-cols-[80px_1fr_1fr] sm:items-center sm:py-9"
+              className="group border-foreground/15 hover:text-brand grid gap-4 border-b py-7 transition-colors sm:grid-cols-[80px_1fr_1fr] sm:items-center sm:py-9"
             >
-              <span className="font-mono text-[10px] text-white/30">
+              <span className="text-foreground/30 font-mono text-[10px]">
                 {capability.number}
               </span>
               <h3 className="font-display text-4xl tracking-[-0.035em] sm:text-5xl">
                 {capability.title}
               </h3>
-              <p className="max-w-xl text-sm leading-6 text-white/45 transition-colors group-hover:text-[#d9ff43]/60 sm:justify-self-end">
+              <p className="text-foreground/45 group-hover:text-brand/60 max-w-xl text-sm leading-6 transition-colors sm:justify-self-end">
                 {capability.description}
               </p>
             </ScrollReveal>
           ))}
         </div>
 
-        <ScrollReveal className="mt-20 rounded-[2px] border border-white/15 bg-white/[0.03] p-5 sm:p-8 lg:mt-28 lg:p-10">
-          <div className="flex flex-col justify-between gap-5 border-b border-white/15 pb-7 sm:flex-row sm:items-center">
+        <ScrollReveal className="border-foreground/15 bg-foreground/[0.03] mt-20 rounded-[2px] border p-5 sm:p-8 lg:mt-28 lg:p-10">
+          <div className="border-foreground/15 flex flex-col justify-between gap-5 border-b pb-7 sm:flex-row sm:items-center">
             <div>
               <p className="flex items-center gap-2 text-xs font-bold">
-                <span className="size-2 rounded-full bg-[#d9ff43] shadow-[0_0_12px_#d9ff43]" />
+                <span className="bg-brand size-2 rounded-full shadow-[0_0_12px_var(--brand)]" />
                 This portfolio is a live full-stack system
               </p>
-              <p className="mt-2 max-w-xl text-sm leading-6 text-white/40">
+              <p className="text-foreground/40 mt-2 max-w-xl text-sm leading-6">
                 Not a static mockup: server rendering, managed content,
                 authentication, realtime comments, transactional email, and edge
                 deployment.
               </p>
             </div>
-            <span className="font-mono text-[9px] tracking-[0.18em] text-white/25 uppercase">
+            <span className="text-foreground/25 font-mono text-[9px] tracking-[0.18em] uppercase">
               Production architecture
             </span>
           </div>
-          <div className="grid divide-y divide-white/10 sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
+          <div className="divide-foreground/10 grid divide-y sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
             {architecture.map(({ icon: Icon, label, value }) => (
               <div key={label} className="py-7 sm:px-7 lg:py-8">
-                <Icon className="size-5 text-[#d9ff43]" strokeWidth={1.5} />
+                <Icon className="text-brand size-5" strokeWidth={1.5} />
                 <p className="mt-8 text-xs font-bold">{label}</p>
-                <p className="mt-2 text-[11px] text-white/35">{value}</p>
+                <p className="text-foreground/35 mt-2 text-[11px]">{value}</p>
               </div>
             ))}
           </div>

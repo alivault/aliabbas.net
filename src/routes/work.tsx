@@ -28,16 +28,16 @@ function WorkPage() {
       <section className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36">
         <ScrollReveal
           as="header"
-          className="grid gap-7 border-b border-black/20 pb-12 lg:grid-cols-[1fr_1fr] lg:items-end lg:pb-20"
+          className="border-foreground/20 grid gap-7 border-b pb-12 lg:grid-cols-[1fr_1fr] lg:items-end lg:pb-20"
         >
           <div>
             <h1 className="font-display text-[clamp(4rem,9vw,8rem)] leading-[0.78] tracking-[-0.06em]">
               Built for the
               <br />
-              <em className="text-[#335cff]">real world.</em>
+              <em className="text-brand">real world.</em>
             </h1>
           </div>
-          <p className="max-w-xl text-base leading-7 text-black/55 lg:justify-self-end lg:text-lg lg:leading-8">
+          <p className="text-foreground/55 max-w-xl text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
             Product experiences where visual ambition and engineering rigor have
             to coexist. I care about the concept, the system, and the final 2px
             in production.
@@ -54,7 +54,7 @@ function WorkPage() {
           ))}
         </div>
 
-        <div className="mt-16 border-t border-black/20 pt-8 lg:mt-24 lg:pt-12">
+        <div className="border-foreground/20 mt-16 border-t pt-8 lg:mt-24 lg:pt-12">
           <ScrollReveal className="mb-10 flex items-end justify-between gap-6">
             <div>
               <h2 className="font-display text-5xl tracking-[-0.045em] sm:text-7xl">

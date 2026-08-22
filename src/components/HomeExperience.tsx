@@ -21,7 +21,7 @@ export default function HomeExperience() {
   })
 
   return (
-    <div className="home-page overflow-x-hidden bg-[#f1efe8] text-[#151513]">
+    <div className="home-page bg-background text-foreground overflow-x-hidden">
       <SiteHeader />
       <main>
         <div className="flex min-h-svh flex-col">

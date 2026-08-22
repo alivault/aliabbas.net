@@ -13,7 +13,7 @@ export default function SectionButton({ href, children }: SectionButtonProps) {
     <Button
       render={<Link to={href} />}
       variant="ghost"
-      className="mt-4 h-10 justify-between rounded-full border border-black/8 px-4 text-left"
+      className="border-foreground/8 mt-4 h-10 justify-between rounded-full border px-4 text-left"
     >
       {children}
       <ChevronsRight size={16} className="opacity-40" />

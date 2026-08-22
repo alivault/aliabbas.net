@@ -56,21 +56,21 @@ function ResetPasswordPage() {
 
   const BrandHeader = () => (
     <Link to="/" className="mb-8 flex items-center justify-center gap-2">
-      <Logo className="size-8 text-[#d9ff43]" />
+      <Logo className="text-brand size-8" />
       <span className="text-sm font-semibold">Ali Abbas</span>
     </Link>
   )
 
   if (!token) {
     return (
-      <div className="flex min-h-svh items-center justify-center bg-[#10100f] p-5 text-[#f1efe8]">
-        <div className="w-full max-w-md border border-white/15 p-8 text-center">
+      <div className="bg-background text-foreground flex min-h-svh items-center justify-center p-5">
+        <div className="border-foreground/15 w-full max-w-md border p-8 text-center">
           <BrandHeader />
           <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
             <XCircle className="size-6 text-red-600 dark:text-red-400" />
           </div>
           <h1 className="font-display mb-2 text-4xl">Invalid reset link</h1>
-          <p className="mb-5 text-sm text-white/45">
+          <p className="text-foreground/45 mb-5 text-sm">
             This password reset link is invalid or has expired.
           </p>
           <Button onClick={() => navigate({ to: '/' })} variant="outline">
@@ -83,14 +83,14 @@ function ResetPasswordPage() {
 
   if (success) {
     return (
-      <div className="flex min-h-svh items-center justify-center bg-[#10100f] p-5 text-[#f1efe8]">
-        <div className="w-full max-w-md border border-white/15 p-8 text-center">
+      <div className="bg-background text-foreground flex min-h-svh items-center justify-center p-5">
+        <div className="border-foreground/15 w-full max-w-md border p-8 text-center">
           <BrandHeader />
           <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
             <CheckCircle className="size-6 text-green-600 dark:text-green-400" />
           </div>
           <h1 className="font-display mb-2 text-4xl">Password reset!</h1>
-          <p className="mb-5 text-sm text-white/45">
+          <p className="text-foreground/45 mb-5 text-sm">
             Your password has been successfully reset. You can now sign in with
             your new password.
           </p>
@@ -101,13 +101,13 @@ function ResetPasswordPage() {
   }
 
   return (
-    <div className="flex min-h-svh items-center justify-center bg-[#10100f] p-5 text-[#f1efe8]">
-      <div className="w-full max-w-md border border-white/15 p-8">
+    <div className="bg-background text-foreground flex min-h-svh items-center justify-center p-5">
+      <div className="border-foreground/15 w-full max-w-md border p-8">
         <BrandHeader />
         <h1 className="font-display mb-2 text-center text-4xl">
           Reset your password
         </h1>
-        <p className="mb-6 text-center text-sm text-white/45">
+        <p className="text-foreground/45 mb-6 text-center text-sm">
           Enter your new password below.
         </p>
 
@@ -119,7 +119,7 @@ function ResetPasswordPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength={8}
-            className="w-full border border-white/15 bg-white/5 px-3 py-3 text-sm text-white placeholder:text-white/30 focus:border-[#d9ff43] focus:outline-none"
+            className="border-foreground/15 bg-foreground/5 text-foreground placeholder:text-foreground/30 focus:border-brand w-full border px-3 py-3 text-sm focus:outline-none"
           />
           <input
             type="password"
@@ -128,7 +128,7 @@ function ResetPasswordPage() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             minLength={8}
-            className="w-full border border-white/15 bg-white/5 px-3 py-3 text-sm text-white placeholder:text-white/30 focus:border-[#d9ff43] focus:outline-none"
+            className="border-foreground/15 bg-foreground/5 text-foreground placeholder:text-foreground/30 focus:border-brand w-full border px-3 py-3 text-sm focus:outline-none"
           />
 
           {error && <p className="text-sm text-red-500">{error}</p>}
@@ -136,7 +136,7 @@ function ResetPasswordPage() {
           <Button
             type="submit"
             disabled={isLoading}
-            className="w-full bg-neutral-900 text-white hover:bg-neutral-800 disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
+            className="w-full disabled:opacity-50"
           >
             {isLoading ? (
               <>

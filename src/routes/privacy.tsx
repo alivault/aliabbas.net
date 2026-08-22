@@ -25,10 +25,10 @@ function PrivacySection({
   title: string
 }) {
   return (
-    <section className="grid gap-5 border-t border-black/20 py-10 lg:grid-cols-[100px_260px_1fr] lg:gap-10 lg:py-14">
-      <span className="font-mono text-[10px] text-black/35">{number}</span>
+    <section className="border-foreground/20 grid gap-5 border-t py-10 lg:grid-cols-[100px_260px_1fr] lg:gap-10 lg:py-14">
+      <span className="text-foreground/35 font-mono text-[10px]">{number}</span>
       <h2 className="text-lg font-bold tracking-[-0.02em]">{title}</h2>
-      <div className="max-w-3xl space-y-5 text-base leading-7 text-black/60">
+      <div className="text-foreground/60 max-w-3xl space-y-5 text-base leading-7">
         {children}
       </div>
     </section>
@@ -38,13 +38,13 @@ function PrivacySection({
 function PrivacyPage() {
   return (
     <Main>
-      <article className="bg-[#f1efe8]">
+      <article className="bg-background">
         <header className="mx-auto max-w-[1600px] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-32">
           <h1 className="font-display text-[clamp(4.5rem,12vw,10rem)] leading-[0.76] tracking-[-0.065em]">
             Privacy
-            <em className="block text-[#335cff]">policy.</em>
+            <em className="text-brand block">policy.</em>
           </h1>
-          <div className="mt-10 flex flex-wrap gap-x-8 gap-y-2 font-mono text-[10px] tracking-[0.12em] text-black/35 uppercase">
+          <div className="text-foreground/35 mt-10 flex flex-wrap gap-x-8 gap-y-2 font-mono text-[10px] tracking-[0.12em] uppercase">
             <span>Effective August 7, 2026</span>
             <span>Operator: Ali Abbas</span>
           </div>
@@ -68,7 +68,7 @@ function PrivacyPage() {
             <p>
               When you send a message to the portfolio chatbot, the site stores:
             </p>
-            <ul className="list-disc space-y-2 pl-5 marker:text-[#335cff]">
+            <ul className="marker:text-brand list-disc space-y-2 pl-5">
               <li>The complete conversation, including AI responses.</li>
               <li>Server-generated timestamps.</li>
               <li>
@@ -165,7 +165,7 @@ function PrivacyPage() {
               Requests can be submitted through the{' '}
               <Link
                 to="/contact"
-                className="font-semibold text-black underline decoration-black/25 underline-offset-4"
+                className="text-foreground decoration-foreground/25 font-semibold underline underline-offset-4"
               >
                 contact page
               </Link>
@@ -206,7 +206,7 @@ function PrivacyPage() {
               through the{' '}
               <Link
                 to="/contact"
-                className="font-semibold text-black underline decoration-black/25 underline-offset-4"
+                className="text-foreground decoration-foreground/25 font-semibold underline underline-offset-4"
               >
                 contact page
               </Link>

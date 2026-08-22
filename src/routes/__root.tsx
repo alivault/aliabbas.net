@@ -28,7 +28,16 @@ export const Route = createRootRouteWithContext<{
         content: 'width=device-width, initial-scale=1, viewport-fit=cover',
       },
       { name: 'darkreader-lock', content: 'true' },
-      { name: 'theme-color', content: '#10100f' },
+      {
+        name: 'theme-color',
+        content: '#f1efe8',
+        media: '(prefers-color-scheme: light)',
+      },
+      {
+        name: 'theme-color',
+        content: '#10100f',
+        media: '(prefers-color-scheme: dark)',
+      },
       { title: 'Ali Abbas' },
       {
         name: 'description',

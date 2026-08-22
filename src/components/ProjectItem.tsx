@@ -17,7 +17,7 @@ export default function ProjectItem({
         href={href}
         target="_blank"
         rel="noopener noreferrer"
-        className="flex flex-col gap-2 rounded-2xl border border-black/8 bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
+        className="border-border bg-card text-card-foreground flex flex-col gap-2 rounded-2xl border p-4 transition-all hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0"
       >
         <div className="flex items-center gap-3">
           {image && (
@@ -31,7 +31,9 @@ export default function ProjectItem({
           )}
           <span className="text-lg font-semibold">{title}</span>
         </div>
-        <span className="text-sm leading-6 text-black/50">{description}</span>
+        <span className="text-card-foreground/50 text-sm leading-6">
+          {description}
+        </span>
       </a>
     </li>
   )

@@ -34,22 +34,24 @@ function NoteListItem({
       <Link
         to="/notes/$slug"
         params={{ slug: article.slug.current }}
-        className="group grid gap-4 border-b border-black/20 py-7 sm:grid-cols-[56px_1fr_130px_auto] sm:items-center sm:py-10"
+        className="group border-foreground/20 grid gap-4 border-b py-7 sm:grid-cols-[56px_1fr_130px_auto] sm:items-center sm:py-10"
       >
-        <span className="font-mono text-[9px] text-black/35">0{index + 1}</span>
+        <span className="text-foreground/35 font-mono text-[9px]">
+          0{index + 1}
+        </span>
         <span>
           <span className="font-display block text-3xl leading-[1.1] tracking-[-0.03em] transition-transform duration-500 group-hover:translate-x-2 sm:text-5xl">
             {article.title}
           </span>
           {article.description && (
-            <span className="mt-3 block max-w-2xl text-sm leading-6 text-black/45">
+            <span className="text-foreground/45 mt-3 block max-w-2xl text-sm leading-6">
               {article.description}
             </span>
           )}
         </span>
         <time
           dateTime={article.date}
-          className="font-mono text-[9px] tracking-[0.12em] text-black/40 uppercase"
+          className="text-foreground/40 font-mono text-[9px] tracking-[0.12em] uppercase"
         >
           {getFormattedDate(article.date)}
         </time>
@@ -70,29 +72,32 @@ function NotesPage() {
       <Section>
         <ScrollReveal
           as="header"
-          className="grid gap-8 border-b border-black/20 pb-12 lg:grid-cols-[1fr_0.65fr] lg:items-end lg:pb-16"
+          className="border-foreground/20 grid gap-8 border-b pb-12 lg:grid-cols-[1fr_0.65fr] lg:items-end lg:pb-16"
         >
           <div>
             <h1 className="font-display text-[clamp(3.5rem,10vw,9rem)] leading-[0.74] tracking-[-0.065em]">
               Thinking
               <br />
-              <em className="text-[#335cff]">in public.</em>
+              <em className="text-brand">in public.</em>
             </h1>
           </div>
-          <p className="max-w-xl text-base leading-7 text-black/55 lg:justify-self-end lg:text-lg lg:leading-8">
+          <p className="text-foreground/55 max-w-xl text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
             Notes on software, interaction design, developer tools, and the
             small decisions that make products feel considered.
           </p>
         </ScrollReveal>
 
         {isLoading ? (
-          <div className="divide-y divide-black/15">
+          <div className="divide-foreground/15 divide-y">
             {[0, 1, 2].map((item) => (
-              <div key={item} className="h-36 animate-pulse bg-black/[0.025]" />
+              <div
+                key={item}
+                className="bg-foreground/[0.025] h-36 animate-pulse"
+              />
             ))}
           </div>
         ) : articles.length === 0 ? (
-          <p className="py-16 text-sm text-black/45">
+          <p className="text-foreground/45 py-16 text-sm">
             New notes are being written. Check back soon.
           </p>
         ) : (

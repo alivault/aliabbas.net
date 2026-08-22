@@ -1,10 +1,46 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 
 const GLOBE_RADIUS = 1.42
 const ARC_POINT_COUNT = 96
 const ARC_RIBBON_SEGMENTS = 64
 const CONNECTION_COUNT = 10
+
+const globePalettes = {
+  light: {
+    atmosphere: '#d8d5cd',
+    background: '#f1efe8',
+    connections: ['#335cff', '#5271d9', '#335cff', '#7187d8'],
+    dots: '#303033',
+    grid: '#335cff',
+    hover: '#000000',
+    rimEdge: '#d8d5cd',
+    rimInner: '#f4f2ed',
+    shell: '#ffffff',
+    shellEmissive: '#f8f7f3',
+    sunlight: '#ffffff',
+  },
+  dark: {
+    atmosphere: '#aea8ff',
+    background: '#050607',
+    connections: ['#d9ff43', '#8da4ff', '#f1efe8', '#72f1b8'],
+    dots: '#dce5ff',
+    grid: '#91a8ee',
+    hover: '#ffffff',
+    rimEdge: '#e9ffff',
+    rimInner: '#6885ff',
+    shell: '#111842',
+    shellEmissive: '#010208',
+    sunlight: '#ffffff',
+  },
+} as const
+
+function getPrefersDarkMode() {
+  return (
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-color-scheme: dark)').matches
+  )
+}
 
 type GlobeConnection = {
   index: number
@@ -200,7 +236,7 @@ function createGridGeometry(radius: number) {
   return geometry
 }
 
-function createAtmosphereTexture() {
+function createAtmosphereTexture(prefersDarkMode: boolean) {
   const size = 256
   const data = new Uint8Array(size * size * 4)
 
@@ -219,8 +255,10 @@ function createAtmosphereTexture() {
         1,
       )
       const offset = (y * size + x) * 4
-      data[offset] = Math.round(58 + surfaceGlow * 150)
-      data[offset + 1] = Math.round(87 + surfaceGlow * 168)
+      data[offset] = prefersDarkMode ? Math.round(58 + surfaceGlow * 150) : 255
+      data[offset + 1] = prefersDarkMode
+        ? Math.round(87 + surfaceGlow * 168)
+        : 255
       data[offset + 2] = 255
       data[offset + 3] = Math.round(alpha * 255)
     }
@@ -271,11 +309,24 @@ function createLandPointPositions(
 export default function ConnectedGlobe() {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [prefersDarkMode, setPrefersDarkMode] = useState(getPrefersDarkMode)
+
+  useEffect(() => {
+    const colorScheme = window.matchMedia('(prefers-color-scheme: dark)')
+    const updateColorScheme = () => setPrefersDarkMode(colorScheme.matches)
+
+    colorScheme.addEventListener('change', updateColorScheme)
+    return () => colorScheme.removeEventListener('change', updateColorScheme)
+  }, [])
 
   useEffect(() => {
     const container = containerRef.current
     const canvas = canvasRef.current
     if (!container || !canvas) return
+    const palette = prefersDarkMode ? globePalettes.dark : globePalettes.light
+    const surfaceBlending = prefersDarkMode
+      ? THREE.AdditiveBlending
+      : THREE.NormalBlending
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -283,14 +334,14 @@ export default function ConnectedGlobe() {
       antialias: true,
       powerPreference: 'high-performance',
     })
-    renderer.setClearColor(0x050607, 1)
+    renderer.setClearColor(palette.background, 1)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.outputColorSpace = THREE.SRGBColorSpace
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.05
 
     const scene = new THREE.Scene()
-    scene.background = new THREE.Color('#050607')
+    scene.background = new THREE.Color(palette.background)
     const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100)
     camera.position.set(0.62, 0.45, 5.5)
     camera.lookAt(0, 0, 0)
@@ -325,24 +376,29 @@ export default function ConnectedGlobe() {
     updateSunDirection()
 
     const shellGeometry = new THREE.SphereGeometry(GLOBE_RADIUS, 64, 40)
-    const shellMaterial = new THREE.MeshStandardMaterial({
-      color: '#111842',
-      emissive: '#010208',
-      emissiveIntensity: 0.12,
-      metalness: 0,
-      roughness: 0.82,
-    })
+    const shellMaterial = prefersDarkMode
+      ? new THREE.MeshStandardMaterial({
+          color: palette.shell,
+          emissive: palette.shellEmissive,
+          emissiveIntensity: 0.12,
+          metalness: 0,
+          roughness: 0.82,
+        })
+      : new THREE.MeshBasicMaterial({
+          color: palette.shell,
+          toneMapped: false,
+        })
     globe.add(new THREE.Mesh(shellGeometry, shellMaterial))
 
-    const sunLight = new THREE.DirectionalLight('#ffffff', 0.65)
+    const sunLight = new THREE.DirectionalLight(palette.sunlight, 0.65)
     sunLight.target = globeRig
     sunLight.position.copy(globeRig.position).addScaledVector(sunDirection, 8)
     scene.add(sunLight)
 
     const rimMaterial = new THREE.ShaderMaterial({
       uniforms: {
-        uInnerColor: { value: new THREE.Color('#6885ff') },
-        uEdgeColor: { value: new THREE.Color('#e9ffff') },
+        uInnerColor: { value: new THREE.Color(palette.rimInner) },
+        uEdgeColor: { value: new THREE.Color(palette.rimEdge) },
         uSunDirection: { value: sunDirection },
         uTerminatorSoftness: { value: sunSettings.terminatorSoftness },
         uThickness: { value: 0.45 },
@@ -383,7 +439,7 @@ export default function ConnectedGlobe() {
         }
       `,
       transparent: true,
-      blending: THREE.AdditiveBlending,
+      blending: surfaceBlending,
       depthWrite: false,
       side: THREE.DoubleSide,
     })
@@ -391,13 +447,13 @@ export default function ConnectedGlobe() {
     rim.scale.setScalar(1.006)
     globe.add(rim)
 
-    const atmosphereTexture = createAtmosphereTexture()
+    const atmosphereTexture = createAtmosphereTexture(prefersDarkMode)
     const atmosphereMaterial = new THREE.SpriteMaterial({
-      color: '#aea8ff',
+      color: palette.atmosphere,
       map: atmosphereTexture,
       transparent: true,
       opacity: sunSettings.atmosphereIntensity,
-      blending: THREE.AdditiveBlending,
+      blending: surfaceBlending,
       depthTest: true,
       depthWrite: false,
     })
@@ -407,10 +463,10 @@ export default function ConnectedGlobe() {
 
     const gridGeometry = createGridGeometry(GLOBE_RADIUS * 1.003)
     const gridMaterial = new THREE.LineBasicMaterial({
-      color: '#91a8ee',
+      color: palette.grid,
       transparent: true,
       opacity: 0.14,
-      blending: THREE.AdditiveBlending,
+      blending: surfaceBlending,
       depthWrite: false,
     })
     globe.add(new THREE.LineSegments(gridGeometry, gridMaterial))
@@ -418,8 +474,8 @@ export default function ConnectedGlobe() {
     const dotGeometry = new THREE.PlaneGeometry(1, 1)
     const dotMaterial = new THREE.ShaderMaterial({
       uniforms: {
-        uColor: { value: new THREE.Color('#dce5ff') },
-        uDiscSize: { value: 0.005 },
+        uColor: { value: new THREE.Color(palette.dots) },
+        uDiscSize: { value: 0.0075 },
         uOpacity: { value: 0.72 },
       },
       vertexShader: `
@@ -451,7 +507,7 @@ export default function ConnectedGlobe() {
         }
       `,
       transparent: true,
-      blending: THREE.AdditiveBlending,
+      blending: surfaceBlending,
       depthWrite: false,
     })
     let landDots: THREE.InstancedMesh | undefined
@@ -508,13 +564,8 @@ export default function ConnectedGlobe() {
     const impactGeometry = new THREE.CircleGeometry(0.02, 24)
     const impactRingGeometry = new THREE.RingGeometry(0.044, 0.049, 28)
     const surfaceNormal = new THREE.Vector3(0, 0, 1)
-    const connectionColors = [
-      '#d9ff43',
-      '#8da4ff',
-      '#f1efe8',
-      '#72f1b8',
-    ] as const
-    const hoverColor = new THREE.Color('#ffffff')
+    const connectionColors = palette.connections
+    const hoverColor = new THREE.Color(palette.hover)
     const arcGeometry = createArcRibbonGeometry()
     const arcStartAttribute = new THREE.InstancedBufferAttribute(
       new Float32Array(CONNECTION_COUNT * 3),
@@ -731,14 +782,14 @@ export default function ConnectedGlobe() {
           color,
           transparent: true,
           opacity: 0,
-          blending: THREE.AdditiveBlending,
+          blending: surfaceBlending,
           depthWrite: false,
         })
         const impactRingMaterial = new THREE.MeshBasicMaterial({
           color,
           transparent: true,
           opacity: 0,
-          blending: THREE.AdditiveBlending,
+          blending: surfaceBlending,
           depthWrite: false,
           side: THREE.DoubleSide,
         })
@@ -1024,7 +1075,7 @@ export default function ConnectedGlobe() {
       impactRingGeometry.dispose()
       renderer.dispose()
     }
-  }, [])
+  }, [prefersDarkMode])
 
   return (
     <div ref={containerRef} className="absolute inset-x-0 top-[72px] bottom-0">

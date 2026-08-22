@@ -11,7 +11,7 @@ export default function HomeNotesSection({
 }) {
   return (
     <section className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36">
-      <ScrollReveal className="flex items-end justify-between gap-6 border-b border-black/20 pb-10">
+      <ScrollReveal className="border-foreground/20 flex items-end justify-between gap-6 border-b pb-10">
         <div>
           <h2 className="font-display text-[clamp(4rem,9vw,8rem)] leading-[0.8] tracking-[-0.055em]">
             Thinking in public.
@@ -26,7 +26,7 @@ export default function HomeNotesSection({
       </ScrollReveal>
       <div>
         {articles.length === 0 ? (
-          <p className="py-12 text-sm text-black/45">
+          <p className="text-foreground/45 py-12 text-sm">
             New notes are in progress. Check back soon.
           </p>
         ) : (
@@ -35,16 +35,16 @@ export default function HomeNotesSection({
               <Link
                 to="/notes/$slug"
                 params={{ slug: article.slug.current }}
-                className="group grid gap-4 border-b border-black/20 py-7 sm:grid-cols-[60px_1fr_auto] sm:items-center sm:py-9"
+                className="group border-foreground/20 grid gap-4 border-b py-7 sm:grid-cols-[60px_1fr_auto] sm:items-center sm:py-9"
               >
-                <span className="font-mono text-[9px] text-black/35">
+                <span className="text-foreground/35 font-mono text-[9px]">
                   0{index + 1}
                 </span>
                 <span>
                   <span className="font-display block text-3xl leading-[1.1] tracking-[-0.025em] transition-transform duration-500 group-hover:translate-x-2 sm:text-5xl">
                     {article.title}
                   </span>
-                  <span className="mt-2 block text-xs text-black/40">
+                  <span className="text-foreground/40 mt-2 block text-xs">
                     {getFormattedDate(article.date)}
                   </span>
                 </span>

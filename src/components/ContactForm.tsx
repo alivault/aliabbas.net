@@ -34,7 +34,7 @@ const createChallenge = (): Challenge => ({
 })
 
 const inputClassName =
-  'h-14 rounded-none border-x-0 border-t-0 border-b-black/25 bg-transparent px-0 text-base shadow-none focus-visible:border-[#335cff] focus-visible:ring-0'
+  'h-14 rounded-none border-x-0 border-t-0 border-b-foreground/25 bg-transparent px-0 text-base shadow-none focus-visible:border-brand focus-visible:ring-0'
 
 export default function ContactForm() {
   const [isSubmitted, setSubmitted] = useState(false)
@@ -96,13 +96,13 @@ export default function ContactForm() {
         animate={{ opacity: 1, scale: 1 }}
         className="mx-auto flex min-h-[75svh] max-w-[1440px] flex-col items-center justify-center px-5 text-center sm:px-8 lg:px-12"
       >
-        <span className="flex size-20 items-center justify-center rounded-full bg-[#d9ff43] text-[#10100f]">
+        <span className="bg-brand text-brand-foreground flex size-20 items-center justify-center rounded-full">
           <CircleCheck className="size-9" strokeWidth={1.5} />
         </span>
         <h1 className="font-display mt-8 text-[clamp(4.5rem,10vw,9rem)] leading-[0.8] tracking-[-0.06em]">
           Message received.
         </h1>
-        <p className="mt-6 max-w-md text-base leading-7 text-black/50">
+        <p className="text-foreground/50 mt-6 max-w-md text-base leading-7">
           Thanks for reaching out. I’ll read your note and get back to you soon.
         </p>
       </motion.section>
@@ -114,25 +114,25 @@ export default function ContactForm() {
       <ScrollReveal className="flex min-w-0 flex-col">
         <h1 className="text-[clamp(2.75rem,12vw,6rem)] leading-[0.74] font-extrabold tracking-[-0.07em] uppercase lg:text-[clamp(3.6rem,5.8vw,6rem)]">
           Let’s build
-          <span className="font-display block font-normal text-[#335cff] normal-case italic">
+          <span className="font-display text-brand block font-normal normal-case italic">
             something
           </span>
           remarkable.
         </h1>
-        <p className="mt-9 max-w-md text-base leading-7 text-black/55">
+        <p className="text-foreground/55 mt-9 max-w-md text-base leading-7">
           I’m interested in product engineering and creative frontend roles
           where design quality matters as much as technical execution. If that
           sounds like your team, I’d like to hear from you.
         </p>
-        <div className="mt-12 grid grid-cols-2 gap-5 border-t border-black/20 pt-6 text-xs lg:mt-auto">
+        <div className="border-foreground/20 mt-12 grid grid-cols-2 gap-5 border-t pt-6 text-xs lg:mt-auto">
           <div>
-            <span className="block text-black/35">Best fit</span>
+            <span className="text-foreground/35 block">Best fit</span>
             <span className="mt-2 block font-bold">
               Product & design engineering
             </span>
           </div>
           <div>
-            <span className="block text-black/35">Response time</span>
+            <span className="text-foreground/35 block">Response time</span>
             <span className="mt-2 block font-bold">Usually 1–2 days</span>
           </div>
         </div>
@@ -142,13 +142,13 @@ export default function ContactForm() {
         <form
           onSubmit={handleSubmit(onSubmit)}
           noValidate
-          className="border-t border-black/25 pt-8"
+          className="border-foreground/25 border-t pt-8"
         >
           <FieldGroup className="gap-8">
             <Field data-invalid={Boolean(errors.name)}>
               <FieldLabel
                 htmlFor="contact-name"
-                className="font-mono text-[11px] tracking-[0.14em] text-black/45 uppercase"
+                className="text-foreground/45 font-mono text-[11px] tracking-[0.14em] uppercase"
               >
                 01 / Your name
               </FieldLabel>
@@ -166,7 +166,7 @@ export default function ContactForm() {
             <Field data-invalid={Boolean(errors.email)}>
               <FieldLabel
                 htmlFor="contact-email"
-                className="font-mono text-[11px] tracking-[0.14em] text-black/45 uppercase"
+                className="text-foreground/45 font-mono text-[11px] tracking-[0.14em] uppercase"
               >
                 02 / Email address
               </FieldLabel>
@@ -185,7 +185,7 @@ export default function ContactForm() {
             <Field data-invalid={Boolean(errors.message)}>
               <FieldLabel
                 htmlFor="contact-message"
-                className="font-mono text-[11px] tracking-[0.14em] text-black/45 uppercase"
+                className="text-foreground/45 font-mono text-[11px] tracking-[0.14em] uppercase"
               >
                 03 / Tell me about the opportunity
               </FieldLabel>
@@ -194,7 +194,7 @@ export default function ContactForm() {
                 placeholder="The role, team, problem, or idea…"
                 rows={7}
                 aria-invalid={Boolean(errors.message)}
-                className="min-h-44 resize-none rounded-none border-x-0 border-t-0 border-b-black/25 bg-transparent px-0 py-4 text-base shadow-none focus-visible:border-[#335cff] focus-visible:ring-0"
+                className="border-b-foreground/25 focus-visible:border-brand min-h-44 resize-none rounded-none border-x-0 border-t-0 bg-transparent px-0 py-4 text-base shadow-none focus-visible:ring-0"
                 {...register('message')}
               />
               <FieldError errors={[errors.message]} />
@@ -203,10 +203,10 @@ export default function ContactForm() {
             <Field data-invalid={Boolean(errors.verification)}>
               <FieldLabel
                 htmlFor="contact-verification"
-                className="font-mono text-[11px] tracking-[0.14em] text-black/45 uppercase"
+                className="text-foreground/45 font-mono text-[11px] tracking-[0.14em] uppercase"
               >
                 04 / Human check
-                <span className="text-black/30">
+                <span className="text-foreground/30">
                   {challenge.ready
                     ? `${challenge.first} + ${challenge.second} = ?`
                     : 'Loading…'}
@@ -231,7 +231,7 @@ export default function ContactForm() {
               type="submit"
               size="lg"
               disabled={isSubmitting || !challenge.ready}
-              className="group mt-2 h-14 w-full rounded-full bg-[#10100f] px-6 text-white hover:bg-[#335cff]"
+              className="group bg-foreground text-background hover:bg-brand hover:text-brand-foreground mt-2 h-14 w-full rounded-full px-6"
             >
               {isSubmitting ? (
                 <>
@@ -248,11 +248,11 @@ export default function ContactForm() {
                 </>
               )}
             </Button>
-            <p className="text-center text-xs leading-5 text-black/40">
+            <p className="text-foreground/40 text-center text-xs leading-5">
               Your name, email, and message are used to respond to this inquiry.{' '}
               <Link
                 to="/privacy"
-                className="font-semibold text-black/60 underline decoration-black/20 underline-offset-4"
+                className="text-foreground/60 decoration-foreground/20 font-semibold underline underline-offset-4"
               >
                 Privacy policy
               </Link>

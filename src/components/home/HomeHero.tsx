@@ -197,7 +197,7 @@ export function HomeHero() {
   }, [changeDescriptor])
 
   return (
-    <section className="site-noise relative flex flex-1 overflow-hidden bg-[#050607] pt-[72px] text-[#f1efe8]">
+    <section className="site-noise bg-background text-foreground relative flex flex-1 overflow-hidden pt-[72px]">
       <ConnectedGlobe />
       <motion.div
         initial={reduceMotion ? false : 'hidden'}
@@ -220,7 +220,7 @@ export function HomeHero() {
               onClick={changeDescriptor}
               whileHover={reduceMotion ? undefined : { scale: 1.015 }}
               whileTap={reduceMotion ? undefined : { scale: 0.985 }}
-              className="font-display pointer-events-auto inline-block cursor-pointer border-0 bg-transparent p-0 text-center font-normal text-[#d9ff43] normal-case italic outline-none focus-visible:ring-2 focus-visible:ring-[#d9ff43]/70 lg:text-left"
+              className="font-display text-brand focus-visible:ring-brand/70 pointer-events-auto inline-block cursor-pointer border-0 bg-transparent p-0 text-center font-normal normal-case italic outline-none focus-visible:ring-2 lg:text-left"
               aria-label={`Change descriptor. Current descriptor: ${productDescriptors[descriptorIndex]}`}
             >
               <motion.span
@@ -249,7 +249,7 @@ export function HomeHero() {
           <motion.a
             variants={introItemVariants}
             href="#work"
-            className="pointer-events-auto mx-auto flex size-14 items-center justify-center rounded-full border border-white/25 transition-colors hover:bg-[#d9ff43] hover:text-[#10100f]"
+            className="border-foreground/25 hover:bg-brand hover:text-brand-foreground pointer-events-auto mx-auto flex size-14 items-center justify-center rounded-full border transition-colors"
             aria-label="See selected work"
           >
             <ArrowDown className="size-5" />

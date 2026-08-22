@@ -104,7 +104,7 @@ function SuggestedQuestionButtons({
           type="button"
           disabled={disabled}
           onClick={() => onSelect(question)}
-          className="max-w-full rounded-full border border-white/15 px-4 py-2 text-left text-base text-white/60 transition-colors hover:border-[#d9ff43]/60 hover:text-[#d9ff43] disabled:pointer-events-none disabled:opacity-40"
+          className="border-foreground/15 text-foreground/60 hover:border-brand/60 hover:text-brand max-w-full rounded-full border px-4 py-2 text-left text-base transition-colors disabled:pointer-events-none disabled:opacity-40"
         >
           {question}
         </button>
@@ -130,33 +130,37 @@ function MessageText({ content }: { content: string }) {
             </a>
           ),
           h1: ({ children }) => (
-            <h1 className="text-lg font-semibold text-white">{children}</h1>
+            <h1 className="text-foreground text-lg font-semibold">
+              {children}
+            </h1>
           ),
           h2: ({ children }) => (
-            <h2 className="text-base font-semibold text-white">{children}</h2>
+            <h2 className="text-foreground text-base font-semibold">
+              {children}
+            </h2>
           ),
           h3: ({ children }) => (
-            <h3 className="font-semibold text-white">{children}</h3>
+            <h3 className="text-foreground font-semibold">{children}</h3>
           ),
           ul: ({ children }) => (
-            <ul className="list-disc space-y-1 pl-5 marker:text-[#d9ff43]">
+            <ul className="marker:text-brand list-disc space-y-1 pl-5">
               {children}
             </ul>
           ),
           ol: ({ children }) => (
-            <ol className="list-decimal space-y-1 pl-5 marker:text-[#d9ff43]">
+            <ol className="marker:text-brand list-decimal space-y-1 pl-5">
               {children}
             </ol>
           ),
           blockquote: ({ children }) => (
-            <blockquote className="border-l border-[#d9ff43]/60 pl-4 text-white/55">
+            <blockquote className="border-brand/60 text-foreground/55 border-l pl-4">
               {children}
             </blockquote>
           ),
           code: ({ children, className }) => (
             <code
               className={cn(
-                'rounded bg-white/10 px-1.5 py-0.5 font-mono text-[0.85em] text-[#d9ff43]',
+                'rounded bg-foreground/10 px-1.5 py-0.5 font-mono text-[0.85em] text-brand',
                 className,
               )}
             >
@@ -164,7 +168,7 @@ function MessageText({ content }: { content: string }) {
             </code>
           ),
           pre: ({ children }) => (
-            <pre className="overflow-x-auto rounded-lg border border-white/10 bg-[#10100f] p-3 text-xs leading-6 [&_code]:bg-transparent [&_code]:p-0">
+            <pre className="border-foreground/10 bg-muted overflow-x-auto rounded-lg border p-3 text-xs leading-6 [&_code]:bg-transparent [&_code]:p-0">
               {children}
             </pre>
           ),
@@ -176,12 +180,12 @@ function MessageText({ content }: { content: string }) {
             </div>
           ),
           th: ({ children }) => (
-            <th className="border-b border-white/20 px-3 py-2 font-semibold text-white">
+            <th className="border-foreground/20 text-foreground border-b px-3 py-2 font-semibold">
               {children}
             </th>
           ),
           td: ({ children }) => (
-            <td className="border-b border-white/10 px-3 py-2 align-top">
+            <td className="border-foreground/10 border-b px-3 py-2 align-top">
               {children}
             </td>
           ),
@@ -199,7 +203,7 @@ function StreamingIndicator() {
       {[0, 1, 2].map((dot) => (
         <span
           key={dot}
-          className="size-1.5 animate-pulse rounded-full bg-[#d9ff43]"
+          className="bg-brand size-1.5 animate-pulse rounded-full"
           style={{ animationDelay: `${dot * 140}ms` }}
         />
       ))}
@@ -403,8 +407,8 @@ export default function PortfolioChat() {
   const isStreaming = requestState.status === 'streaming'
 
   return (
-    <div className="grid h-[calc(100svh-72px)] min-h-0 overflow-hidden lg:grid-cols-[minmax(320px,0.8fr)_minmax(0,1.2fr)] lg:border-b lg:border-white/15">
-      <div className="relative hidden flex-col justify-between overflow-hidden border-r border-white/15 px-12 py-20 lg:flex">
+    <div className="lg:border-foreground/15 grid h-[calc(100svh-72px)] min-h-0 overflow-hidden lg:grid-cols-[minmax(320px,0.8fr)_minmax(0,1.2fr)] lg:border-b">
+      <div className="border-foreground/15 relative hidden flex-col justify-between overflow-hidden border-r px-12 py-20 lg:flex">
         <div
           aria-hidden="true"
           className="hero-grid pointer-events-none absolute inset-0"
@@ -412,12 +416,12 @@ export default function PortfolioChat() {
         <div className="relative z-10">
           <h1 className="font-display text-[clamp(3.5rem,6vw,6rem)] leading-[0.78] tracking-[-0.06em]">
             Ask about
-            <em className="block text-[#d9ff43]">Ali.</em>
+            <em className="text-brand block">Ali.</em>
           </h1>
         </div>
 
         <div className="relative z-10 mt-20">
-          <p className="font-mono text-[9px] tracking-[0.16em] text-white/30 uppercase">
+          <p className="text-foreground/30 font-mono text-[9px] tracking-[0.16em] uppercase">
             Try asking
           </p>
           <SuggestedQuestionButtons
@@ -429,8 +433,8 @@ export default function PortfolioChat() {
       </div>
 
       <div className="flex h-full min-h-0 min-w-0 items-stretch overflow-hidden">
-        <div className="flex h-full max-h-full min-h-0 w-full flex-col overflow-hidden bg-white/[0.04]">
-          <div className="flex h-14 shrink-0 items-center justify-end border-b border-white/15 px-4 sm:px-5">
+        <div className="bg-foreground/[0.04] flex h-full max-h-full min-h-0 w-full flex-col overflow-hidden">
+          <div className="border-foreground/15 flex h-14 shrink-0 items-center justify-end border-b px-4 sm:px-5">
             <TooltipProvider>
               <div className="flex items-center gap-1">
                 {messages.length > 1 && (
@@ -443,7 +447,7 @@ export default function PortfolioChat() {
                           size="icon-sm"
                           disabled={isStreaming || isDeleting}
                           onClick={() => void deleteCurrentConversation()}
-                          className="text-white/45 hover:bg-white/10 hover:text-[#ff8b75]"
+                          className="text-foreground/45 hover:bg-foreground/10 hover:text-[#ff8b75]"
                           aria-label="Delete this conversation"
                         >
                           {isDeleting ? (
@@ -467,7 +471,7 @@ export default function PortfolioChat() {
                         variant="ghost"
                         size="icon-sm"
                         onClick={resetConversation}
-                        className="text-white/45 hover:bg-white/10 hover:text-white"
+                        className="text-foreground/45 hover:bg-foreground/10 hover:text-foreground"
                         aria-label="Start a new conversation"
                       >
                         <RotateCcw />
@@ -503,8 +507,8 @@ export default function PortfolioChat() {
                           className={cn(
                             'flex size-7 shrink-0 items-center justify-center rounded-full',
                             message.role === 'assistant'
-                              ? 'border border-white/15 text-[#d9ff43]'
-                              : 'bg-[#d9ff43] text-[#10100f]',
+                              ? 'border border-foreground/15 text-brand'
+                              : 'bg-brand text-brand-foreground',
                           )}
                         >
                           {message.role === 'assistant' ? (
@@ -517,8 +521,8 @@ export default function PortfolioChat() {
                           className={cn(
                             'max-w-[min(100%,42rem)] text-base leading-7',
                             message.role === 'assistant'
-                              ? 'pt-0.5 text-white/70'
-                              : 'rounded-2xl rounded-tr-sm bg-[#d9ff43] px-4 py-2.5 text-[#10100f]',
+                              ? 'pt-0.5 text-foreground/70'
+                              : 'rounded-2xl rounded-tr-sm bg-brand px-4 py-2.5 text-brand-foreground',
                           )}
                         >
                           {message.content ? (
@@ -528,7 +532,7 @@ export default function PortfolioChat() {
                                 {message.id === 'welcome' &&
                                   messages.length === 1 && (
                                     <div className="mt-6 lg:hidden">
-                                      <p className="font-mono text-[9px] tracking-[0.16em] text-white/30 uppercase">
+                                      <p className="text-foreground/30 font-mono text-[9px] tracking-[0.16em] uppercase">
                                         Try asking
                                       </p>
                                       <SuggestedQuestionButtons
@@ -556,11 +560,11 @@ export default function PortfolioChat() {
                   ))}
                 </MessageScrollerContent>
               </MessageScrollerViewport>
-              <MessageScrollerButton className="border-white/15 bg-[#252523] text-white hover:bg-[#d9ff43] hover:text-[#10100f]" />
+              <MessageScrollerButton className="border-foreground/15 bg-card text-card-foreground hover:bg-brand hover:text-brand-foreground" />
             </MessageScroller>
           </MessageScrollerProvider>
 
-          <div className="shrink-0 border-t border-white/15 p-3 sm:p-4">
+          <div className="border-foreground/15 shrink-0 border-t p-3 sm:p-4">
             {requestState.status === 'error' && (
               <p role="alert" className="mb-3 text-xs text-[#ff8b75]">
                 {requestState.message}
@@ -571,7 +575,7 @@ export default function PortfolioChat() {
                 event.preventDefault()
                 void sendMessage(draft)
               }}
-              className="flex items-center gap-2 rounded-2xl border border-white/15 bg-[#10100f] p-2 focus-within:border-[#d9ff43]/60"
+              className="border-foreground/15 bg-background focus-within:border-brand/60 flex items-center gap-2 rounded-2xl border p-2"
             >
               <label htmlFor="portfolio-question" className="sr-only">
                 Ask a question about Ali
@@ -594,13 +598,13 @@ export default function PortfolioChat() {
                 rows={1}
                 disabled={isStreaming}
                 placeholder="Ask about experience, projects, skills…"
-                className="max-h-32 min-h-9 resize-none border-0 bg-transparent px-2 py-2 text-base text-white shadow-none placeholder:text-white/25 focus-visible:border-0 focus-visible:ring-0 disabled:bg-transparent disabled:opacity-100 md:text-base dark:disabled:bg-transparent"
+                className="text-foreground placeholder:text-foreground/25 max-h-32 min-h-9 resize-none border-0 bg-transparent px-2 py-2 text-base shadow-none focus-visible:border-0 focus-visible:ring-0 disabled:bg-transparent disabled:opacity-100 md:text-base dark:disabled:bg-transparent"
               />
               <Button
                 type="submit"
                 size="icon-lg"
                 disabled={!draft.trim() || isStreaming}
-                className="rounded-full bg-[#d9ff43] text-[#10100f] hover:bg-white"
+                className="bg-brand text-brand-foreground hover:bg-foreground hover:text-background rounded-full"
                 aria-label={
                   isStreaming ? 'Generating response' : 'Send message'
                 }

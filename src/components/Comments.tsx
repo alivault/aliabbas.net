@@ -280,12 +280,12 @@ export function Comments({ articleSlug }: CommentsProps) {
   }
 
   return (
-    <section className="border-t border-black/20 pt-10">
+    <section className="border-foreground/20 border-t pt-10">
       <div className="mb-8 flex items-center gap-3">
-        <MessageCircle className="size-5 text-[#335cff]" />
+        <MessageCircle className="text-brand size-5" />
         <h2 className="font-display text-3xl tracking-[-0.03em]">Comments</h2>
         {comments && comments.length > 0 && (
-          <span className="rounded-full bg-[#d9ff43] px-2 py-0.5 text-xs font-bold">
+          <span className="bg-brand text-brand-foreground rounded-full px-2 py-0.5 text-xs font-bold">
             {comments.length}
           </span>
         )}
@@ -486,7 +486,7 @@ export function Comments({ articleSlug }: CommentsProps) {
           )}
         </div>
       ) : (
-        <div className="mb-8 border border-black/20 p-6 sm:p-8">
+        <div className="border-foreground/20 mb-8 border p-6 sm:p-8">
           {authMode === 'options' ? (
             <div className="text-center">
               <p className="mb-4 text-sm text-neutral-500">
@@ -769,7 +769,7 @@ export function Comments({ articleSlug }: CommentsProps) {
           comments.map((comment) => (
             <div
               key={comment._id}
-              className="group border-t border-black/15 py-5 transition-colors"
+              className="group border-foreground/15 border-t py-5 transition-colors"
             >
               <div className="mb-2 flex items-start justify-between">
                 <div className="flex items-center gap-2">
