@@ -59,11 +59,8 @@ export default function HomeCapabilitiesSection() {
               key={capability.number}
               as="article"
               delay={index * 0.04}
-              className="group border-foreground/15 hover:text-brand grid gap-4 border-b py-7 transition-colors sm:grid-cols-[80px_1fr_1fr] sm:items-center sm:py-9"
+              className="group border-foreground/15 hover:text-brand grid gap-4 border-b py-7 transition-colors sm:grid-cols-2 sm:items-center sm:py-9"
             >
-              <span className="text-foreground/30 font-mono text-[10px]">
-                {capability.number}
-              </span>
               <h3 className="font-display text-4xl tracking-[-0.035em] sm:text-5xl">
                 {capability.title}
               </h3>

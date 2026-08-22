@@ -29,11 +29,8 @@ export default function ExperienceItem({
     <ScrollReveal
       as="li"
       delay={index * 0.05}
-      className="border-foreground/20 grid gap-5 border-b py-10 sm:grid-cols-[60px_180px_1fr] sm:py-14 lg:grid-cols-[80px_240px_1fr]"
+      className="border-foreground/20 grid gap-5 border-b py-10 sm:grid-cols-[180px_1fr] sm:py-14 lg:grid-cols-[240px_1fr]"
     >
-      <span className="text-foreground/30 font-mono text-[9px]">
-        0{index + 1}
-      </span>
       <div>
         <span className="text-foreground/40 font-mono text-[9px] tracking-[0.12em] uppercase">
           {formatDateRange(startDate, endDate)}
