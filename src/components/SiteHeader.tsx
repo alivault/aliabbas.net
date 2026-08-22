@@ -197,16 +197,18 @@ export default function SiteHeader() {
       <SheetContent
         side="top"
         showCloseButton={false}
-        className="bg-background text-foreground z-[90] h-dvh max-h-none gap-0 overflow-y-auto overscroll-contain border-0 px-5 pt-28 pb-8 shadow-none duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] data-ending-style:delay-300 data-[side=top]:h-dvh data-[side=top]:border-b-0 data-[side=top]:data-ending-style:translate-y-[-100%] data-[side=top]:data-starting-style:translate-y-[-100%] lg:hidden"
+        overlayClassName="top-[72px] lg:hidden"
+        viewportClassName="fixed inset-x-0 top-[72px] bottom-0 z-[90] overflow-hidden [transform:translateZ(0)] lg:hidden"
+        className="bg-background/80 text-foreground z-[90] h-full max-h-none gap-0 overflow-y-auto overscroll-contain border-0 px-5 shadow-none backdrop-blur-[12px] backdrop-saturate-[1.8] duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] data-ending-style:delay-300 data-[side=top]:h-full data-[side=top]:border-b-0 data-[side=top]:data-ending-style:translate-y-[-100%] data-[side=top]:data-starting-style:translate-y-[-100%] lg:hidden"
       >
         <SheetTitle className="sr-only">Site navigation</SheetTitle>
         <motion.div
           initial="closed"
           animate={menuOpen ? 'open' : 'closed'}
           variants={mobileMenuVariants}
-          className="flex min-h-0 flex-1 flex-col"
+          className="flex min-h-full flex-none flex-col"
         >
-          <nav className="border-foreground/15 flex flex-col border-t">
+          <nav className="flex flex-col">
             {navigation.map((item, index) => (
               <div
                 key={item.label}
@@ -229,7 +231,7 @@ export default function SiteHeader() {
               </div>
             ))}
           </nav>
-          <div className="mt-auto">
+          <div className="mt-auto shrink-0 overflow-hidden py-8">
             <motion.div variants={mobileContactVariants}>
               <Link
                 to="/contact"
