@@ -2,14 +2,14 @@ import { useEffect, useRef } from 'react'
 import * as THREE from 'three'
 
 const GLOBE_RADIUS = 1.42
-const ARC_POINT_COUNT = 288
+const ARC_POINT_COUNT = 96
+const ARC_RIBBON_SEGMENTS = 64
 const CONNECTION_COUNT = 10
 
 type GlobeConnection = {
-  geometry: THREE.BufferGeometry
-  positionAttribute: THREE.BufferAttribute
-  line: THREE.Line
-  lineMaterial: THREE.LineBasicMaterial
+  index: number
+  hitGeometry: THREE.BufferGeometry
+  hitLine: THREE.Line
   baseColor: THREE.Color
   endNode: THREE.Mesh
   endMaterial: THREE.MeshBasicMaterial
@@ -20,12 +20,18 @@ type GlobeConnection = {
   progress: number
   delay: number
   speed: number
+  hoverAmount: number
 }
 
 type GlobeLocation = {
   label: string
   latitude: number
   longitude: number
+}
+
+type DebugLightHelper = THREE.Object3D & {
+  dispose: () => void
+  update: () => void
 }
 
 const LOCATIONS: GlobeLocation[] = [
@@ -97,19 +103,48 @@ function createArcPositions(
 
   for (let index = 0; index < ARC_POINT_COUNT; index += 1) {
     const progress = index / (ARC_POINT_COUNT - 1)
-    const startWeight = Math.sin((1 - progress) * angle) / angleSine
-    const endWeight = Math.sin(progress * angle) / angleSine
-    const point = start
-      .clone()
-      .multiplyScalar(startWeight)
-      .addScaledVector(end, endWeight)
-      .normalize()
-    const altitude = Math.sin(progress * Math.PI) * height
-    point.multiplyScalar(GLOBE_RADIUS + altitude)
+    const point =
+      Math.abs(angleSine) > 0.0001
+        ? start
+            .clone()
+            .multiplyScalar(Math.sin((1 - progress) * angle) / angleSine)
+            .addScaledVector(end, Math.sin(progress * angle) / angleSine)
+            .normalize()
+        : start.clone().lerp(end, progress).normalize()
+    point.multiplyScalar(
+      GLOBE_RADIUS * 1.008 + Math.sin(progress * Math.PI) * height,
+    )
     point.toArray(positions, index * 3)
   }
 
   return positions
+}
+
+function createArcRibbonGeometry() {
+  const positions = new Float32Array((ARC_RIBBON_SEGMENTS + 1) * 2 * 3)
+  const indices: number[] = []
+
+  for (let index = 0; index <= ARC_RIBBON_SEGMENTS; index += 1) {
+    const progress = index / ARC_RIBBON_SEGMENTS
+    positions.set([progress, -1, 0, progress, 1, 0], index * 6)
+
+    if (index === ARC_RIBBON_SEGMENTS) continue
+    const vertex = index * 2
+    indices.push(
+      vertex,
+      vertex + 1,
+      vertex + 2,
+      vertex + 1,
+      vertex + 3,
+      vertex + 2,
+    )
+  }
+
+  const geometry = new THREE.InstancedBufferGeometry()
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3))
+  geometry.setIndex(indices)
+  geometry.instanceCount = CONNECTION_COUNT
+  return geometry
 }
 
 function createGridGeometry(radius: number) {
@@ -170,32 +205,10 @@ function createGridGeometry(radius: number) {
   return geometry
 }
 
-function createPointTexture() {
-  const size = 32
-  const data = new Uint8Array(size * size * 4)
-  for (let y = 0; y < size; y += 1) {
-    for (let x = 0; x < size; x += 1) {
-      const offsetX = (x + 0.5) / size - 0.5
-      const offsetY = (y + 0.5) / size - 0.5
-      const distance = Math.hypot(offsetX, offsetY) * 2
-      const alpha = 1 - THREE.MathUtils.smoothstep(distance, 0.68, 1)
-      const offset = (y * size + x) * 4
-      data[offset] = 255
-      data[offset + 1] = 255
-      data[offset + 2] = 255
-      data[offset + 3] = Math.round(alpha * 255)
-    }
-  }
-  const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat)
-  texture.minFilter = THREE.LinearFilter
-  texture.magFilter = THREE.LinearFilter
-  texture.needsUpdate = true
-  return texture
-}
-
 function createAtmosphereTexture() {
   const size = 256
   const data = new Uint8Array(size * size * 4)
+
   for (let y = 0; y < size; y += 1) {
     for (let x = 0; x < size; x += 1) {
       const offsetX = (x + 0.5) / size - 0.5
@@ -217,6 +230,7 @@ function createAtmosphereTexture() {
       data[offset + 3] = Math.round(alpha * 255)
     }
   }
+
   const texture = new THREE.DataTexture(data, size, size, THREE.RGBAFormat)
   texture.minFilter = THREE.LinearFilter
   texture.magFilter = THREE.LinearFilter
@@ -250,7 +264,7 @@ function createLandPointPositions(
       if ((pixels[(pixelY * width + pixelX) * 4] ?? 255) > 100) continue
 
       const point = coordinateToPoint(latitude, longitude).multiplyScalar(
-        GLOBE_RADIUS * 1.008,
+        GLOBE_RADIUS * 1.003,
       )
       positions.push(point.x, point.y, point.z)
     }
@@ -276,6 +290,9 @@ export default function ConnectedGlobe() {
     })
     renderer.setClearColor(0x050607, 1)
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+    renderer.outputColorSpace = THREE.SRGBColorSpace
+    renderer.toneMapping = THREE.ACESFilmicToneMapping
+    renderer.toneMappingExposure = 1.05
 
     const scene = new THREE.Scene()
     scene.background = new THREE.Color('#050607')
@@ -283,29 +300,68 @@ export default function ConnectedGlobe() {
     camera.position.set(0.62, 0.45, 5.5)
     camera.lookAt(0, 0, 0)
 
+    const globeRig = new THREE.Group()
+    scene.add(globeRig)
+
     const globe = new THREE.Group()
-    globe.rotation.x = -0.22
     globe.rotation.y =
       0.15 + Math.PI * ((new Date().getTimezoneOffset() || 0) / (60 * 12))
-    globe.rotation.z = 0.08
-    scene.add(globe)
+    globeRig.add(globe)
+
+    const sunDirection = new THREE.Vector3()
+    const sunSettings = {
+      azimuth: 3,
+      atmosphereIntensity: 0.74,
+      elevation: 1,
+      terminatorSoftness: 0.2,
+    }
+    const updateSunDirection = () => {
+      const azimuth = THREE.MathUtils.degToRad(sunSettings.azimuth)
+      const elevation = THREE.MathUtils.degToRad(sunSettings.elevation)
+      const elevationRadius = Math.cos(elevation)
+      sunDirection
+        .set(
+          elevationRadius * Math.sin(azimuth),
+          Math.sin(elevation),
+          elevationRadius * Math.cos(azimuth),
+        )
+        .normalize()
+    }
+    updateSunDirection()
 
     const shellGeometry = new THREE.SphereGeometry(GLOBE_RADIUS, 64, 40)
-    const shellMaterial = new THREE.MeshBasicMaterial({ color: '#07090d' })
+    const shellMaterial = new THREE.MeshStandardMaterial({
+      color: '#111842',
+      emissive: '#010208',
+      emissiveIntensity: 0.12,
+      metalness: 0,
+      roughness: 0.82,
+    })
     globe.add(new THREE.Mesh(shellGeometry, shellMaterial))
+
+    const sunLight = new THREE.DirectionalLight('#ffffff', 0.65)
+    sunLight.target = globeRig
+    sunLight.position.copy(globeRig.position).addScaledVector(sunDirection, 8)
+    scene.add(sunLight)
 
     const rimMaterial = new THREE.ShaderMaterial({
       uniforms: {
         uInnerColor: { value: new THREE.Color('#6885ff') },
         uEdgeColor: { value: new THREE.Color('#e9ffff') },
+        uSunDirection: { value: sunDirection },
+        uTerminatorSoftness: { value: sunSettings.terminatorSoftness },
+        uThickness: { value: 0.45 },
+        uWhiteLineThickness: { value: 0.22 },
       },
       vertexShader: `
-        varying vec3 vNormal;
+        varying vec3 vViewNormal;
+        varying vec3 vWorldNormal;
         varying vec3 vViewPosition;
 
         void main() {
           vec4 viewPosition = modelViewMatrix * vec4(position, 1.0);
-          vNormal = normalize(normalMatrix * normal);
+          vViewNormal = normalize(normalMatrix * normal);
+          vWorldNormal = normalize(mat3(modelMatrix) * normal);
           vViewPosition = -viewPosition.xyz;
           gl_Position = projectionMatrix * viewPosition;
         }
@@ -313,14 +369,21 @@ export default function ConnectedGlobe() {
       fragmentShader: `
         uniform vec3 uInnerColor;
         uniform vec3 uEdgeColor;
-        varying vec3 vNormal;
+        uniform vec3 uSunDirection;
+        uniform float uTerminatorSoftness;
+        uniform float uThickness;
+        uniform float uWhiteLineThickness;
+        varying vec3 vViewNormal;
+        varying vec3 vWorldNormal;
         varying vec3 vViewPosition;
 
         void main() {
-          float rim = 1.0 - abs(dot(normalize(vNormal), normalize(vViewPosition)));
-          float brightEdge = pow(rim, 7.0);
+          float rim = 1.0 - abs(dot(normalize(vViewNormal), normalize(vViewPosition)));
+          float sunAngle = dot(normalize(vWorldNormal), normalize(uSunDirection));
+          float sunlight = smoothstep(-uTerminatorSoftness, uTerminatorSoftness, sunAngle);
+          float brightEdge = pow(rim, 1.0 / max(uWhiteLineThickness, 0.001));
           vec3 color = mix(uInnerColor, uEdgeColor, brightEdge);
-          float alpha = pow(rim, 2.35) * 0.78;
+          float alpha = pow(rim, 1.0 / max(uThickness, 0.001)) * mix(0.04, 1.0, sunlight) * 0.72;
           gl_FragColor = vec4(color, alpha);
         }
       `,
@@ -335,15 +398,15 @@ export default function ConnectedGlobe() {
 
     const atmosphereTexture = createAtmosphereTexture()
     const atmosphereMaterial = new THREE.SpriteMaterial({
+      color: '#aea8ff',
       map: atmosphereTexture,
       transparent: true,
-      opacity: 0.82,
+      opacity: sunSettings.atmosphereIntensity,
       blending: THREE.AdditiveBlending,
       depthTest: true,
       depthWrite: false,
     })
     const atmosphere = new THREE.Sprite(atmosphereMaterial)
-    atmosphere.scale.setScalar(GLOBE_RADIUS * 2 * 1.36)
     atmosphere.renderOrder = -1
     scene.add(atmosphere)
 
@@ -351,31 +414,185 @@ export default function ConnectedGlobe() {
     const gridMaterial = new THREE.LineBasicMaterial({
       color: '#91a8ee',
       transparent: true,
-      opacity: 0.055,
+      opacity: 0.14,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     })
     globe.add(new THREE.LineSegments(gridGeometry, gridMaterial))
 
-    const pointTexture = createPointTexture()
-    const pointGeometry = new THREE.BufferGeometry()
-    pointGeometry.setAttribute(
-      'position',
-      new THREE.BufferAttribute(new Float32Array(), 3),
-    )
-    const pointMaterial = new THREE.PointsMaterial({
-      color: '#dce5ff',
-      map: pointTexture,
-      size: 0.021,
-      sizeAttenuation: true,
+    const dotGeometry = new THREE.PlaneGeometry(1, 1)
+    const dotMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        uColor: { value: new THREE.Color('#dce5ff') },
+        uDiscSize: { value: 0.005 },
+        uOpacity: { value: 0.72 },
+      },
+      vertexShader: `
+        uniform float uDiscSize;
+        varying float vFacing;
+        varying vec2 vUv;
+
+        void main() {
+          vec3 instanceNormal = normalize(mat3(instanceMatrix) * normal);
+          vec3 viewNormal = normalize(normalMatrix * instanceNormal);
+          vFacing = smoothstep(0.0, 0.35, viewNormal.z);
+          vUv = uv;
+          vec4 viewPosition = modelViewMatrix * instanceMatrix * vec4(position * uDiscSize, 1.0);
+          gl_Position = projectionMatrix * viewPosition;
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 uColor;
+        uniform float uOpacity;
+        varying float vFacing;
+        varying vec2 vUv;
+
+        void main() {
+          float distanceFromCenter = length(vUv - vec2(0.5));
+          float circle = 1.0 - smoothstep(0.46, 0.5, distanceFromCenter);
+          float alpha = uOpacity * vFacing * circle;
+          if (alpha < 0.005) discard;
+          gl_FragColor = vec4(uColor, alpha);
+        }
+      `,
       transparent: true,
-      opacity: 0.72,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     })
-    globe.add(new THREE.Points(pointGeometry, pointMaterial))
+    let landDots: THREE.InstancedMesh | undefined
 
     let isDisposed = false
+    let debugGui: { destroy: () => void } | undefined
+    let lightHelper: DebugLightHelper | undefined
+
+    if (import.meta.env.DEV) {
+      void import('lil-gui').then(({ default: GUI }) => {
+        if (isDisposed) return
+
+        const lightSettings = {
+          color: `#${sunLight.color.getHexString()}`,
+          intensity: sunLight.intensity,
+          azimuth: sunSettings.azimuth,
+          elevation: sunSettings.elevation,
+          terminatorSoftness: sunSettings.terminatorSoftness,
+          atmosphereIntensity: sunSettings.atmosphereIntensity,
+          mistColor: `#${atmosphereMaterial.color.getHexString()}`,
+          gridOpacity: gridMaterial.opacity,
+          discSize: dotMaterial.uniforms.uDiscSize!.value as number,
+          rimThickness: rimMaterial.uniforms.uThickness!.value as number,
+          whiteLineThickness: rimMaterial.uniforms.uWhiteLineThickness!
+            .value as number,
+          showAtmosphere: true,
+          showHelper: false,
+          showRim: true,
+          copyValues: () => {
+            const values = {
+              color: lightSettings.color,
+              intensity: lightSettings.intensity,
+              azimuth: lightSettings.azimuth,
+              elevation: lightSettings.elevation,
+              terminatorSoftness: lightSettings.terminatorSoftness,
+              atmosphereIntensity: lightSettings.atmosphereIntensity,
+              mistColor: lightSettings.mistColor,
+              gridOpacity: lightSettings.gridOpacity,
+              discSize: lightSettings.discSize,
+              rimThickness: lightSettings.rimThickness,
+              whiteLineThickness: lightSettings.whiteLineThickness,
+              showAtmosphere: lightSettings.showAtmosphere,
+              showRim: lightSettings.showRim,
+              direction: sunDirection.toArray(),
+            }
+            void navigator.clipboard.writeText(JSON.stringify(values, null, 2))
+          },
+        }
+
+        lightHelper = new THREE.DirectionalLightHelper(
+          sunLight,
+          0.45,
+          '#ffffff',
+        )
+        lightHelper.visible = false
+        scene.add(lightHelper)
+
+        const updateLight = () => {
+          sunLight.color.set(lightSettings.color)
+          sunLight.intensity = lightSettings.intensity
+          sunSettings.azimuth = lightSettings.azimuth
+          sunSettings.elevation = lightSettings.elevation
+          sunSettings.terminatorSoftness = lightSettings.terminatorSoftness
+          sunSettings.atmosphereIntensity = lightSettings.atmosphereIntensity
+          rimMaterial.uniforms.uTerminatorSoftness!.value =
+            sunSettings.terminatorSoftness
+          rimMaterial.uniforms.uThickness!.value = lightSettings.rimThickness
+          rimMaterial.uniforms.uWhiteLineThickness!.value =
+            lightSettings.whiteLineThickness
+          atmosphereMaterial.opacity = sunSettings.atmosphereIntensity
+          atmosphereMaterial.color.set(lightSettings.mistColor)
+          gridMaterial.opacity = lightSettings.gridOpacity
+          dotMaterial.uniforms.uDiscSize!.value = lightSettings.discSize
+          updateSunDirection()
+          sunLight.position
+            .copy(globeRig.position)
+            .addScaledVector(sunDirection, 8)
+          lightHelper?.update()
+        }
+
+        const gui = new GUI({ title: 'Sunlight' })
+        gui.domElement.style.zIndex = '100'
+        gui.addColor(lightSettings, 'color').onChange(updateLight)
+        gui.add(lightSettings, 'intensity', 0, 10, 0.05).onChange(updateLight)
+        gui
+          .add(lightSettings, 'azimuth', -180, 180, 1)
+          .name('azimuth °')
+          .onChange(updateLight)
+        gui
+          .add(lightSettings, 'elevation', -90, 90, 1)
+          .name('elevation °')
+          .onChange(updateLight)
+        gui
+          .add(lightSettings, 'terminatorSoftness', 0.001, 0.2, 0.001)
+          .name('terminator')
+          .onChange(updateLight)
+        gui
+          .add(lightSettings, 'atmosphereIntensity', 0, 1.5, 0.01)
+          .name('atmosphere')
+          .onChange(updateLight)
+        gui
+          .addColor(lightSettings, 'mistColor')
+          .name('mist color')
+          .onChange(updateLight)
+        gui
+          .add(lightSettings, 'gridOpacity', 0, 1, 0.01)
+          .name('grid opacity')
+          .onChange(updateLight)
+        gui
+          .add(lightSettings, 'discSize', 0.002, 0.03, 0.001)
+          .name('disc size')
+          .onChange(updateLight)
+        gui
+          .add(lightSettings, 'rimThickness', 0.02, 0.8, 0.01)
+          .name('rim thickness')
+          .onChange(updateLight)
+        gui
+          .add(lightSettings, 'whiteLineThickness', 0.02, 0.5, 0.01)
+          .name('white line')
+          .onChange(updateLight)
+        gui.add(lightSettings, 'showHelper').onChange((showHelper: boolean) => {
+          if (lightHelper) lightHelper.visible = showHelper
+        })
+        gui
+          .add(lightSettings, 'showAtmosphere')
+          .onChange((showAtmosphere: boolean) => {
+            atmosphere.visible = showAtmosphere
+          })
+        gui.add(lightSettings, 'showRim').onChange((showRim: boolean) => {
+          rim.visible = showRim
+        })
+        gui.add(lightSettings, 'copyValues').name('Copy values')
+        debugGui = gui
+      })
+    }
+
     const landMask = new Image()
     landMask.src = '/earth-land-mask.png'
     landMask.addEventListener('load', () => {
@@ -392,18 +609,35 @@ export default function ConnectedGlobe() {
         maskCanvas.width,
         maskCanvas.height,
       )
-      pointGeometry.setAttribute(
-        'position',
-        new THREE.BufferAttribute(
-          createLandPointPositions(
-            imageData.data,
-            imageData.width,
-            imageData.height,
-          ),
-          3,
-        ),
+      const positions = createLandPointPositions(
+        imageData.data,
+        imageData.width,
+        imageData.height,
       )
-      pointGeometry.computeBoundingSphere()
+      const dots = new THREE.InstancedMesh(
+        dotGeometry,
+        dotMaterial,
+        positions.length / 3,
+      )
+      const position = new THREE.Vector3()
+      const normal = new THREE.Vector3()
+      const quaternion = new THREE.Quaternion()
+      const matrix = new THREE.Matrix4()
+      const scale = new THREE.Vector3(1, 1, 1)
+      const forward = new THREE.Vector3(0, 0, 1)
+
+      for (let index = 0; index < positions.length; index += 3) {
+        position.fromArray(positions, index)
+        normal.copy(position).normalize()
+        quaternion.setFromUnitVectors(forward, normal)
+        matrix.compose(position, quaternion, scale)
+        dots.setMatrixAt(index / 3, matrix)
+      }
+
+      dots.instanceMatrix.needsUpdate = true
+      dots.frustumCulled = false
+      globe.add(dots)
+      landDots = dots
     })
 
     const impactGeometry = new THREE.CircleGeometry(0.02, 24)
@@ -416,6 +650,150 @@ export default function ConnectedGlobe() {
       '#72f1b8',
     ] as const
     const hoverColor = new THREE.Color('#ffffff')
+    const arcGeometry = createArcRibbonGeometry()
+    const arcStartAttribute = new THREE.InstancedBufferAttribute(
+      new Float32Array(CONNECTION_COUNT * 3),
+      3,
+    )
+    const arcEndAttribute = new THREE.InstancedBufferAttribute(
+      new Float32Array(CONNECTION_COUNT * 3),
+      3,
+    )
+    const arcHeightAttribute = new THREE.InstancedBufferAttribute(
+      new Float32Array(CONNECTION_COUNT),
+      1,
+    )
+    const arcColorAttribute = new THREE.InstancedBufferAttribute(
+      new Float32Array(CONNECTION_COUNT * 3),
+      3,
+    )
+    const arcProgressAttribute = new THREE.InstancedBufferAttribute(
+      new Float32Array(CONNECTION_COUNT),
+      1,
+    )
+    const arcTailAttribute = new THREE.InstancedBufferAttribute(
+      new Float32Array(CONNECTION_COUNT),
+      1,
+    )
+    const arcOpacityAttribute = new THREE.InstancedBufferAttribute(
+      new Float32Array(CONNECTION_COUNT),
+      1,
+    )
+    const arcHoverAttribute = new THREE.InstancedBufferAttribute(
+      new Float32Array(CONNECTION_COUNT),
+      1,
+    )
+    arcGeometry.setAttribute('aStart', arcStartAttribute)
+    arcGeometry.setAttribute('aEnd', arcEndAttribute)
+    arcGeometry.setAttribute('aHeight', arcHeightAttribute)
+    arcGeometry.setAttribute('aColor', arcColorAttribute)
+    arcGeometry.setAttribute('aProgress', arcProgressAttribute)
+    arcGeometry.setAttribute('aTailProgress', arcTailAttribute)
+    arcGeometry.setAttribute('aOpacity', arcOpacityAttribute)
+    arcGeometry.setAttribute('aHover', arcHoverAttribute)
+
+    const arcMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        uResolution: { value: new THREE.Vector2(1, 1) },
+        uLineWidth: { value: 2 },
+        uGlobeRadius: { value: GLOBE_RADIUS },
+        uHoverColor: { value: hoverColor },
+      },
+      vertexShader: `
+        uniform vec2 uResolution;
+        uniform float uLineWidth;
+        uniform float uGlobeRadius;
+        attribute vec3 aStart;
+        attribute vec3 aEnd;
+        attribute float aHeight;
+        attribute vec3 aColor;
+        attribute float aProgress;
+        attribute float aTailProgress;
+        attribute float aOpacity;
+        attribute float aHover;
+        varying float vSide;
+        varying float vProgress;
+        varying float vArcProgress;
+        varying float vTailProgress;
+        varying float vOpacity;
+        varying float vHover;
+        varying vec3 vColor;
+
+        vec3 arcPoint(vec3 start, vec3 end, float height, float progress) {
+          float angle = acos(clamp(dot(start, end), -1.0, 1.0));
+          float angleSine = sin(angle);
+          vec3 direction = abs(angleSine) > 0.0001
+            ? normalize(
+                start * (sin((1.0 - progress) * angle) / angleSine)
+                + end * (sin(progress * angle) / angleSine)
+              )
+            : normalize(mix(start, end, progress));
+          float radius = uGlobeRadius * 1.008 + sin(progress * 3.14159265) * height;
+          return direction * radius;
+        }
+
+        void main() {
+          float progress = position.x;
+          float side = position.y;
+          vec3 point = arcPoint(aStart, aEnd, aHeight, progress);
+          float previousProgress = max(0.0, progress - 0.002);
+          float nextProgress = min(1.0, progress + 0.002);
+          vec3 tangent = normalize(
+            arcPoint(aStart, aEnd, aHeight, nextProgress)
+              - arcPoint(aStart, aEnd, aHeight, previousProgress)
+          );
+
+          vec4 clipPosition = projectionMatrix * modelViewMatrix * vec4(point, 1.0);
+          vec4 clipTangent = projectionMatrix * modelViewMatrix * vec4(point + tangent * 0.01, 1.0);
+          vec2 screenPosition = clipPosition.xy / clipPosition.w;
+          vec2 screenTangent = clipTangent.xy / clipTangent.w - screenPosition;
+          screenTangent *= uResolution;
+          float tangentLength = length(screenTangent);
+          vec2 screenPerpendicular = tangentLength > 0.0001
+            ? vec2(-screenTangent.y, screenTangent.x) / tangentLength
+            : vec2(1.0, 0.0);
+          vec2 ndcOffset = screenPerpendicular * side * uLineWidth / uResolution;
+          clipPosition.xy += ndcOffset * clipPosition.w;
+
+          gl_Position = clipPosition;
+          vSide = side;
+          vProgress = progress;
+          vArcProgress = aProgress;
+          vTailProgress = aTailProgress;
+          vOpacity = aOpacity;
+          vHover = aHover;
+          vColor = aColor;
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 uHoverColor;
+        varying float vSide;
+        varying float vProgress;
+        varying float vArcProgress;
+        varying float vTailProgress;
+        varying float vOpacity;
+        varying float vHover;
+        varying vec3 vColor;
+
+        void main() {
+          if (vProgress < vTailProgress || vProgress > vArcProgress) discard;
+          float edge = 1.0 - smoothstep(0.78, 1.0, abs(vSide));
+          float alpha = edge * vOpacity * mix(1.0, 1.28, vHover);
+          if (alpha < 0.005) discard;
+          vec3 color = mix(vColor, uHoverColor, vHover * 0.78);
+          gl_FragColor = vec4(color, alpha);
+        }
+      `,
+      transparent: true,
+      blending: THREE.NormalBlending,
+      depthWrite: false,
+      side: THREE.DoubleSide,
+    })
+    const arcMesh = new THREE.Mesh(arcGeometry, arcMaterial)
+    arcMesh.frustumCulled = false
+    globe.add(arcMesh)
+
+    const hitMaterial = new THREE.LineBasicMaterial()
     let hoveredConnection: GlobeConnection | null = null
 
     const resetConnection = (
@@ -423,15 +801,28 @@ export default function ConnectedGlobe() {
       immediate = false,
     ) => {
       const { start, end, startLabel, endLabel } = randomConnectionPoints()
-      const positions = createArcPositions(
-        start,
-        end,
-        THREE.MathUtils.randFloat(0.34, 0.72),
+      const height = THREE.MathUtils.randFloat(0.34, 0.72)
+      const positions = createArcPositions(start, end, height)
+      connection.hitGeometry.setAttribute(
+        'position',
+        new THREE.BufferAttribute(positions, 3),
       )
-      connection.positionAttribute.copyArray(positions)
-      connection.positionAttribute.needsUpdate = true
-      connection.geometry.computeBoundingSphere()
-      connection.geometry.setDrawRange(0, 0)
+      connection.hitGeometry.computeBoundingSphere()
+      connection.hitGeometry.setDrawRange(0, 0)
+      arcStartAttribute.setXYZ(connection.index, start.x, start.y, start.z)
+      arcEndAttribute.setXYZ(connection.index, end.x, end.y, end.z)
+      arcHeightAttribute.setX(connection.index, height)
+      arcProgressAttribute.setX(connection.index, 0)
+      arcTailAttribute.setX(connection.index, 0)
+      arcOpacityAttribute.setX(connection.index, 0)
+      arcHoverAttribute.setX(connection.index, 0)
+      arcStartAttribute.needsUpdate = true
+      arcEndAttribute.needsUpdate = true
+      arcHeightAttribute.needsUpdate = true
+      arcProgressAttribute.needsUpdate = true
+      arcTailAttribute.needsUpdate = true
+      arcOpacityAttribute.needsUpdate = true
+      arcHoverAttribute.needsUpdate = true
       connection.endNode.position.copy(end).multiplyScalar(GLOBE_RADIUS * 1.012)
       connection.endNode.quaternion.setFromUnitVectors(surfaceNormal, end)
       connection.impactRing.position
@@ -445,9 +836,9 @@ export default function ConnectedGlobe() {
         ? THREE.MathUtils.randFloat(0, 2.5)
         : THREE.MathUtils.randFloat(0.4, 3.6)
       connection.speed = THREE.MathUtils.randFloat(0.22, 0.38)
-      connection.lineMaterial.opacity = 0
       connection.endMaterial.opacity = 0
       connection.impactRingMaterial.opacity = 0
+      connection.hoverAmount = 0
       connection.endNode.scale.setScalar(0.6)
       connection.impactRing.scale.setScalar(0.4)
       if (hoveredConnection === connection) {
@@ -461,18 +852,15 @@ export default function ConnectedGlobe() {
         const color = connectionColors[index % connectionColors.length]
         const baseColor = new THREE.Color(color)
         const positions = new Float32Array(ARC_POINT_COUNT * 3)
-        const positionAttribute = new THREE.BufferAttribute(positions, 3)
-        const geometry = new THREE.BufferGeometry()
-        geometry.setAttribute('position', positionAttribute)
-        const lineMaterial = new THREE.LineBasicMaterial({
-          color,
-          transparent: true,
-          opacity: 0,
-          blending: THREE.AdditiveBlending,
-          depthWrite: false,
-        })
-        const line = new THREE.Line(geometry, lineMaterial)
-        globe.add(line)
+        const hitGeometry = new THREE.BufferGeometry()
+        hitGeometry.setAttribute(
+          'position',
+          new THREE.BufferAttribute(positions, 3),
+        )
+        const hitLine = new THREE.Line(hitGeometry, hitMaterial)
+        hitLine.layers.set(1)
+        globe.add(hitLine)
+        arcColorAttribute.setXYZ(index, baseColor.r, baseColor.g, baseColor.b)
 
         const endMaterial = new THREE.MeshBasicMaterial({
           color,
@@ -497,10 +885,9 @@ export default function ConnectedGlobe() {
         globe.add(endNode, impactRing)
 
         const connection = {
-          geometry,
-          positionAttribute,
-          line,
-          lineMaterial,
+          index,
+          hitGeometry,
+          hitLine,
           baseColor,
           endNode,
           endMaterial,
@@ -511,29 +898,34 @@ export default function ConnectedGlobe() {
           progress: 0,
           delay: 0,
           speed: 0.3,
+          hoverAmount: 0,
         }
         resetConnection(connection, true)
         return connection
       },
     )
+    arcColorAttribute.needsUpdate = true
 
     const resize = () => {
       const width = container.clientWidth
       const height = container.clientHeight
       if (width === 0 || height === 0) return
       renderer.setSize(width, height, false)
+      arcMaterial.uniforms.uResolution!.value.set(width, height)
       camera.aspect = width / height
       camera.updateProjectionMatrix()
 
       if (camera.aspect > 1.1) {
-        globe.position.set(1.5, 0.02, 0)
-        globe.scale.setScalar(1)
+        globeRig.position.set(1.5, 0.02, 0)
+        globeRig.scale.setScalar(1)
       } else {
-        globe.position.set(0, 0.22, 0)
-        globe.scale.setScalar(0.88)
+        globeRig.position.set(0, 0.22, 0)
+        globeRig.scale.setScalar(0.88)
       }
-      atmosphere.position.copy(globe.position)
-      atmosphere.scale.setScalar(GLOBE_RADIUS * 2 * 1.36 * globe.scale.x)
+      sunLight.position.copy(globeRig.position).addScaledVector(sunDirection, 8)
+      lightHelper?.update()
+      atmosphere.position.copy(globeRig.position)
+      atmosphere.scale.setScalar(GLOBE_RADIUS * 2 * 1.36 * globeRig.scale.x)
     }
 
     const resizeObserver = new ResizeObserver(resize)
@@ -542,6 +934,7 @@ export default function ConnectedGlobe() {
 
     const raycaster = new THREE.Raycaster()
     raycaster.params.Line = { threshold: 0.075 }
+    raycaster.layers.set(1)
     const pointer = new THREE.Vector2()
     let isDragging = false
     let pointerTravel = 0
@@ -561,14 +954,14 @@ export default function ConnectedGlobe() {
 
     const updateHoveredConnection = (event: PointerEvent) => {
       updatePointer(event)
-      globe.updateMatrixWorld(true)
+      globeRig.updateMatrixWorld(true)
       raycaster.setFromCamera(pointer, camera)
       const hit = raycaster.intersectObjects(
-        connections.map((connection) => connection.line),
+        connections.map((connection) => connection.hitLine),
         false,
       )[0]
       const connection = hit
-        ? (connections.find((item) => item.line === hit.object) ?? null)
+        ? (connections.find((item) => item.hitLine === hit.object) ?? null)
         : null
       hoveredConnection = connection
       canvas.style.cursor = 'grab'
@@ -595,10 +988,10 @@ export default function ConnectedGlobe() {
       const deltaY = event.clientY - lastPointerY
       pointerTravel += Math.hypot(deltaX, deltaY)
       globe.rotation.y += deltaX * 0.006
-      globe.rotation.x = THREE.MathUtils.clamp(
-        globe.rotation.x + deltaY * 0.0045,
-        -1.05,
-        0.8,
+      globeRig.rotation.x = THREE.MathUtils.clamp(
+        globeRig.rotation.x + deltaY * 0.0045,
+        -0.7,
+        0.7,
       )
       rotationVelocityY = deltaX * 0.3
       rotationVelocityX = deltaY * 0.22
@@ -626,9 +1019,9 @@ export default function ConnectedGlobe() {
       if (event.key === 'ArrowLeft') globe.rotation.y -= rotationStep
       else if (event.key === 'ArrowRight') globe.rotation.y += rotationStep
       else if (event.key === 'ArrowUp') {
-        globe.rotation.x = Math.max(-1.05, globe.rotation.x - rotationStep)
+        globeRig.rotation.x = Math.max(-0.7, globeRig.rotation.x - rotationStep)
       } else if (event.key === 'ArrowDown') {
-        globe.rotation.x = Math.min(0.8, globe.rotation.x + rotationStep)
+        globeRig.rotation.x = Math.min(0.7, globeRig.rotation.x + rotationStep)
       } else return
       event.preventDefault()
     }
@@ -664,12 +1057,14 @@ export default function ConnectedGlobe() {
 
       if (!reduceMotion && !isDragging) {
         globe.rotation.y += delta * (0.055 + rotationVelocityY)
-        globe.rotation.x = THREE.MathUtils.clamp(
-          globe.rotation.x + delta * rotationVelocityX,
-          -1.05,
-          0.8,
+        globeRig.rotation.x = THREE.MathUtils.clamp(
+          globeRig.rotation.x + delta * rotationVelocityX,
+          -0.7,
+          0.7,
         )
         const inertiaDamping = Math.exp(-3.8 * delta)
+        const tiltReturn = 1 - Math.exp(-2.6 * delta)
+        globeRig.rotation.x += (0 - globeRig.rotation.x) * tiltReturn
         rotationVelocityX *= inertiaDamping
         rotationVelocityY *= inertiaDamping
       }
@@ -686,17 +1081,22 @@ export default function ConnectedGlobe() {
           2,
           Math.ceil(travelProgress * ARC_POINT_COUNT),
         )
-        connection.geometry.setDrawRange(0, visiblePoints)
-        const hoverIntensity = connection === hoveredConnection ? 1.28 : 1
-        connection.lineMaterial.opacity =
-          THREE.MathUtils.smoothstep(travelProgress, 0, 0.08) *
-          (1 - THREE.MathUtils.smoothstep(connection.progress, 1, 1.28)) *
-          0.82 *
-          hoverIntensity
-        connection.lineMaterial.color.lerp(
-          connection === hoveredConnection ? hoverColor : connection.baseColor,
-          0.16,
+        connection.hitGeometry.setDrawRange(0, visiblePoints)
+        const opacity =
+          THREE.MathUtils.smoothstep(travelProgress, 0, 0.08) * 0.82
+        const tailProgress = THREE.MathUtils.smoothstep(
+          connection.progress,
+          1,
+          1.3,
         )
+        connection.hoverAmount +=
+          ((connection === hoveredConnection ? 1 : 0) -
+            connection.hoverAmount) *
+          0.16
+        arcProgressAttribute.setX(connection.index, travelProgress)
+        arcTailAttribute.setX(connection.index, tailProgress)
+        arcOpacityAttribute.setX(connection.index, opacity)
+        arcHoverAttribute.setX(connection.index, connection.hoverAmount)
         const impact = THREE.MathUtils.smoothstep(travelProgress, 0.96, 1)
         const impactFade =
           1 - THREE.MathUtils.smoothstep(connection.progress, 1.12, 1.3)
@@ -719,12 +1119,19 @@ export default function ConnectedGlobe() {
         }
       })
 
+      arcProgressAttribute.needsUpdate = true
+      arcTailAttribute.needsUpdate = true
+      arcOpacityAttribute.needsUpdate = true
+      arcHoverAttribute.needsUpdate = true
+
       renderer.render(scene, camera)
     })
 
     return () => {
       isDisposed = true
       renderer.setAnimationLoop(null)
+      debugGui?.destroy()
+      lightHelper?.dispose()
       resizeObserver.disconnect()
       intersectionObserver.disconnect()
       canvas.removeEventListener('pointerdown', handlePointerDown)
@@ -734,11 +1141,13 @@ export default function ConnectedGlobe() {
       canvas.removeEventListener('pointerleave', handlePointerLeave)
       canvas.removeEventListener('keydown', handleKeyDown)
       connections.forEach((connection) => {
-        connection.geometry.dispose()
-        connection.lineMaterial.dispose()
+        connection.hitGeometry.dispose()
         connection.endMaterial.dispose()
         connection.impactRingMaterial.dispose()
       })
+      arcGeometry.dispose()
+      arcMaterial.dispose()
+      hitMaterial.dispose()
       shellGeometry.dispose()
       shellMaterial.dispose()
       rimMaterial.dispose()
@@ -746,9 +1155,9 @@ export default function ConnectedGlobe() {
       atmosphereTexture.dispose()
       gridGeometry.dispose()
       gridMaterial.dispose()
-      pointGeometry.dispose()
-      pointMaterial.dispose()
-      pointTexture.dispose()
+      dotGeometry.dispose()
+      dotMaterial.dispose()
+      landDots?.dispose()
       impactGeometry.dispose()
       impactRingGeometry.dispose()
       renderer.dispose()
