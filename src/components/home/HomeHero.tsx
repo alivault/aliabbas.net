@@ -245,11 +245,11 @@ export function HomeHero() {
           </motion.h1>
         </div>
 
-        <div className="flex justify-center pt-5 sm:mt-auto sm:justify-end">
+        <div className="flex justify-center pt-5 sm:mt-auto">
           <motion.a
             variants={introItemVariants}
             href="#work"
-            className="pointer-events-auto mx-auto flex size-14 items-center justify-center rounded-full border border-white/25 transition-colors hover:bg-[#d9ff43] hover:text-[#10100f] sm:mx-0"
+            className="pointer-events-auto mx-auto flex size-14 items-center justify-center rounded-full border border-white/25 transition-colors hover:bg-[#d9ff43] hover:text-[#10100f]"
             aria-label="See selected work"
           >
             <ArrowDown className="size-5" />
