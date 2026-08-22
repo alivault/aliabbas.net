@@ -35,11 +35,8 @@ export default function HomeNotesSection({
               <Link
                 to="/notes/$slug"
                 params={{ slug: article.slug.current }}
-                className="group border-foreground/20 grid gap-4 border-b py-7 sm:grid-cols-[60px_1fr_auto] sm:items-center sm:py-9"
+                className="group border-foreground/20 grid gap-4 border-b py-7 sm:grid-cols-[1fr_auto] sm:items-center sm:py-9"
               >
-                <span className="text-foreground/35 font-mono text-[9px]">
-                  0{index + 1}
-                </span>
                 <span>
                   <span className="font-display block text-3xl leading-[1.1] tracking-[-0.025em] transition-transform duration-500 group-hover:translate-x-2 sm:text-5xl">
                     {article.title}
