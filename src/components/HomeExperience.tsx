@@ -32,9 +32,6 @@ export default function HomeExperience() {
         </ScrollReveal>
         <HomeWorkSection />
         <HomeCapabilitiesSection />
-        <ScrollReveal amount={0.4}>
-          <StackMarquee />
-        </ScrollReveal>
         <HomeAboutSection currentRole={experiences[0]} />
         <HomeNotesSection articles={articles} />
       </main>

@@ -24,7 +24,7 @@ function AboutDecorations() {
         whileInView={{ rotate: 6, x: 0, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute right-[-7%] bottom-[3%] z-0 size-[54%] text-[#d9ff43]"
+        className="text-brand absolute right-[-7%] bottom-[3%] z-0 size-[54%]"
       >
         <CodeXml aria-hidden="true" strokeWidth={1} className="size-full" />
       </motion.div>
@@ -51,10 +51,10 @@ function DraggableLogo() {
         whileDrag={{ cursor: 'grabbing', scale: 1.03 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        className="pointer-events-auto relative aspect-square w-[48%] max-w-[360px] cursor-grab touch-none rounded-full border border-white/30 bg-[#496aff]/35 shadow-[0_18px_38px_rgb(7_20_83_/_18%)] backdrop-blur-md sm:w-[44%]"
+        className="border-foreground/30 pointer-events-auto relative aspect-square w-[48%] max-w-[360px] cursor-grab touch-none rounded-full border shadow-[0_18px_38px_rgb(0_0_0_/_18%)] backdrop-blur-md sm:w-[44%]"
         aria-label="Draggable logo"
       >
-        <Logo className="pointer-events-none absolute top-1/2 left-1/2 h-auto w-[50%] -translate-x-1/2 -translate-y-1/2 text-[#d9ff43]" />
+        <Logo className="text-brand pointer-events-none absolute top-1/2 left-1/2 h-auto w-[50%] -translate-x-1/2 -translate-y-1/2" />
       </motion.div>
     </div>
   )
@@ -62,10 +62,14 @@ function DraggableLogo() {
 
 export default function AboutVisual() {
   return (
-    <div className="relative min-h-[520px] overflow-hidden border-white/20 p-5 sm:p-8 lg:min-h-[760px] lg:border-r lg:p-12">
+    <div className="relative min-h-[520px] overflow-hidden p-5 sm:p-8 lg:min-h-[760px] lg:p-12">
+      <span
+        aria-hidden="true"
+        className="bg-foreground/20 pointer-events-none absolute inset-y-0 right-0 hidden w-px [mask-image:linear-gradient(to_bottom,transparent,black_18%,black_82%,transparent)] lg:block"
+      />
       <AboutDecorations />
       <DraggableLogo />
-      <p className="relative z-30 font-mono text-[9px] tracking-[0.18em] text-white/55 uppercase">
+      <p className="text-foreground/55 relative z-30 font-mono text-[9px] tracking-[0.18em] uppercase">
         Design engineer · Builder · Collaborator
       </p>
     </div>
