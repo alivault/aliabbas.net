@@ -5,6 +5,8 @@ const GLOBE_RADIUS = 1.42
 const ARC_POINT_COUNT = 96
 const ARC_RIBBON_SEGMENTS = 64
 const CONNECTION_COUNT = 10
+const CAMERA_FOV = 38
+const NAVIGATION_HEIGHT = 72
 
 const globePalettes = {
   light: {
@@ -342,7 +344,7 @@ export default function ConnectedGlobe() {
 
     const scene = new THREE.Scene()
     scene.background = new THREE.Color(palette.background)
-    const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100)
+    const camera = new THREE.PerspectiveCamera(CAMERA_FOV, 1, 0.1, 100)
     camera.position.set(0.62, 0.45, 5.5)
     camera.lookAt(0, 0, 0)
 
@@ -826,12 +828,27 @@ export default function ConnectedGlobe() {
       const width = container.clientWidth
       const height = container.clientHeight
       if (width === 0 || height === 0) return
+      const contentHeight = Math.max(1, height - NAVIGATION_HEIGHT)
+      const contentAspect = width / contentHeight
+      const baseHalfFov = THREE.MathUtils.degToRad(CAMERA_FOV) / 2
+      const adjustedFov =
+        2 * Math.atan(Math.tan(baseHalfFov) * (height / contentHeight))
+
       renderer.setSize(width, height, false)
       arcMaterial.uniforms.uResolution!.value.set(width, height)
       camera.aspect = width / height
+      camera.fov = THREE.MathUtils.radToDeg(adjustedFov)
+      camera.setViewOffset(
+        width,
+        height,
+        0,
+        -NAVIGATION_HEIGHT / 2,
+        width,
+        height,
+      )
       camera.updateProjectionMatrix()
 
-      if (camera.aspect > 1.1) {
+      if (contentAspect > 1.1) {
         globeRig.position.set(1.5, 0.02, 0)
         globeRig.scale.setScalar(1)
       } else {
@@ -1078,7 +1095,7 @@ export default function ConnectedGlobe() {
   }, [prefersDarkMode])
 
   return (
-    <div ref={containerRef} className="absolute inset-x-0 top-[72px] bottom-0">
+    <div ref={containerRef} className="absolute inset-0">
       <canvas
         ref={canvasRef}
         className="block size-full cursor-grab touch-pan-y outline-none"
