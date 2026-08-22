@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { ArrowUpRight } from 'lucide-react'
-import { motion, useReducedMotion } from 'motion/react'
+import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import type { Variants } from 'motion/react'
 import {
   Sheet,
@@ -141,11 +141,18 @@ function SpinMenuIcon({ open }: { open: boolean }) {
 
 export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const { scrollY } = useScroll()
+  const headerChromeOpacity = useTransform(scrollY, [0, 96], [0, 1])
 
   return (
     <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-      <header className="border-foreground/10 bg-background/90 text-foreground fixed inset-x-0 top-0 z-[100] h-[72px] border-b backdrop-blur-xl">
-        <div className="mx-auto grid h-full max-w-[1600px] grid-cols-[1fr_auto] items-center px-5 sm:px-8 lg:grid-cols-[1fr_auto_1fr] lg:px-12">
+      <header className="text-foreground fixed inset-x-0 top-0 z-[100] h-[72px]">
+        <motion.div
+          aria-hidden="true"
+          className="border-foreground/10 bg-background/80 pointer-events-none absolute inset-0 border-b backdrop-blur-[12px] backdrop-saturate-[1.8]"
+          style={{ opacity: headerChromeOpacity }}
+        />
+        <div className="relative mx-auto grid h-full max-w-[1600px] grid-cols-[1fr_auto] items-center px-5 sm:px-8 lg:grid-cols-[1fr_auto_1fr] lg:px-12">
           <Link
             to="/"
             className="group flex items-center gap-3 justify-self-start"
