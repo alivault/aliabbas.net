@@ -29,11 +29,6 @@ type GlobeLocation = {
   longitude: number
 }
 
-type DebugLightHelper = THREE.Object3D & {
-  dispose: () => void
-  update: () => void
-}
-
 const LOCATIONS: GlobeLocation[] = [
   { label: 'San Francisco', latitude: 37.77, longitude: -122.42 },
   { label: 'Los Angeles', latitude: 34.05, longitude: -118.24 },
@@ -462,136 +457,6 @@ export default function ConnectedGlobe() {
     let landDots: THREE.InstancedMesh | undefined
 
     let isDisposed = false
-    let debugGui: { destroy: () => void } | undefined
-    let lightHelper: DebugLightHelper | undefined
-
-    if (import.meta.env.DEV) {
-      void import('lil-gui').then(({ default: GUI }) => {
-        if (isDisposed) return
-
-        const lightSettings = {
-          color: `#${sunLight.color.getHexString()}`,
-          intensity: sunLight.intensity,
-          azimuth: sunSettings.azimuth,
-          elevation: sunSettings.elevation,
-          terminatorSoftness: sunSettings.terminatorSoftness,
-          atmosphereIntensity: sunSettings.atmosphereIntensity,
-          mistColor: `#${atmosphereMaterial.color.getHexString()}`,
-          gridOpacity: gridMaterial.opacity,
-          discSize: dotMaterial.uniforms.uDiscSize!.value as number,
-          rimThickness: rimMaterial.uniforms.uThickness!.value as number,
-          whiteLineThickness: rimMaterial.uniforms.uWhiteLineThickness!
-            .value as number,
-          showAtmosphere: true,
-          showHelper: false,
-          showRim: true,
-          copyValues: () => {
-            const values = {
-              color: lightSettings.color,
-              intensity: lightSettings.intensity,
-              azimuth: lightSettings.azimuth,
-              elevation: lightSettings.elevation,
-              terminatorSoftness: lightSettings.terminatorSoftness,
-              atmosphereIntensity: lightSettings.atmosphereIntensity,
-              mistColor: lightSettings.mistColor,
-              gridOpacity: lightSettings.gridOpacity,
-              discSize: lightSettings.discSize,
-              rimThickness: lightSettings.rimThickness,
-              whiteLineThickness: lightSettings.whiteLineThickness,
-              showAtmosphere: lightSettings.showAtmosphere,
-              showRim: lightSettings.showRim,
-              direction: sunDirection.toArray(),
-            }
-            void navigator.clipboard.writeText(JSON.stringify(values, null, 2))
-          },
-        }
-
-        lightHelper = new THREE.DirectionalLightHelper(
-          sunLight,
-          0.45,
-          '#ffffff',
-        )
-        lightHelper.visible = false
-        scene.add(lightHelper)
-
-        const updateLight = () => {
-          sunLight.color.set(lightSettings.color)
-          sunLight.intensity = lightSettings.intensity
-          sunSettings.azimuth = lightSettings.azimuth
-          sunSettings.elevation = lightSettings.elevation
-          sunSettings.terminatorSoftness = lightSettings.terminatorSoftness
-          sunSettings.atmosphereIntensity = lightSettings.atmosphereIntensity
-          rimMaterial.uniforms.uTerminatorSoftness!.value =
-            sunSettings.terminatorSoftness
-          rimMaterial.uniforms.uThickness!.value = lightSettings.rimThickness
-          rimMaterial.uniforms.uWhiteLineThickness!.value =
-            lightSettings.whiteLineThickness
-          atmosphereMaterial.opacity = sunSettings.atmosphereIntensity
-          atmosphereMaterial.color.set(lightSettings.mistColor)
-          gridMaterial.opacity = lightSettings.gridOpacity
-          dotMaterial.uniforms.uDiscSize!.value = lightSettings.discSize
-          updateSunDirection()
-          sunLight.position
-            .copy(globeRig.position)
-            .addScaledVector(sunDirection, 8)
-          lightHelper?.update()
-        }
-
-        const gui = new GUI({ title: 'Sunlight' })
-        gui.domElement.style.zIndex = '100'
-        gui.addColor(lightSettings, 'color').onChange(updateLight)
-        gui.add(lightSettings, 'intensity', 0, 10, 0.05).onChange(updateLight)
-        gui
-          .add(lightSettings, 'azimuth', -180, 180, 1)
-          .name('azimuth °')
-          .onChange(updateLight)
-        gui
-          .add(lightSettings, 'elevation', -90, 90, 1)
-          .name('elevation °')
-          .onChange(updateLight)
-        gui
-          .add(lightSettings, 'terminatorSoftness', 0.001, 0.2, 0.001)
-          .name('terminator')
-          .onChange(updateLight)
-        gui
-          .add(lightSettings, 'atmosphereIntensity', 0, 1.5, 0.01)
-          .name('atmosphere')
-          .onChange(updateLight)
-        gui
-          .addColor(lightSettings, 'mistColor')
-          .name('mist color')
-          .onChange(updateLight)
-        gui
-          .add(lightSettings, 'gridOpacity', 0, 1, 0.01)
-          .name('grid opacity')
-          .onChange(updateLight)
-        gui
-          .add(lightSettings, 'discSize', 0.002, 0.03, 0.001)
-          .name('disc size')
-          .onChange(updateLight)
-        gui
-          .add(lightSettings, 'rimThickness', 0.02, 0.8, 0.01)
-          .name('rim thickness')
-          .onChange(updateLight)
-        gui
-          .add(lightSettings, 'whiteLineThickness', 0.02, 0.5, 0.01)
-          .name('white line')
-          .onChange(updateLight)
-        gui.add(lightSettings, 'showHelper').onChange((showHelper: boolean) => {
-          if (lightHelper) lightHelper.visible = showHelper
-        })
-        gui
-          .add(lightSettings, 'showAtmosphere')
-          .onChange((showAtmosphere: boolean) => {
-            atmosphere.visible = showAtmosphere
-          })
-        gui.add(lightSettings, 'showRim').onChange((showRim: boolean) => {
-          rim.visible = showRim
-        })
-        gui.add(lightSettings, 'copyValues').name('Copy values')
-        debugGui = gui
-      })
-    }
 
     const landMask = new Image()
     landMask.src = '/earth-land-mask.png'
@@ -923,7 +788,6 @@ export default function ConnectedGlobe() {
         globeRig.scale.setScalar(0.88)
       }
       sunLight.position.copy(globeRig.position).addScaledVector(sunDirection, 8)
-      lightHelper?.update()
       atmosphere.position.copy(globeRig.position)
       atmosphere.scale.setScalar(GLOBE_RADIUS * 2 * 1.36 * globeRig.scale.x)
     }
@@ -1130,8 +994,6 @@ export default function ConnectedGlobe() {
     return () => {
       isDisposed = true
       renderer.setAnimationLoop(null)
-      debugGui?.destroy()
-      lightHelper?.dispose()
       resizeObserver.disconnect()
       intersectionObserver.disconnect()
       canvas.removeEventListener('pointerdown', handlePointerDown)
