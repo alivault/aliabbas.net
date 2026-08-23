@@ -29,28 +29,10 @@ export default function HomeCapabilitiesSection() {
   return (
     <section className="bg-background text-foreground">
       <div className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36">
-        <ScrollReveal
-          as="header"
-          className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end"
-        >
-          <div>
-            <h2 className="text-[clamp(3.1rem,9vw,8.5rem)] leading-[0.76] font-extrabold tracking-[-0.07em] uppercase">
-              Beautiful
-              <br />
-              <span className="font-display text-brand font-normal normal-case italic">
-                on the surface.
-              </span>
-              <br />
-              Serious
-              <br />
-              underneath.
-            </h2>
-          </div>
-          <p className="text-foreground/55 max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
-            I bridge product design and full-stack engineering, so the idea
-            survives implementation—and the implementation holds up after
-            launch.
-          </p>
+        <ScrollReveal as="header">
+          <h2 className="font-display text-5xl tracking-[-0.045em] sm:text-7xl">
+            Skillset
+          </h2>
         </ScrollReveal>
 
         <div className="border-foreground/15 mt-20 border-t lg:mt-28">

@@ -194,7 +194,7 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-      className="border-foreground/20 grid gap-7 border-t py-10 first:border-t-0 lg:grid-cols-[minmax(0,1.35fr)_minmax(320px,0.65fr)] lg:gap-12 lg:py-16"
+      className="flex flex-col gap-7 pb-10"
     >
       <a
         href={project.href}
@@ -205,8 +205,8 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
       >
         <ProjectVisual project={project} />
       </a>
-      <div className="flex flex-col lg:pt-3">
-        <h3 className="font-display text-[clamp(3.25rem,6vw,6rem)] leading-[0.82] tracking-[-0.05em]">
+      <div className="flex flex-1 flex-col">
+        <h3 className="font-display text-4xl tracking-[-0.04em] sm:text-5xl">
           {project.title}
         </h3>
         <p className="text-foreground/60 mt-7 max-w-md text-base leading-7">
@@ -230,16 +230,6 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
             </span>
           ))}
         </div>
-        <a
-          href={project.href}
-          target="_blank"
-          rel="noreferrer"
-          className="group border-foreground/25 hover:text-background relative mt-10 flex items-center justify-between overflow-hidden border-b px-3 py-4 text-xs font-bold uppercase transition-colors duration-300 lg:mt-auto"
-        >
-          <span className="bg-foreground absolute inset-0 translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
-          <span className="relative z-10">Visit live project</span>
-          <ArrowUpRight className="relative z-10 size-4 transition-transform group-hover:translate-x-1" />
-        </a>
       </div>
     </motion.article>
   )
