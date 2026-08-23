@@ -27,10 +27,10 @@ const architecture = [
   },
 ] as const
 
-export const Route = createFileRoute('/capabilities')({
+export const Route = createFileRoute('/skillset')({
   head: () => ({
     meta: [
-      { title: 'Capabilities — Ali Abbas' },
+      { title: 'Skillset — Ali Abbas' },
       {
         name: 'description',
         content:
@@ -38,10 +38,10 @@ export const Route = createFileRoute('/capabilities')({
       },
     ],
   }),
-  component: CapabilitiesPage,
+  component: SkillsetPage,
 })
 
-function CapabilitiesPage() {
+function SkillsetPage() {
   return (
     <Main>
       <section className="bg-background text-foreground">
@@ -51,16 +51,12 @@ function CapabilitiesPage() {
             className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end"
           >
             <div>
-              <h1 className="text-[clamp(3.1rem,9vw,8.5rem)] leading-[0.76] font-extrabold tracking-[-0.07em] uppercase">
-                Beautiful
+              <h1 className="text-[clamp(3.1rem,9vw,8.5rem)] leading-[0.76] font-extrabold tracking-[-0.07em]">
+                Ideas,
                 <br />
                 <span className="font-display text-brand font-normal normal-case italic">
-                  on the surface.
+                  engineered.
                 </span>
-                <br />
-                Serious
-                <br />
-                underneath.
               </h1>
             </div>
             <p className="text-foreground/55 max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">

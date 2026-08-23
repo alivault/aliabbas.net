@@ -13,7 +13,7 @@ import Logo from './Logo'
 
 const navigation = [
   { label: 'Work', to: '/work' as const },
-  { label: 'Capabilities', to: '/capabilities' as const },
+  { label: 'Skillset', to: '/skillset' as const },
   { label: 'Experience', to: '/experience' as const },
   { label: 'Notes', to: '/notes' as const },
   { label: 'Play', to: '/play' as const },
