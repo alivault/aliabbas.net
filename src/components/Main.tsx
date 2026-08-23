@@ -5,9 +5,11 @@ import SiteHeader from './SiteHeader'
 
 export default function Main({
   children,
+  hideFooter = false,
   hideFooterOnMobile = false,
 }: {
   children: ReactNode
+  hideFooter?: boolean
   hideFooterOnMobile?: boolean
 }) {
   return (
@@ -18,7 +20,7 @@ export default function Main({
           {children}
         </main>
       </PageAnimation>
-      {hideFooterOnMobile ? (
+      {hideFooter ? null : hideFooterOnMobile ? (
         <div className="hidden lg:block">
           <Footer />
         </div>

@@ -18,7 +18,7 @@ export const Route = createFileRoute('/chat')({
 
 function ChatPage() {
   return (
-    <Main hideFooterOnMobile>
+    <Main hideFooter>
       <section className="site-noise bg-background text-foreground">
         <div className="relative z-30 mx-auto max-w-[1600px]">
           <PortfolioChat />

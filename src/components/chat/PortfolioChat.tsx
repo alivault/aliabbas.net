@@ -104,7 +104,7 @@ function SuggestedQuestionButtons({
           type="button"
           disabled={disabled}
           onClick={() => onSelect(question)}
-          className="border-foreground/15 text-foreground/60 hover:border-brand/60 hover:text-brand max-w-full rounded-full border px-4 py-2 text-left text-base transition-colors disabled:pointer-events-none disabled:opacity-40"
+          className="border-foreground/15 text-foreground/60 hover:border-brand/60 hover:text-brand max-w-full rounded-[21px] border px-4 py-2 text-left text-base transition-colors disabled:pointer-events-none disabled:opacity-40"
         >
           {question}
         </button>
@@ -407,7 +407,7 @@ export default function PortfolioChat() {
   const isStreaming = requestState.status === 'streaming'
 
   return (
-    <div className="lg:border-foreground/15 grid h-[calc(100svh-72px)] min-h-0 overflow-hidden lg:grid-cols-[minmax(320px,0.8fr)_minmax(0,1.2fr)] lg:border-b">
+    <div className="lg:border-foreground/15 grid h-[calc(100svh-72px)] min-h-0 overflow-hidden lg:grid-cols-[minmax(320px,0.8fr)_minmax(0,1.2fr)] lg:border-r lg:border-b">
       <div className="border-foreground/15 relative hidden flex-col justify-between overflow-hidden border-r px-12 py-20 lg:flex">
         <div
           aria-hidden="true"
@@ -598,7 +598,7 @@ export default function PortfolioChat() {
                 rows={1}
                 disabled={isStreaming}
                 placeholder="Ask about experience, projects, skills…"
-                className="text-foreground placeholder:text-foreground/25 max-h-32 min-h-9 resize-none border-0 bg-transparent px-2 py-2 text-base shadow-none focus-visible:border-0 focus-visible:ring-0 disabled:bg-transparent disabled:opacity-100 md:text-base dark:disabled:bg-transparent"
+                className="text-foreground placeholder:text-foreground/25 max-h-32 min-h-9 resize-none border-0 bg-transparent px-2 py-2 text-base shadow-none focus-visible:border-0 focus-visible:ring-0 disabled:bg-transparent disabled:opacity-100 md:text-base dark:bg-transparent dark:disabled:bg-transparent"
               />
               <Button
                 type="submit"
