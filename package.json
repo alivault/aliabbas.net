@@ -41,6 +41,7 @@
     "react-syntax-highlighter": "^16.1.1",
     "remark-gfm": "^4.0.1",
     "resend": "^6.18.0",
+    "shadcn": "^4.19.0",
     "tailwind-merge": "^3.6.0",
     "three": "^0.185.1",
     "vite": "catalog:",

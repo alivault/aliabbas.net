@@ -1,12 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
-import {
-  ArrowUp,
-  Bot,
-  LoaderCircle,
-  RotateCcw,
-  Trash2,
-  UserRound,
-} from 'lucide-react'
+import { ArrowUp, Bot, LoaderCircle, UserRound } from 'lucide-react'
+import { motion, useReducedMotion } from 'motion/react'
 import {
   MessageScroller,
   MessageScrollerButton,
@@ -17,12 +11,6 @@ import {
 } from '~/components/ui/message-scroller'
 import { Button } from '~/components/ui/button'
 import { Textarea } from '~/components/ui/textarea'
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '~/components/ui/tooltip'
 import { cn } from '~/lib/utils'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -42,6 +30,8 @@ type ConversationIdentity = {
   id: string
   deleteToken: string
 }
+
+const AnimatedMessageScrollerItem = motion.create(MessageScrollerItem)
 
 const welcomeMessage = {
   id: 'welcome',
@@ -91,25 +81,129 @@ function SuggestedQuestionButtons({
   className,
   disabled,
   onSelect,
+  questions = suggestedQuestions,
 }: {
   className?: string
   disabled: boolean
   onSelect: (question: string) => void
+  questions?: ReadonlyArray<string>
 }) {
+  const reduceMotion = useReducedMotion()
+
+  if (disabled) return null
+
   return (
     <div className={className}>
-      {suggestedQuestions.map((question) => (
-        <button
+      {questions.map((question, index) => (
+        <motion.button
           key={question}
           type="button"
           disabled={disabled}
           onClick={() => onSelect(question)}
+          initial={
+            reduceMotion
+              ? false
+              : { opacity: 0, y: 8, scale: 0.9, filter: 'blur(8px)' }
+          }
+          animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
+          transition={
+            reduceMotion
+              ? { duration: 0 }
+              : {
+                  opacity: { duration: 0.22, delay: index * 0.08 },
+                  filter: { duration: 0.3, delay: index * 0.08 },
+                  y: {
+                    type: 'spring',
+                    stiffness: 460,
+                    damping: 28,
+                    delay: index * 0.08,
+                  },
+                  scale: {
+                    type: 'spring',
+                    stiffness: 460,
+                    damping: 22,
+                    delay: index * 0.08,
+                  },
+                }
+          }
           className="border-foreground/15 text-foreground/60 hover:border-brand/60 hover:text-brand max-w-full rounded-[21px] border px-4 py-2 text-left text-base transition-colors disabled:pointer-events-none disabled:opacity-40"
         >
           {question}
-        </button>
+        </motion.button>
       ))}
     </div>
+  )
+}
+
+function QuestionComposer({
+  className,
+  id,
+  isStreaming,
+  onChange,
+  onSubmit,
+  value,
+}: {
+  className?: string
+  id: string
+  isStreaming: boolean
+  onChange: (value: string) => void
+  onSubmit: () => void
+  value: string
+}) {
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault()
+        onSubmit()
+      }}
+      className={cn(
+        'border-foreground/15 bg-background focus-within:border-brand/60 relative flex items-center gap-2 rounded-[23px] border p-1',
+        className,
+      )}
+    >
+      <label htmlFor={id} className="sr-only">
+        Ask a question about Ali
+      </label>
+      <Textarea
+        id={id}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        onKeyDown={(event) => {
+          if (
+            event.key === 'Enter' &&
+            !event.shiftKey &&
+            !event.nativeEvent.isComposing
+          ) {
+            event.preventDefault()
+            onSubmit()
+          }
+        }}
+        maxLength={1000}
+        rows={1}
+        readOnly={isStreaming}
+        placeholder={
+          isStreaming ? '' : 'Ask about experience, projects, skills…'
+        }
+        className="text-foreground placeholder:text-foreground/35 max-h-32 min-h-9 resize-none border-0 bg-transparent px-2 py-2 text-base shadow-none focus-visible:border-0 focus-visible:ring-0 disabled:cursor-default disabled:bg-transparent disabled:opacity-100 md:text-base dark:bg-transparent dark:disabled:bg-transparent"
+      />
+      {isStreaming && !value && (
+        <span
+          role="status"
+          className="text-foreground/35 shimmer pointer-events-none absolute top-1/2 right-12 left-3 -translate-y-1/2 truncate text-base"
+        >
+          Generating response…
+        </span>
+      )}
+      <Button
+        type="submit"
+        size="icon-lg"
+        disabled={!value.trim() || isStreaming}
+        className="bg-brand text-brand-foreground hover:bg-foreground hover:text-background rounded-full"
+        aria-label={isStreaming ? 'Generating response' : 'Send message'}
+      >
+        {isStreaming ? <LoaderCircle className="animate-spin" /> : <ArrowUp />}
+      </Button>
+    </form>
   )
 }
 
@@ -220,12 +314,12 @@ function getSseData(event: string) {
 }
 
 export default function PortfolioChat() {
+  const reduceMotion = useReducedMotion()
   const [messages, setMessages] = useState<Array<ChatMessage>>([welcomeMessage])
   const [draft, setDraft] = useState('')
-  const [conversation, setConversation] = useState<ConversationIdentity>(
+  const [conversation] = useState<ConversationIdentity>(
     createConversationIdentity,
   )
-  const [isDeleting, setIsDeleting] = useState(false)
   const [requestState, setRequestState] = useState<RequestState>({
     status: 'idle',
   })
@@ -365,136 +459,82 @@ export default function PortfolioChat() {
     }
   }
 
-  const resetConversation = () => {
-    abortControllerRef.current?.abort()
-    abortControllerRef.current = null
-    setMessages([welcomeMessage])
-    setDraft('')
-    setConversation(createConversationIdentity())
-    setRequestState({ status: 'idle' })
-  }
-
-  const deleteCurrentConversation = async () => {
-    if (messages.length === 1 || requestState.status === 'streaming') return
-    if (!window.confirm('Permanently delete this conversation?')) return
-
-    setIsDeleting(true)
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ conversation }),
-      })
-
-      if (!response.ok) {
-        throw new Error('The conversation could not be deleted right now.')
-      }
-
-      resetConversation()
-    } catch (error) {
-      setRequestState({
-        status: 'error',
-        message:
-          error instanceof Error
-            ? error.message
-            : 'The conversation could not be deleted right now.',
-      })
-    } finally {
-      setIsDeleting(false)
-    }
-  }
-
   const isStreaming = requestState.status === 'streaming'
+  const hasConversation = messages.length > 1
+  const askedQuestions = new Set(
+    messages
+      .filter((message) => message.role === 'user')
+      .map((message) => message.content.trim().toLowerCase()),
+  )
+  const unusedQuestions = suggestedQuestions.filter(
+    (question) => !askedQuestions.has(question.toLowerCase()),
+  )
 
   return (
-    <div className="lg:border-foreground/15 grid h-[calc(100svh-72px)] min-h-0 overflow-hidden lg:grid-cols-[minmax(320px,0.8fr)_minmax(0,1.2fr)] lg:border-r lg:border-b">
-      <div className="border-foreground/15 relative hidden flex-col justify-between overflow-hidden border-r px-12 py-20 lg:flex">
-        <div
-          aria-hidden="true"
-          className="hero-grid pointer-events-none absolute inset-0"
-        />
-        <div className="relative z-10">
-          <h1 className="font-display text-[clamp(3.5rem,6vw,6rem)] leading-[0.78] tracking-[-0.06em]">
-            Ask about
-            <em className="text-brand block">Ali.</em>
-          </h1>
-        </div>
-
-        <div className="relative z-10 mt-20">
-          <p className="text-foreground/30 font-mono text-[9px] tracking-[0.16em] uppercase">
-            Try asking
-          </p>
-          <SuggestedQuestionButtons
-            disabled={isStreaming}
-            onSelect={(question) => void sendMessage(question)}
-            className="mt-4 flex flex-wrap gap-2 lg:flex-col lg:items-start"
-          />
-        </div>
-      </div>
-
-      <div className="flex h-full min-h-0 min-w-0 items-stretch overflow-hidden">
-        <div className="bg-foreground/[0.04] flex h-full max-h-full min-h-0 w-full flex-col overflow-hidden">
-          <div className="border-foreground/15 flex h-14 shrink-0 items-center justify-end border-b px-4 sm:px-5">
-            <TooltipProvider>
-              <div className="flex items-center gap-1">
-                {messages.length > 1 && (
-                  <Tooltip>
-                    <TooltipTrigger
-                      render={
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon-sm"
-                          disabled={isStreaming || isDeleting}
-                          onClick={() => void deleteCurrentConversation()}
-                          className="text-foreground/45 hover:bg-foreground/10 hover:text-[#ff8b75]"
-                          aria-label="Delete this conversation"
-                        >
-                          {isDeleting ? (
-                            <LoaderCircle className="animate-spin" />
-                          ) : (
-                            <Trash2 />
-                          )}
-                        </Button>
-                      }
-                    />
-                    <TooltipContent side="bottom">
-                      Delete this conversation
-                    </TooltipContent>
-                  </Tooltip>
-                )}
-                <Tooltip>
-                  <TooltipTrigger
-                    render={
-                      <Button
-                        type="button"
-                        variant="ghost"
-                        size="icon-sm"
-                        onClick={resetConversation}
-                        className="text-foreground/45 hover:bg-foreground/10 hover:text-foreground"
-                        aria-label="Start a new conversation"
-                      >
-                        <RotateCcw />
-                      </Button>
-                    }
-                  />
-                  <TooltipContent side="bottom">
-                    Start a new conversation
-                  </TooltipContent>
-                </Tooltip>
+    <div className="flex h-[calc(100svh-72px)] min-h-0 min-w-0 flex-col overflow-hidden">
+      {!hasConversation && (
+        <section className="flex min-h-0 flex-1 flex-col">
+          <div className="flex min-h-0 flex-1 items-end justify-start overflow-y-auto px-4 py-8 sm:px-6 sm:py-10 lg:items-center lg:justify-center lg:py-12">
+            <div className="flex w-full max-w-3xl flex-col items-start lg:items-center">
+              <h1 className="font-display text-left text-[clamp(3.5rem,6vw,6rem)] leading-[0.82] tracking-[-0.06em] lg:text-center">
+                Ask about <em className="text-brand">Ali.</em>
+              </h1>
+              <div className="mt-10 hidden w-full lg:block">
+                <QuestionComposer
+                  id="portfolio-question-initial"
+                  value={draft}
+                  isStreaming={isStreaming}
+                  onChange={setDraft}
+                  onSubmit={() => void sendMessage(draft)}
+                />
               </div>
-            </TooltipProvider>
+              <div className="mt-8 w-full">
+                <p className="text-foreground/30 text-left font-mono text-[9px] tracking-[0.16em] uppercase lg:text-center">
+                  Try asking
+                </p>
+                <SuggestedQuestionButtons
+                  disabled={isStreaming}
+                  onSelect={(question) => void sendMessage(question)}
+                  className="mt-4 flex flex-wrap justify-start gap-2 lg:justify-center"
+                />
+              </div>
+            </div>
           </div>
+          <div className="shrink-0 p-3 sm:p-4 lg:hidden">
+            <QuestionComposer
+              id="portfolio-question-initial-mobile"
+              value={draft}
+              isStreaming={isStreaming}
+              onChange={setDraft}
+              onSubmit={() => void sendMessage(draft)}
+            />
+          </div>
+        </section>
+      )}
 
-          <MessageScrollerProvider scrollPreviousItemPeek={48}>
-            <MessageScroller className="flex-1">
-              <MessageScrollerViewport className="px-4 py-6 sm:px-6 sm:py-8">
-                <MessageScrollerContent className="mx-auto w-full max-w-3xl justify-end gap-7">
-                  {messages.map((message) => (
-                    <MessageScrollerItem
+      <div
+        className={cn(
+          'size-full min-h-0 min-w-0 flex-col overflow-hidden',
+          hasConversation ? 'flex' : 'hidden',
+        )}
+      >
+        <MessageScrollerProvider scrollPreviousItemPeek={48}>
+          <MessageScroller className="flex-1">
+            <MessageScrollerViewport className="px-4 py-6 sm:px-6 sm:py-8">
+              <MessageScrollerContent className="mx-auto w-full max-w-3xl gap-7">
+                {messages
+                  .filter((message) => message.id !== 'welcome')
+                  .map((message) => (
+                    <AnimatedMessageScrollerItem
                       key={message.id}
                       messageId={message.id}
                       scrollAnchor={message.role === 'user'}
+                      initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{
+                        duration: reduceMotion ? 0 : 0.28,
+                        ease: [0.22, 1, 0.36, 1],
+                      }}
                     >
                       <div
                         className={cn(
@@ -527,24 +567,7 @@ export default function PortfolioChat() {
                         >
                           {message.content ? (
                             message.role === 'assistant' ? (
-                              <>
-                                <MessageText content={message.content} />
-                                {message.id === 'welcome' &&
-                                  messages.length === 1 && (
-                                    <div className="mt-6 lg:hidden">
-                                      <p className="text-foreground/30 font-mono text-[9px] tracking-[0.16em] uppercase">
-                                        Try asking
-                                      </p>
-                                      <SuggestedQuestionButtons
-                                        disabled={isStreaming}
-                                        onSelect={(question) =>
-                                          void sendMessage(question)
-                                        }
-                                        className="mt-3 flex flex-col items-start gap-2"
-                                      />
-                                    </div>
-                                  )}
-                              </>
+                              <MessageText content={message.content} />
                             ) : (
                               <p className="whitespace-pre-wrap">
                                 {message.content}
@@ -556,66 +579,39 @@ export default function PortfolioChat() {
                           ) : null}
                         </div>
                       </div>
-                    </MessageScrollerItem>
+                    </AnimatedMessageScrollerItem>
                   ))}
-                </MessageScrollerContent>
-              </MessageScrollerViewport>
-              <MessageScrollerButton className="border-foreground/15 bg-card text-card-foreground hover:bg-brand hover:text-brand-foreground" />
-            </MessageScroller>
-          </MessageScrollerProvider>
+              </MessageScrollerContent>
+            </MessageScrollerViewport>
+            <MessageScrollerButton
+              size="icon-lg"
+              className="border-foreground/15 bg-background/80 text-foreground hover:bg-brand hover:text-brand-foreground rounded-full backdrop-blur-[12px] backdrop-saturate-[1.8]"
+            />
+          </MessageScroller>
+        </MessageScrollerProvider>
 
-          <div className="border-foreground/15 shrink-0 border-t p-3 sm:p-4">
+        <div className="shrink-0 px-3 pb-5 sm:px-4 sm:pb-6">
+          <div className="mx-auto w-full max-w-3xl">
             {requestState.status === 'error' && (
               <p role="alert" className="mb-3 text-xs text-[#ff8b75]">
                 {requestState.message}
               </p>
             )}
-            <form
-              onSubmit={(event) => {
-                event.preventDefault()
-                void sendMessage(draft)
-              }}
-              className="border-foreground/15 bg-background focus-within:border-brand/60 flex items-center gap-2 rounded-2xl border p-2"
-            >
-              <label htmlFor="portfolio-question" className="sr-only">
-                Ask a question about Ali
-              </label>
-              <Textarea
-                id="portfolio-question"
-                value={draft}
-                onChange={(event) => setDraft(event.target.value)}
-                onKeyDown={(event) => {
-                  if (
-                    event.key === 'Enter' &&
-                    !event.shiftKey &&
-                    !event.nativeEvent.isComposing
-                  ) {
-                    event.preventDefault()
-                    void sendMessage(draft)
-                  }
-                }}
-                maxLength={1000}
-                rows={1}
+            {unusedQuestions.length > 0 && (
+              <SuggestedQuestionButtons
+                questions={unusedQuestions}
                 disabled={isStreaming}
-                placeholder="Ask about experience, projects, skills…"
-                className="text-foreground placeholder:text-foreground/25 max-h-32 min-h-9 resize-none border-0 bg-transparent px-2 py-2 text-base shadow-none focus-visible:border-0 focus-visible:ring-0 disabled:bg-transparent disabled:opacity-100 md:text-base dark:bg-transparent dark:disabled:bg-transparent"
+                onSelect={(question) => void sendMessage(question)}
+                className="mb-3 flex flex-wrap gap-2"
               />
-              <Button
-                type="submit"
-                size="icon-lg"
-                disabled={!draft.trim() || isStreaming}
-                className="bg-brand text-brand-foreground hover:bg-foreground hover:text-background rounded-full"
-                aria-label={
-                  isStreaming ? 'Generating response' : 'Send message'
-                }
-              >
-                {isStreaming ? (
-                  <LoaderCircle className="animate-spin" />
-                ) : (
-                  <ArrowUp />
-                )}
-              </Button>
-            </form>
+            )}
+            <QuestionComposer
+              id="portfolio-question"
+              value={draft}
+              isStreaming={isStreaming}
+              onChange={setDraft}
+              onSubmit={() => void sendMessage(draft)}
+            />
           </div>
         </div>
       </div>
