@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import ScrollReveal from '~/components/ScrollReveal'
 import type { SanityArticle } from '~/lib/sanity'
 import getFormattedDate from '~/lib/getFormattedDate'
@@ -14,14 +14,16 @@ export default function HomeNotesSection({
       <ScrollReveal className="border-foreground/20 flex items-end justify-between gap-6 border-b pb-10">
         <div>
           <h2 className="font-display text-[clamp(4rem,9vw,8rem)] leading-[0.8] tracking-[-0.055em]">
-            Thinking in public.
+            Notes
           </h2>
         </div>
         <Link
           to="/notes"
-          className="hidden items-center gap-2 text-xs font-bold sm:flex"
+          className="group border-foreground/25 hover:text-background relative hidden items-center gap-8 overflow-hidden border-b px-3 py-4 text-xs font-bold uppercase transition-colors duration-300 sm:flex"
         >
-          All notes <ArrowUpRight className="size-4" />
+          <span className="bg-foreground absolute inset-0 translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
+          <span className="relative z-10">View all notes</span>
+          <ArrowRight className="relative z-10 size-4" />
         </Link>
       </ScrollReveal>
       <div>
