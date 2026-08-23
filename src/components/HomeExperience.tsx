@@ -8,18 +8,13 @@ import HomeNotesSection from './home/HomeNotesSection'
 import StackMarquee from './home/StackMarquee'
 import HomeWorkSection from './home/HomeWorkSection'
 import SiteHeader from './SiteHeader'
-import { getRecentArticles, getRecentExperiences } from '~/lib/sanity'
+import { getRecentArticles } from '~/lib/sanity'
 
 export default function HomeExperience() {
   const { data: articles = [] } = useQuery({
     queryKey: ['recentArticles'],
     queryFn: () => getRecentArticles(3),
   })
-  const { data: experiences = [] } = useQuery({
-    queryKey: ['recentExperiences'],
-    queryFn: () => getRecentExperiences(1),
-  })
-
   return (
     <div className="home-page bg-background text-foreground overflow-x-hidden">
       <SiteHeader />
@@ -32,7 +27,7 @@ export default function HomeExperience() {
         </ScrollReveal>
         <HomeWorkSection />
         <HomeCapabilitiesSection />
-        <HomeAboutSection currentRole={experiences[0]} />
+        <HomeAboutSection />
         <HomeNotesSection articles={articles} />
       </main>
       <Footer />

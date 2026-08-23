@@ -69,9 +69,6 @@ export default function AboutVisual() {
       />
       <AboutDecorations />
       <DraggableLogo />
-      <p className="text-foreground/55 relative z-30 font-mono text-[9px] tracking-[0.18em] uppercase">
-        Design engineer · Builder · Collaborator
-      </p>
     </div>
   )
 }
