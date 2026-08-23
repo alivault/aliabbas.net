@@ -114,10 +114,10 @@ export default function ContactForm() {
       <ScrollReveal className="flex min-w-0 flex-col">
         <h1 className="text-[clamp(2.75rem,12vw,6rem)] leading-[0.74] font-extrabold tracking-[-0.02em] lg:text-[clamp(3.6rem,5.8vw,6rem)]">
           Let’s build
+          <span className="block">something</span>
           <span className="font-display text-brand block font-normal italic">
-            something
+            remarkable.
           </span>
-          remarkable.
         </h1>
         <p className="text-foreground/55 mt-9 max-w-md text-base leading-7">
           I’m interested in product engineering and creative frontend roles
@@ -150,12 +150,12 @@ export default function ContactForm() {
                 htmlFor="contact-name"
                 className="text-foreground/45 font-mono text-[11px] tracking-[0.14em] uppercase"
               >
-                01 / Your name
+                Name
               </FieldLabel>
               <Input
                 id="contact-name"
                 autoComplete="name"
-                placeholder="What should I call you?"
+                placeholder="Enter your name"
                 aria-invalid={Boolean(errors.name)}
                 className={inputClassName}
                 {...register('name')}
@@ -168,13 +168,13 @@ export default function ContactForm() {
                 htmlFor="contact-email"
                 className="text-foreground/45 font-mono text-[11px] tracking-[0.14em] uppercase"
               >
-                02 / Email address
+                Email
               </FieldLabel>
               <Input
                 id="contact-email"
                 type="email"
                 autoComplete="email"
-                placeholder="you@company.com"
+                placeholder="Enter your email address"
                 aria-invalid={Boolean(errors.email)}
                 className={inputClassName}
                 {...register('email')}
@@ -187,7 +187,7 @@ export default function ContactForm() {
                 htmlFor="contact-message"
                 className="text-foreground/45 font-mono text-[11px] tracking-[0.14em] uppercase"
               >
-                03 / Tell me about the opportunity
+                Tell me about the opportunity
               </FieldLabel>
               <Textarea
                 id="contact-message"
@@ -205,8 +205,8 @@ export default function ContactForm() {
                 htmlFor="contact-verification"
                 className="text-foreground/45 font-mono text-[11px] tracking-[0.14em] uppercase"
               >
-                04 / Human check
-                <span className="text-foreground/30">
+                Human check:
+                <span>
                   {challenge.ready
                     ? `${challenge.first} + ${challenge.second} = ?`
                     : 'Loading…'}
