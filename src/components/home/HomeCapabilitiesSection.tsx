@@ -41,12 +41,12 @@ export default function HomeCapabilitiesSection() {
               key={capability.number}
               as="article"
               delay={index * 0.04}
-              className="group border-foreground/15 hover:text-brand grid gap-4 border-b py-7 transition-colors sm:grid-cols-2 sm:items-center sm:py-9"
+              className="border-foreground/15 grid gap-4 border-b py-7 sm:grid-cols-2 sm:items-center sm:py-9"
             >
               <h3 className="font-display text-4xl tracking-[-0.035em] sm:text-5xl">
                 {capability.title}
               </h3>
-              <p className="text-foreground/45 group-hover:text-brand/60 max-w-xl text-sm leading-6 transition-colors sm:justify-self-end">
+              <p className="text-foreground/45 max-w-xl text-sm leading-6 sm:justify-self-end">
                 {capability.description}
               </p>
             </ScrollReveal>
