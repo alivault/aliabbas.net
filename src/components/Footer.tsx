@@ -12,7 +12,7 @@ export default function Footer() {
             <p className="text-brand font-mono text-[10px] tracking-[0.2em] uppercase">
               Have an ambitious brief?
             </p>
-            <p className="font-display mt-5 max-w-5xl text-[clamp(3.5rem,8.5vw,9rem)] leading-[0.82] tracking-[-0.055em]">
+            <p className="font-display mt-5 max-w-5xl text-[clamp(3rem,6.5vw,6rem)] leading-[0.8] tracking-[-0.055em]">
               Let’s make it
               <br />
               <em className="text-brand">unmissable.</em>
@@ -20,10 +20,10 @@ export default function Footer() {
           </div>
           <Link
             to="/contact"
-            className="group bg-brand text-brand-foreground flex size-28 shrink-0 items-center justify-center rounded-full transition-transform duration-500 hover:scale-105 hover:rotate-6 sm:size-36"
+            className="group bg-brand text-brand-foreground flex size-24 shrink-0 items-center justify-center rounded-full transition-transform duration-500 hover:scale-105 hover:rotate-6 sm:size-30"
             aria-label="Contact Ali"
           >
-            <ArrowUpRight className="size-9 transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1 sm:size-11" />
+            <ArrowUpRight className="size-8 transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1 sm:size-9" />
           </Link>
         </ScrollReveal>
         <ScrollReveal

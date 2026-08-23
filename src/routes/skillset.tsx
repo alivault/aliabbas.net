@@ -51,7 +51,7 @@ function SkillsetPage() {
             className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end"
           >
             <div>
-              <h1 className="text-[clamp(3.1rem,9vw,8.5rem)] leading-[0.76] font-extrabold tracking-[-0.07em]">
+              <h1 className="text-[clamp(3.1rem,9vw,8.5rem)] leading-[0.76] font-extrabold tracking-[-0.02em]">
                 Ideas,
                 <br />
                 <span className="font-display text-brand font-normal normal-case italic">

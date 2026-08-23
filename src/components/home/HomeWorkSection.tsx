@@ -10,7 +10,7 @@ export default function HomeWorkSection() {
       className="mx-auto max-w-[1600px] scroll-mt-[71px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36"
     >
       <ScrollReveal as="header" className="pb-12 lg:pb-20">
-        <h2 className="font-display text-5xl tracking-[-0.045em] sm:text-7xl">
+        <h2 className="font-display text-[clamp(3rem,6.5vw,6rem)] leading-[0.8] tracking-[-0.055em]">
           Recent work
         </h2>
       </ScrollReveal>
@@ -24,7 +24,7 @@ export default function HomeWorkSection() {
       <div className="mt-16 pt-8 lg:mt-24 lg:pt-12">
         <ScrollReveal className="mb-10 flex items-end justify-between gap-6">
           <div>
-            <h2 className="font-display text-5xl tracking-[-0.045em] sm:text-7xl">
+            <h2 className="font-display text-[clamp(3rem,6.5vw,6rem)] leading-[0.8] tracking-[-0.055em]">
               Side projects
             </h2>
           </div>

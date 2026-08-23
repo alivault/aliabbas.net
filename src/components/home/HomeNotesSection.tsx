@@ -13,7 +13,7 @@ export default function HomeNotesSection({
     <section className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36">
       <ScrollReveal className="border-foreground/20 flex items-end justify-between gap-6 border-b pb-10">
         <div>
-          <h2 className="font-display text-[clamp(4rem,9vw,8rem)] leading-[0.8] tracking-[-0.055em]">
+          <h2 className="font-display text-[clamp(3rem,6.5vw,6rem)] leading-[0.8] tracking-[-0.055em]">
             Notes
           </h2>
         </div>

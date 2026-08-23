@@ -34,7 +34,7 @@ function ExperiencePage() {
           className="border-foreground/20 grid gap-8 border-b pb-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-end lg:pb-16"
         >
           <div>
-            <h1 className="font-display text-[clamp(3.5rem,10vw,9rem)] leading-[0.74] tracking-[-0.065em]">
+            <h1 className="font-display text-[clamp(3.5rem,10vw,9rem)] leading-[0.74] tracking-[-0.02em]">
               Work that
               <br />
               <em className="text-brand">shaped me.</em>

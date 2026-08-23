@@ -6,7 +6,7 @@ export default function HomeCapabilitiesSection() {
     <section className="bg-background text-foreground">
       <div className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36">
         <ScrollReveal as="header">
-          <h2 className="font-display text-5xl tracking-[-0.045em] sm:text-7xl">
+          <h2 className="font-display text-[clamp(3rem,6.5vw,6rem)] leading-[0.8] tracking-[-0.055em]">
             Skillset
           </h2>
         </ScrollReveal>

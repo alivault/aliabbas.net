@@ -72,7 +72,7 @@ function NotesPage() {
           className="border-foreground/20 grid gap-8 border-b pb-12 lg:grid-cols-[1fr_0.65fr] lg:items-end lg:pb-16"
         >
           <div>
-            <h1 className="font-display text-[clamp(3.5rem,10vw,9rem)] leading-[0.74] tracking-[-0.065em]">
+            <h1 className="font-display text-[clamp(3.5rem,10vw,9rem)] leading-[0.74] tracking-[-0.02em]">
               Thinking
               <br />
               <em className="text-brand">in public.</em>
