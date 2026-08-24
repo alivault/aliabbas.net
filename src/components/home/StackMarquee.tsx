@@ -59,11 +59,10 @@ export default function StackMarquee() {
 
   return (
     <div
-      id="stack-marquee"
       ref={containerRef}
       role="region"
       aria-label={`Technology stack: ${stack.map(({ name }) => name).join(', ')}`}
-      className="text-foreground scroll-mt-[72px] overflow-hidden py-4 sm:py-5"
+      className="text-foreground overflow-hidden py-4 sm:py-5"
     >
       <div
         className="marquee-track flex w-max items-center"

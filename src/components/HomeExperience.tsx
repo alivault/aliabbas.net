@@ -22,9 +22,11 @@ export default function HomeExperience() {
         <div className="flex min-h-svh flex-col">
           <HomeHero />
         </div>
-        <ScrollReveal amount={0.4}>
-          <StackMarquee />
-        </ScrollReveal>
+        <div id="stack-marquee" className="scroll-mt-[72px]">
+          <ScrollReveal amount={0.4}>
+            <StackMarquee />
+          </ScrollReveal>
+        </div>
         <HomeWorkSection />
         <HomeCapabilitiesSection />
         <HomeAboutSection />
