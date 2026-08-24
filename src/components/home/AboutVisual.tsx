@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { CodeXml, SplinePointer } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import Logo from '../Logo'
@@ -34,7 +34,50 @@ function AboutDecorations() {
 
 function DraggableLogo() {
   const constraintsRef = useRef<HTMLDivElement>(null)
+  const logoRef = useRef<HTMLDivElement>(null)
   const reduceMotion = useReducedMotion()
+  const [dragConstraints, setDragConstraints] = useState({
+    top: 0,
+    right: 0,
+    bottom: 0,
+    left: 0,
+  })
+
+  useEffect(() => {
+    const container = constraintsRef.current
+    const logo = logoRef.current
+    if (!container || !logo) return
+
+    const measureConstraints = () => {
+      const horizontal = Math.max(
+        0,
+        (container.clientWidth - logo.offsetWidth) / 2,
+      )
+      const vertical = Math.max(
+        0,
+        (container.clientHeight - logo.offsetHeight) / 2,
+      )
+
+      setDragConstraints({
+        top: -vertical,
+        right: horizontal,
+        bottom: vertical,
+        left: -horizontal,
+      })
+    }
+
+    measureConstraints()
+
+    // Ref-based Motion constraints remeasure on every window resize. Mobile
+    // Safari emits resize events while its browser chrome collapses on scroll,
+    // which makes Motion reposition the logo. Observe the actual elements so
+    // constraints only change when their layout size changes instead.
+    const resizeObserver = new ResizeObserver(measureConstraints)
+    resizeObserver.observe(container)
+    resizeObserver.observe(logo)
+
+    return () => resizeObserver.disconnect()
+  }, [])
 
   return (
     <div
@@ -42,8 +85,9 @@ function DraggableLogo() {
       className="pointer-events-none absolute inset-0 z-20 grid place-items-center"
     >
       <motion.div
+        ref={logoRef}
         drag={!reduceMotion}
-        dragConstraints={constraintsRef}
+        dragConstraints={dragConstraints}
         dragElastic={0.08}
         dragMomentum={false}
         initial={reduceMotion ? undefined : { opacity: 0, scale: 0.94 }}
