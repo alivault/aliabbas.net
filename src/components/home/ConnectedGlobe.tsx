@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { motion, useReducedMotion } from 'motion/react'
 import * as THREE from 'three'
 
 const GLOBE_RADIUS = 1.42
@@ -311,6 +312,7 @@ function createLandPointPositions(
 export default function ConnectedGlobe() {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const prefersReducedMotion = useReducedMotion()
   const [prefersDarkMode, setPrefersDarkMode] = useState(getPrefersDarkMode)
 
   useEffect(() => {
@@ -1096,8 +1098,18 @@ export default function ConnectedGlobe() {
 
   return (
     <div ref={containerRef} className="absolute inset-0">
-      <canvas
+      <motion.canvas
         ref={canvasRef}
+        initial={
+          prefersReducedMotion
+            ? false
+            : { opacity: 0, scale: 0.96, filter: 'blur(16px)' }
+        }
+        animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+        transition={{
+          duration: prefersReducedMotion ? 0 : 1.2,
+          ease: [0.22, 1, 0.36, 1],
+        }}
         className="block size-full cursor-grab touch-pan-y outline-none"
         aria-label="Interactive globe with animated connections. Drag or use arrow keys to rotate."
         role="img"
