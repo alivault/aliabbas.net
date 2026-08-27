@@ -108,7 +108,7 @@ prioritize performance, accessibility, and engagement.
 
 Company: https://superstudios.io/
 
-### Web Designer — Super Studios Inc. (2021–2024)
+### Frontend Engineer — Super Studios Inc. (2021–2024)
 
 Ali designed and developed user interfaces using Figma for UX/UI, Webflow for
 prototyping, and Next.js for modern responsive web experiences. This role shows
