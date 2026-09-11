@@ -1,4 +1,6 @@
 import ScrollReveal from '~/components/ScrollReveal'
+import SectionHeading from '~/components/SectionHeading'
+import Title from '~/components/Title'
 import { capabilities } from '~/data/capabilities'
 
 export default function HomeCapabilitiesSection() {
@@ -6,9 +8,7 @@ export default function HomeCapabilitiesSection() {
     <section className="bg-background text-foreground">
       <div className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36">
         <ScrollReveal as="header">
-          <h2 className="font-display text-[clamp(3rem,6.5vw,6rem)] leading-[0.8] tracking-[-0.055em]">
-            Skillset
-          </h2>
+          <SectionHeading>Skillset</SectionHeading>
         </ScrollReveal>
 
         <div className="border-foreground/15 mt-20 border-t lg:mt-28">
@@ -19,9 +19,9 @@ export default function HomeCapabilitiesSection() {
               delay={index * 0.04}
               className="border-foreground/15 grid gap-4 border-b py-7 sm:grid-cols-2 sm:items-center sm:py-9"
             >
-              <h3 className="font-display text-4xl tracking-[-0.035em] sm:text-5xl">
+              <Title as="h3" variant="card">
                 {capability.title}
-              </h3>
+              </Title>
               <p className="text-foreground/45 max-w-xl text-sm leading-6 sm:justify-self-end">
                 {capability.description}
               </p>

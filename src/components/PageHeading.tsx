@@ -1,9 +1,29 @@
-import type { ReactNode } from 'react'
+import type { ComponentProps } from 'react'
+import Title from '~/components/Title'
+import { cn } from '~/lib/utils'
 
-export default function PageHeading({ children }: { children: ReactNode }) {
+const pageVariants = {
+  default: 'page',
+  compact: 'card',
+  hero: 'hero',
+} as const
+
+type PageHeadingProps = ComponentProps<'h1'> & {
+  size?: keyof typeof pageVariants
+}
+
+export default function PageHeading({
+  className,
+  size = 'default',
+  ...props
+}: PageHeadingProps) {
   return (
-    <h1 className="font-display max-w-5xl text-[clamp(4rem,10vw,9rem)] leading-[0.82] tracking-[-0.055em]">
-      {children}
-    </h1>
+    <Title
+      as="h1"
+      variant={pageVariants[size]}
+      data-slot="page-heading"
+      className={cn('max-w-5xl text-balance', className)}
+      {...props}
+    />
   )
 }

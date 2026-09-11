@@ -1,3 +1,5 @@
+import Title from './Title'
+
 interface ProjectItemProps {
   href: string
   title: string
@@ -29,7 +31,9 @@ export default function ProjectItem({
               className="size-6 flex-shrink-0"
             />
           )}
-          <span className="text-lg font-semibold">{title}</span>
+          <Title as="span" variant="subsection">
+            {title}
+          </Title>
         </div>
         <span className="text-card-foreground/50 text-sm leading-6">
           {description}

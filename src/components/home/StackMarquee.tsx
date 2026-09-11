@@ -84,7 +84,7 @@ export default function StackMarquee() {
                     className="block max-h-4 max-w-5 object-contain brightness-0 dark:invert"
                   />
                 </span>
-                <span className="px-5 text-sm font-extrabold tracking-[-0.02em] uppercase sm:px-8 sm:text-base">
+                <span className="px-5 text-sm font-extrabold uppercase sm:px-8 sm:text-base">
                   {item.name}
                 </span>
               </div>

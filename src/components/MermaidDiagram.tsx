@@ -56,7 +56,8 @@ export function MermaidDiagram({ value }: { value: MermaidDiagramValue }) {
           theme: 'base',
           themeVariables: {
             background,
-            fontFamily: 'Inter Tight, ui-sans-serif, system-ui, sans-serif',
+            fontFamily:
+              'DM Sans Variable, ui-sans-serif, system-ui, sans-serif',
             lineColor: foreground,
             primaryColor: background,
             primaryTextColor: foreground,
@@ -104,7 +105,7 @@ export function MermaidDiagram({ value }: { value: MermaidDiagramValue }) {
         />
       )}
       {value.caption && (
-        <figcaption className="text-foreground/45 mt-5 text-center font-mono text-[9px] tracking-[0.12em] uppercase">
+        <figcaption className="text-foreground/45 mt-5 text-center font-mono text-[9px] uppercase">
           {value.caption}
         </figcaption>
       )}

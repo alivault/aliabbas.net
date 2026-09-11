@@ -1,4 +1,5 @@
 import ScrollReveal from './ScrollReveal'
+import Title from './Title'
 
 interface ExperienceItemProps {
   index: number
@@ -32,7 +33,7 @@ export default function ExperienceItem({
       className="border-foreground/20 grid gap-5 border-b py-10 sm:grid-cols-[180px_1fr] sm:py-14 lg:grid-cols-[240px_1fr]"
     >
       <div>
-        <span className="text-foreground/40 font-mono text-[9px] tracking-[0.12em] uppercase">
+        <span className="text-foreground/40 font-mono text-[9px] uppercase">
           {formatDateRange(startDate, endDate)}
         </span>
         {url ? (
@@ -49,9 +50,9 @@ export default function ExperienceItem({
         )}
       </div>
       <div>
-        <h2 className="font-display text-4xl leading-none tracking-[-0.035em] sm:text-5xl">
+        <Title as="h2" variant="card">
           {title}
-        </h2>
+        </Title>
         <p className="text-foreground/55 mt-5 max-w-2xl text-sm leading-7 sm:text-base">
           {description}
         </p>

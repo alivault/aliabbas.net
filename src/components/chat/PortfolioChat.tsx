@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowUp, Bot, LoaderCircle, UserRound } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
+import PageHeading from '~/components/PageHeading'
+import Title from '~/components/Title'
 import {
   MessageScroller,
   MessageScrollerButton,
@@ -224,17 +226,34 @@ function MessageText({ content }: { content: string }) {
             </a>
           ),
           h1: ({ children }) => (
-            <h1 className="text-foreground text-lg font-semibold">
+            <Title as="h1" variant="card" className="text-foreground">
               {children}
-            </h1>
+            </Title>
           ),
           h2: ({ children }) => (
-            <h2 className="text-foreground text-base font-semibold">
+            <Title as="h2" variant="subsection" className="text-foreground">
               {children}
-            </h2>
+            </Title>
           ),
           h3: ({ children }) => (
-            <h3 className="text-foreground font-semibold">{children}</h3>
+            <Title as="h3" variant="detail" className="text-foreground">
+              {children}
+            </Title>
+          ),
+          h4: ({ children }) => (
+            <Title as="h4" variant="detail">
+              {children}
+            </Title>
+          ),
+          h5: ({ children }) => (
+            <Title as="h5" variant="detail">
+              {children}
+            </Title>
+          ),
+          h6: ({ children }) => (
+            <Title as="h6" variant="detail">
+              {children}
+            </Title>
           ),
           ul: ({ children }) => (
             <ul className="marker:text-brand list-disc space-y-1 pl-5">
@@ -476,9 +495,9 @@ export default function PortfolioChat() {
         <section className="flex min-h-0 flex-1 flex-col">
           <div className="flex min-h-0 flex-1 items-end justify-start overflow-y-auto px-4 py-8 sm:px-6 sm:py-10 lg:items-center lg:justify-center lg:py-12">
             <div className="flex w-full max-w-3xl flex-col items-start lg:items-center">
-              <h1 className="font-display text-left text-[clamp(3.5rem,6vw,6rem)] leading-[0.82] tracking-[-0.06em] lg:text-center">
+              <PageHeading className="text-left lg:text-center">
                 Ask about <em className="text-brand">Ali.</em>
-              </h1>
+              </PageHeading>
               <div className="mt-10 hidden w-full lg:block">
                 <QuestionComposer
                   id="portfolio-question-initial"
@@ -489,7 +508,7 @@ export default function PortfolioChat() {
                 />
               </div>
               <div className="mt-8 w-full">
-                <p className="text-foreground/30 text-left font-mono text-[9px] tracking-[0.16em] uppercase lg:text-center">
+                <p className="text-foreground/30 text-left font-mono text-[9px] uppercase lg:text-center">
                   Try asking
                 </p>
                 <SuggestedQuestionButtons

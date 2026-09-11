@@ -10,6 +10,7 @@ import {
   SheetTrigger,
 } from '~/components/ui/sheet'
 import Logo from './Logo'
+import Title from './Title'
 
 const navigation = [
   { label: 'Work', to: '/work' as const },
@@ -159,9 +160,7 @@ export default function SiteHeader() {
             aria-label="Ali Abbas — home"
           >
             <Logo className="text-foreground h-7 w-8" />
-            <span className="text-sm font-semibold tracking-[-0.02em]">
-              Ali Abbas
-            </span>
+            <span className="text-sm font-semibold">Ali Abbas</span>
           </Link>
 
           <nav className="text-foreground/55 hidden items-center gap-8 justify-self-center text-[12px] font-semibold lg:flex">
@@ -220,9 +219,9 @@ export default function SiteHeader() {
                     onClick={() => setMenuOpen(false)}
                     className="flex items-center justify-between py-4"
                   >
-                    <span className="font-display text-4xl tracking-[-0.03em]">
+                    <Title as="span" variant="card">
                       {item.label}
-                    </span>
+                    </Title>
                     <span className="text-foreground/30 font-mono text-[10px]">
                       0{index + 1}
                     </span>

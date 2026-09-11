@@ -6,8 +6,8 @@ import HomeCapabilitiesSection from './home/HomeCapabilitiesSection'
 import { HomeHero } from './home/HomeHero'
 import HomeNotesSection from './home/HomeNotesSection'
 import StackMarquee from './home/StackMarquee'
-import HomeWorkSection from './home/HomeWorkSection'
 import SiteHeader from './SiteHeader'
+import WorkSection from './WorkSection'
 import { getRecentArticles } from '~/lib/sanity'
 
 export default function HomeExperience() {
@@ -27,7 +27,7 @@ export default function HomeExperience() {
             <StackMarquee />
           </ScrollReveal>
         </div>
-        <HomeWorkSection />
+        <WorkSection />
         <HomeCapabilitiesSection />
         <HomeAboutSection />
         <HomeNotesSection articles={articles} />

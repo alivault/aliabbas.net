@@ -1,6 +1,8 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import ScrollReveal from '~/components/ScrollReveal'
+import SectionHeading from '~/components/SectionHeading'
+import Title from '~/components/Title'
 import type { SanityArticle } from '~/lib/sanity'
 import getFormattedDate from '~/lib/getFormattedDate'
 
@@ -13,9 +15,7 @@ export default function HomeNotesSection({
     <section className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36">
       <ScrollReveal className="border-foreground/20 flex items-end justify-between gap-6 border-b pb-10">
         <div>
-          <h2 className="font-display text-[clamp(3rem,6.5vw,6rem)] leading-[0.8] tracking-[-0.055em]">
-            Notes
-          </h2>
+          <SectionHeading>Notes</SectionHeading>
         </div>
         <Link
           to="/notes"
@@ -40,9 +40,13 @@ export default function HomeNotesSection({
                 className="group border-foreground/20 grid gap-4 border-b py-7 sm:grid-cols-[1fr_auto] sm:items-center sm:py-9"
               >
                 <span>
-                  <span className="font-display block text-3xl leading-[1.1] tracking-[-0.025em] transition-transform duration-500 group-hover:translate-x-2 sm:text-5xl">
+                  <Title
+                    as="span"
+                    variant="card"
+                    className="block transition-transform duration-500 group-hover:translate-x-2"
+                  >
                     {article.title}
-                  </span>
+                  </Title>
                   <span className="text-foreground/40 mt-2 block text-xs">
                     {getFormattedDate(article.date)}
                   </span>

@@ -5,6 +5,7 @@ import { ArrowUpRight, CircleCheck, Loader2 } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import PageHeading from './PageHeading'
 import ScrollReveal from './ScrollReveal'
 import { Button } from './ui/button'
 import { Field, FieldError, FieldGroup, FieldLabel } from './ui/field'
@@ -99,9 +100,7 @@ export default function ContactForm() {
         <span className="bg-brand text-brand-foreground flex size-20 items-center justify-center rounded-full">
           <CircleCheck className="size-9" strokeWidth={1.5} />
         </span>
-        <h1 className="font-display mt-8 text-[clamp(4.5rem,10vw,9rem)] leading-[0.8] tracking-[-0.06em]">
-          Message received.
-        </h1>
+        <PageHeading className="mt-8">Message received.</PageHeading>
         <p className="text-foreground/50 mt-6 max-w-md text-base leading-7">
           Thanks for reaching out. I’ll read your note and get back to you soon.
         </p>
@@ -112,13 +111,11 @@ export default function ContactForm() {
   return (
     <section className="mx-auto grid max-w-[1440px] gap-14 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[0.9fr_1.1fr] lg:gap-24 lg:px-12 lg:py-32">
       <ScrollReveal className="flex min-w-0 flex-col">
-        <h1 className="text-[clamp(2.75rem,12vw,6rem)] leading-[0.74] font-extrabold tracking-[-0.02em] lg:text-[clamp(3.6rem,5.8vw,6rem)]">
+        <PageHeading>
           Let’s build
           <span className="block">something</span>
-          <span className="font-display text-brand block font-normal italic">
-            remarkable.
-          </span>
-        </h1>
+          <span className="text-brand block">remarkable.</span>
+        </PageHeading>
         <p className="text-foreground/55 mt-9 max-w-md text-base leading-7">
           I’m interested in product engineering and creative frontend roles
           where design quality matters as much as technical execution. If that
@@ -148,7 +145,7 @@ export default function ContactForm() {
             <Field data-invalid={Boolean(errors.name)}>
               <FieldLabel
                 htmlFor="contact-name"
-                className="text-foreground/45 font-mono text-[11px] tracking-[0.14em] uppercase"
+                className="text-foreground/45 font-mono text-[11px] uppercase"
               >
                 Name
               </FieldLabel>
@@ -166,7 +163,7 @@ export default function ContactForm() {
             <Field data-invalid={Boolean(errors.email)}>
               <FieldLabel
                 htmlFor="contact-email"
-                className="text-foreground/45 font-mono text-[11px] tracking-[0.14em] uppercase"
+                className="text-foreground/45 font-mono text-[11px] uppercase"
               >
                 Email
               </FieldLabel>
@@ -185,7 +182,7 @@ export default function ContactForm() {
             <Field data-invalid={Boolean(errors.message)}>
               <FieldLabel
                 htmlFor="contact-message"
-                className="text-foreground/45 font-mono text-[11px] tracking-[0.14em] uppercase"
+                className="text-foreground/45 font-mono text-[11px] uppercase"
               >
                 Tell me about the opportunity
               </FieldLabel>
@@ -203,7 +200,7 @@ export default function ContactForm() {
             <Field data-invalid={Boolean(errors.verification)}>
               <FieldLabel
                 htmlFor="contact-verification"
-                className="text-foreground/45 font-mono text-[11px] tracking-[0.14em] uppercase"
+                className="text-foreground/45 font-mono text-[11px] uppercase"
               >
                 Human check:
                 <span>

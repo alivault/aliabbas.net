@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import ExperienceList from '~/components/ExperienceList'
 import Main from '~/components/Main'
+import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
 import Section from '~/components/Section'
 import { getExperiences } from '~/lib/sanity'
@@ -34,11 +35,11 @@ function ExperiencePage() {
           className="border-foreground/20 grid gap-8 border-b pb-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-end lg:pb-16"
         >
           <div>
-            <h1 className="font-display text-[clamp(3.5rem,10vw,9rem)] leading-[0.74] tracking-[-0.02em]">
+            <PageHeading>
               Work that
               <br />
               <em className="text-brand">shaped me.</em>
-            </h1>
+            </PageHeading>
           </div>
           <p className="text-foreground/55 max-w-xl text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
             A path through product teams, creative development, frontend

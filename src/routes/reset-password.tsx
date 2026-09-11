@@ -4,6 +4,7 @@ import { Loader2, CheckCircle, XCircle } from 'lucide-react'
 import { authClient } from '~/lib/auth-client'
 import { Button } from '~/components/ui/button'
 import Logo from '~/components/Logo'
+import PageHeading from '~/components/PageHeading'
 
 export const Route = createFileRoute('/reset-password')({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -69,7 +70,9 @@ function ResetPasswordPage() {
           <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
             <XCircle className="size-6 text-red-600 dark:text-red-400" />
           </div>
-          <h1 className="font-display mb-2 text-4xl">Invalid reset link</h1>
+          <PageHeading size="compact" className="mb-2">
+            Invalid reset link
+          </PageHeading>
           <p className="text-foreground/45 mb-5 text-sm">
             This password reset link is invalid or has expired.
           </p>
@@ -89,7 +92,9 @@ function ResetPasswordPage() {
           <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
             <CheckCircle className="size-6 text-green-600 dark:text-green-400" />
           </div>
-          <h1 className="font-display mb-2 text-4xl">Password reset!</h1>
+          <PageHeading size="compact" className="mb-2">
+            Password reset!
+          </PageHeading>
           <p className="text-foreground/45 mb-5 text-sm">
             Your password has been successfully reset. You can now sign in with
             your new password.
@@ -104,9 +109,9 @@ function ResetPasswordPage() {
     <div className="bg-background text-foreground flex min-h-svh items-center justify-center p-5">
       <div className="border-foreground/15 w-full max-w-md border p-8">
         <BrandHeader />
-        <h1 className="font-display mb-2 text-center text-4xl">
+        <PageHeading size="compact" className="mb-2 text-center">
           Reset your password
-        </h1>
+        </PageHeading>
         <p className="text-foreground/45 mb-6 text-center text-sm">
           Enter your new password below.
         </p>

@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { ArrowLeft, Map as MapIcon, X } from 'lucide-react'
+import PageHeading from '~/components/PageHeading'
+import SectionHeading from '~/components/SectionHeading'
 import { Kbd } from '~/components/ui/kbd'
 import StackTraceScene from './StackTraceScene'
 import StackTraceTouchControls from './StackTraceTouchControls'
@@ -20,7 +22,7 @@ type ScreenState =
 function Metric({ label, value }: { label: string; value: string }) {
   return (
     <div className="border-l border-white/15 pl-4">
-      <p className="font-mono text-[10px] tracking-[0.14em] text-white/40 uppercase sm:text-[11px]">
+      <p className="font-mono text-[10px] text-white/40 uppercase sm:text-[11px]">
         {label}
       </p>
       <p className="mt-1 text-base font-semibold text-white sm:text-lg">
@@ -87,20 +89,10 @@ function MissionBriefing({
         }`}
       >
         <div>
-          <h1
-            className={`text-center leading-[0.72] font-extrabold tracking-[-0.075em] uppercase ${
-              isTouchPortrait
-                ? 'text-[clamp(3rem,16vw,5rem)]'
-                : isTouch
-                  ? 'text-[clamp(2.75rem,8vw,5rem)]'
-                  : 'text-[clamp(3rem,9vw,9rem)]'
-            }`}
-          >
+          <PageHeading className="text-center uppercase">
             Stack
-            <span className="font-display block font-normal text-[#d9ff43] normal-case italic">
-              Trace
-            </span>
-          </h1>
+            <span className="block text-[#d9ff43] normal-case">Trace</span>
+          </PageHeading>
         </div>
 
         <div>
@@ -135,7 +127,7 @@ function MissionBriefing({
           </div>
 
           {isTouch && (
-            <div className="mx-auto mt-4 max-w-xl font-mono text-[8px] tracking-[0.12em] text-white/40 uppercase">
+            <div className="mx-auto mt-4 max-w-xl font-mono text-[8px] text-white/40 uppercase">
               <label className="flex items-center gap-3">
                 Look sensitivity
                 <input
@@ -188,14 +180,14 @@ function MissionHud({
     <div className="stack-trace-hud pointer-events-none absolute inset-0 z-20 p-4 text-[#f1efe8] sm:p-6">
       <div className="flex items-start justify-between gap-8">
         <div>
-          <p className="font-mono text-[11px] tracking-[0.18em] text-[#d9ff43] uppercase sm:text-xs">
+          <p className="font-mono text-[11px] text-[#d9ff43] uppercase sm:text-xs">
             Stack Trace
           </p>
-          <p className="mt-1 font-mono text-[9px] tracking-[0.14em] text-white/35 uppercase sm:text-[10px]">
+          <p className="mt-1 font-mono text-[9px] text-white/35 uppercase sm:text-[10px]">
             Incident 001 / Trace active
           </p>
           {!isTouch && (
-            <div className="mt-4 flex items-center gap-2 font-mono text-[10px] tracking-[0.12em] text-white/45 uppercase">
+            <div className="mt-4 flex items-center gap-2 font-mono text-[10px] text-white/45 uppercase">
               <Kbd className="size-6 border border-white/20 bg-black/35 font-mono text-xs text-white/75">
                 ?
               </Kbd>
@@ -205,7 +197,7 @@ function MissionHud({
         </div>
 
         <div className="max-w-[50vw] text-right">
-          <p className="font-mono text-[9px] tracking-[0.14em] text-white/35 uppercase sm:text-[10px]">
+          <p className="font-mono text-[9px] text-white/35 uppercase sm:text-[10px]">
             Current instruction
           </p>
           <p className="mt-1 text-sm font-semibold sm:text-base">
@@ -229,10 +221,10 @@ function MissionHud({
           >
             <span className="size-2 shrink-0 rounded-full bg-[#ff694a] shadow-[0_0_14px_#ff694a]" />
             <div className="min-w-0 flex-1">
-              <p className="font-mono text-[8px] tracking-[0.18em] text-[#ff694a] uppercase sm:text-[9px]">
+              <p className="font-mono text-[8px] text-[#ff694a] uppercase sm:text-[9px]">
                 Rollback active
               </p>
-              <p className="mt-0.5 text-sm font-extrabold tracking-[0.04em] text-white uppercase sm:text-base">
+              <p className="mt-0.5 text-sm font-extrabold text-white uppercase sm:text-base">
                 Return to surface
               </p>
               <p className="mt-0.5 text-[10px] text-white/50 sm:text-xs">
@@ -263,7 +255,7 @@ function MissionHud({
       {!isTouch && (
         <div className="absolute right-4 bottom-4 left-4 flex items-end justify-between gap-6 sm:right-6 sm:bottom-6 sm:left-6">
           <div className="hidden w-56 border border-white/12 bg-black/35 p-4 backdrop-blur-sm sm:block">
-            <p className="font-mono text-[10px] tracking-[0.14em] text-white/35 uppercase">
+            <p className="font-mono text-[10px] text-white/35 uppercase">
               Captured frames
             </p>
             <div className="mt-3 space-y-2">
@@ -284,7 +276,7 @@ function MissionHud({
                   >
                     {frame.label}
                   </span>
-                  <span className="text-[9px] tracking-[0.1em] text-white/30 uppercase">
+                  <span className="text-[9px] text-white/30 uppercase">
                     {frame.status}
                   </span>
                 </div>
@@ -368,12 +360,12 @@ function KeybindsScreen({ onClose }: { onClose: () => void }) {
       <div className="w-full max-w-2xl border border-white/15 bg-[#090a0d] p-6 sm:p-8">
         <div className="flex items-start justify-between gap-6">
           <div>
-            <p className="font-mono text-[10px] tracking-[0.2em] text-[#d9ff43] uppercase">
+            <p className="font-mono text-[10px] text-[#d9ff43] uppercase">
               Input reference
             </p>
-            <h2 className="font-display mt-3 text-4xl tracking-[-0.045em] sm:text-6xl">
+            <SectionHeading size="compact" className="mt-3">
               Flight controls
-            </h2>
+            </SectionHeading>
           </div>
           <button
             type="button"
@@ -424,12 +416,12 @@ function PauseScreen({
   return (
     <div className="pointer-events-auto absolute inset-0 z-40 grid place-items-center bg-[#050608]/80 p-5 text-[#f1efe8] backdrop-blur-sm">
       <div className="w-full max-w-md border border-white/15 bg-[#0a0b0e] p-6 sm:p-8">
-        <p className="font-mono text-[9px] tracking-[0.2em] text-[#ff694a] uppercase">
+        <p className="font-mono text-[9px] text-[#ff694a] uppercase">
           Diagnostic suspended
         </p>
-        <h2 className="font-display mt-4 text-5xl tracking-[-0.045em]">
+        <SectionHeading size="compact" className="mt-4">
           Trace paused.
-        </h2>
+        </SectionHeading>
         <p className="mt-4 text-sm leading-6 text-white/45">
           Resume {inputMode === 'touch' ? 'touch' : 'pointer'} control to
           continue the mission.
@@ -466,14 +458,14 @@ function AutomapOverlay({
     <div className="pointer-events-none absolute inset-0 z-40 flex flex-col justify-between p-5 text-[#f1efe8] sm:p-8">
       <div className="flex items-start justify-between gap-6">
         <div>
-          <div className="flex items-center gap-2 font-mono text-[9px] tracking-[0.2em] text-[#d9ff43] uppercase">
+          <div className="flex items-center gap-2 font-mono text-[9px] text-[#d9ff43] uppercase">
             <MapIcon className="size-4" />
             Complete stack geometry
           </div>
-          <h2 className="font-display mt-2 text-3xl tracking-[-0.04em] sm:text-5xl">
+          <SectionHeading size="compact" className="mt-2">
             Wireframe map
-          </h2>
-          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 font-mono text-[7px] tracking-[0.12em] text-white/40 uppercase sm:text-[8px]">
+          </SectionHeading>
+          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 font-mono text-[7px] text-white/40 uppercase sm:text-[8px]">
             {[
               ['#d9ff43', 'Player'],
               ['#ff694a', 'Hostile target'],
@@ -500,7 +492,7 @@ function AutomapOverlay({
         </button>
       </div>
 
-      <div className="flex items-end justify-between gap-6 font-mono text-[8px] tracking-[0.14em] text-white/35 uppercase sm:text-[9px]">
+      <div className="flex items-end justify-between gap-6 font-mono text-[8px] text-white/35 uppercase sm:text-[9px]">
         <span>
           {inputMode === 'touch'
             ? 'Drag to rotate'
@@ -527,7 +519,7 @@ function ResultScreen({
       <div className="w-full max-w-2xl border border-white/15 bg-[#090a0d] p-6 sm:p-9">
         <div className="flex items-center justify-between gap-6">
           <p
-            className={`font-mono text-[9px] tracking-[0.2em] uppercase ${didWin ? 'text-[#d9ff43]' : 'text-[#ff694a]'}`}
+            className={`font-mono text-[9px] uppercase ${didWin ? 'text-[#d9ff43]' : 'text-[#ff694a]'}`}
           >
             {didWin ? 'Stack trace resolved' : 'Trace terminated'}
           </p>
@@ -535,14 +527,14 @@ function ResultScreen({
             INCIDENT_001
           </span>
         </div>
-        <h2 className="mt-6 text-[clamp(3.5rem,11vw,7rem)] leading-[0.78] font-extrabold tracking-[-0.065em] uppercase">
+        <SectionHeading className="mt-6 uppercase">
           Build
           <span
-            className={`font-display block font-normal normal-case italic ${didWin ? 'text-[#d9ff43]' : 'text-[#ff694a]'}`}
+            className={`block normal-case ${didWin ? 'text-[#d9ff43]' : 'text-[#ff694a]'}`}
           >
             {didWin ? 'shipped.' : 'failed.'}
           </span>
-        </h2>
+        </SectionHeading>
         <p className="mt-6 text-sm text-white/45">{result.reason}</p>
 
         <div className="mt-8 grid grid-cols-2 gap-px border border-white/15 bg-white/15 sm:grid-cols-3">
@@ -555,7 +547,7 @@ function ResultScreen({
             ['Trace time', `${Math.round(result.elapsed)}s`],
           ].map(([label, value]) => (
             <div key={label} className="bg-[#090a0d] p-4 sm:p-5">
-              <p className="font-mono text-[8px] tracking-[0.14em] text-white/30 uppercase">
+              <p className="font-mono text-[8px] text-white/30 uppercase">
                 {label}
               </p>
               <p className="mt-2 text-xl font-semibold">{value}</p>

@@ -1,7 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Braces, Cloud, Database, Layers3 } from 'lucide-react'
 import Main from '~/components/Main'
+import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
+import Title from '~/components/Title'
 import { capabilities } from '~/data/capabilities'
 
 const architecture = [
@@ -51,13 +53,11 @@ function SkillsetPage() {
             className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end"
           >
             <div>
-              <h1 className="text-[clamp(3.1rem,9vw,8.5rem)] leading-[0.76] font-extrabold tracking-[-0.02em]">
+              <PageHeading>
                 Ideas,
                 <br />
-                <span className="font-display text-brand font-normal normal-case italic">
-                  engineered.
-                </span>
-              </h1>
+                <span className="text-brand">engineered.</span>
+              </PageHeading>
             </div>
             <p className="text-foreground/55 max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
               I bridge product design and full-stack engineering, so the idea
@@ -74,9 +74,9 @@ function SkillsetPage() {
                 delay={index * 0.04}
                 className="group border-foreground/15 hover:text-brand grid gap-4 border-b py-7 transition-colors sm:grid-cols-2 sm:items-center sm:py-9"
               >
-                <h2 className="font-display text-4xl tracking-[-0.035em] sm:text-5xl">
+                <Title as="h2" variant="card">
                   {capability.title}
-                </h2>
+                </Title>
                 <p className="text-foreground/45 group-hover:text-brand/60 max-w-xl text-sm leading-6 transition-colors sm:justify-self-end">
                   {capability.description}
                 </p>
@@ -97,7 +97,7 @@ function SkillsetPage() {
                   edge deployment.
                 </p>
               </div>
-              <span className="text-foreground/25 font-mono text-[9px] tracking-[0.18em] uppercase">
+              <span className="text-foreground/25 font-mono text-[9px] uppercase">
                 Production architecture
               </span>
             </div>

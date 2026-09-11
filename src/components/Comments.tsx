@@ -19,6 +19,8 @@ import {
 import { api } from '../../convex/_generated/api'
 import { Button } from './ui/button'
 import GitHubIcon from './GitHubIcon'
+import SectionHeading from './SectionHeading'
+import Title from './Title'
 import { InputOTP, InputOTPGroup, InputOTPSlot } from './ui/input-otp'
 import type { Id } from '../../convex/_generated/dataModel'
 import { authClient } from '~/lib/auth-client'
@@ -283,7 +285,7 @@ export function Comments({ articleSlug }: CommentsProps) {
     <section className="border-foreground/20 border-t pt-10">
       <div className="mb-8 flex items-center gap-3">
         <MessageCircle className="text-brand size-5" />
-        <h2 className="font-display text-3xl tracking-[-0.03em]">Comments</h2>
+        <SectionHeading size="compact">Comments</SectionHeading>
         {comments && comments.length > 0 && (
           <span className="bg-brand text-brand-foreground rounded-full px-2 py-0.5 text-xs font-bold">
             {comments.length}
@@ -383,10 +385,12 @@ export function Comments({ articleSlug }: CommentsProps) {
                   Back
                 </button>
                 <div className="mb-4 text-center">
-                  <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
-                    <Mail className="size-6 text-blue-600 dark:text-blue-400" />
+                  <div className="bg-brand/10 mx-auto mb-3 flex size-12 items-center justify-center rounded-full">
+                    <Mail className="text-brand size-6" />
                   </div>
-                  <h3 className="font-medium">Enter verification code</h3>
+                  <Title as="h3" variant="detail">
+                    Enter verification code
+                  </Title>
                   <p className="mt-1 text-sm text-neutral-500">
                     We sent a 6-digit code to{' '}
                     <strong className="text-neutral-700 dark:text-neutral-300">
@@ -531,10 +535,12 @@ export function Comments({ articleSlug }: CommentsProps) {
                 Back
               </button>
               <div className="mb-4 text-center">
-                <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
-                  <Mail className="size-6 text-blue-600 dark:text-blue-400" />
+                <div className="bg-brand/10 mx-auto mb-3 flex size-12 items-center justify-center rounded-full">
+                  <Mail className="text-brand size-6" />
                 </div>
-                <h3 className="font-medium">Enter verification code</h3>
+                <Title as="h3" variant="detail">
+                  Enter verification code
+                </Title>
                 <p className="mt-1 text-sm text-neutral-500">
                   We sent a 6-digit code to{' '}
                   <strong className="text-neutral-700 dark:text-neutral-300">
@@ -600,7 +606,9 @@ export function Comments({ articleSlug }: CommentsProps) {
                 Back to sign in
               </button>
               <div className="mb-4">
-                <h3 className="font-medium">Reset your password</h3>
+                <Title as="h3" variant="detail">
+                  Reset your password
+                </Title>
                 <p className="mt-1 text-sm text-neutral-500">
                   Enter your email and we'll send you a reset link.
                 </p>
@@ -638,7 +646,9 @@ export function Comments({ articleSlug }: CommentsProps) {
               <div className="mx-auto mb-3 flex size-12 items-center justify-center rounded-full bg-green-100 dark:bg-green-900/30">
                 <Check className="size-6 text-green-600 dark:text-green-400" />
               </div>
-              <h3 className="font-medium">Check your email</h3>
+              <Title as="h3" variant="detail">
+                Check your email
+              </Title>
               <p className="mt-1 text-sm text-neutral-500">
                 If an account exists for{' '}
                 <strong className="text-neutral-700 dark:text-neutral-300">
@@ -656,9 +666,9 @@ export function Comments({ articleSlug }: CommentsProps) {
           ) : authMode === 'email' ? (
             <div className="mx-auto max-w-sm">
               <div className="mb-4 flex items-center justify-between">
-                <h3 className="font-medium">
+                <Title as="h3" variant="detail">
                   {isSignUp ? 'Create an account' : 'Sign in'}
-                </h3>
+                </Title>
                 <button
                   onClick={resetAuthForm}
                   className="cursor-pointer text-sm text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"

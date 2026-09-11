@@ -2,7 +2,10 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { ArrowDown } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import type { Variants } from 'motion/react'
+import PageHeading from '~/components/PageHeading'
 import ConnectedGlobe from './ConnectedGlobe'
+
+const MotionPageHeading = motion.create(PageHeading)
 
 const productDescriptors = [
   'full-stack',
@@ -206,9 +209,10 @@ export function HomeHero() {
         className="pointer-events-none relative z-10 mx-auto flex w-full max-w-[1600px] flex-col px-5 pt-9 pb-7 sm:px-8 sm:pt-14 lg:px-12 lg:pt-16"
       >
         <div className="flex flex-1 items-center justify-center text-center sm:mt-auto sm:flex-none lg:justify-start lg:text-left">
-          <motion.h1
+          <MotionPageHeading
+            size="hero"
             variants={titleVariants}
-            className="w-fit max-w-full text-[clamp(1.65rem,8.25vw,2.75rem)] leading-[1.08] font-extrabold tracking-[-0.02em] sm:text-[clamp(2.75rem,5vw,5.5rem)]"
+            className="w-fit max-w-full"
           >
             <TitleLine
               text="I design and build"
@@ -220,7 +224,7 @@ export function HomeHero() {
               onClick={changeDescriptor}
               whileHover={reduceMotion ? undefined : { scale: 1.015 }}
               whileTap={reduceMotion ? undefined : { scale: 0.985 }}
-              className="font-display text-brand focus-visible:ring-brand/70 pointer-events-auto inline-block cursor-pointer border-0 bg-transparent p-0 text-center font-normal normal-case italic outline-none focus-visible:ring-2 lg:text-left"
+              className="text-brand focus-visible:ring-brand/70 pointer-events-auto inline-block cursor-pointer border-0 bg-transparent p-0 text-center normal-case outline-none focus-visible:ring-2 lg:text-left"
               aria-label={`Change descriptor. Current descriptor: ${productDescriptors[descriptorIndex]}`}
             >
               <motion.span
@@ -240,9 +244,9 @@ export function HomeHero() {
             </motion.button>
             <TitleLine
               text="digital products."
-              className="-mt-[0.08em] block whitespace-nowrap"
+              className="block whitespace-nowrap"
             />
-          </motion.h1>
+          </MotionPageHeading>
         </div>
 
         <div className="flex justify-center pt-5 sm:mt-auto">

@@ -1,19 +1,24 @@
+import type { ReactNode } from 'react'
 import { ArrowUpRight } from 'lucide-react'
+import {
+  FeaturedProject,
+  IndependentProject,
+} from '~/components/home/ProjectCards'
 import ScrollReveal from '~/components/ScrollReveal'
+import SectionHeading from '~/components/SectionHeading'
 import { clientWork, personalProjects } from '~/data/work'
-import { FeaturedProject, IndependentProject } from './ProjectCards'
 
-export default function HomeWorkSection() {
+export default function WorkSection({ header }: { header?: ReactNode }) {
   return (
     <section
       id="work"
       className="mx-auto max-w-[1600px] scroll-mt-[71px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36"
     >
-      <ScrollReveal as="header" className="pb-12 lg:pb-20">
-        <h2 className="font-display text-[clamp(3rem,6.5vw,6rem)] leading-[0.8] tracking-[-0.055em]">
-          Recent work
-        </h2>
-      </ScrollReveal>
+      {header ?? (
+        <ScrollReveal as="header" className="pb-12 lg:pb-20">
+          <SectionHeading>Recent work</SectionHeading>
+        </ScrollReveal>
+      )}
 
       <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
         {clientWork.map((project) => (
@@ -24,9 +29,7 @@ export default function HomeWorkSection() {
       <div className="mt-16 pt-8 lg:mt-24 lg:pt-12">
         <ScrollReveal className="mb-10 flex items-end justify-between gap-6">
           <div>
-            <h2 className="font-display text-[clamp(3rem,6.5vw,6rem)] leading-[0.8] tracking-[-0.055em]">
-              Side projects
-            </h2>
+            <SectionHeading>Side projects</SectionHeading>
           </div>
           <a
             href="https://github.com/alivault"

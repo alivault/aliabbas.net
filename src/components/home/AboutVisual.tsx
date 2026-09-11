@@ -11,7 +11,7 @@ function AboutDecorations() {
         whileInView={{ rotate: -8, x: 0, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-        className="absolute top-[9%] left-[4%] z-0 size-[46%] text-[#ff694a]"
+        className="text-brand absolute top-[9%] left-[4%] z-0 size-[46%]"
       >
         <SplinePointer
           aria-hidden="true"
@@ -98,7 +98,7 @@ function DraggableLogo() {
         className="border-foreground/30 pointer-events-auto relative aspect-square w-[48%] max-w-[360px] cursor-grab touch-none rounded-full border shadow-[0_18px_38px_rgb(0_0_0_/_18%)] backdrop-blur-md sm:w-[44%]"
         aria-label="Draggable logo"
       >
-        <Logo className="text-brand pointer-events-none absolute top-1/2 left-1/2 h-auto w-[50%] -translate-x-1/2 -translate-y-1/2" />
+        <Logo className="text-foreground pointer-events-none absolute top-1/2 left-1/2 h-auto w-[50%] -translate-x-1/2 -translate-y-1/2" />
       </motion.div>
     </div>
   )

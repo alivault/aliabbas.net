@@ -1,5 +1,7 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import Main from '~/components/Main'
+import PageHeading from '~/components/PageHeading'
+import Title from '~/components/Title'
 
 export const Route = createFileRoute('/privacy')({
   head: () => ({
@@ -27,7 +29,9 @@ function PrivacySection({
   return (
     <section className="border-foreground/20 grid gap-5 border-t py-10 lg:grid-cols-[100px_260px_1fr] lg:gap-10 lg:py-14">
       <span className="text-foreground/35 font-mono text-[10px]">{number}</span>
-      <h2 className="text-lg font-bold tracking-[-0.02em]">{title}</h2>
+      <Title as="h2" variant="subsection">
+        {title}
+      </Title>
       <div className="text-foreground/60 max-w-3xl space-y-5 text-base leading-7">
         {children}
       </div>
@@ -40,11 +44,11 @@ function PrivacyPage() {
     <Main>
       <article className="bg-background">
         <header className="mx-auto max-w-[1600px] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-32">
-          <h1 className="font-display text-[clamp(4.5rem,12vw,10rem)] leading-[0.76] tracking-[-0.065em]">
+          <PageHeading>
             Privacy
             <em className="text-brand block">policy.</em>
-          </h1>
-          <div className="text-foreground/35 mt-10 flex flex-wrap gap-x-8 gap-y-2 font-mono text-[10px] tracking-[0.12em] uppercase">
+          </PageHeading>
+          <div className="text-foreground/35 mt-10 flex flex-wrap gap-x-8 gap-y-2 font-mono text-[10px] uppercase">
             <span>Effective August 7, 2026</span>
             <span>Operator: Ali Abbas</span>
           </div>

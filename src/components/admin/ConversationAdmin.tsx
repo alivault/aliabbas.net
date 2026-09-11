@@ -15,6 +15,8 @@ import {
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import GitHubIcon from '~/components/GitHubIcon'
+import PageHeading from '~/components/PageHeading'
+import Title from '~/components/Title'
 import { Button } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import {
@@ -80,6 +82,36 @@ function MessageContent({ content }: { content: string }) {
     <ReactMarkdown
       remarkPlugins={[remarkGfm]}
       components={{
+        h1: ({ children }) => (
+          <Title as="h1" variant="card">
+            {children}
+          </Title>
+        ),
+        h2: ({ children }) => (
+          <Title as="h2" variant="subsection">
+            {children}
+          </Title>
+        ),
+        h3: ({ children }) => (
+          <Title as="h3" variant="detail">
+            {children}
+          </Title>
+        ),
+        h4: ({ children }) => (
+          <Title as="h4" variant="detail">
+            {children}
+          </Title>
+        ),
+        h5: ({ children }) => (
+          <Title as="h5" variant="detail">
+            {children}
+          </Title>
+        ),
+        h6: ({ children }) => (
+          <Title as="h6" variant="detail">
+            {children}
+          </Title>
+        ),
         a: ({ children, href }) => (
           <a
             href={href}
@@ -155,12 +187,12 @@ function SignInPanel({
         >
           <ArrowLeft className="size-3.5" /> Back to portfolio
         </Link>
-        <p className="font-mono text-[10px] tracking-[0.18em] text-[#d9ff43] uppercase">
+        <p className="font-mono text-[10px] text-[#d9ff43] uppercase">
           Private admin
         </p>
-        <h1 className="font-display mt-4 text-5xl tracking-[-0.05em]">
+        <PageHeading size="compact" className="mt-4">
           Conversations
-        </h1>
+        </PageHeading>
         <p className="mt-5 text-sm leading-6 text-white/50">
           {accessError.message}
         </p>
@@ -404,7 +436,7 @@ export default function ConversationAdmin() {
           </Link>
           <div>
             <p className="text-sm font-semibold">Chat conversations</p>
-            <p className="font-mono text-[8px] tracking-[0.12em] text-white/30 uppercase">
+            <p className="font-mono text-[8px] text-white/30 uppercase">
               {admin?.email ?? 'Private admin'}
             </p>
           </div>
@@ -470,7 +502,7 @@ export default function ConversationAdmin() {
                 className="h-10 border-white/15 bg-white/5 pl-10 text-white placeholder:text-white/25"
               />
             </div>
-            <p className="mt-3 font-mono text-[9px] tracking-[0.1em] text-white/25 uppercase">
+            <p className="mt-3 font-mono text-[9px] text-white/25 uppercase">
               {filteredConversations.length} conversations · 90-day retention
             </p>
           </div>
@@ -496,7 +528,7 @@ export default function ConversationAdmin() {
                     <p className="line-clamp-2 text-sm leading-5 text-white/75">
                       {conversation.preview || 'Conversation started'}
                     </p>
-                    <div className="mt-3 flex items-center justify-between gap-3 font-mono text-[8px] tracking-[0.06em] text-white/30 uppercase">
+                    <div className="mt-3 flex items-center justify-between gap-3 font-mono text-[8px] text-white/30 uppercase">
                       <span>
                         {dateFormatter.format(conversation.lastMessageAt)}
                       </span>
@@ -530,7 +562,7 @@ export default function ConversationAdmin() {
               <div className="border-b border-white/15 px-5 py-5 sm:px-8">
                 <div className="flex flex-wrap items-start justify-between gap-5">
                   <div>
-                    <p className="font-mono text-[9px] tracking-[0.12em] text-white/30 uppercase">
+                    <p className="font-mono text-[9px] text-white/30 uppercase">
                       Conversation
                     </p>
                     <p className="mt-1 text-xs break-all text-white/55">
@@ -622,7 +654,7 @@ export default function ConversationAdmin() {
                         )}
                         <p
                           className={cn(
-                            'mt-2 font-mono text-[8px] tracking-[0.08em] uppercase',
+                            'mt-2 font-mono text-[8px] uppercase',
                             message.role === 'user'
                               ? 'text-black/35'
                               : 'text-white/25',

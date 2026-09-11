@@ -12,6 +12,13 @@ import tsx from 'react-syntax-highlighter/dist/esm/languages/prism/tsx'
 import typescript from 'react-syntax-highlighter/dist/esm/languages/prism/typescript'
 import oneDark from 'react-syntax-highlighter/dist/esm/styles/prism/one-dark'
 
+const codeTheme: typeof oneDark = Object.fromEntries(
+  Object.entries(oneDark).map(([token, style]) => [
+    token,
+    { ...style, fontStyle: 'normal' },
+  ]),
+)
+
 SyntaxHighlighter.registerLanguage('typescript', typescript)
 SyntaxHighlighter.registerLanguage('ts', typescript)
 SyntaxHighlighter.registerLanguage('tsx', tsx)
@@ -45,7 +52,7 @@ export function CodeBlock({ value }: CodeBlockProps) {
       )}
       <SyntaxHighlighter
         language={value.language || 'text'}
-        style={oneDark}
+        style={codeTheme}
         customStyle={{
           margin: 0,
           borderRadius: value.filename ? '0 0 0.5rem 0.5rem' : '0.5rem',

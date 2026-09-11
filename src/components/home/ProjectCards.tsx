@@ -1,5 +1,6 @@
 import { ArrowUpRight } from 'lucide-react'
 import { motion } from 'motion/react'
+import Title from '~/components/Title'
 import type { WorkItem } from '~/data/work'
 import { cn } from '~/lib/utils'
 
@@ -206,14 +207,14 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
         <ProjectVisual project={project} />
       </a>
       <div className="flex flex-1 flex-col">
-        <h3 className="font-display text-4xl tracking-[-0.04em] sm:text-5xl">
+        <Title as="h3" variant="card">
           {project.title}
-        </h3>
+        </Title>
         <p className="text-foreground/60 mt-7 max-w-md text-base leading-7">
           {project.description}
         </p>
         <div className="border-foreground/25 mt-7 border-l pl-4">
-          <p className="text-foreground/40 font-mono text-[9px] tracking-[0.16em] uppercase">
+          <p className="text-foreground/40 font-mono text-[9px] uppercase">
             Contribution
           </p>
           <p className="text-foreground/55 mt-2 max-w-sm text-sm leading-6">
@@ -255,9 +256,9 @@ export function IndependentProject({
     >
       <ProjectVisual project={project} />
       <div className="py-5">
-        <h3 className="font-display text-4xl tracking-[-0.04em] sm:text-5xl">
+        <Title as="h3" variant="card">
           {project.title}
-        </h3>
+        </Title>
         <p className="text-foreground/55 mt-3 max-w-xl text-sm leading-6">
           {project.description}
         </p>

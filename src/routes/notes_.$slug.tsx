@@ -11,13 +11,47 @@ import { CodeBlock } from '~/components/CodeBlock'
 import { Comments } from '~/components/Comments'
 import Main from '~/components/Main'
 import { MermaidDiagram } from '~/components/MermaidDiagram'
+import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
+import Title from '~/components/Title'
 import getFormattedDate from '~/lib/getFormattedDate'
 import { getArticleBySlug, sanityClient } from '~/lib/sanity'
 
 const builder = createImageUrlBuilder(sanityClient)
 
 const portableTextComponents: PortableTextComponents = {
+  block: {
+    h1: ({ children }) => (
+      <Title as="h1" variant="section">
+        {children}
+      </Title>
+    ),
+    h2: ({ children }) => (
+      <Title as="h2" variant="card">
+        {children}
+      </Title>
+    ),
+    h3: ({ children }) => (
+      <Title as="h3" variant="subsection">
+        {children}
+      </Title>
+    ),
+    h4: ({ children }) => (
+      <Title as="h4" variant="detail">
+        {children}
+      </Title>
+    ),
+    h5: ({ children }) => (
+      <Title as="h5" variant="detail">
+        {children}
+      </Title>
+    ),
+    h6: ({ children }) => (
+      <Title as="h6" variant="detail">
+        {children}
+      </Title>
+    ),
+  },
   types: {
     code: CodeBlock,
     mermaidDiagram: MermaidDiagram,
@@ -35,7 +69,7 @@ const portableTextComponents: PortableTextComponents = {
             className="border-foreground/10 w-full border"
           />
           {value.alt && (
-            <figcaption className="text-foreground/40 mt-3 font-mono text-[9px] tracking-[0.12em] uppercase">
+            <figcaption className="text-foreground/40 mt-3 font-mono text-[9px] uppercase">
               {value.alt}
             </figcaption>
           )}
@@ -86,12 +120,10 @@ function NotePage() {
     return (
       <Main>
         <section className="mx-auto flex min-h-[70svh] max-w-5xl flex-col items-center justify-center gap-5 px-5 text-center">
-          <p className="text-brand font-mono text-[9px] tracking-[0.2em] uppercase">
+          <p className="text-brand font-mono text-[9px] uppercase">
             Missing note
           </p>
-          <h1 className="font-display text-6xl tracking-[-0.04em]">
-            Note not found.
-          </h1>
+          <PageHeading>Note not found.</PageHeading>
           <Link
             to="/notes"
             className="hover:text-brand text-xs font-bold uppercase"
@@ -108,7 +140,7 @@ function NotePage() {
       <article className="mx-auto max-w-[1440px] px-5 py-14 sm:px-8 sm:py-20 lg:px-12 lg:py-28">
         <Link
           to="/notes"
-          className="text-foreground/45 hover:text-brand mb-12 inline-flex items-center gap-2 font-mono text-[9px] tracking-[0.15em] uppercase transition-colors"
+          className="text-foreground/45 hover:text-brand mb-12 inline-flex items-center gap-2 font-mono text-[9px] uppercase transition-colors"
         >
           <ArrowLeft className="size-4" /> Back to field notes
         </Link>
@@ -117,14 +149,12 @@ function NotePage() {
           className="border-foreground/20 mx-auto max-w-3xl border-b pb-12 sm:pb-16"
         >
           <time
-            className="text-brand font-mono text-[9px] tracking-[0.18em] uppercase"
+            className="text-brand font-mono text-[9px] uppercase"
             dateTime={note.date}
           >
             {getFormattedDate(note.date)}
           </time>
-          <h1 className="font-display mt-5 text-[clamp(4rem,6.5vw,6.5rem)] leading-[1.1] tracking-[-0.04em]">
-            {note.title}
-          </h1>
+          <PageHeading className="mt-5">{note.title}</PageHeading>
           {note.description && (
             <p className="text-foreground/50 mt-7 max-w-2xl text-base leading-7 sm:text-lg sm:leading-8">
               {note.description}
@@ -134,7 +164,7 @@ function NotePage() {
         <ScrollReveal
           trigger="mount"
           delay={0.2}
-          className="prose prose-lg prose-neutral prose-headings:font-display prose-headings:tracking-[-0.03em] prose-a:text-brand prose-pre:p-0 dark:prose-invert mx-auto mt-12 max-w-3xl sm:mt-16"
+          className="prose prose-lg prose-neutral prose-a:text-brand prose-pre:p-0 dark:prose-invert mx-auto mt-12 max-w-3xl sm:mt-16"
         >
           <PortableText
             value={note.content}

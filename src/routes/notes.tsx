@@ -2,8 +2,10 @@ import { useQuery } from '@tanstack/react-query'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { ArrowUpRight } from 'lucide-react'
 import Main from '~/components/Main'
+import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
 import Section from '~/components/Section'
+import Title from '~/components/Title'
 import getFormattedDate from '~/lib/getFormattedDate'
 import { getArticles } from '~/lib/sanity'
 import type { SanityArticle } from '~/lib/sanity'
@@ -37,9 +39,13 @@ function NoteListItem({
         className="group border-foreground/20 grid gap-4 border-b py-7 sm:grid-cols-[1fr_130px_auto] sm:items-center sm:py-10"
       >
         <span>
-          <span className="font-display block text-3xl leading-[1.1] tracking-[-0.03em] transition-transform duration-500 group-hover:translate-x-2 sm:text-5xl">
+          <Title
+            as="span"
+            variant="card"
+            className="block transition-transform duration-500 group-hover:translate-x-2"
+          >
             {article.title}
-          </span>
+          </Title>
           {article.description && (
             <span className="text-foreground/45 mt-3 block max-w-2xl text-sm leading-6">
               {article.description}
@@ -48,7 +54,7 @@ function NoteListItem({
         </span>
         <time
           dateTime={article.date}
-          className="text-foreground/40 font-mono text-[9px] tracking-[0.12em] uppercase"
+          className="text-foreground/40 font-mono text-[9px] uppercase"
         >
           {getFormattedDate(article.date)}
         </time>
@@ -72,11 +78,11 @@ function NotesPage() {
           className="border-foreground/20 grid gap-8 border-b pb-12 lg:grid-cols-[1fr_0.65fr] lg:items-end lg:pb-16"
         >
           <div>
-            <h1 className="font-display text-[clamp(3.5rem,10vw,9rem)] leading-[0.74] tracking-[-0.02em]">
+            <PageHeading>
               Thinking
               <br />
               <em className="text-brand">in public.</em>
-            </h1>
+            </PageHeading>
           </div>
           <p className="text-foreground/55 max-w-xl text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
             Notes on software, interaction design, developer tools, and the

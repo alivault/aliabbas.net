@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { ArrowUpRight } from 'lucide-react'
 import Logo from './Logo'
 import ScrollReveal from './ScrollReveal'
+import SectionHeading from './SectionHeading'
 
 export default function Footer() {
   return (
@@ -9,18 +10,18 @@ export default function Footer() {
       <div className="mx-auto max-w-[1600px] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
         <ScrollReveal className="border-foreground/15 grid gap-10 border-b pb-16 lg:grid-cols-[1fr_auto] lg:items-end lg:pb-24">
           <div>
-            <p className="text-brand font-mono text-[10px] tracking-[0.2em] uppercase">
+            <p className="text-brand font-mono text-[10px] uppercase">
               Have an ambitious brief?
             </p>
-            <p className="font-display mt-5 max-w-5xl text-[clamp(3rem,6.5vw,6rem)] leading-[0.8] tracking-[-0.055em]">
+            <SectionHeading className="mt-5 max-w-5xl">
               Let’s make it
               <br />
               <em className="text-brand">unmissable.</em>
-            </p>
+            </SectionHeading>
           </div>
           <Link
             to="/contact"
-            className="group bg-brand text-brand-foreground flex size-24 shrink-0 items-center justify-center rounded-full transition-transform duration-500 hover:scale-105 hover:rotate-6 sm:size-30"
+            className="group bg-primary text-primary-foreground hover:bg-primary/80 flex size-24 shrink-0 items-center justify-center rounded-full transition-[background-color,transform] duration-500 hover:scale-105 hover:rotate-6 sm:size-30"
             aria-label="Contact Ali"
           >
             <ArrowUpRight className="size-8 transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1 sm:size-9" />
