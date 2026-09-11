@@ -35,7 +35,7 @@ const createChallenge = (): Challenge => ({
 })
 
 const inputClassName =
-  'h-14 rounded-none border-x-0 border-t-0 border-b-foreground/25 bg-transparent px-0 text-base shadow-none focus-visible:border-brand focus-visible:ring-0'
+  'h-14 rounded-none border-x-0 border-t-0 border-b-foreground/25 px-4 text-base shadow-none focus-visible:border-brand focus-visible:ring-0'
 
 export default function ContactForm() {
   const [isSubmitted, setSubmitted] = useState(false)
@@ -136,11 +136,7 @@ export default function ContactForm() {
       </ScrollReveal>
 
       <ScrollReveal delay={0.08}>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          noValidate
-          className="border-foreground/25 border-t pt-8"
-        >
+        <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <FieldGroup className="gap-8">
             <Field data-invalid={Boolean(errors.name)}>
               <FieldLabel
@@ -151,6 +147,7 @@ export default function ContactForm() {
               </FieldLabel>
               <Input
                 id="contact-name"
+                variant="filled"
                 autoComplete="name"
                 placeholder="Enter your name"
                 aria-invalid={Boolean(errors.name)}
@@ -169,6 +166,7 @@ export default function ContactForm() {
               </FieldLabel>
               <Input
                 id="contact-email"
+                variant="filled"
                 type="email"
                 autoComplete="email"
                 placeholder="Enter your email address"
@@ -188,10 +186,11 @@ export default function ContactForm() {
               </FieldLabel>
               <Textarea
                 id="contact-message"
+                variant="filled"
                 placeholder="The role, team, problem, or idea…"
                 rows={7}
                 aria-invalid={Boolean(errors.message)}
-                className="border-b-foreground/25 focus-visible:border-brand min-h-44 resize-none rounded-none border-x-0 border-t-0 bg-transparent px-0 py-4 text-base shadow-none focus-visible:ring-0"
+                className="border-b-foreground/25 focus-visible:border-brand min-h-44 resize-none rounded-none border-x-0 border-t-0 px-4 py-4 text-base shadow-none focus-visible:ring-0"
                 {...register('message')}
               />
               <FieldError errors={[errors.message]} />
@@ -211,6 +210,7 @@ export default function ContactForm() {
               </FieldLabel>
               <Input
                 id="contact-verification"
+                variant="filled"
                 type="number"
                 inputMode="numeric"
                 aria-invalid={Boolean(errors.verification)}
