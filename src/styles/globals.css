@@ -10,6 +10,10 @@
   --font-display: var(--font-sans);
   --font-mono: 'JetBrains Mono', monospace;
 
+  --spacing-section: var(--section-padding);
+  --spacing-section-content: var(--section-content-gap);
+  --spacing-section-divider: calc(var(--section-content-gap) / 2);
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -39,6 +43,9 @@
 
 :root {
   color-scheme: light dark;
+  /* Shared page/section padding and heading-to-content spacing. */
+  --section-padding: 3rem;
+  --section-content-gap: 2rem;
   --radius: 0.5rem;
   --background: oklch(0.955 0.009 94);
   --foreground: oklch(0.155 0.006 85);
@@ -60,6 +67,20 @@
   --ring: color-mix(in oklab, var(--foreground) 50%, transparent);
   --brand: color-mix(in oklab, var(--foreground) 65%, transparent);
   --brand-foreground: var(--background);
+}
+
+@media (width >= 40rem) {
+  :root {
+    --section-padding: 4rem;
+    --section-content-gap: 2.5rem;
+  }
+}
+
+@media (width >= 64rem) {
+  :root {
+    --section-padding: 5rem;
+    --section-content-gap: 3rem;
+  }
 }
 
 @media (prefers-color-scheme: dark) {

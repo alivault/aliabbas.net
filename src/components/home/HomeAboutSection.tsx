@@ -9,7 +9,7 @@ export default function HomeAboutSection() {
     <section className="bg-background text-foreground overflow-hidden">
       <div className="mx-auto grid max-w-[1600px] lg:grid-cols-2">
         <AboutVisual />
-        <ScrollReveal className="flex flex-col justify-between px-5 py-16 sm:px-8 sm:py-20 lg:p-12 lg:py-16">
+        <ScrollReveal className="py-section flex flex-col justify-between px-5 sm:px-8 lg:px-12">
           <div>
             <SectionHeading>Design + Engineering</SectionHeading>
             <p className="text-foreground/65 mt-9 max-w-xl text-base leading-8">
@@ -22,7 +22,7 @@ export default function HomeAboutSection() {
           </div>
           <Link
             to="/experience"
-            className="group border-foreground/25 hover:text-background relative mt-16 flex items-center justify-between overflow-hidden border-b px-3 py-4 text-xs font-bold uppercase transition-colors duration-300"
+            className="group border-foreground/25 hover:text-background mt-section-content relative flex items-center justify-between overflow-hidden border-b px-3 py-4 text-xs font-bold uppercase transition-colors duration-300"
           >
             <span className="bg-foreground absolute inset-0 translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
             <span className="relative z-10">View full experience</span>

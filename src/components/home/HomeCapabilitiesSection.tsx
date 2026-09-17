@@ -6,12 +6,12 @@ import { capabilities } from '~/data/capabilities'
 export default function HomeCapabilitiesSection() {
   return (
     <section className="bg-background text-foreground">
-      <div className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36">
+      <div className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
         <ScrollReveal as="header">
           <SectionHeading>Skillset</SectionHeading>
         </ScrollReveal>
 
-        <div className="border-foreground/15 mt-20 border-t lg:mt-28">
+        <div className="border-foreground/15 mt-section-content border-t">
           {capabilities.map((capability, index) => (
             <ScrollReveal
               key={capability.number}

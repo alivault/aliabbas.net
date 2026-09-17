@@ -7,8 +7,8 @@ import SectionHeading from './SectionHeading'
 export default function Footer() {
   return (
     <footer className="bg-background text-foreground overflow-hidden">
-      <div className="mx-auto max-w-[1600px] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-28">
-        <ScrollReveal className="border-foreground/15 grid gap-10 border-b pb-16 lg:grid-cols-[1fr_auto] lg:items-end lg:pb-24">
+      <div className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
+        <ScrollReveal className="border-foreground/15 gap-section-content pb-section-content grid border-b lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
             <p className="text-brand font-mono text-[10px] uppercase">
               Have an ambitious brief?
@@ -29,7 +29,7 @@ export default function Footer() {
         </ScrollReveal>
         <ScrollReveal
           delay={0.08}
-          className="text-foreground/45 flex flex-col gap-8 pt-8 text-xs min-[685px]:grid min-[685px]:grid-cols-[1fr_auto_1fr] min-[685px]:items-center"
+          className="text-foreground/45 pt-section-content flex flex-col gap-8 text-xs min-[685px]:grid min-[685px]:grid-cols-[1fr_auto_1fr] min-[685px]:items-center"
         >
           <Link
             to="/"

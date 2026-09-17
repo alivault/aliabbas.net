@@ -24,7 +24,7 @@ function WorkPage() {
         header={
           <ScrollReveal
             as="header"
-            className="border-foreground/20 mb-12 grid gap-7 border-b pb-12 lg:mb-20 lg:grid-cols-[1fr_1fr] lg:items-end lg:pb-20"
+            className="border-foreground/20 mb-section-divider pb-section-divider grid gap-7 border-b lg:grid-cols-[1fr_1fr] lg:items-end"
           >
             <div>
               <PageHeading>

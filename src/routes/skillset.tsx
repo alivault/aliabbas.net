@@ -47,7 +47,7 @@ function SkillsetPage() {
   return (
     <Main>
       <section className="bg-background text-foreground">
-        <div className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36">
+        <div className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
           <ScrollReveal
             as="header"
             className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end"
@@ -66,7 +66,7 @@ function SkillsetPage() {
             </p>
           </ScrollReveal>
 
-          <div className="border-foreground/15 mt-20 border-t lg:mt-28">
+          <div className="border-foreground/15 mt-section-content border-t">
             {capabilities.map((capability, index) => (
               <ScrollReveal
                 key={capability.number}
@@ -84,7 +84,7 @@ function SkillsetPage() {
             ))}
           </div>
 
-          <ScrollReveal className="border-foreground/15 bg-foreground/[0.03] mt-20 rounded-[2px] border p-5 sm:p-8 lg:mt-28 lg:p-10">
+          <ScrollReveal className="border-foreground/15 bg-foreground/[0.03] mt-section-content rounded-[2px] border p-5 sm:p-8 lg:p-10">
             <div className="border-foreground/15 flex flex-col justify-between gap-5 border-b pb-7 sm:flex-row sm:items-center">
               <div>
                 <p className="flex items-center gap-2 text-xs font-bold">

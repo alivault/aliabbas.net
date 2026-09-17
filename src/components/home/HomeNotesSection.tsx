@@ -12,8 +12,8 @@ export default function HomeNotesSection({
   articles: Array<SanityArticle>
 }) {
   return (
-    <section className="mx-auto max-w-[1600px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36">
-      <ScrollReveal className="border-foreground/20 flex items-end justify-between gap-6 border-b pb-10">
+    <section className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
+      <ScrollReveal className="border-foreground/20 pb-section-content flex items-end justify-between gap-6 border-b">
         <div>
           <SectionHeading>Notes</SectionHeading>
         </div>
@@ -28,7 +28,7 @@ export default function HomeNotesSection({
       </ScrollReveal>
       <div>
         {articles.length === 0 ? (
-          <p className="text-foreground/45 py-12 text-sm">
+          <p className="text-foreground/45 py-section-content text-sm">
             New notes are in progress. Check back soon.
           </p>
         ) : (

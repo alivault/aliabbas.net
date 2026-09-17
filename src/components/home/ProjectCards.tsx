@@ -124,7 +124,7 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-80px' }}
       transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-      className="flex flex-col gap-7 pb-10"
+      className="flex flex-col gap-7"
     >
       <a
         href={project.href}

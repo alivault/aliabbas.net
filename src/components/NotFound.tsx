@@ -6,7 +6,7 @@ import PageHeading from './PageHeading'
 export function NotFound() {
   return (
     <Main>
-      <section className="mx-auto flex min-h-[75svh] max-w-[1600px] flex-col justify-center px-5 py-20 sm:px-8 lg:px-12">
+      <section className="py-section mx-auto flex min-h-[75svh] max-w-[1600px] flex-col justify-center px-5 sm:px-8 lg:px-12">
         <p className="text-brand font-mono text-[10px] uppercase">
           Error / 404
         </p>

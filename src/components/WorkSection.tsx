@@ -8,10 +8,10 @@ export default function WorkSection({ header }: { header?: ReactNode }) {
   return (
     <section
       id="work"
-      className="mx-auto max-w-[1600px] scroll-mt-[71px] px-5 py-20 sm:px-8 sm:py-28 lg:px-12 lg:py-36"
+      className="py-section mx-auto max-w-[1600px] scroll-mt-[71px] px-5 sm:px-8 lg:px-12"
     >
       {header ?? (
-        <ScrollReveal as="header" className="pb-12 lg:pb-20">
+        <ScrollReveal as="header" className="pb-section-content">
           <SectionHeading>Recent work</SectionHeading>
         </ScrollReveal>
       )}

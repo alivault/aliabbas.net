@@ -27,7 +27,7 @@ function PrivacySection({
   title: string
 }) {
   return (
-    <section className="border-foreground/20 grid gap-5 border-t py-10 lg:grid-cols-[100px_260px_1fr] lg:gap-10 lg:py-14">
+    <section className="border-foreground/20 py-section-content grid gap-5 border-t lg:grid-cols-[100px_260px_1fr] lg:gap-10">
       <span className="text-foreground/35 font-mono text-[10px]">{number}</span>
       <Title as="h2" variant="subsection">
         {title}
@@ -43,7 +43,7 @@ function PrivacyPage() {
   return (
     <Main>
       <article className="bg-background">
-        <header className="mx-auto max-w-[1600px] px-5 py-16 sm:px-8 sm:py-24 lg:px-12 lg:py-32">
+        <header className="pt-section pb-section-content mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
           <PageHeading>
             Privacy
             <em className="text-brand block">policy.</em>
@@ -54,7 +54,7 @@ function PrivacyPage() {
           </div>
         </header>
 
-        <div className="mx-auto max-w-[1600px] px-5 pb-20 sm:px-8 sm:pb-28 lg:px-12 lg:pb-36">
+        <div className="pb-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
           <PrivacySection number="01" title="Overview">
             <p>
               This policy explains what information aliabbas.dev collects, why

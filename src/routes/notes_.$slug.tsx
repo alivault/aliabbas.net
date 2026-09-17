@@ -109,7 +109,7 @@ function NotePage() {
   if (isLoading) {
     return (
       <Main>
-        <div className="mx-auto max-w-5xl px-5 py-16 sm:px-8 sm:py-24">
+        <div className="py-section mx-auto max-w-5xl px-5 sm:px-8">
           <div className="bg-foreground/5 h-96 animate-pulse" />
         </div>
       </Main>
@@ -137,16 +137,16 @@ function NotePage() {
 
   return (
     <Main>
-      <article className="mx-auto max-w-[1440px] px-5 py-14 sm:px-8 sm:py-20 lg:px-12 lg:py-28">
+      <article className="py-section mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
         <Link
           to="/notes"
-          className="text-foreground/45 hover:text-brand mb-12 inline-flex items-center gap-2 font-mono text-[9px] uppercase transition-colors"
+          className="text-foreground/45 hover:text-brand mb-section-content inline-flex items-center gap-2 font-mono text-[9px] uppercase transition-colors"
         >
           <ArrowLeft className="size-4" /> Back to field notes
         </Link>
         <ScrollReveal
           as="header"
-          className="border-foreground/20 mx-auto max-w-3xl border-b pb-12 sm:pb-16"
+          className="border-foreground/20 pb-section-divider mx-auto max-w-3xl border-b"
         >
           <time
             className="text-brand font-mono text-[9px] uppercase"
@@ -164,7 +164,7 @@ function NotePage() {
         <ScrollReveal
           trigger="mount"
           delay={0.2}
-          className="prose prose-lg prose-neutral prose-a:text-brand prose-pre:p-0 dark:prose-invert mx-auto mt-12 max-w-3xl sm:mt-16"
+          className="prose prose-lg prose-neutral prose-a:text-brand prose-pre:p-0 dark:prose-invert mt-section-divider mx-auto max-w-3xl"
         >
           <PortableText
             value={note.content}
@@ -172,7 +172,7 @@ function NotePage() {
           />
         </ScrollReveal>
       </article>
-      <ScrollReveal className="mx-auto max-w-3xl px-5 pb-20 sm:px-8 sm:pb-28">
+      <ScrollReveal className="pb-section mx-auto max-w-3xl px-5 sm:px-8">
         <Comments articleSlug={slug} />
       </ScrollReveal>
     </Main>

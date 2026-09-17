@@ -75,7 +75,7 @@ function NotesPage() {
       <Section>
         <ScrollReveal
           as="header"
-          className="border-foreground/20 grid gap-8 border-b pb-12 lg:grid-cols-[1fr_0.65fr] lg:items-end lg:pb-16"
+          className="border-foreground/20 pb-section-content grid gap-8 border-b lg:grid-cols-[1fr_0.65fr] lg:items-end"
         >
           <div>
             <PageHeading>
@@ -100,7 +100,7 @@ function NotesPage() {
             ))}
           </div>
         ) : articles.length === 0 ? (
-          <p className="text-foreground/45 py-16 text-sm">
+          <p className="text-foreground/45 py-section-content text-sm">
             New notes are being written. Check back soon.
           </p>
         ) : (

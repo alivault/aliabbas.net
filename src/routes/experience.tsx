@@ -32,7 +32,7 @@ function ExperiencePage() {
       <Section>
         <ScrollReveal
           as="header"
-          className="border-foreground/20 grid gap-8 border-b pb-12 lg:grid-cols-[1.2fr_0.8fr] lg:items-end lg:pb-16"
+          className="border-foreground/20 pb-section-content grid gap-8 border-b lg:grid-cols-[1.2fr_0.8fr] lg:items-end"
         >
           <div>
             <PageHeading>
@@ -57,7 +57,9 @@ function ExperiencePage() {
             ))}
           </div>
         ) : experiences.length === 0 ? (
-          <p className="text-foreground/45 py-16 text-sm">No experience yet.</p>
+          <p className="text-foreground/45 py-section-content text-sm">
+            No experience yet.
+          </p>
         ) : (
           <ExperienceList experiences={experiences} />
         )}

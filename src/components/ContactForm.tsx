@@ -109,7 +109,7 @@ export default function ContactForm() {
   }
 
   return (
-    <section className="mx-auto grid max-w-[1440px] gap-14 px-5 py-16 sm:px-8 sm:py-24 lg:grid-cols-[0.9fr_1.1fr] lg:gap-24 lg:px-12 lg:py-32">
+    <section className="gap-y-section-content py-section mx-auto grid max-w-[1440px] gap-x-14 px-5 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-x-24 lg:px-12">
       <ScrollReveal className="flex min-w-0 flex-col">
         <PageHeading>
           Let’s build
