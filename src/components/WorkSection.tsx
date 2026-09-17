@@ -1,12 +1,8 @@
 import type { ReactNode } from 'react'
-import { ArrowUpRight } from 'lucide-react'
-import {
-  FeaturedProject,
-  IndependentProject,
-} from '~/components/home/ProjectCards'
+import { FeaturedProject } from '~/components/home/ProjectCards'
 import ScrollReveal from '~/components/ScrollReveal'
 import SectionHeading from '~/components/SectionHeading'
-import { clientWork, personalProjects } from '~/data/work'
+import { recentWork } from '~/data/work'
 
 export default function WorkSection({ header }: { header?: ReactNode }) {
   return (
@@ -21,34 +17,9 @@ export default function WorkSection({ header }: { header?: ReactNode }) {
       )}
 
       <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
-        {clientWork.map((project) => (
+        {recentWork.map((project) => (
           <FeaturedProject key={project.title} project={project} />
         ))}
-      </div>
-
-      <div className="mt-16 pt-8 lg:mt-24 lg:pt-12">
-        <ScrollReveal className="mb-10 flex items-end justify-between gap-6">
-          <div>
-            <SectionHeading>Side projects</SectionHeading>
-          </div>
-          <a
-            href="https://github.com/alivault"
-            target="_blank"
-            rel="noreferrer"
-            className="hidden items-center gap-2 text-xs font-bold sm:flex"
-          >
-            More on GitHub <ArrowUpRight className="size-4" />
-          </a>
-        </ScrollReveal>
-        <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
-          {personalProjects.map((project, index) => (
-            <IndependentProject
-              key={project.title}
-              project={project}
-              index={index}
-            />
-          ))}
-        </div>
       </div>
     </section>
   )

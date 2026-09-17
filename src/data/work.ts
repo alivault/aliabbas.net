@@ -7,58 +7,10 @@ export type WorkItem = {
   image?: string
   year: string
   tools: Array<string>
-  visual:
-    | 'blackhole'
-    | 'superverse'
-    | 'impostors'
-    | 'whimcall'
-    | 'pico'
-    | 'chromagine'
+  visual: 'whimcall' | 'pico' | 'chromagine'
 }
 
-export const clientWork = [
-  {
-    title: 'BlackHole',
-    category: 'Digital product · Web3',
-    description:
-      'Turning a dense on-chain ecosystem into a focused product experience that feels clear from the first interaction.',
-    contribution:
-      'Interface engineering, interaction systems, wallet flows, and responsive implementation.',
-    href: 'https://blackhole.xyz/',
-    image: '/blackhole.svg',
-    year: '2025',
-    tools: ['Next.js', 'TypeScript', 'RainbowKit'],
-    visual: 'blackhole',
-  },
-  {
-    title: 'SuperVerse',
-    category: 'Interactive platform · Gaming',
-    description:
-      'A cinematic, content-rich home for a gaming ecosystem—built to stay expressive without becoming difficult to operate.',
-    contribution:
-      'Creative development, motion direction, CMS architecture, and frontend systems.',
-    href: 'https://superverse.co/',
-    image: '/superverse.svg',
-    year: '2024',
-    tools: ['Next.js', 'Sanity', 'GSAP'],
-    visual: 'superverse',
-  },
-  {
-    title: 'Impostors',
-    category: 'Brand experience · Gaming',
-    description:
-      'A character-led digital world where playful motion and tactile interactions make the brand feel alive on every screen.',
-    contribution:
-      'Frontend development, responsive behavior, animation, and interaction polish.',
-    href: 'https://impostors-3-preview.superfarm.workers.dev/',
-    image: '/impostors.svg',
-    year: '2023',
-    tools: ['React', 'Motion', 'Tailwind CSS'],
-    visual: 'impostors',
-  },
-] as const satisfies ReadonlyArray<WorkItem>
-
-export const personalProjects = [
+export const recentWork = [
   {
     title: 'Whimcall',
     category: 'Real-time communication',
@@ -98,5 +50,3 @@ export const personalProjects = [
     visual: 'chromagine',
   },
 ] as const satisfies ReadonlyArray<WorkItem>
-
-export const allWork = [...clientWork, ...personalProjects]

@@ -10,8 +10,7 @@ export const Route = createFileRoute('/work')({
       { title: 'Selected Work — Ali Abbas' },
       {
         name: 'description',
-        content:
-          'Selected client work and independent products designed and engineered by Ali Abbas.',
+        content: 'Selected products designed and engineered by Ali Abbas.',
       },
     ],
   }),

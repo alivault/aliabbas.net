@@ -9,6 +9,11 @@
 - **Type check**: `vp check --no-fmt --no-lint`
 - **No test framework configured**
 
+## Workflow
+
+- Commit after each completed change, after running the relevant checks.
+- Only include files related to the change in each commit.
+
 ## Code Style
 
 - **TypeScript**: Strict mode enabled, no unused locals/parameters

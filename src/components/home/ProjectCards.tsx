@@ -5,9 +5,6 @@ import type { WorkItem } from '~/data/work'
 import { cn } from '~/lib/utils'
 
 const visualStyles = {
-  blackhole: 'bg-[#7867ff] text-[#faff00]',
-  superverse: 'bg-[#d8ff52] text-[#10100f]',
-  impostors: 'bg-[#ff694a] text-[#10100f]',
   whimcall: 'bg-[#080b12] text-white',
   pico: 'bg-[#d8d5cd] text-[#10100f]',
   chromagine: 'bg-[#335cff] text-white',
@@ -33,74 +30,6 @@ function ProjectVisual({ project }: { project: WorkItem }) {
       )}
     >
       <div className="project-lines absolute inset-0 opacity-40" />
-      {project.visual === 'blackhole' && (
-        <>
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 28, repeat: Infinity, ease: 'linear' }}
-            className="absolute top-1/2 left-1/2 size-[65%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-dashed border-[#faff00]/35"
-          />
-          <div className="absolute top-1/2 left-1/2 flex aspect-square w-[44%] -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#10100f] shadow-[0_40px_100px_rgba(0,0,0,0.35)] transition-transform duration-500 group-hover:scale-[1.04] group-hover:rotate-3">
-            <img
-              src={project.image}
-              alt=""
-              className="size-[68%] object-contain"
-            />
-          </div>
-        </>
-      )}
-
-      {project.visual === 'superverse' && (
-        <>
-          <svg
-            viewBox="0 0 330 330"
-            aria-hidden="true"
-            className="absolute top-1/2 left-1/2 w-[88%] -translate-x-1/2 -translate-y-1/2 text-[#10100f] opacity-[0.09]"
-          >
-            <path
-              fill="currentColor"
-              d="M143.309 96.708V50.43h-46.29L59.942 87.495v67.973l-16.902 16.898v46.278h46.29l36.099-36.088v-67.974z"
-            />
-            <path
-              fill="currentColor"
-              d="M240.773 55.313h-46.29l-62.132 62.156v67.974l-43.02 42.966v46.278h46.333l62.131-62.157v-67.973l42.978-42.966z"
-            />
-            <path
-              fill="currentColor"
-              d="M287.107 111.356h-46.291l-36.098 36.088v67.974l-17.964 17.959v46.278h46.29l37.16-37.15v-67.973l16.903-16.898z"
-            />
-          </svg>
-          <motion.img
-            src={project.image}
-            alt=""
-            initial={{ scale: 0.9 }}
-            whileInView={{ scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute top-1/2 left-1/2 w-[42%] -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_30px_35px_rgba(0,0,0,0.22)] transition-transform duration-500 group-hover:scale-[1.04] group-hover:rotate-3"
-          />
-        </>
-      )}
-
-      {project.visual === 'impostors' && (
-        <>
-          <img
-            src="/impostors-bg-pattern.svg"
-            alt=""
-            className="absolute inset-0 size-full object-cover opacity-20"
-          />
-          <motion.img
-            src={project.image}
-            alt=""
-            initial={{ y: 35 }}
-            whileInView={{ y: 0 }}
-            viewport={{ once: true }}
-            transition={{ type: 'spring', stiffness: 120, damping: 18 }}
-            className="absolute top-1/2 left-1/2 z-10 w-[56%] -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_25px_30px_rgba(71,18,8,0.22)] transition-transform duration-500 group-hover:scale-[1.04] group-hover:rotate-3"
-          />
-        </>
-      )}
-
       {project.visual === 'pico' && (
         <>
           <div className="absolute inset-[12%] border border-black/20" />
@@ -233,36 +162,5 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
         </div>
       </div>
     </motion.article>
-  )
-}
-
-export function IndependentProject({
-  project,
-  index,
-}: {
-  project: WorkItem
-  index: number
-}) {
-  return (
-    <motion.a
-      href={project.href}
-      target="_blank"
-      rel="noreferrer"
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.1 }}
-      className="group focus-visible:outline-foreground block rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-4"
-    >
-      <ProjectVisual project={project} />
-      <div className="py-5">
-        <Title as="h3" variant="card">
-          {project.title}
-        </Title>
-        <p className="text-foreground/55 mt-3 max-w-xl text-sm leading-6">
-          {project.description}
-        </p>
-      </div>
-    </motion.a>
   )
 }
