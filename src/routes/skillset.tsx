@@ -87,8 +87,7 @@ function SkillsetPage() {
           <ScrollReveal className="border-foreground/15 bg-foreground/[0.03] mt-section-content rounded-[2px] border p-5 sm:p-8 lg:p-10">
             <div className="border-foreground/15 flex flex-col justify-between gap-5 border-b pb-7 sm:flex-row sm:items-center">
               <div>
-                <p className="flex items-center gap-2 text-xs font-bold">
-                  <span className="bg-brand size-2 rounded-full shadow-[0_0_12px_var(--brand)]" />
+                <p className="text-xs font-bold">
                   This portfolio is a live full-stack system
                 </p>
                 <p className="text-foreground/40 mt-2 max-w-xl text-sm leading-6">
