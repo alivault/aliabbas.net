@@ -11,6 +11,13 @@ import type { DataModel } from './_generated/dataModel'
 
 export const authComponent = createClient<DataModel>(components.betterAuth)
 
+// SITE_URL is the primary origin; ADDITIONAL_SITE_URLS is a comma-separated
+// list of other origins serving the same site (e.g. https://aliabbas.net).
+export const getTrustedOrigins = () =>
+  [process.env.SITE_URL, ...(process.env.ADDITIONAL_SITE_URLS ?? '').split(',')]
+    .map((origin) => origin?.trim())
+    .filter((origin): origin is string => Boolean(origin))
+
 export const createAuth = (
   ctx: GenericCtx<DataModel>,
   { optionsOnly } = { optionsOnly: false },
@@ -25,7 +32,7 @@ export const createAuth = (
       disabled: optionsOnly,
     },
     baseURL: convexSiteUrl,
-    trustedOrigins: [siteUrl],
+    trustedOrigins: getTrustedOrigins(),
     database: authComponent.adapter(ctx),
     session: {
       cookieCache: {
