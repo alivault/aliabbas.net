@@ -37,6 +37,14 @@
       "pattern": "www.aliabbas.dev",
       "custom_domain": true,
     },
+    {
+      "pattern": "aliabbas.net",
+      "custom_domain": true,
+    },
+    {
+      "pattern": "www.aliabbas.net",
+      "custom_domain": true,
+    },
   ],
   "vars": {
     "VITE_CONVEX_URL": "https://valiant-penguin-216.convex.cloud",
