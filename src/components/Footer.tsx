@@ -39,26 +39,41 @@ export default function Footer() {
             <span className="font-semibold">Ali Abbas</span>
           </Link>
           <div className="flex flex-wrap gap-x-6 gap-y-3 min-[685px]:justify-self-center">
-            <Link to="/skillset" className="hover:text-foreground">
+            <Link
+              to="/skillset"
+              className="hover:text-foreground transition-colors"
+            >
               Skillset
             </Link>
-            <Link to="/experience" className="hover:text-foreground">
+            <Link
+              to="/experience"
+              className="hover:text-foreground transition-colors"
+            >
               Experience
             </Link>
-            <Link to="/notes" className="hover:text-foreground">
+            <Link
+              to="/notes"
+              className="hover:text-foreground transition-colors"
+            >
               Notes
             </Link>
-            <Link to="/chat" className="hover:text-foreground">
+            <Link
+              to="/chat"
+              className="hover:text-foreground transition-colors"
+            >
               Ask AI
             </Link>
-            <Link to="/privacy" className="hover:text-foreground">
+            <Link
+              to="/privacy"
+              className="hover:text-foreground transition-colors"
+            >
               Privacy
             </Link>
             <a
               href="https://github.com/alivault"
               target="_blank"
               rel="noreferrer"
-              className="hover:text-foreground"
+              className="hover:text-foreground transition-colors"
             >
               GitHub ↗
             </a>
