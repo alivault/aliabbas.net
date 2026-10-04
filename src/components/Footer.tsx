@@ -21,10 +21,10 @@ export default function Footer() {
           </div>
           <Link
             to="/contact"
-            className="group bg-primary text-primary-foreground hover:bg-primary/80 flex size-24 shrink-0 items-center justify-center rounded-full transition-[background-color,scale,rotate] duration-500 hover:scale-105 hover:rotate-6 sm:size-30"
+            className="bg-primary text-primary-foreground hover:bg-primary/80 flex size-24 shrink-0 items-center justify-center rounded-full transition-[background-color,scale,rotate] duration-500 hover:scale-105 hover:rotate-6 sm:size-30"
             aria-label="Contact Ali"
           >
-            <ArrowUpRight className="size-8 transition-transform duration-500 group-hover:translate-x-1 group-hover:-translate-y-1 sm:size-9" />
+            <ArrowUpRight className="size-8 sm:size-9" />
           </Link>
         </ScrollReveal>
         <ScrollReveal
