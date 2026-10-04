@@ -11,9 +11,9 @@ export function getRouter() {
     console.error('missing envar VITE_CONVEX_URL')
   }
 
-  const convexQueryClient = new ConvexQueryClient(CONVEX_URL, {
-    expectAuth: true,
-  })
+  // Don't use expectAuth: it pauses the socket until a token is set, which
+  // never happens for signed-out visitors, so public queries would hang.
+  const convexQueryClient = new ConvexQueryClient(CONVEX_URL)
 
   const queryClient: QueryClient = new QueryClient({
     defaultOptions: {
