@@ -245,7 +245,7 @@ Ali's stated lessons from Pico include:
 
 ### Chromagine — creative color tool (2025)
 
-Live project: https://chromagine.aliabbas.dev/
+Live project: https://chromagine.aliabbas.net/
 
 Chromagine is a playful utility for creating harmonious color palettes using
 perceptual color models rather than guesswork. Ali handled product design,

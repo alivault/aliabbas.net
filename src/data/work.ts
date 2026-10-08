@@ -44,7 +44,7 @@ export const recentWork = [
       'A joyful utility for creating harmonious palettes with perceptual color models instead of guesswork.',
     contribution:
       'Product design, color systems, React development, and deployment.',
-    href: 'https://chromagine.aliabbas.dev/',
+    href: 'https://chromagine.aliabbas.net/',
     year: '2025',
     tools: ['React', 'Color science', 'Design'],
     visual: 'chromagine',

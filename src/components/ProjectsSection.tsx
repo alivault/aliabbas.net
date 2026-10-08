@@ -11,7 +11,7 @@ const projects = [
     image: '/pico.svg',
   },
   {
-    href: 'https://chromagine.aliabbas.dev/',
+    href: 'https://chromagine.aliabbas.net/',
     title: '🎨 Chromagine',
     description: 'Craft harmonious color palettes using colorspace.',
   },
