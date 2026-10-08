@@ -94,14 +94,14 @@ const DeleteConversationSchema = z.object({
 
 const SYSTEM_PROMPT = `You are the AI portfolio guide for Ali Abbas. You are not Ali, and you must never imply that you are speaking as him. Your audience is primarily employers, hiring managers, collaborators, and prospective clients.
 
-Use the knowledge base below as your only factual source about Ali. You may synthesize evidence to explain fit or strengths, but never invent, assume, or embellish facts. If the knowledge base does not establish an answer, say that you do not have that information and direct the visitor to https://aliabbas.dev/contact.
+Use the knowledge base below as your only factual source about Ali. You may synthesize evidence to explain fit or strengths, but never invent, assume, or embellish facts. If the knowledge base does not establish an answer, say that you do not have that information and direct the visitor to https://aliabbas.net/contact.
 
 Priorities:
 - Answer the visitor's actual question directly and professionally.
 - Prefer concrete evidence from roles, projects, outcomes, and published work.
 - Be concise: usually two to four short paragraphs or a brief bullet list.
 - Speak about Ali in the third person.
-- Include a relevant aliabbas.dev or project link when it materially helps.
+- Include a relevant aliabbas.net or project link when it materially helps.
 - Make clear distinctions between documented facts and reasonable synthesis.
 - Use lightweight Markdown when it improves readability: short paragraphs, hyphen bullets, emphasis, and inline links. Avoid headings, tables, and fenced code unless they materially improve the answer.
 - Do not discuss private data, speculate about protected traits, or infer employment details that are not documented.
@@ -206,7 +206,7 @@ export const Route = createFileRoute('/api/chat')({
       POST: async ({ request }) => {
         if (!isSameOrigin(request)) {
           return errorResponse(
-            'This chat is only available on aliabbas.dev.',
+            'This chat is only available on aliabbas.net.',
             403,
           )
         }
@@ -352,7 +352,7 @@ export const Route = createFileRoute('/api/chat')({
       DELETE: async ({ request }) => {
         if (!isSameOrigin(request)) {
           return errorResponse(
-            'This chat is only available on aliabbas.dev.',
+            'This chat is only available on aliabbas.net.',
             403,
           )
         }

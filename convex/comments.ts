@@ -66,7 +66,7 @@ export const sendCommentNotification = internalAction({
   },
   handler: async (_ctx, args) => {
     const resend = new Resend(process.env.RESEND_API_KEY)
-    const siteUrl = process.env.SITE_URL || 'https://aliabbas.dev'
+    const siteUrl = process.env.SITE_URL || 'https://aliabbas.net'
     const noteUrl = `${siteUrl}/notes/${args.articleSlug}`
 
     await resend.emails.send({

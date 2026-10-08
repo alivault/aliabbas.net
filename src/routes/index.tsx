@@ -19,11 +19,11 @@ export const Route = createFileRoute('/')({
         content:
           'Full-stack product engineer with a strong frontend design background.',
       },
-      { property: 'og:url', content: 'https://aliabbas.dev' },
+      { property: 'og:url', content: 'https://aliabbas.net' },
       { property: 'og:type', content: 'website' },
       {
         property: 'og:image',
-        content: 'https://aliabbas.dev/og-image.png',
+        content: 'https://aliabbas.net/og-image.png',
       },
       { property: 'og:image:width', content: '1200' },
       { property: 'og:image:height', content: '630' },
@@ -44,7 +44,7 @@ export const Route = createFileRoute('/')({
       },
       {
         name: 'twitter:image',
-        content: 'https://aliabbas.dev/og-image.png',
+        content: 'https://aliabbas.net/og-image.png',
       },
       {
         name: 'twitter:image:alt',

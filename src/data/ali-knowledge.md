@@ -1,14 +1,14 @@
 # Ali Abbas — portfolio knowledge base
 
 This document is the factual source for Ali Abbas's portfolio assistant. It was
-assembled from the public pages and public Sanity content on aliabbas.dev. It is
+assembled from the public pages and public Sanity content on aliabbas.net. It is
 intended to answer questions from employers, collaborators, and prospective
 clients. Do not infer facts that are not stated here.
 
 ## Core profile
 
 - Name: Ali Abbas.
-- Portfolio: https://aliabbas.dev
+- Portfolio: https://aliabbas.net
 - LinkedIn: https://www.linkedin.com/in/webdevali/
 - GitHub: https://github.com/alivault
 - Public positioning: full-stack product engineer with a strong frontend design
@@ -18,7 +18,7 @@ clients. Do not infer facts that are not stated here.
 - Primary focus: product engineering and creative frontend.
 - Best-fit work: product and design engineering roles where design quality
   matters as much as technical execution.
-- Contact: use https://aliabbas.dev/contact. The site says Ali usually responds
+- Contact: use https://aliabbas.net/contact. The site says Ali usually responds
   within one to two days.
 
 Ali describes his work as turning ambitious ideas into polished,
@@ -254,7 +254,7 @@ highlights React, color science, and design.
 
 ## Writing and technical interests
 
-Ali publishes field notes at https://aliabbas.dev/notes. The notes demonstrate
+Ali publishes field notes at https://aliabbas.net/notes. The notes demonstrate
 interest in product engineering, interaction design, developer tooling,
 workflow quality, Git, shell tooling, Tailwind CSS, native clients, local-first
 software, and agent-driven development.
@@ -262,7 +262,7 @@ software, and agent-driven development.
 ### The Developer Becomes the Driver (July 6, 2026)
 
 Path:
-https://aliabbas.dev/notes/the-developer-becomes-the-driver
+https://aliabbas.net/notes/the-developer-becomes-the-driver
 
 Ali describes an agent-driven workflow using Herdr with Pi, Lazygit, and a live
 development server in adjacent panes. His loop is intent, implementation,
@@ -276,7 +276,7 @@ as someone removed from technical responsibility.
 ### Building Pico: A Local-First Workspace for Coding Agents (July 26, 2026)
 
 Path:
-https://aliabbas.dev/notes/building-pico-a-local-first-workspace-for-coding-agents
+https://aliabbas.net/notes/building-pico-a-local-first-workspace-for-coding-agents
 
 This article explains Pico's product motivation, local runtime, browser and
 SwiftUI clients, SSE state model, keyboard-first composer, Git integration,
@@ -287,7 +287,7 @@ streaming systems, Git tooling, SwiftUI, and local-first architecture.
 ### A Practical Approach to Learning How to Code (August 11, 2023)
 
 Path:
-https://aliabbas.dev/notes/a-practical-approach-to-learning-how-to-code
+https://aliabbas.net/notes/a-practical-approach-to-learning-how-to-code
 
 Ali presents himself as a self-taught web developer and recommends learning
 through imitation, small builds, repetition, gradually adding interactivity,
@@ -299,7 +299,7 @@ questions.
 (February 22, 2024)
 
 Path:
-https://aliabbas.dev/notes/effortlessly-clean-up-your-local-git-branches-with-the-gclean-function
+https://aliabbas.net/notes/effortlessly-clean-up-your-local-git-branches-with-the-gclean-function
 
 Explains shell helpers for removing local Git branches whose remote tracking
 branches have been deleted, with Bash, Zsh, and Fish examples.
@@ -309,7 +309,7 @@ branches have been deleted, with Bash, Zsh, and Fish examples.
 (March 6, 2024)
 
 Path:
-https://aliabbas.dev/notes/suppressing-tailwind-css-unknown-at-rule-warnings-in-neovim
+https://aliabbas.net/notes/suppressing-tailwind-css-unknown-at-rule-warnings-in-neovim
 
 Shows how to configure the CSS language server in LazyVim/Neovim to suppress
 false-positive warnings for Tailwind CSS.
@@ -317,7 +317,7 @@ false-positive warnings for Tailwind CSS.
 ### One Command for Adding and Pushing Git Remotes (March 13, 2024)
 
 Path:
-https://aliabbas.dev/notes/one-command-for-adding-and-pushing-git-remotes
+https://aliabbas.net/notes/one-command-for-adding-and-pushing-git-remotes
 
 Documents small Bash, Zsh, and Fish functions that combine adding a Git remote,
 setting the upstream branch, and performing the initial push.
@@ -327,7 +327,7 @@ setting the upstream branch, and performing the initial push.
 (March 24, 2024)
 
 Path:
-https://aliabbas.dev/notes/enhance-your-lazygit-experience-with-git-delta-integration
+https://aliabbas.net/notes/enhance-your-lazygit-experience-with-git-delta-integration
 
 Explains how Git Delta improves Lazygit diff readability with syntax
 highlighting and visually clearer comparisons, reflecting Ali's interest in
@@ -336,7 +336,7 @@ developer experience and visually legible tools.
 ### Simplify Git Pull With Rebase and AutoStash (May 24, 2024)
 
 Path:
-https://aliabbas.dev/notes/simplify-git-pull-with-rebase-and-autostash
+https://aliabbas.net/notes/simplify-git-pull-with-rebase-and-autostash
 
 Explains Git configuration for pull-with-rebase and automatic stashing to keep
 history cleaner and reduce repetitive manual steps.
@@ -346,7 +346,7 @@ history cleaner and reduce repetitive manual steps.
 (October 25, 2024)
 
 Path:
-https://aliabbas.dev/notes/how-to-disable-unused-variable-warnings-in-env-files
+https://aliabbas.net/notes/how-to-disable-unused-variable-warnings-in-env-files
 
 Shows how to use `.shellcheckrc` to suppress SC2034 warnings when environment
 variables are intentionally consumed outside the shell file.
@@ -380,4 +380,4 @@ direct public email address, age, formal education or degree, citizenship,
 visa/sponsorship requirements, compensation expectations, exact start-date
 availability, preferred employment arrangement, or detailed management/team
 size history. For these questions, direct the visitor to
-https://aliabbas.dev/contact rather than guessing.
+https://aliabbas.net/contact rather than guessing.

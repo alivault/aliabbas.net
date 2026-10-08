@@ -10,7 +10,7 @@ export const Route = createFileRoute('/privacy')({
       {
         name: 'description',
         content:
-          'How aliabbas.dev collects, uses, stores, and protects personal information.',
+          'How aliabbas.net collects, uses, stores, and protects personal information.',
       },
     ],
   }),
@@ -57,7 +57,7 @@ function PrivacyPage() {
         <div className="pb-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
           <PrivacySection number="01" title="Overview">
             <p>
-              This policy explains what information aliabbas.dev collects, why
+              This policy explains what information aliabbas.net collects, why
               it is used, how long it is retained, and the choices available to
               visitors. The site is operated by Ali Abbas as a professional
               portfolio and publishing website.

@@ -85,7 +85,7 @@ export const sendNewConversationNotification = action({
       throw new Error('Invalid notification signature')
     }
 
-    const siteUrl = process.env.SITE_URL || 'https://aliabbas.dev'
+    const siteUrl = process.env.SITE_URL || 'https://aliabbas.net'
     const conversationUrl = `${siteUrl}/admin/conversations`
     const question = args.firstQuestion.trim().slice(0, 1000)
     const location = [

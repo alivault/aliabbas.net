@@ -1,4 +1,4 @@
-# aliabbas.dev
+# aliabbas.net
 
 Ali Abbas’s design-led full-stack engineering portfolio. The site uses an
 editorial, motion-rich visual system to present selected work, technical
