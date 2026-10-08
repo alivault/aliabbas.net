@@ -71,7 +71,7 @@ export const sendCommentNotification = internalAction({
 
     await resend.emails.send({
       from: 'Ali Abbas <noreply@mail.aliabbas.dev>',
-      to: 'hi@aliabbas.dev',
+      to: 'ali@aliabbas.net',
       subject: `New comment from ${args.userName}`,
       html: `
         <div style="font-family: system-ui, sans-serif; max-width: 500px; margin: 0 auto; padding: 40px 20px;">

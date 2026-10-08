@@ -106,7 +106,7 @@ export const sendNewConversationNotification = action({
 
     const result = await new Resend(resendApiKey).emails.send({
       from: 'Ali Abbas <noreply@mail.aliabbas.dev>',
-      to: 'ali@aliabbas.dev',
+      to: 'ali@aliabbas.net',
       subject: 'New Ask AI conversation',
       html: `
         <div style="font-family: system-ui, sans-serif; max-width: 560px; margin: 0 auto; padding: 40px 20px;">
