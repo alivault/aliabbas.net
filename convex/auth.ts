@@ -46,7 +46,7 @@ export const createAuth = (
       sendResetPassword: async ({ user, url }) => {
         const resend = new Resend(process.env.RESEND_API_KEY)
         const result = await resend.emails.send({
-          from: 'Ali Abbas <noreply@mail.aliabbas.dev>',
+          from: 'Ali Abbas <noreply@mail.aliabbas.net>',
           to: user.email,
           subject: 'Reset your password',
           html: `
@@ -91,7 +91,7 @@ export const createAuth = (
         sendVerificationOTP: async ({ email, otp, type }) => {
           const resend = new Resend(process.env.RESEND_API_KEY)
           const result = await resend.emails.send({
-            from: 'Ali Abbas <noreply@mail.aliabbas.dev>',
+            from: 'Ali Abbas <noreply@mail.aliabbas.net>',
             to: email,
             subject:
               type === 'sign-in'

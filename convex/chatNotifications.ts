@@ -105,7 +105,7 @@ export const sendNewConversationNotification = action({
       visitorDetails.join(' · ') || 'No visitor details available'
 
     const result = await new Resend(resendApiKey).emails.send({
-      from: 'Ali Abbas <noreply@mail.aliabbas.dev>',
+      from: 'Ali Abbas <noreply@mail.aliabbas.net>',
       to: 'ali@aliabbas.net',
       subject: 'New Ask AI conversation',
       html: `

@@ -15,7 +15,7 @@ export const sendContactEmail = createServerFn({ method: 'POST' })
     const { name, email, message } = data
 
     const result = await resend.emails.send({
-      from: 'New Message <form@mail.aliabbas.dev>',
+      from: 'New Message <form@mail.aliabbas.net>',
       to: ['ali@aliabbas.net'],
       subject: `from ${name}`,
       html: `

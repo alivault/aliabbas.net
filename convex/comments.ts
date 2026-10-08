@@ -70,7 +70,7 @@ export const sendCommentNotification = internalAction({
     const noteUrl = `${siteUrl}/notes/${args.articleSlug}`
 
     await resend.emails.send({
-      from: 'Ali Abbas <noreply@mail.aliabbas.dev>',
+      from: 'Ali Abbas <noreply@mail.aliabbas.net>',
       to: 'ali@aliabbas.net',
       subject: `New comment from ${args.userName}`,
       html: `
