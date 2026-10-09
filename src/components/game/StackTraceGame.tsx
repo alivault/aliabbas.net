@@ -519,10 +519,8 @@ function ResultScreen({
           </span>
         </div>
         <SectionHeading className="mt-6">
-          Build
-          <span
-            className={`block ${didWin ? 'text-[#d9ff43]' : 'text-[#ff694a]'}`}
-          >
+          Build{' '}
+          <span className={didWin ? 'text-[#d9ff43]' : 'text-[#ff694a]'}>
             {didWin ? 'shipped.' : 'failed.'}
           </span>
         </SectionHeading>
