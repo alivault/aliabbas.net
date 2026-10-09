@@ -232,6 +232,16 @@ html:has(.stack-trace-page) body {
   touch-action: none;
 }
 
+/* The game is always dark, so the site nav uses dark colours here. */
+.stack-trace-nav {
+  --background: oklch(0.155 0.006 85);
+  --foreground: oklch(0.955 0.009 94);
+  --border: oklch(0.32 0.008 85);
+  --brand: color-mix(in oklab, var(--foreground) 65%, transparent);
+  --brand-foreground: var(--background);
+  color: var(--foreground);
+}
+
 .stack-trace-hud {
   padding-top: max(1rem, env(safe-area-inset-top));
   padding-right: max(1rem, env(safe-area-inset-right));
