@@ -85,29 +85,40 @@ function SkillsPage() {
             ))}
           </div>
 
-          <ScrollReveal className="border-foreground/15 bg-foreground/[0.03] mt-section-content rounded-[2px] border p-5 sm:p-8 lg:p-10">
-            <div className="border-foreground/15 flex flex-col justify-between gap-5 border-b pb-7 sm:flex-row sm:items-center">
-              <div>
-                <p className="text-xs font-bold">
-                  This portfolio is a live full-stack system
-                </p>
-                <p className="text-foreground/40 mt-2 max-w-xl text-sm leading-6">
-                  Not a static mockup: server rendering, managed content,
-                  authentication, realtime comments, transactional email, and
-                  edge deployment.
-                </p>
-              </div>
-              <MonoLabel as="span">Production architecture</MonoLabel>
+          <ScrollReveal className="mt-section-content grid gap-10 lg:grid-cols-2 lg:gap-16">
+            <div className="lg:py-2">
+              <MonoLabel tone="brand">Production architecture</MonoLabel>
+              <Title as="h2" variant="subsection" className="mt-4 max-w-sm">
+                This portfolio is a live full-stack system
+              </Title>
+              <p className="text-foreground/45 mt-4 max-w-md text-sm leading-6">
+                Not a static mockup: server rendering, managed content,
+                authentication, realtime comments, transactional email, and edge
+                deployment.
+              </p>
             </div>
-            <div className="divide-foreground/10 grid divide-y sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
-              {architecture.map(({ icon: Icon, label, value }) => (
-                <div key={label} className="py-7 sm:px-7 lg:py-8">
-                  <Icon className="text-brand size-5" strokeWidth={1.5} />
-                  <p className="mt-8 text-xs font-bold">{label}</p>
-                  <p className="text-foreground/35 mt-2 text-[11px]">{value}</p>
-                </div>
+            <ul className="border-foreground/15 bg-foreground/15 grid gap-px overflow-hidden rounded-[2px] border sm:grid-cols-2">
+              {architecture.map(({ icon: Icon, label, value }, index) => (
+                <li
+                  key={label}
+                  className="bg-background group hover:bg-foreground/[0.03] flex flex-col gap-6 p-6 transition-colors sm:gap-10 sm:p-7"
+                >
+                  <div className="flex items-center justify-between">
+                    <Icon
+                      className="text-foreground/50 group-hover:text-foreground size-5 transition-colors"
+                      strokeWidth={1.5}
+                    />
+                    <MonoLabel as="span">
+                      {String(index + 1).padStart(2, '0')}
+                    </MonoLabel>
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">{label}</p>
+                    <p className="text-foreground/45 mt-1.5 text-xs">{value}</p>
+                  </div>
+                </li>
               ))}
-            </div>
+            </ul>
           </ScrollReveal>
         </div>
       </section>
