@@ -67,6 +67,8 @@
   --ring: color-mix(in oklab, var(--foreground) 50%, transparent);
   --brand: color-mix(in oklab, var(--foreground) 65%, transparent);
   --brand-foreground: var(--background);
+  /* Surface behind the page cards during page transitions. */
+  --page-base: oklch(0.8 0.014 94);
 }
 
 @media (width >= 40rem) {
@@ -100,6 +102,7 @@
     --destructive: oklch(0.7 0.19 25);
     --border: oklch(0.32 0.008 85);
     --input: oklch(0.32 0.008 85);
+    --page-base: oklch(0.06 0.004 85);
   }
 }
 
@@ -355,41 +358,64 @@ html:has(.stack-trace-page) body {
 
 /* Page transition. See src/lib/page-transition.ts. */
 html:active-view-transition-type(page) {
+  /* Each page is a card that moves over this base surface. */
   &::view-transition-group(root) {
-    background: var(--background);
+    background: var(--page-base);
   }
 
   &::view-transition-old(root),
   &::view-transition-new(root) {
     mix-blend-mode: normal;
-    transform-origin: 50% 0;
+    transform-origin: 50% 50%;
+    overflow: clip;
+    box-shadow:
+      0 0 0 1px var(--border),
+      0 40px 80px -24px rgb(0 0 0 / 45%);
   }
 
   &::view-transition-old(root) {
-    animation: page-scale-out 450ms cubic-bezier(0.4, 0, 0.2, 1) both;
+    animation: page-card-out 900ms both;
   }
 
   &::view-transition-new(root) {
-    animation: page-slide-in 700ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
-  }
-
-  /* Keep the fixed header in place while the page moves. */
-  &::view-transition-group(site-header) {
-    animation: none;
+    animation: page-card-in 900ms both;
   }
 }
 
-@keyframes page-scale-out {
-  to {
+/* Current page: shrink into a card, then fade under the next card. */
+@keyframes page-card-out {
+  0% {
+    transform: scale(1);
+    border-radius: 0;
+    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  35% {
+    transform: scale(0.9);
+    border-radius: 24px;
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.88);
+    border-radius: 24px;
     opacity: 0;
-    transform: scale(0.94);
-    filter: blur(2px);
   }
 }
 
-@keyframes page-slide-in {
-  from {
-    transform: translateY(100vh);
+/* Next page: slide up as a card, then grow to fill the screen. */
+@keyframes page-card-in {
+  0% {
+    transform: translateY(100vh) scale(0.9);
+    border-radius: 24px;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  65% {
+    transform: translateY(0) scale(0.9);
+    border-radius: 24px;
+    animation-timing-function: cubic-bezier(0.65, 0, 0.35, 1);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    border-radius: 0;
   }
 }
 
