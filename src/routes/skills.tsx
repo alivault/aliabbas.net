@@ -78,7 +78,7 @@ function SkillsPage() {
                 <Title as="h2" variant="card">
                   {capability.title}
                 </Title>
-                <p className="text-foreground/45 group-hover:text-brand/60 max-w-xl text-sm leading-6 transition-colors sm:justify-self-end">
+                <p className="text-foreground/45 max-w-xl text-sm leading-6 sm:justify-self-end">
                   {capability.description}
                 </p>
               </ScrollReveal>
