@@ -390,6 +390,14 @@ html:active-view-transition-type(page) {
   &::view-transition-group(site-header) {
     animation: none;
   }
+
+  /* Fade the header blur and border out slowly. The nav text is the same in
+     both snapshots, so it stays solid. */
+  &::view-transition-old(site-header),
+  &::view-transition-new(site-header) {
+    animation-duration: 600ms;
+    animation-timing-function: ease-out;
+  }
 }
 
 /* Current page: move up, shrink, and fade into the base surface. */

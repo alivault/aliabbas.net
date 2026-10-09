@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from '@tanstack/react-router'
 import { ArrowUpRight } from 'lucide-react'
 import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
@@ -9,6 +9,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '~/components/ui/sheet'
+import { getActiveViewTransition } from '~/lib/page-transition'
 import Logo from './Logo'
 import Title from './Title'
 
@@ -144,6 +145,23 @@ export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
   const { scrollY } = useScroll()
   const headerChromeOpacity = useTransform(scrollY, [0, 96], [0, 1])
+  // When the header mounts during a page transition, hide the blur and border
+  // in the new snapshot. The old snapshot still has them, so they fade out.
+  const [hideChrome, setHideChrome] = useState(
+    () => getActiveViewTransition() != null,
+  )
+
+  useEffect(() => {
+    const transition = getActiveViewTransition()
+    if (!transition) return
+    let active = true
+    void transition.finished.finally(() => {
+      if (active) setHideChrome(false)
+    })
+    return () => {
+      active = false
+    }
+  }, [])
 
   return (
     <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
@@ -151,7 +169,7 @@ export default function SiteHeader() {
         <motion.div
           aria-hidden="true"
           className="border-foreground/10 bg-background/80 pointer-events-none absolute inset-0 border-b backdrop-blur-[12px] backdrop-saturate-[1.8]"
-          style={{ opacity: headerChromeOpacity }}
+          style={{ opacity: hideChrome ? 0 : headerChromeOpacity }}
         />
         <div className="relative mx-auto grid h-full max-w-[1600px] grid-cols-[1fr_auto] items-center px-5 sm:px-8 lg:grid-cols-[1fr_auto_1fr] lg:px-12">
           <Link
