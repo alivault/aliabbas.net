@@ -60,6 +60,9 @@ export type BugVisual = CrawlerVisual | WispVisual
 export type CentipedeSegment = {
   group: THREE.Group
   legs: THREE.Object3D
+  // Each segment owns its materials, so a shed segment can fade out
+  // without fading the rest of the body.
+  skin: THREE.MeshStandardMaterial
   alive: boolean
 }
 
@@ -424,11 +427,12 @@ export function createCentipedeVisual(): CentipedeVisual {
     const size = 1 - index * 0.06
     const segment = new THREE.Group()
     segment.scale.setScalar(size)
+    const skin = materials.skin.clone()
     segment.add(
-      ellipsoid(materials.skin, [0.78, 0.58, 0.58], [0, 0, 0]),
-      ellipsoid(materials.wire, [0.84, 0.64, 0.64], [0, 0, 0], 6),
+      ellipsoid(skin, [0.78, 0.58, 0.58], [0, 0, 0]),
+      ellipsoid(materials.wire.clone(), [0.84, 0.64, 0.64], [0, 0, 0], 6),
     )
-    const ring = new THREE.Mesh(ringGeometry, materials.glow)
+    const ring = new THREE.Mesh(ringGeometry, materials.glow.clone())
     ring.scale.set(0.8, 0.6, 1)
     segment.add(ring)
     const legs = new THREE.Mesh(
@@ -436,12 +440,12 @@ export function createCentipedeVisual(): CentipedeVisual {
         legGeometry(1, 1.5, 0.75, 0.07),
         legGeometry(-1, 1.5, 0.75, 0.07),
       ]),
-      materials.skin,
+      skin,
     )
     legs.position.y = -0.15
     segment.add(legs)
     group.add(segment)
-    return { group: segment, legs, alive: true }
+    return { group: segment, legs, skin, alive: true }
   })
 
   return {
@@ -527,6 +531,8 @@ export function animateCentipede(
     pivot.rotation.x = 0.6 + Math.sin(time * 2.4 + index * 1.3) * 0.22
   })
   visual.segments.forEach((segment, index) => {
+    // Segments flash and glow with the head.
+    segment.skin.emissiveIntensity = visual.materials.skin.emissiveIntensity
     segment.legs.rotation.z = Math.sin(time * 9 - index * 0.9) * 0.28
     segment.legs.rotation.y = Math.cos(time * 9 - index * 0.9) * 0.18
   })
