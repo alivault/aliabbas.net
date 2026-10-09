@@ -378,7 +378,15 @@ html:active-view-transition-type(page) {
     animation: page-card-in 800ms cubic-bezier(0.76, 0, 0.24, 1) 100ms both;
   }
 
-  /* The fixed header has its own snapshot, so it stays in place. */
+  /*
+   * The fixed header has its own snapshot, so it stays in place.
+   * Set the name only during the transition: a view-transition-name makes
+   * the header a backdrop root, which stops its backdrop blur.
+   */
+  & .site-header {
+    view-transition-name: site-header;
+  }
+
   &::view-transition-group(site-header) {
     animation: none;
   }
