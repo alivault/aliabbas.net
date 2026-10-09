@@ -256,7 +256,7 @@ function MissionBriefing({
             }`}
           >
             Stack
-            <span className="st-logo-trace block text-[#d9ff43]">Trace</span>
+            <span className="block text-[#d9ff43]">Trace</span>
           </h1>
 
           <ol
