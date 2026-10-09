@@ -309,7 +309,7 @@ function IntegrityBar({
   const segments = 20
   const filled = Math.ceil((integrity / 100) * segments)
   return (
-    <div className={`st-panel px-4 py-3 ${compact ? 'w-44' : 'w-72'}`}>
+    <div className={`st-panel px-4 py-3 ${compact ? 'w-44' : 'w-56 sm:w-72'}`}>
       <div className="flex items-baseline justify-between gap-3">
         <span className="text-sm font-semibold text-white/60 uppercase">
           Integrity
@@ -506,9 +506,9 @@ function MissionHud({
         </div>
       ) : (
         <>
-          <div className="absolute top-4 right-4 left-4 flex items-start justify-between gap-6 sm:top-6 sm:right-6 sm:left-6">
+          <div className="absolute top-4 right-4 left-4 flex flex-wrap items-start justify-between gap-2 sm:top-6 sm:right-6 sm:left-6 lg:gap-6">
             <IntegrityBar integrity={hud.integrity} compact={false} />
-            <div className="absolute left-1/2 w-[min(32rem,40vw)] -translate-x-1/2">
+            <div className="order-last w-full lg:absolute lg:left-1/2 lg:w-[min(32rem,36vw)] lg:-translate-x-1/2">
               <ObjectiveBanner hud={hud} compact={false} />
             </div>
             <div className="flex gap-2">
@@ -529,7 +529,7 @@ function MissionHud({
             <div className="hidden md:block">
               <FrameTracker frames={hud.frames} />
             </div>
-            <div className="ml-auto flex items-center gap-5 text-sm font-semibold text-white/70 uppercase">
+            <div className="ml-auto hidden items-center gap-5 text-sm font-semibold text-white/70 uppercase sm:flex">
               <span className="flex items-center gap-2">
                 <KeyCap>M</KeyCap> Map
               </span>
