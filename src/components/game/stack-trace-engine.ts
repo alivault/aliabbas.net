@@ -131,7 +131,7 @@ const MAP_TUNNEL_RADIUS = 3.4
 const PROJECTILE_AXIS = new THREE.Vector3(0, 1, 0)
 const CHARGE_TIME = 0.45
 const ROOT_CHARGE_TIME = 0.55
-const DEATH_TIME = 1.1
+const DEATH_TIME = 0.9
 const FADE_TIME = 0.8
 const CRAWLER_HOVER = 0.46
 // The root bug circles the centre of /deploy/core. Segments trail the head
@@ -1515,8 +1515,8 @@ export default class StackTraceEngine {
     )
   }
 
-  // Crawlers drop off their wall and flip over; wisps spiral down. The
-  // motion stays inside the level, so the whole fade stays in view.
+  // Crawlers drop off their wall toward the opposite wall and flip over;
+  // wisps spiral down. A fall stops at the first wall or floor it meets.
   private animateEnemyDeath(enemy: Enemy, delta: number) {
     const { visual } = enemy
     visual.state.dying += delta
@@ -1527,19 +1527,24 @@ export default class StackTraceEngine {
     }
     this.moveVector.set(0, 0, 0)
     if (enemy.walker && visual.kind === 'crawler') {
-      this.moveVector.addScaledVector(enemy.walker.normal, delta * 1.2)
-      this.moveVector.y -= delta * progress * 3
+      // The wall normal points across the room, so there is always room
+      // to fall.
+      this.moveVector.addScaledVector(
+        enemy.walker.normal,
+        delta * (1.4 + progress * 6),
+      )
       visual.body.rotation.z = Math.min(Math.PI, progress * Math.PI * 2.2)
       visual.legs.forEach(({ pivot }, index) => {
         pivot.rotation.z = Math.sin(visual.state.dying * 40 + index) * 0.5
       })
     } else {
-      this.moveVector.y -= delta * (0.6 + progress * 2.4)
-      visual.body.rotation.z += delta * 10
+      this.moveVector.y -= delta * (1 + progress * 5)
+      visual.body.rotation.z += delta * 14
       visual.body.rotation.x = progress * 1.2
     }
-    this.moveDying(visual.group.position, 0.5)
-    setObjectOpacity(visual.group, 1 - progress * progress)
+    // The radius is less than CRAWLER_HOVER, so a crawler can leave its wall.
+    this.moveDying(visual.group.position, 0.3)
+    setObjectOpacity(visual.group, 1 - progress)
   }
 
   private animateRootDeath(delta: number) {
@@ -1550,10 +1555,10 @@ export default class StackTraceEngine {
       visual.group.visible = false
       return
     }
-    this.moveVector.set(0, -delta * progress * 3, 0)
+    this.moveVector.set(0, -delta * progress * 5, 0)
     this.moveDying(visual.head.position, 1.1)
     visual.head.rotation.z += delta * 3
-    setObjectOpacity(visual.group, 1 - progress * progress)
+    setObjectOpacity(visual.group, 1 - progress)
   }
 
   // Applies `moveVector` to a dying part, unless the move would put it
