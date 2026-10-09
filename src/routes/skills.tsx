@@ -29,10 +29,10 @@ const architecture = [
   },
 ] as const
 
-export const Route = createFileRoute('/skillset')({
+export const Route = createFileRoute('/skills')({
   head: () => ({
     meta: [
-      { title: 'Skillset — Ali Abbas' },
+      { title: 'Skills — Ali Abbas' },
       {
         name: 'description',
         content:
@@ -40,10 +40,10 @@ export const Route = createFileRoute('/skillset')({
       },
     ],
   }),
-  component: SkillsetPage,
+  component: SkillsPage,
 })
 
-function SkillsetPage() {
+function SkillsPage() {
   return (
     <Main>
       <section className="bg-background text-foreground">

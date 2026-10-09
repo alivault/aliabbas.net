@@ -40,10 +40,10 @@ export default function Footer() {
           </Link>
           <div className="flex flex-wrap gap-x-6 gap-y-3 min-[685px]:justify-self-center">
             <Link
-              to="/skillset"
+              to="/skills"
               className="hover:text-foreground transition-colors"
             >
-              Skillset
+              Skills
             </Link>
             <Link
               to="/experience"

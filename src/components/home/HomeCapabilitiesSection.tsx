@@ -8,7 +8,7 @@ export default function HomeCapabilitiesSection() {
     <section className="bg-background text-foreground">
       <div className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
         <ScrollReveal as="header">
-          <SectionHeading>Skillset</SectionHeading>
+          <SectionHeading>Skills</SectionHeading>
         </ScrollReveal>
 
         <div className="border-foreground/15 mt-section-content border-t">

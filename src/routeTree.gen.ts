@@ -18,7 +18,7 @@ import { Route as NotesRouteImport } from './routes/notes'
 import { Route as PlayRouteImport } from './routes/play'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
-import { Route as SkillsetRouteImport } from './routes/skillset'
+import { Route as SkillsRouteImport } from './routes/skills'
 import { Route as WorkRouteImport } from './routes/work'
 import { Route as AdminConversationsRouteImport } from './routes/admin.conversations'
 import { Route as ApiChatRouteImport } from './routes/api.chat'
@@ -72,9 +72,9 @@ const ResetPasswordRoute = ResetPasswordRouteImport.update({
   path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SkillsetRoute = SkillsetRouteImport.update({
-  id: '/skillset',
-  path: '/skillset',
+const SkillsRoute = SkillsRouteImport.update({
+  id: '/skills',
+  path: '/skills',
   getParentRoute: () => rootRouteImport,
 } as any)
 const WorkRoute = WorkRouteImport.update({
@@ -123,7 +123,7 @@ export interface FileRoutesByFullPath {
   '/play': typeof PlayRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/skillset': typeof SkillsetRoute
+  '/skills': typeof SkillsRoute
   '/work': typeof WorkRoute
   '/admin/conversations': typeof AdminConversationsRoute
   '/api/chat': typeof ApiChatRoute
@@ -142,7 +142,7 @@ export interface FileRoutesByTo {
   '/play': typeof PlayRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/skillset': typeof SkillsetRoute
+  '/skills': typeof SkillsRoute
   '/work': typeof WorkRoute
   '/admin/conversations': typeof AdminConversationsRoute
   '/api/chat': typeof ApiChatRoute
@@ -162,7 +162,7 @@ export interface FileRoutesById {
   '/play': typeof PlayRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/skillset': typeof SkillsetRoute
+  '/skills': typeof SkillsRoute
   '/work': typeof WorkRoute
   '/admin/conversations': typeof AdminConversationsRoute
   '/api/chat': typeof ApiChatRoute
@@ -183,7 +183,7 @@ export interface FileRouteTypes {
     | '/play'
     | '/privacy'
     | '/reset-password'
-    | '/skillset'
+    | '/skills'
     | '/work'
     | '/admin/conversations'
     | '/api/chat'
@@ -202,7 +202,7 @@ export interface FileRouteTypes {
     | '/play'
     | '/privacy'
     | '/reset-password'
-    | '/skillset'
+    | '/skills'
     | '/work'
     | '/admin/conversations'
     | '/api/chat'
@@ -221,7 +221,7 @@ export interface FileRouteTypes {
     | '/play'
     | '/privacy'
     | '/reset-password'
-    | '/skillset'
+    | '/skills'
     | '/work'
     | '/admin/conversations'
     | '/api/chat'
@@ -241,7 +241,7 @@ export interface RootRouteChildren {
   PlayRoute: typeof PlayRoute
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
-  SkillsetRoute: typeof SkillsetRoute
+  SkillsRoute: typeof SkillsRoute
   WorkRoute: typeof WorkRoute
   AdminConversationsRoute: typeof AdminConversationsRoute
   ApiChatRoute: typeof ApiChatRoute
@@ -316,11 +316,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/skillset': {
-      id: '/skillset'
-      path: '/skillset'
-      fullPath: '/skillset'
-      preLoaderRoute: typeof SkillsetRouteImport
+    '/skills': {
+      id: '/skills'
+      path: '/skills'
+      fullPath: '/skills'
+      preLoaderRoute: typeof SkillsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/work': {
@@ -385,7 +385,7 @@ const rootRouteChildren: RootRouteChildren = {
   PlayRoute: PlayRoute,
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
-  SkillsetRoute: SkillsetRoute,
+  SkillsRoute: SkillsRoute,
   WorkRoute: WorkRoute,
   AdminConversationsRoute: AdminConversationsRoute,
   ApiChatRoute: ApiChatRoute,
