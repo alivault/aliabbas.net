@@ -389,24 +389,48 @@ html:active-view-transition-type(page) {
   }
 
   /*
-   * The fixed header has its own snapshot, so it stays in place.
-   * Set the name only during the transition: a view-transition-name makes
-   * the header a backdrop root, which stops its backdrop blur.
+   * The fixed header and its blur layer get their own snapshots, so they stay
+   * in place. Set the names only during the transition: a
+   * view-transition-name makes an element a backdrop root, which stops the
+   * backdrop blur.
    */
   & .site-header {
     view-transition-name: site-header;
   }
 
-  &::view-transition-group(site-header) {
+  & .site-header-chrome {
+    view-transition-name: site-header-chrome;
+  }
+
+  &::view-transition-group(site-header),
+  &::view-transition-group(site-header-chrome) {
     animation: none;
   }
 
-  /* Fade the header blur and border out slowly. The nav text is the same in
-     both snapshots, so it stays solid. */
-  &::view-transition-old(site-header),
+  /* Swap the nav text at once. A cross-fade makes the text flash. */
+  &::view-transition-old(site-header) {
+    animation: none;
+    opacity: 0;
+  }
+
   &::view-transition-new(site-header) {
-    animation-duration: 600ms;
-    animation-timing-function: ease-out;
+    animation: none;
+  }
+
+  /* Fade the old blur and border out. Hide the new one until the end. */
+  &::view-transition-old(site-header-chrome) {
+    animation: page-fade-out 300ms ease-out both;
+  }
+
+  &::view-transition-new(site-header-chrome) {
+    animation: none;
+    opacity: 0;
+  }
+}
+
+@keyframes page-fade-out {
+  to {
+    opacity: 0;
   }
 }
 
