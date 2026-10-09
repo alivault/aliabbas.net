@@ -147,7 +147,7 @@ export default function SiteHeader() {
 
   return (
     <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-      <header className="text-foreground fixed inset-x-0 top-0 z-[100] h-[72px]">
+      <header className="text-foreground fixed inset-x-0 top-0 z-[100] h-[72px] [view-transition-name:site-header]">
         <motion.div
           aria-hidden="true"
           className="border-foreground/10 bg-background/80 pointer-events-none absolute inset-0 border-b backdrop-blur-[12px] backdrop-saturate-[1.8]"

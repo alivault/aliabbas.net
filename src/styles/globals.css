@@ -377,6 +377,11 @@ html:active-view-transition-type(page) {
     box-shadow: 0 -24px 64px rgb(0 0 0 / 22%);
     animation: page-card-in 800ms cubic-bezier(0.76, 0, 0.24, 1) 100ms both;
   }
+
+  /* The fixed header has its own snapshot, so it stays in place. */
+  &::view-transition-group(site-header) {
+    animation: none;
+  }
 }
 
 /* Current page: shrink and fade into the base surface. */
