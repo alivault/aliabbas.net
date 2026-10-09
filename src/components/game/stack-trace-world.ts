@@ -842,72 +842,6 @@ export function createLevelWorld(scene: THREE.Scene): LevelWorld {
   return { group, rooms: roomMap, graph, volumes, door }
 }
 
-// Official Lucide `bug` icon paths, rendered to a canvas texture so the icon
-// stays crisp and camera-facing inside the WebGL scene.
-const lucideBugPaths = [
-  'M12 20v-9',
-  'M14 7a4 4 0 0 1 4 4v3a6 6 0 0 1-12 0v-3a4 4 0 0 1 4-4z',
-  'M14.12 3.88 16 2',
-  'M21 21a4 4 0 0 0-3.81-4',
-  'M21 5a4 4 0 0 1-3.55 3.97',
-  'M22 13h-4',
-  'M3 21a4 4 0 0 1 3.81-4',
-  'M3 5a4 4 0 0 0 3.55 3.97',
-  'M6 13H2',
-  'm8 2 1.88 1.88',
-  'M9 7.13V6a3 3 0 1 1 6 0v1.13',
-] as const
-
-function createLucideBugSprite(color: string, size = 2.7) {
-  const canvas = document.createElement('canvas')
-  canvas.width = 128
-  canvas.height = 128
-  const context = canvas.getContext('2d')
-  if (!context) throw new Error('Stack Trace could not render bug icons')
-
-  context.fillStyle = 'rgb(5 6 8 / 88%)'
-  context.beginPath()
-  context.arc(64, 64, 57, 0, Math.PI * 2)
-  context.fill()
-  context.strokeStyle = color
-  context.globalAlpha = 0.38
-  context.lineWidth = 2
-  context.stroke()
-
-  context.globalAlpha = 1
-  context.strokeStyle = color
-  context.lineWidth = 2
-  context.lineCap = 'round'
-  context.lineJoin = 'round'
-  context.shadowColor = color
-  context.shadowBlur = 3
-  context.translate(16, 16)
-  context.scale(4, 4)
-  lucideBugPaths.forEach((path) => context.stroke(new Path2D(path)))
-
-  const texture = new THREE.CanvasTexture(canvas)
-  texture.colorSpace = THREE.SRGBColorSpace
-  texture.generateMipmaps = false
-  texture.minFilter = THREE.LinearFilter
-  texture.magFilter = THREE.LinearFilter
-  const material = new THREE.SpriteMaterial({
-    map: texture,
-    transparent: true,
-    depthWrite: false,
-    toneMapped: false,
-  })
-  const sprite = new THREE.Sprite(material)
-  sprite.scale.set(size, size, 1)
-  return sprite
-}
-
-export function createBugVisual(color = '#ff694a') {
-  const group = new THREE.Group()
-  const icon = createLucideBugSprite(color)
-  group.add(icon)
-  return { group, icon }
-}
-
 export function createFaultVisual(color: string) {
   const group = new THREE.Group()
   const coreMaterial = new THREE.MeshStandardMaterial({
@@ -952,30 +886,6 @@ export function createFaultVisual(color: string) {
   })
 
   return { group, core, shell }
-}
-
-export function createRootVisual() {
-  const group = new THREE.Group()
-  const shellMaterial = new THREE.MeshBasicMaterial({
-    color: '#8da4ff',
-    wireframe: true,
-    transparent: true,
-    opacity: 0.72,
-    toneMapped: false,
-  })
-  const icon = createLucideBugSprite('#ff694a', 5.2)
-  group.add(icon)
-
-  const rings = [0, 1].map((index) => {
-    const ring = new THREE.Mesh(
-      new THREE.TorusGeometry(3 + index * 0.34, 0.045, 6, 40),
-      shellMaterial,
-    )
-    ring.rotation.set(index * 0.65, index * 0.4, index * 0.8)
-    group.add(ring)
-    return ring
-  })
-  return { group, icon, rings }
 }
 
 export function createExitVisual(): ExitVisual {

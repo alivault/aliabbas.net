@@ -1,5 +1,22 @@
 import * as THREE from 'three'
 import StackTraceAudio from './stack-trace-audio'
+import {
+  CENTIPEDE_SEGMENTS,
+  animateBug,
+  animateCentipede,
+  createBugVisual,
+  createCentipedeVisual,
+  createCrawlerWalker,
+  easeToBasis,
+  resetCrawlerWalker,
+  stepCrawlerWalker,
+} from './stack-trace-bugs'
+import type {
+  BugVisual,
+  CentipedeVisual,
+  CrawlerRoom,
+  CrawlerWalker,
+} from './stack-trace-bugs'
 import type {
   GameInputMode,
   GameHudState,
@@ -16,11 +33,9 @@ import {
 } from './stack-trace-map'
 import type { StackTraceAutomap } from './stack-trace-map'
 import {
-  createBugVisual,
   createExitVisual,
   createFaultVisual,
   createLevelWorld,
-  createRootVisual,
   connections,
   enemySpecs,
   exitPosition,
@@ -43,18 +58,19 @@ type EngineCallbacks = {
   onEnd: (result: GameResult) => void
 }
 
-type BugVisual = ReturnType<typeof createBugVisual>
 type FaultVisual = ReturnType<typeof createFaultVisual>
-type RootVisual = ReturnType<typeof createRootVisual>
 
 type Enemy = {
   spec: EnemySpec
   visual: BugVisual
+  walker: CrawlerWalker | null
   home: THREE.Vector3
+  seed: number
   health: number
   maxHealth: number
   alive: boolean
   lastShot: number
+  chargeStart: number | null
   collisionCooldown: number
 }
 
@@ -67,11 +83,13 @@ type Fault = {
 }
 
 type RootBug = {
-  visual: RootVisual
+  visual: CentipedeVisual
+  head: THREE.Vector3
   health: number
   maxHealth: number
   alive: boolean
   lastShot: number
+  chargeStart: number | null
 }
 
 type Projectile = {
@@ -102,20 +120,58 @@ const TOUCH_ESCAPE_DURATION = 60
 const MAP_CHAMBER_HALF = 5.25
 const MAP_TUNNEL_RADIUS = 3.4
 const PROJECTILE_AXIS = new THREE.Vector3(0, 1, 0)
+const CHARGE_TIME = 0.45
+const ROOT_CHARGE_TIME = 0.55
+const DEATH_TIME = 0.9
+const CRAWLER_HOVER = 0.46
+// The root bug circles the centre of /deploy/core. Segments trail the head
+// along the same path, `ROOT_SEGMENT_LAG` seconds apart.
+const ROOT_PATH_SPEED = 0.55
+const ROOT_SEGMENT_LAG = 0.62
+const ROOT_HEAD_RADIUS = 1.25
+const ROOT_SEGMENT_RADIUS = 0.85
 
 const faultColors = ['#335cff', '#d9ff43', '#ff694a'] as const
 
+// Fades an object. Each material keeps its authored opacity as the maximum,
+// so wings and wireframes do not turn solid when a bug resets.
 function setObjectOpacity(object: THREE.Object3D, opacity: number) {
   object.traverse((child) => {
-    if (!(child instanceof THREE.Mesh || child instanceof THREE.Sprite)) return
+    if (
+      !(
+        child instanceof THREE.Mesh ||
+        child instanceof THREE.Line ||
+        child instanceof THREE.Sprite
+      )
+    ) {
+      return
+    }
     const materials = Array.isArray(child.material)
       ? child.material
       : [child.material]
-    materials.forEach((material) => {
-      material.transparent = true
-      material.opacity = opacity
+    materials.forEach((material: THREE.Material) => {
+      if (material.userData.baseOpacity === undefined) {
+        material.userData.baseOpacity = material.opacity
+        material.userData.baseTransparent = material.transparent
+      }
+      const baseOpacity = material.userData.baseOpacity as number
+      material.opacity = baseOpacity * opacity
+      material.transparent =
+        opacity < 1 || (material.userData.baseTransparent as boolean)
     })
   })
+}
+
+// The loop is centred on /deploy/core so the body stays clear of its walls.
+const ROOT_PATH_CENTER = new THREE.Vector3(0, -48, -56)
+
+function rootPathPoint(time: number, out: THREE.Vector3) {
+  const angle = time * ROOT_PATH_SPEED
+  return out.set(
+    ROOT_PATH_CENTER.x + Math.cos(angle) * 3,
+    ROOT_PATH_CENTER.y + Math.sin(angle * 2) * 1.3,
+    ROOT_PATH_CENTER.z + Math.sin(angle) * 3,
+  )
 }
 
 export default class StackTraceEngine {
@@ -246,36 +302,47 @@ export default class StackTraceEngine {
         alive: true,
       }
     })
-    this.enemies = enemySpecs.map((spec) => {
+    this.enemies = enemySpecs.map((spec, index) => {
       const visual = createBugVisual(
+        spec.kind,
         spec.kind === 'crawler' ? '#ff694a' : '#d9ff43',
       )
       const home = new THREE.Vector3(...spec.position)
       visual.group.position.copy(home)
-      visual.group.scale.setScalar(spec.kind === 'crawler' ? 0.9 : 0.78)
+      visual.group.scale.setScalar(spec.kind === 'crawler' ? 1 : 1.15)
       this.scene.add(visual.group)
-      return {
+      const enemy: Enemy = {
         spec,
         visual,
+        walker:
+          spec.kind === 'crawler'
+            ? createCrawlerWalker(this.crawlerRoom(spec.roomId), home)
+            : null,
         home,
+        seed: index * 1.7,
         health: spec.kind === 'crawler' ? 3 : 2,
         maxHealth: spec.kind === 'crawler' ? 3 : 2,
         alive: true,
         lastShot: -10,
+        chargeStart: null,
         collisionCooldown: 0,
       }
+      this.placeEnemy(enemy, true)
+      return enemy
     })
 
-    const rootVisual = createRootVisual()
-    rootVisual.group.position.copy(rootPosition)
+    const rootVisual = createCentipedeVisual()
     this.scene.add(rootVisual.group)
     this.root = {
       visual: rootVisual,
+      head: rootPosition.clone(),
       health: 18,
       maxHealth: 18,
       alive: true,
       lastShot: -10,
+      chargeStart: null,
     }
+    this.poseRoot(0, 1, true)
 
     this.createProjectilePool()
     this.createBurstPool()
@@ -696,17 +763,36 @@ export default class StackTraceEngine {
       enemy.health = enemy.maxHealth
       enemy.alive = true
       enemy.lastShot = -10
+      enemy.chargeStart = null
       enemy.collisionCooldown = 0
-      enemy.visual.group.visible = true
-      enemy.visual.group.position.copy(enemy.home)
-      setObjectOpacity(enemy.visual.group, 1)
+      const { visual } = enemy
+      visual.group.visible = true
+      visual.body.rotation.set(0, 0, 0)
+      visual.body.position.set(0, 0, 0)
+      Object.assign(visual.state, { charge: 0, flash: 0, stride: 0, dying: -1 })
+      if (visual.kind === 'crawler') {
+        visual.legs.forEach(({ pivot }) => (pivot.visible = true))
+      }
+      if (enemy.walker) resetCrawlerWalker(enemy.walker, enemy.home)
+      this.placeEnemy(enemy, true)
+      setObjectOpacity(visual.group, 1)
     })
     this.root.health = this.root.maxHealth
     this.root.alive = true
     this.root.lastShot = -10
+    this.root.chargeStart = null
     this.root.visual.group.visible = true
-    this.root.visual.group.scale.setScalar(1)
+    this.root.visual.segments.forEach((segment) => {
+      segment.alive = true
+      segment.group.visible = true
+    })
+    Object.assign(this.root.visual.state, {
+      charge: 0,
+      flash: 0,
+      dying: -1,
+    })
     setObjectOpacity(this.root.visual.group, 1)
+    this.poseRoot(0, 1, true)
     this.syncAutomap()
     this.projectiles.forEach((projectile) =>
       this.deactivateProjectile(projectile),
@@ -1014,7 +1100,7 @@ export default class StackTraceEngine {
       if (fault) marker.position.copy(fault.visual.group.position)
     })
     this.automap.rootEnemy.visible = this.root.alive
-    this.automap.rootEnemy.position.copy(rootPosition)
+    this.automap.rootEnemy.position.copy(this.root.head)
     this.automap.exit.visible = this.mode === 'escape'
   }
 
@@ -1045,18 +1131,14 @@ export default class StackTraceEngine {
       const pulse = 1 + Math.sin(time * 3 + index) * 0.045
       fault.visual.group.scale.setScalar(pulse)
     })
-    this.enemies.forEach((enemy, enemyIndex) => {
-      if (!enemy.alive) return
-      enemy.visual.icon.material.rotation =
-        Math.sin(time * 2.8 + enemyIndex) * 0.055
+    this.enemies.forEach((enemy) => {
+      if (!enemy.visual.group.visible) return
+      animateBug(enemy.visual, time, delta)
+      if (!enemy.alive) this.animateEnemyDeath(enemy, delta)
     })
-    if (this.root.alive) {
-      this.root.visual.icon.material.rotation = Math.sin(time * 1.8) * 0.04
-      this.root.visual.rings.forEach((ring, index) => {
-        ring.rotation.z += delta * (0.2 + index * 0.12)
-      })
-      const rootPulse = 1 + Math.sin(time * 2.4) * 0.035
-      this.root.visual.group.scale.setScalar(rootPulse)
+    if (this.root.visual.group.visible) {
+      animateCentipede(this.root.visual, time, delta)
+      if (!this.root.alive) this.animateRootDeath(delta)
     }
     if (this.exit.group.visible) {
       const exitPulse = 1 + Math.sin(time * 6) * 0.08
@@ -1175,38 +1257,179 @@ export default class StackTraceEngine {
     })
   }
 
+  // The inner walls of a room, plus the centres of its tunnel openings.
+  private crawlerRoom(roomId: RoomId): CrawlerRoom {
+    const room = this.world.rooms.get(roomId)
+    if (!room) throw new Error(`Stack Trace has no room ${roomId}`)
+    const center = new THREE.Vector3(...room.center)
+    const bounds =
+      this.world.volumes.find(
+        (volume): volume is { kind: 'box'; bounds: THREE.Box3 } =>
+          volume.kind === 'box' && volume.bounds.containsPoint(center),
+      )?.bounds ??
+      new THREE.Box3().setFromCenterAndSize(
+        center,
+        new THREE.Vector3(9.5, 9.5, 9.5),
+      )
+    const half = bounds.getSize(new THREE.Vector3()).multiplyScalar(0.5)
+    const openings = (this.world.graph.get(roomId) ?? []).flatMap((id) => {
+      const neighbour = this.world.rooms.get(id)
+      if (!neighbour) return []
+      const offset = new THREE.Vector3(...neighbour.center).sub(center)
+      const axis =
+        Math.abs(offset.x) >= Math.abs(offset.y) &&
+        Math.abs(offset.x) >= Math.abs(offset.z)
+          ? 'x'
+          : Math.abs(offset.y) >= Math.abs(offset.z)
+            ? 'y'
+            : 'z'
+      const opening = center.clone()
+      opening[axis] += Math.sign(offset[axis]) * half[axis]
+      return [opening]
+    })
+    return { bounds, openings }
+  }
+
+  // Puts a crawler on its wall, or a wisp at its current position.
+  private placeEnemy(enemy: Enemy, snap = false, delta = 1) {
+    const { group } = enemy.visual
+    if (!enemy.walker) {
+      if (snap) group.position.copy(enemy.home)
+      return
+    }
+    const { walker } = enemy
+    this.candidate
+      .copy(walker.contact)
+      .addScaledVector(walker.normal, CRAWLER_HOVER)
+    if (snap) group.position.copy(this.candidate)
+    else group.position.lerp(this.candidate, 1 - Math.exp(-12 * delta))
+    easeToBasis(group, walker.normal, walker.heading, snap ? 1e6 : 9, delta)
+  }
+
+  private updateCrawler(enemy: Enemy, delta: number) {
+    const { walker, visual } = enemy
+    if (!walker || visual.kind !== 'crawler') return
+    const legsLost = enemy.maxHealth - enemy.health
+    const baseSpeed = this.inputMode === 'touch' ? 1.2 : 1.6
+    // Stop and turn to the player while it winds up a shot.
+    const speed =
+      enemy.chargeStart === null ? baseSpeed * (1 - legsLost * 0.2) : 0
+    const moved = stepCrawlerWalker(walker, this.camera.position, speed, delta)
+    visual.state.phase += moved * 7
+    visual.state.stride = THREE.MathUtils.damp(
+      visual.state.stride,
+      moved > 0 ? 1 : 0,
+      10,
+      delta,
+    )
+    if (enemy.chargeStart !== null) {
+      this.forward.copy(this.camera.position).sub(walker.contact)
+      walker.heading.lerp(this.forward.normalize(), 1 - Math.exp(-10 * delta))
+    }
+    this.placeEnemy(enemy, false, delta)
+
+    // Raise the head toward the player.
+    this.candidate.copy(this.camera.position)
+    visual.group.worldToLocal(this.candidate)
+    const pitch = -Math.atan2(
+      this.candidate.y,
+      Math.max(0.2, Math.hypot(this.candidate.x, this.candidate.z)),
+    )
+    visual.head.rotation.x = THREE.MathUtils.damp(
+      visual.head.rotation.x,
+      THREE.MathUtils.clamp(pitch, -0.9, 0.35),
+      8,
+      delta,
+    )
+  }
+
+  private updateWisp(enemy: Enemy, time: number, delta: number) {
+    const { group } = enemy.visual
+    const position = group.position
+    const distance = position.distanceTo(this.camera.position)
+    this.forward.copy(this.camera.position).sub(position).normalize()
+    if (distance < 15 && distance > 1.2) {
+      this.right.crossVectors(this.forward, this.camera.up).normalize()
+      this.up.crossVectors(this.right, this.forward).normalize()
+      const speed = this.inputMode === 'touch' ? 1.05 : 1.45
+      // Weave while closing in, so wisps are harder to track.
+      this.moveVector
+        .copy(this.forward)
+        .addScaledVector(this.right, Math.sin(time * 2.7 + enemy.seed) * 1.1)
+        .addScaledVector(this.up, Math.cos(time * 2.1 + enemy.seed) * 0.6)
+        .multiplyScalar(delta * speed)
+      this.candidate.copy(position).add(this.moveVector)
+      if (this.canOccupy(this.candidate, 0.72)) position.copy(this.candidate)
+    }
+    // Face the player, banking into the weave.
+    this.up.set(0, 1, 0).addScaledVector(this.forward, -this.forward.y)
+    if (this.up.lengthSq() < 1e-4) this.up.set(0, 0, 1)
+    this.up
+      .normalize()
+      .applyAxisAngle(this.forward, Math.cos(time * 2.7 + enemy.seed) * 0.35)
+      .normalize()
+    easeToBasis(group, this.up, this.forward, 6, delta)
+  }
+
+  // Shared wind-up: bugs show a charge before each shot so the player can
+  // dodge. Returns true when the shot should fire.
+  private updateCharge(
+    target: { lastShot: number; chargeStart: number | null },
+    state: { charge: number },
+    inRange: boolean,
+    interval: number,
+    chargeTime: number,
+    time: number,
+  ) {
+    if (!inRange) {
+      target.chargeStart = null
+    } else if (
+      target.chargeStart === null &&
+      time - target.lastShot > interval - chargeTime
+    ) {
+      target.chargeStart = time
+    }
+    const charge =
+      target.chargeStart === null
+        ? 0
+        : Math.min(1, (time - target.chargeStart) / chargeTime)
+    state.charge = charge
+    if (charge < 1) return false
+    target.chargeStart = null
+    target.lastShot = time
+    return true
+  }
+
   private updateEnemies(time: number, delta: number) {
     this.enemies.forEach((enemy) => {
       if (!enemy.alive) return
       enemy.collisionCooldown = Math.max(0, enemy.collisionCooldown - delta)
+      if (enemy.walker) this.updateCrawler(enemy, delta)
+      else this.updateWisp(enemy, time, delta)
       const position = enemy.visual.group.position
       const distance = position.distanceTo(this.camera.position)
-
-      if (enemy.spec.kind === 'wisp' && distance < 15 && distance > 1.2) {
-        this.moveVector
-          .copy(this.camera.position)
-          .sub(position)
-          .normalize()
-          .multiplyScalar(delta * (this.inputMode === 'touch' ? 1.05 : 1.45))
-        this.candidate.copy(position).add(this.moveVector)
-        if (this.canOccupy(this.candidate, 0.72)) {
-          position.copy(this.candidate)
-        }
-      }
 
       const fireInterval =
         (enemy.spec.kind === 'crawler' ? 1.65 : 2.25) *
         (this.inputMode === 'touch' ? 1.35 : 1)
-      if (distance < 17 && time - enemy.lastShot > fireInterval) {
-        this.forward.copy(this.camera.position).sub(position).normalize()
+      const fire = this.updateCharge(
+        enemy,
+        enemy.visual.state,
+        distance < 17,
+        fireInterval,
+        CHARGE_TIME,
+        time,
+      )
+      if (fire) {
+        enemy.visual.mouth.getWorldPosition(this.candidate)
+        this.forward.copy(this.camera.position).sub(this.candidate).normalize()
         this.spawnProjectile(
           'enemy',
-          position,
+          this.candidate,
           this.forward,
           enemy.spec.kind === 'crawler' ? 10 : 8,
         )
         this.audio.playEnemyShot(1 - distance / 17)
-        enemy.lastShot = time
       }
 
       if (distance < 1.25 && enemy.collisionCooldown <= 0) {
@@ -1218,19 +1441,100 @@ export default class StackTraceEngine {
       }
     })
 
-    if (
-      !this.doorLocked &&
-      this.root.alive &&
-      this.camera.position.distanceTo(rootPosition) < 20 &&
-      time - this.root.lastShot > (this.inputMode === 'touch' ? 1.55 : 1.15)
-    ) {
-      this.forward.copy(this.camera.position).sub(rootPosition).normalize()
-      this.spawnProjectile('enemy', rootPosition, this.forward, 11)
-      this.audio.playEnemyShot(
-        1 - this.camera.position.distanceTo(rootPosition) / 20,
-      )
-      this.root.lastShot = time
+    if (!this.root.alive) return
+    this.poseRoot(time, delta)
+    const rootDistance = this.camera.position.distanceTo(this.root.head)
+    const fire = this.updateCharge(
+      this.root,
+      this.root.visual.state,
+      !this.doorLocked && rootDistance < 20,
+      this.inputMode === 'touch' ? 1.55 : 1.15,
+      ROOT_CHARGE_TIME,
+      time,
+    )
+    if (fire) {
+      this.root.visual.mouth.getWorldPosition(this.candidate)
+      this.forward.copy(this.camera.position).sub(this.candidate).normalize()
+      this.spawnProjectile('enemy', this.candidate, this.forward, 11)
+      this.audio.playEnemyShot(1 - rootDistance / 20)
     }
+  }
+
+  // Moves the centipede along its loop. The head turns toward the player
+  // once the deployment door opens.
+  private poseRoot(time: number, delta: number, snap = false) {
+    const { visual } = this.root
+    const rate = snap ? 1e6 : 7
+    rootPathPoint(time, this.root.head)
+    visual.head.position.copy(this.root.head)
+    rootPathPoint(time + 0.2, this.candidate)
+    this.forward.copy(this.candidate).sub(this.root.head).normalize()
+    if (!this.doorLocked) {
+      this.moveVector.copy(this.camera.position).sub(this.root.head).normalize()
+      this.forward.lerp(this.moveVector, 0.8).normalize()
+    }
+    this.up.set(0, 1, 0)
+    easeToBasis(visual.head, this.up, this.forward, rate, delta)
+
+    let previous = this.root.head
+    visual.segments.forEach((segment, index) => {
+      const position = segment.group.position
+      rootPathPoint(time - (index + 1) * ROOT_SEGMENT_LAG, position)
+      this.forward.copy(previous).sub(position).normalize()
+      this.up.set(0, 1, 0)
+      easeToBasis(segment.group, this.up, this.forward, rate, delta)
+      previous = position
+    })
+  }
+
+  private killEnemy(enemy: Enemy) {
+    enemy.alive = false
+    enemy.visual.state.dying = 0
+    enemy.visual.state.charge = 0
+    enemy.visual.state.stride = 0
+    this.bugsPurged += 1
+    this.audio.playDestroy()
+    this.spawnBurst(
+      enemy.visual.group.position,
+      enemy.spec.kind === 'crawler' ? '#ff694a' : '#d9ff43',
+    )
+  }
+
+  // Crawlers drop off their wall and flip over; wisps spiral down.
+  private animateEnemyDeath(enemy: Enemy, delta: number) {
+    const { visual } = enemy
+    visual.state.dying += delta
+    const progress = visual.state.dying / DEATH_TIME
+    if (progress >= 1) {
+      visual.group.visible = false
+      return
+    }
+    if (enemy.walker && visual.kind === 'crawler') {
+      visual.group.position.addScaledVector(enemy.walker.normal, delta * 1.4)
+      visual.group.position.y -= delta * progress * 6
+      visual.body.rotation.z = Math.min(Math.PI, progress * Math.PI * 2.2)
+      visual.legs.forEach(({ pivot }, index) => {
+        pivot.rotation.z = Math.sin(visual.state.dying * 40 + index) * 0.5
+      })
+    } else {
+      visual.group.position.y -= delta * (1 + progress * 5)
+      visual.body.rotation.z += delta * 14
+      visual.body.rotation.x = progress * 1.2
+    }
+    setObjectOpacity(visual.group, 1 - progress)
+  }
+
+  private animateRootDeath(delta: number) {
+    const { visual } = this.root
+    visual.state.dying += delta
+    const progress = visual.state.dying / DEATH_TIME
+    if (progress >= 1) {
+      visual.group.visible = false
+      return
+    }
+    visual.head.position.y -= delta * progress * 5
+    visual.head.rotation.z += delta * 3
+    setObjectOpacity(visual.group, 1 - progress)
   }
 
   private firePlayerProjectile() {
@@ -1265,7 +1569,7 @@ export default class StackTraceEngine {
     this.faults.forEach((fault) => {
       if (fault.alive) considerTarget(fault.visual.group.position)
     })
-    if (!this.doorLocked && this.root.alive) considerTarget(rootPosition)
+    if (!this.doorLocked && this.root.alive) considerTarget(this.root.head)
     if (bestAlignment > 0.972) {
       this.forward.lerp(this.aimDirection, 0.32).normalize()
     }
@@ -1347,16 +1651,31 @@ export default class StackTraceEngine {
         this.hitPulse += 1
         this.audio.playImpact()
         this.touchImpactFeedback()
-        hitEnemy.health -= 1
+        const { visual } = hitEnemy
+        // A crawler head shot counts double. Test the whole line of travel:
+        // the body check fires before the shot reaches the head.
+        visual.head.getWorldPosition(this.aimDirection)
+        this.segment.closestPointToPoint(
+          this.aimDirection,
+          false,
+          this.closestPoint,
+        )
+        const headShot =
+          visual.kind === 'crawler' &&
+          this.closestPoint.distanceTo(this.aimDirection) < 0.4
+        hitEnemy.health -= headShot ? 2 : 1
+        visual.state.flash = headShot ? 1.6 : 1
+        // An interrupted wind-up must start again.
+        hitEnemy.chargeStart = null
         if (hitEnemy.health <= 0) {
-          hitEnemy.alive = false
-          hitEnemy.visual.group.visible = false
-          this.bugsPurged += 1
-          this.audio.playDestroy()
-          this.spawnBurst(
-            hitEnemy.visual.group.position,
-            hitEnemy.spec.kind === 'crawler' ? '#ff694a' : '#d9ff43',
-          )
+          this.killEnemy(hitEnemy)
+        } else if (visual.kind === 'crawler') {
+          // Each hit breaks off a pair of legs.
+          const lost = (hitEnemy.maxHealth - hitEnemy.health) * 2
+          visual.legs.forEach(({ pivot }, index) => {
+            pivot.visible = index >= lost
+          })
+          this.spawnBurst(this.closestPoint, '#ff694a', 0.35)
         }
         this.deactivateProjectile(projectile)
         return
@@ -1398,27 +1717,54 @@ export default class StackTraceEngine {
         return
       }
 
-      if (
-        !this.doorLocked &&
-        this.root.alive &&
-        this.segmentDistanceTo(rootPosition) <
-          (this.inputMode === 'touch' ? 2.7 : 2.35)
-      ) {
+      if (!this.doorLocked && this.root.alive && this.projectileHitsRoot()) {
         this.shotsHit += 1
         this.hitPulse += 1
         this.audio.playImpact()
         this.touchImpactFeedback()
         this.root.health -= 1
+        this.root.visual.state.flash = 1
+        this.shedRootSegments()
         if (this.root.health <= 0) {
           this.root.alive = false
-          this.root.visual.group.visible = false
+          this.root.visual.state.dying = 0
+          this.root.visual.state.charge = 0
           this.bugsPurged += 1
           this.audio.playDestroy(true)
-          this.spawnBurst(rootPosition, '#8da4ff')
+          this.spawnBurst(this.root.head, '#8da4ff')
           this.beginEscape()
         }
         this.deactivateProjectile(projectile)
       }
+    })
+  }
+
+  private projectileHitsRoot() {
+    const touchPadding = this.inputMode === 'touch' ? 0.35 : 0
+    if (
+      this.segmentDistanceTo(this.root.head) <
+      ROOT_HEAD_RADIUS + touchPadding
+    ) {
+      return true
+    }
+    return this.root.visual.segments.some(
+      (segment) =>
+        segment.alive &&
+        this.segmentDistanceTo(segment.group.position) <
+          ROOT_SEGMENT_RADIUS * segment.group.scale.x + touchPadding,
+    )
+  }
+
+  // The root bug loses one tail segment for every two hits. The head takes
+  // the last two.
+  private shedRootSegments() {
+    const keep = Math.max(0, Math.ceil((this.root.health - 2) / 2))
+    this.root.visual.segments.forEach((segment, index) => {
+      if (!segment.alive || index < Math.min(keep, CENTIPEDE_SEGMENTS)) return
+      segment.alive = false
+      segment.group.visible = false
+      this.spawnBurst(segment.group.position, '#8da4ff')
+      this.audio.playDestroy()
     })
   }
 
@@ -1456,11 +1802,11 @@ export default class StackTraceEngine {
     this.integrity = THREE.MathUtils.clamp(value, 0, 100)
   }
 
-  private spawnBurst(position: THREE.Vector3, color: string) {
+  private spawnBurst(position: THREE.Vector3, color: string, size = 1) {
     const burst = this.bursts.find((item) => !item.active)
     if (!burst) return
     burst.active = true
-    burst.life = 0.75
+    burst.life = 0.75 * size
     burst.points.visible = true
     burst.points.position.copy(position)
     burst.material.color.set(color)
@@ -1470,7 +1816,7 @@ export default class StackTraceEngine {
       velocity
         .set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5)
         .normalize()
-        .multiplyScalar(2.5 + Math.random() * 4)
+        .multiplyScalar((2.5 + Math.random() * 4) * size)
     })
     const attribute = burst.points.geometry.getAttribute('position')
     if (attribute instanceof THREE.BufferAttribute) attribute.needsUpdate = true
