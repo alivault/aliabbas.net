@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import type { ReactNode } from 'react'
 import { Link } from '@tanstack/react-router'
-import { Map as MapIcon, X } from 'lucide-react'
-import PageHeading from '~/components/PageHeading'
-import SectionHeading from '~/components/SectionHeading'
+import '@fontsource/chakra-petch/latin-500.css'
+import '@fontsource/chakra-petch/latin-600.css'
+import '@fontsource/chakra-petch/latin-700.css'
+import '@fontsource/chakra-petch/latin-700-italic.css'
+import { Bug, Check, Layers, Map as MapIcon, Navigation, X } from 'lucide-react'
 import SiteHeader from '~/components/SiteHeader'
-import { Kbd } from '~/components/ui/kbd'
 import StackTraceScene from './StackTraceScene'
 import StackTraceTouchControls from './StackTraceTouchControls'
 import { initialHudState } from './stack-trace-types'
@@ -20,138 +22,450 @@ type ScreenState =
   | { status: 'playing' }
   | { status: 'result'; result: GameResult }
 
-function Metric({ label, value }: { label: string; value: string }) {
+const LIME = '#d9ff43'
+const RED = '#ff694a'
+
+/* ---------- Shared pieces ---------- */
+
+function KeyCap({
+  children,
+  tone = 'light',
+}: {
+  children: ReactNode
+  tone?: 'light' | 'dark'
+}) {
   return (
-    <div className="border-l border-white/15 pl-4">
-      <p className="font-mono text-[10px] text-white/40 uppercase sm:text-[11px]">
-        {label}
-      </p>
-      <p className="mt-1 text-base font-semibold text-white sm:text-lg">
-        {value}
-      </p>
+    <kbd
+      className={`st-display inline-flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm font-bold uppercase ${
+        tone === 'dark'
+          ? 'bg-black/15 text-current'
+          : 'border-b-2 border-white/25 bg-white/12 text-white'
+      }`}
+    >
+      {children}
+    </kbd>
+  )
+}
+
+function MenuButton({
+  children,
+  hint,
+  variant = 'primary',
+  disabled,
+  onClick,
+}: {
+  children: ReactNode
+  hint?: string
+  variant?: 'primary' | 'secondary'
+  disabled?: boolean
+  onClick?: () => void
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={`st-cut st-display flex w-full items-center justify-between gap-4 px-6 font-bold tracking-wide uppercase ${
+        variant === 'primary' ? 'st-btn-primary' : 'st-btn-secondary'
+      } h-16 text-2xl`}
+    >
+      {children}
+      {hint && (
+        <KeyCap tone={variant === 'primary' ? 'dark' : 'light'}>{hint}</KeyCap>
+      )}
+    </button>
+  )
+}
+
+function MenuLink({ children }: { children: ReactNode }) {
+  return (
+    <Link
+      to="/"
+      className="st-cut st-display st-btn-secondary flex h-16 w-full items-center justify-start px-6 text-2xl font-bold tracking-wide uppercase"
+    >
+      {children}
+    </Link>
+  )
+}
+
+function Overlay({
+  children,
+  tint = 'rgba(5,6,8,.78)',
+  z = 'z-40',
+}: {
+  children: ReactNode
+  tint?: string
+  z?: string
+}) {
+  return (
+    <div
+      className={`pointer-events-auto absolute inset-0 ${z} grid place-items-center overflow-y-auto p-5 text-[#f1efe8] backdrop-blur-md`}
+      style={{ background: tint }}
+    >
+      {children}
     </div>
   )
 }
+
+/* ---------- Controls ---------- */
+
+type ControlRow = { keys: Array<string>; action: string }
+
+const pointerControls: Array<ControlRow> = [
+  { keys: ['W', 'A', 'S', 'D'], action: 'Fly' },
+  { keys: ['Space', 'C'], action: 'Rise / descend' },
+  { keys: ['Q', 'E'], action: 'Roll' },
+  { keys: ['Mouse'], action: 'Aim and fire' },
+  { keys: ['M'], action: 'Map' },
+  { keys: ['Esc'], action: 'Pause' },
+  { keys: ['?'], action: 'Controls' },
+]
+
+const touchControls: Array<ControlRow> = [
+  { keys: ['Left stick'], action: 'Fly' },
+  { keys: ['Drag'], action: 'Aim' },
+  { keys: ['Tap'], action: 'Fire' },
+  { keys: ['▲', '▼'], action: 'Rise / descend' },
+]
+
+function ControlsPanel({
+  inputMode,
+  sensitivity,
+  onSensitivityChange,
+  onBack,
+  onResume,
+}: {
+  inputMode: GameInputMode
+  sensitivity?: number
+  onSensitivityChange?: (sensitivity: number) => void
+  onBack: () => void
+  onResume?: () => void
+}) {
+  const rows = inputMode === 'touch' ? touchControls : pointerControls
+  return (
+    <Overlay z="z-50">
+      <div className="st-panel w-full max-w-2xl p-6 sm:p-8">
+        <div className="flex items-center justify-between gap-6">
+          <h2 className="st-display text-4xl font-bold uppercase italic sm:text-5xl">
+            Controls
+          </h2>
+          <button
+            type="button"
+            onClick={onBack}
+            className="st-cut-sm st-btn-secondary flex size-12 shrink-0 items-center justify-center"
+            aria-label="Back"
+          >
+            <X className="size-5" />
+          </button>
+        </div>
+
+        <div className="mt-6 grid gap-2 sm:grid-cols-2">
+          {rows.map(({ keys, action }) => (
+            <div
+              key={action}
+              className="flex min-h-14 items-center justify-between gap-4 bg-white/[.04] px-4 py-2"
+            >
+              <span className="text-base text-white/75">{action}</span>
+              <span className="flex flex-wrap justify-end gap-1">
+                {keys.map((key) => (
+                  <KeyCap key={key}>{key}</KeyCap>
+                ))}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {sensitivity !== undefined && onSensitivityChange && (
+          <label className="mt-4 flex items-center gap-4 bg-white/[.04] px-4 py-3 text-base text-white/75">
+            Look speed
+            <input
+              type="range"
+              min="0.65"
+              max="1.5"
+              step="0.05"
+              value={sensitivity}
+              onChange={(event) =>
+                onSensitivityChange(Number(event.currentTarget.value))
+              }
+              className="h-2 min-w-20 flex-1 accent-[#d9ff43]"
+            />
+            <span className="st-display w-12 text-right font-bold text-[#d9ff43]">
+              {sensitivity.toFixed(1)}×
+            </span>
+          </label>
+        )}
+
+        <div className="mt-6">
+          {onResume ? (
+            <MenuButton
+              onClick={onResume}
+              hint={inputMode === 'pointer' ? 'Enter' : undefined}
+            >
+              Resume
+            </MenuButton>
+          ) : (
+            <MenuButton onClick={onBack} variant="secondary">
+              Back
+            </MenuButton>
+          )}
+        </div>
+      </div>
+    </Overlay>
+  )
+}
+
+/* ---------- Title screen ---------- */
+
+const missionSteps = [
+  'Trace the corrupted frames',
+  'Destroy the root bug',
+  'Escape before rollback',
+]
 
 function MissionBriefing({
   ready,
   renderingFailed,
   inputMode,
   isPortrait,
-  sensitivity,
-  onSensitivityChange,
+  onOpenControls,
   onLaunch,
 }: {
   ready: boolean
   renderingFailed: boolean
   inputMode: GameInputMode
   isPortrait: boolean
-  sensitivity: number
-  onSensitivityChange: (sensitivity: number) => void
+  onOpenControls: () => void
   onLaunch: () => void
 }) {
-  const isTouch = inputMode === 'touch'
-  const isTouchPortrait = isTouch && isPortrait
+  const isTouchLandscape = inputMode === 'touch' && !isPortrait
   const canLaunch = ready && !renderingFailed
-  const controls = isTouch
-    ? [
-        ['Move stick', 'Fly / strafe'],
-        ['View', 'Drag to aim'],
-        ['Tap / fire', 'Patch cannon'],
-        ['Arrows', 'Rise / descend'],
-      ]
-    : [
-        ['WASD', 'Fly'],
-        ['Space / C', 'Rise / descend'],
-        ['Q / E', 'Roll'],
-        ['Mouse', 'Aim / fire'],
-        ['M', 'Wireframe map'],
-      ]
 
   return (
-    <div className="pointer-events-auto relative z-30 flex h-svh min-h-[320px] flex-col overflow-y-auto bg-[linear-gradient(90deg,rgba(5,6,8,.94)_0%,rgba(5,6,8,.8)_48%,rgba(5,6,8,.3)_100%)] p-5 pt-[72px] text-[#f1efe8] sm:p-8 sm:pt-[72px] lg:p-12 lg:pt-[72px]">
+    <div className="pointer-events-auto relative z-30 flex h-svh min-h-[320px] flex-col overflow-y-auto bg-[radial-gradient(ellipse_at_center,rgba(5,6,8,.55)_0%,rgba(5,6,8,.9)_75%)] p-5 pt-[72px] text-[#f1efe8] sm:p-8 sm:pt-[72px]">
       <div
         className={`mx-auto my-auto w-full ${
-          isTouchPortrait
-            ? 'max-w-xl py-6'
-            : isTouch
-              ? 'grid max-w-5xl grid-cols-[0.8fr_1.2fr] items-center gap-8 py-8'
-              : 'max-w-[780px] py-8 sm:py-12'
+          isTouchLandscape
+            ? 'grid max-w-4xl grid-cols-[1.1fr_1fr] items-center gap-10 py-4'
+            : 'max-w-xl py-8'
         }`}
       >
-        <div>
-          <PageHeading className="text-center">
-            Stack
-            <span className="block text-[#d9ff43] normal-case">Trace</span>
-          </PageHeading>
-        </div>
-
-        <div>
-          <p
-            className={`mx-auto max-w-xl text-center text-white/58 ${
-              isTouch
-                ? `${isTouchPortrait ? 'mt-7' : ''} text-sm leading-5`
-                : 'mt-9 text-base leading-6 sm:text-lg sm:leading-7'
+        <div className={isTouchLandscape ? '' : 'text-center'}>
+          <h1
+            className={`st-display st-logo leading-[.85] font-bold uppercase italic ${
+              isTouchLandscape ? 'text-6xl' : 'text-7xl sm:text-8xl'
             }`}
           >
-            Pilot a diagnostic drone through a zero-gravity codebase. Explore
-            connected chambers, shoot corrupted frames and bugs, destroy the
-            root bug, then escape before the build rolls back.
-          </p>
+            Stack
+            <span className="st-logo-trace block text-[#d9ff43]">Trace</span>
+          </h1>
 
-          <div
-            className={`mx-auto grid max-w-xl grid-cols-2 gap-px border border-white/15 bg-white/15 ${isTouch ? 'mt-4 sm:grid-cols-4' : 'mt-9 sm:grid-cols-5'}`}
+          <ol
+            className={`mt-8 space-y-2 ${isTouchLandscape ? '' : 'mx-auto w-fit text-left'}`}
           >
-            {controls.map(([control, action]) => (
-              <div
-                key={control}
-                className={`bg-[#08090b]/90 text-center ${isTouch ? 'px-2.5 py-1.5' : 'px-4 py-2.5'}`}
-              >
-                <p className="font-mono text-[11px] text-[#d9ff43] sm:text-xs">
-                  {control}
-                </p>
-                <p className="mt-1 text-[11px] text-white/40 sm:text-xs">
-                  {action}
-                </p>
-              </div>
+            {missionSteps.map((step, index) => (
+              <li key={step} className="flex items-center gap-3 text-lg">
+                <span className="st-cut-sm st-display flex size-8 shrink-0 items-center justify-center bg-[#d9ff43]/15 text-base font-bold text-[#d9ff43]">
+                  {index + 1}
+                </span>
+                <span className="text-white/80">{step}</span>
+              </li>
             ))}
-          </div>
+          </ol>
+        </div>
 
-          {isTouch && (
-            <div className="mx-auto mt-4 max-w-xl font-mono text-[8px] text-white/40 uppercase">
-              <label className="flex items-center gap-3">
-                Look sensitivity
-                <input
-                  type="range"
-                  min="0.65"
-                  max="1.5"
-                  step="0.05"
-                  value={sensitivity}
-                  onChange={(event) =>
-                    onSensitivityChange(Number(event.currentTarget.value))
-                  }
-                  className="h-1 min-w-20 flex-1 accent-[#d9ff43]"
-                />
-              </label>
-            </div>
-          )}
-
-          <button
-            type="button"
+        <div
+          className={`flex flex-col gap-3 ${isTouchLandscape ? '' : 'mt-10'}`}
+        >
+          <MenuButton
             onClick={onLaunch}
             disabled={!canLaunch}
-            className={`group mx-auto flex w-full max-w-xl items-center justify-between rounded-full bg-[#d9ff43] px-6 text-xs font-bold text-[#10100f] transition-colors hover:bg-white disabled:cursor-not-allowed disabled:bg-white/15 disabled:text-white/35 ${isTouch ? 'mt-4 h-12' : 'mt-7 h-14'}`}
+            hint={inputMode === 'pointer' && canLaunch ? 'Enter' : undefined}
           >
             {renderingFailed
-              ? 'WebGL is unavailable'
+              ? 'WebGL unavailable'
               : ready
-                ? 'Start game'
-                : 'Initializing labyrinth'}
-            <Kbd className="h-7 rounded-full bg-[#10100f]/10 px-2.5 font-mono text-[10px] font-bold text-[#10100f] group-disabled:bg-white/10 group-disabled:text-white/35">
-              Enter
-            </Kbd>
-          </button>
+                ? 'Play'
+                : 'Loading…'}
+          </MenuButton>
+          <MenuButton onClick={onOpenControls} variant="secondary">
+            Controls
+          </MenuButton>
         </div>
+      </div>
+    </div>
+  )
+}
+
+/* ---------- In-game HUD ---------- */
+
+function IntegrityBar({
+  integrity,
+  compact,
+}: {
+  integrity: number
+  compact: boolean
+}) {
+  const color = integrity <= 30 ? RED : LIME
+  const segments = 20
+  const filled = Math.ceil((integrity / 100) * segments)
+  return (
+    <div className={`st-panel px-4 py-3 ${compact ? 'w-44' : 'w-72'}`}>
+      <div className="flex items-baseline justify-between gap-3">
+        <span className="text-sm font-semibold text-white/60 uppercase">
+          Integrity
+        </span>
+        <span
+          className={`st-display font-bold tabular-nums ${compact ? 'text-xl' : 'text-3xl'} ${integrity <= 30 ? 'st-pulse' : ''}`}
+          style={{ color }}
+        >
+          {integrity}
+          <span className="text-base">%</span>
+        </span>
+      </div>
+      <div
+        className={`mt-2 grid gap-[3px] ${compact ? 'h-2.5' : 'h-3.5'}`}
+        style={{ gridTemplateColumns: `repeat(${segments}, 1fr)` }}
+      >
+        {Array.from({ length: segments }, (_, index) => (
+          <span
+            key={index}
+            className="-skew-x-12 transition-colors duration-150"
+            style={{
+              backgroundColor: index < filled ? color : 'rgba(255,255,255,.1)',
+              boxShadow: index < filled ? `0 0 8px ${color}66` : undefined,
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+function ObjectiveBanner({
+  hud,
+  compact,
+}: {
+  hud: GameHudState
+  compact: boolean
+}) {
+  const escaping = hud.phase === 'escape'
+  const critical = escaping && hud.escapeTime <= 10
+  return (
+    <div
+      className={`st-panel flex items-center gap-4 px-4 py-3 ${escaping ? 'stack-trace-escape-alert' : ''}`}
+      data-tone={escaping ? 'danger' : undefined}
+      data-critical={critical ? 'true' : 'false'}
+    >
+      <div className="min-w-0 flex-1">
+        <p
+          className={`text-sm font-semibold uppercase ${escaping ? 'text-[#ff694a]' : 'text-[#d9ff43]'}`}
+        >
+          {escaping ? 'Rollback incoming' : 'Objective'}
+        </p>
+        <p
+          className={`st-display mt-0.5 leading-tight font-bold ${compact ? 'text-base' : 'text-xl'}`}
+        >
+          {hud.objective}
+        </p>
+        <p className="mt-1 flex items-center gap-1.5 text-sm text-white/60">
+          <Navigation className="size-3.5 rotate-45" />
+          <span className="tabular-nums">
+            {Math.round(hud.targetDistance)} m
+          </span>
+        </p>
+      </div>
+      {escaping && (
+        <span
+          className={`st-display font-bold text-[#ff694a] tabular-nums ${compact ? 'text-4xl' : 'text-6xl'}`}
+        >
+          {Math.ceil(hud.escapeTime)}
+        </span>
+      )}
+    </div>
+  )
+}
+
+function StatBadge({
+  icon,
+  label,
+  value,
+}: {
+  icon: ReactNode
+  label: string
+  value: string
+}) {
+  return (
+    <div className="st-panel flex items-center gap-3 px-4 py-3">
+      <span className="text-[#d9ff43]">{icon}</span>
+      <div>
+        <p className="text-sm font-semibold text-white/60 uppercase">{label}</p>
+        <p className="st-display text-3xl leading-none font-bold tabular-nums">
+          {value}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function FrameTracker({ frames }: { frames: GameHudState['frames'] }) {
+  return (
+    <div className="st-panel w-72 px-4 py-4">
+      <p className="text-sm font-semibold text-white/60 uppercase">
+        Stack frames
+      </p>
+      <ul className="mt-3 space-y-2">
+        {frames.map((frame) => (
+          <li key={frame.number} className="flex items-center gap-3">
+            <span
+              className={`st-cut-sm flex size-7 shrink-0 items-center justify-center ${
+                frame.status === 'resolved'
+                  ? 'bg-[#d9ff43] text-[#0b0c0a]'
+                  : frame.status === 'active'
+                    ? 'bg-[#ff694a]/20 text-[#ff694a]'
+                    : 'bg-white/8 text-white/35'
+              }`}
+            >
+              {frame.status === 'resolved' ? (
+                <Check className="size-4" strokeWidth={3} />
+              ) : frame.status === 'active' ? (
+                <span className="st-pulse size-2.5 rounded-full bg-[#ff694a]" />
+              ) : (
+                <span className="st-display text-sm font-bold">
+                  {Number(frame.number)}
+                </span>
+              )}
+            </span>
+            <span
+              className={`st-display text-base font-semibold ${
+                frame.status === 'active'
+                  ? 'text-white'
+                  : frame.status === 'resolved'
+                    ? 'text-white/50 line-through decoration-[#d9ff43]/60'
+                    : 'text-white/40'
+              }`}
+            >
+              {frame.label}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+function Crosshair({ hitPulse }: { hitPulse: number }) {
+  return (
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      <div
+        key={hitPulse}
+        className="stack-trace-crosshair relative size-11"
+        data-hit={hitPulse > 0 ? 'true' : 'false'}
+      >
+        <span className="absolute top-0 left-0 size-2.5 border-t-2 border-l-2 border-white/80" />
+        <span className="absolute top-0 right-0 size-2.5 border-t-2 border-r-2 border-white/80" />
+        <span className="absolute bottom-0 left-0 size-2.5 border-b-2 border-l-2 border-white/80" />
+        <span className="absolute right-0 bottom-0 size-2.5 border-r-2 border-b-2 border-white/80" />
+        <span className="absolute top-1/2 left-1/2 size-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#d9ff43] shadow-[0_0_8px_#d9ff43]" />
       </div>
     </div>
   )
@@ -164,279 +478,115 @@ function MissionHud({
   hud: GameHudState
   inputMode: GameInputMode
 }) {
-  const integrityColor = hud.integrity <= 30 ? '#ff694a' : '#d9ff43'
   const isTouch = inputMode === 'touch'
 
   return (
-    <div className="stack-trace-hud pointer-events-none absolute inset-0 z-20 p-4 text-[#f1efe8] sm:p-6">
-      <div className="flex items-start justify-between gap-8">
-        <div>
-          <p className="font-mono text-[11px] text-[#d9ff43] uppercase sm:text-xs">
-            Stack Trace
-          </p>
-          <p className="mt-1 font-mono text-[9px] text-white/35 uppercase sm:text-[10px]">
-            Incident 001 / Trace active
-          </p>
-          {!isTouch && (
-            <div className="mt-4 flex items-center gap-2 font-mono text-[10px] text-white/45 uppercase">
-              <Kbd className="size-6 border border-white/20 bg-black/35 font-mono text-xs text-white/75">
-                ?
-              </Kbd>
-              Keybinds
-            </div>
-          )}
-        </div>
-
-        <div className="max-w-[50vw] text-right">
-          <p className="font-mono text-[9px] text-white/35 uppercase sm:text-[10px]">
-            Current instruction
-          </p>
-          <p className="mt-1 text-sm font-semibold sm:text-base">
-            {hud.objective}
-          </p>
-          <p className="mt-1 font-mono text-[10px] text-white/35 sm:text-[11px]">
-            {Math.round(hud.targetDistance)}m
-          </p>
-        </div>
-      </div>
-
+    <div className="stack-trace-hud pointer-events-none absolute inset-0 z-20 text-[#f1efe8]">
       {hud.phase === 'escape' && (
-        <>
-          <div
-            className="stack-trace-escape-frame absolute inset-2 border-2 border-[#ff694a]/70 sm:inset-3"
-            data-critical={hud.escapeTime <= 10 ? 'true' : 'false'}
-          />
-          <div
-            className={`stack-trace-escape-alert absolute left-1/2 flex -translate-x-1/2 items-center gap-4 border border-[#ff694a]/75 bg-[#160906]/88 px-4 py-3 text-left shadow-[0_0_28px_rgba(255,105,74,.24)] backdrop-blur-sm ${isTouch ? 'top-[max(8rem,calc(env(safe-area-inset-top)+7rem))] w-[min(19rem,calc(100vw-2rem))]' : 'top-[max(6.25rem,calc(env(safe-area-inset-top)+5rem))] min-w-80'}`}
-            data-critical={hud.escapeTime <= 10 ? 'true' : 'false'}
-          >
-            <span className="size-2 shrink-0 rounded-full bg-[#ff694a] shadow-[0_0_14px_#ff694a]" />
-            <div className="min-w-0 flex-1">
-              <p className="font-mono text-[8px] text-[#ff694a] uppercase sm:text-[9px]">
-                Rollback active
-              </p>
-              <p className="mt-0.5 text-sm font-extrabold text-white uppercase sm:text-base">
-                Return to surface
-              </p>
-              <p className="mt-0.5 text-[10px] text-white/50 sm:text-xs">
-                Hurry—reach the exit before rollback.
-              </p>
-            </div>
-            <span className="font-mono text-2xl font-bold text-[#ff694a] tabular-nums sm:text-3xl">
-              {Math.ceil(hud.escapeTime)}s
-            </span>
-          </div>
-        </>
+        <div
+          className="stack-trace-escape-frame absolute inset-2 border-2 border-[#ff694a]/70 sm:inset-3"
+          data-critical={hud.escapeTime <= 10 ? 'true' : 'false'}
+        />
       )}
 
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <div
-          key={hud.hitPulse}
-          className="stack-trace-crosshair relative size-8"
-          data-hit={hud.hitPulse > 0 ? 'true' : 'false'}
-        >
-          <span className="absolute top-1/2 left-0 h-px w-2 bg-white/70" />
-          <span className="absolute top-1/2 right-0 h-px w-2 bg-white/70" />
-          <span className="absolute top-0 left-1/2 h-2 w-px bg-white/70" />
-          <span className="absolute bottom-0 left-1/2 h-2 w-px bg-white/70" />
-          <span className="absolute top-1/2 left-1/2 size-1 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#d9ff43]" />
-        </div>
-      </div>
+      <Crosshair hitPulse={hud.hitPulse} />
 
-      {!isTouch && (
-        <div className="absolute right-4 bottom-4 left-4 flex items-end justify-between gap-6 sm:right-6 sm:bottom-6 sm:left-6">
-          <div className="hidden w-56 border border-white/12 bg-black/35 p-4 backdrop-blur-sm sm:block">
-            <p className="font-mono text-[10px] text-white/35 uppercase">
-              Captured frames
-            </p>
-            <div className="mt-3 space-y-2">
-              {hud.frames.map((frame) => (
-                <div
-                  key={frame.number}
-                  className="grid grid-cols-[24px_1fr_auto] items-center gap-2 font-mono text-[10px]"
-                >
-                  <span className="text-white/25">{frame.number}</span>
-                  <span
-                    className={
-                      frame.status === 'active'
-                        ? 'text-[#ff694a]'
-                        : frame.status === 'resolved'
-                          ? 'text-[#d9ff43]'
-                          : 'text-white/25'
-                    }
-                  >
-                    {frame.label}
-                  </span>
-                  <span className="text-[9px] text-white/30 uppercase">
-                    {frame.status}
-                  </span>
-                </div>
-              ))}
+      {isTouch ? (
+        <div className="absolute top-[max(1rem,env(safe-area-inset-top))] right-[max(1rem,env(safe-area-inset-right))] left-[max(1rem,env(safe-area-inset-left))] flex items-start justify-between gap-3">
+          <div className="space-y-2">
+            <IntegrityBar integrity={hud.integrity} compact />
+            <div className="st-panel st-display w-fit px-3 py-1.5 text-base font-bold">
+              <Layers className="mr-2 inline size-4 text-[#d9ff43]" />
+              {hud.faultsResolved}/{hud.totalFaults}
             </div>
           </div>
-
-          <div className="ml-auto grid grid-cols-2 gap-4 sm:grid-cols-4">
-            <Metric
-              label="Integrity"
-              value={`${hud.integrity.toString().padStart(3, '0')}%`}
-            />
-            <Metric
-              label="Frames"
-              value={`${hud.faultsResolved}/${hud.totalFaults}`}
-            />
-            <div className="hidden sm:block">
-              <Metric label="Bugs" value={String(hud.bugsPurged)} />
+          <div className="w-[min(46vw,18rem)]">
+            <ObjectiveBanner hud={hud} compact />
+          </div>
+        </div>
+      ) : (
+        <>
+          <div className="absolute top-4 right-4 left-4 flex items-start justify-between gap-6 sm:top-6 sm:right-6 sm:left-6">
+            <IntegrityBar integrity={hud.integrity} compact={false} />
+            <div className="absolute left-1/2 w-[min(32rem,40vw)] -translate-x-1/2">
+              <ObjectiveBanner hud={hud} compact={false} />
             </div>
-            <div
-              className={hud.phase === 'escape' ? 'block' : 'hidden sm:block'}
-            >
-              <Metric
-                label={hud.phase === 'escape' ? 'Rollback' : 'Trace'}
-                value={
-                  hud.phase === 'escape'
-                    ? `${Math.ceil(hud.escapeTime)}s`
-                    : 'Active'
-                }
+            <div className="flex gap-2">
+              <StatBadge
+                icon={<Layers className="size-6" />}
+                label="Frames"
+                value={`${hud.faultsResolved}/${hud.totalFaults}`}
+              />
+              <StatBadge
+                icon={<Bug className="size-6" />}
+                label="Bugs"
+                value={String(hud.bugsPurged)}
               />
             </div>
           </div>
-        </div>
-      )}
 
-      {isTouch && (
-        <div className="absolute top-[max(4.25rem,calc(env(safe-area-inset-top)+3.5rem))] left-[max(1rem,env(safe-area-inset-left))] flex gap-4">
-          <Metric
-            label="Integrity"
-            value={`${hud.integrity.toString().padStart(3, '0')}%`}
-          />
-          <Metric
-            label="Frames"
-            value={`${hud.faultsResolved}/${hud.totalFaults}`}
-          />
-          {hud.phase === 'escape' && (
-            <Metric label="Rollback" value={`${Math.ceil(hud.escapeTime)}s`} />
-          )}
-        </div>
-      )}
-
-      {!isTouch && (
-        <div className="absolute right-4 bottom-24 h-1 w-32 overflow-hidden bg-white/10 sm:right-6">
-          <div
-            className="h-full transition-[width] duration-150"
-            style={{
-              width: `${hud.integrity}%`,
-              backgroundColor: integrityColor,
-            }}
-          />
-        </div>
-      )}
-    </div>
-  )
-}
-
-const keybinds = [
-  ['W A S D', 'Fly / strafe'],
-  ['Space / C', 'Rise / descend'],
-  ['Q / E', 'Roll'],
-  ['Mouse', 'Aim / fire'],
-  ['M', 'Wireframe map'],
-  ['Esc', 'Pause'],
-  ['Enter', 'Resume game'],
-  ['?', 'Toggle keybinds'],
-] as const
-
-function KeybindsScreen({ onClose }: { onClose: () => void }) {
-  return (
-    <div className="pointer-events-auto absolute inset-0 z-50 grid place-items-center overflow-y-auto bg-[#050608]/82 p-5 text-[#f1efe8] backdrop-blur-sm">
-      <div className="w-full max-w-2xl border border-white/15 bg-[#090a0d] p-6 sm:p-8">
-        <div className="flex items-start justify-between gap-6">
-          <div>
-            <p className="font-mono text-[10px] text-[#d9ff43] uppercase">
-              Input reference
-            </p>
-            <SectionHeading size="compact" className="mt-3">
-              Flight controls
-            </SectionHeading>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex size-11 shrink-0 items-center justify-center rounded-full border border-white/20 text-white/60 transition-colors hover:border-white/45 hover:text-white"
-            aria-label="Close keybinds"
-          >
-            <X className="size-4" />
-          </button>
-        </div>
-
-        <div className="mt-7 grid gap-px border border-white/15 bg-white/15 sm:grid-cols-2">
-          {keybinds.map(([keybind, action]) => (
-            <div
-              key={keybind}
-              className="flex min-h-16 items-center justify-between gap-4 bg-[#08090b] px-4 py-3"
-            >
-              <span className="text-sm text-white/55">{action}</span>
-              <Kbd className="h-6 shrink-0 bg-white/8 px-2 font-mono text-xs font-semibold text-[#d9ff43]">
-                {keybind}
-              </Kbd>
+          <div className="absolute right-4 bottom-4 left-4 flex items-end justify-between gap-6 sm:right-6 sm:bottom-6 sm:left-6">
+            <div className="hidden md:block">
+              <FrameTracker frames={hud.frames} />
             </div>
-          ))}
-        </div>
-
-        <button
-          type="button"
-          onClick={onClose}
-          className="mt-7 flex h-12 w-full items-center justify-between rounded-full bg-[#d9ff43] px-5 text-xs font-bold text-[#10100f] transition-colors hover:bg-white"
-        >
-          Resume game
-          <Kbd className="h-7 rounded-full bg-[#10100f]/10 px-2.5 font-mono text-[10px] font-bold text-[#10100f]">
-            Enter
-          </Kbd>
-        </button>
-      </div>
+            <div className="ml-auto flex items-center gap-5 text-sm font-semibold text-white/70 uppercase">
+              <span className="flex items-center gap-2">
+                <KeyCap>M</KeyCap> Map
+              </span>
+              <span className="flex items-center gap-2">
+                <KeyCap>?</KeyCap> Controls
+              </span>
+              <span className="flex items-center gap-2">
+                <KeyCap>Esc</KeyCap> Pause
+              </span>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }
+
+/* ---------- Pause, map, result ---------- */
 
 function PauseScreen({
   inputMode,
   onResume,
+  onOpenControls,
 }: {
   inputMode: GameInputMode
   onResume: () => void
+  onOpenControls: () => void
 }) {
   return (
-    <div className="pointer-events-auto absolute inset-0 z-40 grid place-items-center bg-[#050608]/80 p-5 text-[#f1efe8] backdrop-blur-sm">
-      <div className="w-full max-w-md border border-white/15 bg-[#0a0b0e] p-6 sm:p-8">
-        <p className="font-mono text-[9px] text-[#ff694a] uppercase">
-          Diagnostic suspended
-        </p>
-        <SectionHeading size="compact" className="mt-4">
-          Trace paused.
-        </SectionHeading>
-        <p className="mt-4 text-sm leading-6 text-white/45">
-          Resume {inputMode === 'touch' ? 'touch' : 'pointer'} control to
-          continue the mission.
-        </p>
-        <button
-          type="button"
-          onClick={onResume}
-          className="mt-7 flex h-12 w-full items-center justify-between rounded-full bg-[#d9ff43] px-5 text-xs font-bold text-[#10100f] hover:bg-white"
-        >
-          Resume game
-          <Kbd className="h-7 rounded-full bg-[#10100f]/10 px-2.5 font-mono text-[10px] font-bold text-[#10100f]">
-            Enter
-          </Kbd>
-        </button>
-        <Link
-          to="/"
-          className="mt-3 flex h-12 items-center justify-center text-xs font-semibold text-white/45 transition-colors hover:text-white"
-        >
-          Exit to portfolio
-        </Link>
+    <Overlay>
+      <div className="w-full max-w-sm text-center">
+        <h2 className="st-display st-logo text-7xl font-bold uppercase italic">
+          Paused
+        </h2>
+        <div className="mt-10 flex flex-col gap-3">
+          <MenuButton
+            onClick={onResume}
+            hint={inputMode === 'pointer' ? 'Enter' : undefined}
+          >
+            Resume
+          </MenuButton>
+          <MenuButton onClick={onOpenControls} variant="secondary">
+            Controls
+          </MenuButton>
+          <MenuLink>Quit</MenuLink>
+        </div>
       </div>
-    </div>
+    </Overlay>
   )
 }
+
+const mapLegend = [
+  [LIME, 'You'],
+  [RED, 'Target'],
+  ['#f1efe8', 'Visited'],
+  ['#335cff', 'Unexplored'],
+] as const
 
 function AutomapOverlay({
   inputMode,
@@ -448,25 +598,20 @@ function AutomapOverlay({
   return (
     <div className="pointer-events-none absolute inset-0 z-40 flex flex-col justify-between p-5 text-[#f1efe8] sm:p-8">
       <div className="flex items-start justify-between gap-6">
-        <div>
-          <div className="flex items-center gap-2 font-mono text-[9px] text-[#d9ff43] uppercase">
-            <MapIcon className="size-4" />
-            Complete stack geometry
-          </div>
-          <SectionHeading size="compact" className="mt-2">
-            Wireframe map
-          </SectionHeading>
-          <div className="mt-3 flex flex-wrap gap-x-4 gap-y-2 font-mono text-[7px] text-white/40 uppercase sm:text-[8px]">
-            {[
-              ['#d9ff43', 'Player'],
-              ['#ff694a', 'Hostile target'],
-              ['#f1efe8', 'Traversed'],
-              ['#335cff', 'Untraversed'],
-            ].map(([color, label]) => (
-              <span key={label} className="flex items-center gap-1.5">
+        <div className="st-panel px-5 py-4">
+          <h2 className="st-display flex items-center gap-3 text-3xl font-bold uppercase italic">
+            <MapIcon className="size-7 text-[#d9ff43]" />
+            Map
+          </h2>
+          <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2 text-base text-white/75">
+            {mapLegend.map(([color, label]) => (
+              <span key={label} className="flex items-center gap-2">
                 <span
-                  className="size-1.5 rounded-full"
-                  style={{ backgroundColor: color }}
+                  className="size-3 rounded-full"
+                  style={{
+                    backgroundColor: color,
+                    boxShadow: `0 0 8px ${color}`,
+                  }}
                 />
                 {label}
               </span>
@@ -476,94 +621,130 @@ function AutomapOverlay({
         <button
           type="button"
           onClick={onClose}
-          className="pointer-events-auto flex size-11 items-center justify-center rounded-full border border-white/20 bg-black/40 text-white/70 backdrop-blur-sm transition-colors hover:border-white/45 hover:text-white"
-          aria-label="Close wireframe map"
+          className="st-cut-sm st-btn-secondary pointer-events-auto flex size-12 items-center justify-center backdrop-blur-sm"
+          aria-label="Close map"
         >
-          <X className="size-4" />
+          <X className="size-5" />
         </button>
       </div>
 
-      <div className="flex items-end justify-between gap-6 font-mono text-[8px] text-white/35 uppercase sm:text-[9px]">
+      <div className="flex flex-wrap items-center justify-between gap-4 text-base text-white/75">
         <span>
           {inputMode === 'touch'
             ? 'Drag to rotate'
-            : 'Drag to rotate / Wheel to zoom'}
+            : 'Drag to rotate, scroll to zoom'}
         </span>
-        <span>
-          {inputMode === 'touch' ? 'Tap close to resume' : 'M or Esc to close'}
-        </span>
+        {inputMode === 'pointer' && (
+          <span className="flex items-center gap-2">
+            <KeyCap>M</KeyCap> Close
+          </span>
+        )}
       </div>
     </div>
   )
 }
 
+function rankFor(result: GameResult) {
+  if (result.status !== 'won') return { letter: 'F', color: RED }
+  if (result.score >= 10000) return { letter: 'S', color: LIME }
+  if (result.score >= 8500) return { letter: 'A', color: LIME }
+  if (result.score >= 7000) return { letter: 'B', color: '#f1efe8' }
+  return { letter: 'C', color: '#f1efe8' }
+}
+
 function ResultScreen({
   result,
+  inputMode,
   onRestart,
 }: {
   result: GameResult
+  inputMode: GameInputMode
   onRestart: () => void
 }) {
   const didWin = result.status === 'won'
+  const accent = didWin ? LIME : RED
+  const rank = rankFor(result)
+  const stats = [
+    ['Integrity', `${result.integrity}%`],
+    ['Accuracy', `${Math.round(result.accuracy)}%`],
+    ['Bugs', String(result.bugsPurged)],
+    ['Frames', `${result.faultsResolved}/3`],
+    ['Time', `${Math.round(result.elapsed)}s`],
+  ] as const
+
   return (
-    <div className="pointer-events-auto absolute inset-0 z-40 grid place-items-center overflow-y-auto bg-[#050608]/88 p-5 text-[#f1efe8] backdrop-blur-md">
-      <div className="w-full max-w-2xl border border-white/15 bg-[#090a0d] p-6 sm:p-9">
-        <div className="flex items-center justify-between gap-6">
-          <p
-            className={`font-mono text-[9px] uppercase ${didWin ? 'text-[#d9ff43]' : 'text-[#ff694a]'}`}
-          >
-            {didWin ? 'Stack trace resolved' : 'Trace terminated'}
-          </p>
-          <span className="font-mono text-[8px] text-white/25">
-            INCIDENT_001
-          </span>
-        </div>
-        <SectionHeading className="mt-6">
+    <Overlay tint="rgba(5,6,8,.85)">
+      <div className="w-full max-w-3xl py-6">
+        <p
+          className="st-display text-center text-xl font-bold uppercase"
+          style={{ color: accent }}
+        >
+          {didWin ? 'Mission complete' : 'Mission failed'}
+        </p>
+        <h2 className="st-display st-logo mt-2 text-center text-6xl leading-none font-bold uppercase italic sm:text-8xl">
           Build{' '}
-          <span className={didWin ? 'text-[#d9ff43]' : 'text-[#ff694a]'}>
-            {didWin ? 'shipped.' : 'failed.'}
-          </span>
-        </SectionHeading>
-        <p className="mt-6 text-sm text-white/45">{result.reason}</p>
+          <span style={{ color: accent }}>{didWin ? 'shipped' : 'failed'}</span>
+        </h2>
+        <p className="mt-4 text-center text-lg text-white/70">
+          {result.reason}
+        </p>
 
-        <div className="mt-8 grid grid-cols-2 gap-px border border-white/15 bg-white/15 sm:grid-cols-3">
-          {[
-            ['Ship score', result.score.toLocaleString()],
-            ['Integrity', `${result.integrity}%`],
-            ['Accuracy', `${Math.round(result.accuracy)}%`],
-            ['Bugs purged', String(result.bugsPurged)],
-            ['Frames resolved', `${result.faultsResolved}/3`],
-            ['Trace time', `${Math.round(result.elapsed)}s`],
-          ].map(([label, value]) => (
-            <div key={label} className="bg-[#090a0d] p-4 sm:p-5">
-              <p className="font-mono text-[8px] text-white/30 uppercase">
-                {label}
+        <div className="mt-8 grid gap-3 sm:grid-cols-[auto_1fr]">
+          <div
+            className="st-panel flex items-center gap-6 px-6 py-5"
+            style={{ ['--st-accent' as string]: accent }}
+          >
+            <div>
+              <p className="text-sm font-semibold text-white/60 uppercase">
+                Rank
               </p>
-              <p className="mt-2 text-xl font-semibold">{value}</p>
+              <p
+                className="st-display text-7xl leading-none font-bold italic"
+                style={{
+                  color: rank.color,
+                  textShadow: `0 0 30px ${rank.color}55`,
+                }}
+              >
+                {rank.letter}
+              </p>
             </div>
-          ))}
+            <div>
+              <p className="text-sm font-semibold text-white/60 uppercase">
+                Score
+              </p>
+              <p className="st-display text-5xl leading-none font-bold tabular-nums">
+                {result.score.toLocaleString()}
+              </p>
+            </div>
+          </div>
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
+            {stats.map(([label, value]) => (
+              <div
+                key={label}
+                className="flex flex-col justify-center bg-white/[.05] px-3 py-4 text-center"
+              >
+                <p className="text-sm font-semibold text-white/60 uppercase">
+                  {label}
+                </p>
+                <p className="st-display mt-1 text-2xl font-bold tabular-nums">
+                  {value}
+                </p>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-          <button
-            type="button"
+        <div className="mt-8 grid gap-3 sm:grid-cols-[1.4fr_1fr]">
+          <MenuButton
             onClick={onRestart}
-            className="flex h-12 flex-1 items-center justify-between rounded-full bg-[#d9ff43] px-5 text-xs font-bold text-[#10100f] hover:bg-white"
+            hint={inputMode === 'pointer' ? 'Enter' : undefined}
           >
-            Run trace again
-            <Kbd className="h-7 rounded-full bg-[#10100f]/10 px-2.5 font-mono text-[10px] font-bold text-[#10100f]">
-              Enter
-            </Kbd>
-          </button>
-          <Link
-            to="/"
-            className="flex h-12 flex-1 items-center justify-center rounded-full border border-white/15 text-xs font-semibold text-white/60 transition-colors hover:border-white/35 hover:text-white"
-          >
-            Return to portfolio
-          </Link>
+            Play again
+          </MenuButton>
+          <MenuLink>Quit</MenuLink>
         </div>
       </div>
-    </div>
+    </Overlay>
   )
 }
 
@@ -575,6 +756,7 @@ export default function StackTraceGame() {
   const [paused, setPaused] = useState(false)
   const [mapOpen, setMapOpen] = useState(false)
   const [keybindsOpen, setKeybindsOpen] = useState(false)
+  const [briefingControlsOpen, setBriefingControlsOpen] = useState(false)
   const [hud, setHud] = useState(initialHudState)
   const [screen, setScreen] = useState<ScreenState>({ status: 'briefing' })
   const [inputMode, setInputMode] = useState<GameInputMode>('pointer')
@@ -609,6 +791,7 @@ export default function StackTraceGame() {
     setPaused(false)
     setMapOpen(false)
     setKeybindsOpen(false)
+    setBriefingControlsOpen(false)
     setScreen({ status: 'playing' })
     apiRef.current.start(inputMode, { sensitivity })
   }, [inputMode, ready, renderingFailed, requestMobileFullscreen, sensitivity])
@@ -616,6 +799,11 @@ export default function StackTraceGame() {
   useEffect(() => {
     if (screen.status !== 'briefing' && screen.status !== 'result') return
     const handleKeyDown = (event: KeyboardEvent) => {
+      if (briefingControlsOpen && event.code === 'Escape') {
+        event.preventDefault()
+        setBriefingControlsOpen(false)
+        return
+      }
       if (event.code !== 'Enter' || event.repeat) return
       event.preventDefault()
       event.stopImmediatePropagation()
@@ -623,7 +811,7 @@ export default function StackTraceGame() {
     }
     window.addEventListener('keydown', handleKeyDown, true)
     return () => window.removeEventListener('keydown', handleKeyDown, true)
-  }, [launch, screen.status])
+  }, [briefingControlsOpen, launch, screen.status])
 
   const resume = useCallback(() => {
     setPaused(false)
@@ -710,9 +898,16 @@ export default function StackTraceGame() {
           renderingFailed={renderingFailed}
           inputMode={inputMode}
           isPortrait={isPortrait}
-          sensitivity={sensitivity}
-          onSensitivityChange={setSensitivity}
+          onOpenControls={() => setBriefingControlsOpen(true)}
           onLaunch={launch}
+        />
+      )}
+      {screen.status === 'briefing' && briefingControlsOpen && (
+        <ControlsPanel
+          inputMode={inputMode}
+          sensitivity={inputMode === 'touch' ? sensitivity : undefined}
+          onSensitivityChange={setSensitivity}
+          onBack={() => setBriefingControlsOpen(false)}
         />
       )}
       {screen.status === 'playing' && !mapOpen && !keybindsOpen && (
@@ -737,13 +932,25 @@ export default function StackTraceGame() {
         />
       )}
       {screen.status === 'playing' && keybindsOpen && (
-        <KeybindsScreen onClose={closeKeybinds} />
+        <ControlsPanel
+          inputMode={inputMode}
+          onBack={() => setKeybindsOpen(false)}
+          onResume={closeKeybinds}
+        />
       )}
       {screen.status === 'playing' && paused && !mapOpen && !keybindsOpen && (
-        <PauseScreen inputMode={inputMode} onResume={resume} />
+        <PauseScreen
+          inputMode={inputMode}
+          onResume={resume}
+          onOpenControls={() => setKeybindsOpen(true)}
+        />
       )}
       {screen.status === 'result' && (
-        <ResultScreen result={screen.result} onRestart={launch} />
+        <ResultScreen
+          result={screen.result}
+          inputMode={inputMode}
+          onRestart={launch}
+        />
       )}
       {hud.damagePulse > 0 && screen.status === 'playing' && (
         <div
