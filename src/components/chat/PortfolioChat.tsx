@@ -200,7 +200,7 @@ function QuestionComposer({
         type="submit"
         size="icon-lg"
         disabled={!value.trim() || isStreaming}
-        className="bg-brand text-brand-foreground hover:bg-foreground hover:text-background rounded-full"
+        className="bg-foreground text-background hover:bg-foreground hover:text-background rounded-full"
         aria-label={isStreaming ? 'Generating response' : 'Send message'}
       >
         {isStreaming ? <LoaderCircle className="animate-spin" /> : <ArrowUp />}
