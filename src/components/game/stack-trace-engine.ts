@@ -166,8 +166,14 @@ function setObjectOpacity(object: THREE.Object3D, opacity: number) {
       }
       const baseOpacity = material.userData.baseOpacity as number
       material.opacity = baseOpacity * opacity
-      material.transparent =
+      const transparent =
         opacity < 1 || (material.userData.baseTransparent as boolean)
+      if (material.transparent !== transparent) {
+        material.transparent = transparent
+        // three.js compiles opaque materials with alpha forced to 1, so a
+        // change here needs a new shader program before the fade shows.
+        material.needsUpdate = true
+      }
     })
   })
 }
