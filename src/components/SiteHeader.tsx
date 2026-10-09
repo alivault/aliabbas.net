@@ -147,12 +147,17 @@ export default function SiteHeader() {
 
   return (
     <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
-      <header className="text-foreground fixed inset-x-0 top-0 z-[100] h-[72px] [view-transition-name:site-header]">
-        <motion.div
-          aria-hidden="true"
-          className="border-foreground/10 bg-background/80 pointer-events-none absolute inset-0 border-b backdrop-blur-[12px] backdrop-saturate-[1.8]"
-          style={{ opacity: headerChromeOpacity }}
-        />
+      {/*
+        The blur and border sit before the header, not inside it. During page
+        transitions they get their own snapshot below the nav text, so they
+        can fade out on their own.
+      */}
+      <motion.div
+        aria-hidden="true"
+        className="site-header-chrome border-foreground/10 bg-background/80 pointer-events-none fixed inset-x-0 top-0 z-[100] h-[72px] border-b backdrop-blur-[12px] backdrop-saturate-[1.8]"
+        style={{ opacity: headerChromeOpacity }}
+      />
+      <header className="site-header text-foreground fixed inset-x-0 top-0 z-[100] h-[72px]">
         <div className="relative mx-auto grid h-full max-w-[1600px] grid-cols-[1fr_auto] items-center px-5 sm:px-8 lg:grid-cols-[1fr_auto_1fr] lg:px-12">
           <Link
             to="/"
