@@ -98,20 +98,15 @@ function SkillsPage() {
               </p>
             </div>
             <ul className="border-foreground/15 bg-foreground/15 grid gap-px overflow-hidden rounded-[2px] border sm:grid-cols-2">
-              {architecture.map(({ icon: Icon, label, value }, index) => (
+              {architecture.map(({ icon: Icon, label, value }) => (
                 <li
                   key={label}
                   className="bg-background group hover:bg-foreground/[0.03] flex flex-col gap-6 p-6 transition-colors sm:gap-10 sm:p-7"
                 >
-                  <div className="flex items-center justify-between">
-                    <Icon
-                      className="text-foreground/50 group-hover:text-foreground size-5 transition-colors"
-                      strokeWidth={1.5}
-                    />
-                    <MonoLabel as="span">
-                      {String(index + 1).padStart(2, '0')}
-                    </MonoLabel>
-                  </div>
+                  <Icon
+                    className="text-foreground/50 group-hover:text-foreground size-5 transition-colors"
+                    strokeWidth={1.5}
+                  />
                   <div>
                     <p className="text-sm font-bold">{label}</p>
                     <p className="text-foreground/45 mt-1.5 text-xs">{value}</p>
