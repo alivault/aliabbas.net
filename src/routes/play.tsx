@@ -86,9 +86,8 @@ function PlayPage() {
               Averno
             </h1>
             <p className="text-foreground/65 mt-6 max-w-2xl text-base leading-7 lg:text-lg lg:leading-8">
-              The descent is easy. Fly a mining ship down through a dead colony,
-              destroy its three reactors, and climb back out before each one
-              blows.
+              Fly a mining ship down through a dead colony, destroy its three
+              reactors, and climb back out before each one blows.
             </p>
           </div>
           <PlayLink className="justify-self-start" />
