@@ -518,10 +518,10 @@ function ResultScreen({
             INCIDENT_001
           </span>
         </div>
-        <SectionHeading className="mt-6 uppercase">
+        <SectionHeading className="mt-6">
           Build
           <span
-            className={`block normal-case ${didWin ? 'text-[#d9ff43]' : 'text-[#ff694a]'}`}
+            className={`block ${didWin ? 'text-[#d9ff43]' : 'text-[#ff694a]'}`}
           >
             {didWin ? 'shipped.' : 'failed.'}
           </span>
