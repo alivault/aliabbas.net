@@ -92,6 +92,15 @@ type RootBug = {
   chargeStart: number | null
 }
 
+// A part that fades, shrinks, and drifts before it hides.
+type Fade = {
+  object: THREE.Object3D
+  elapsed: number
+  duration: number
+  scale: number
+  drift: THREE.Vector3
+}
+
 type Projectile = {
   mesh: THREE.Mesh
   owner: 'player' | 'enemy'
@@ -122,7 +131,8 @@ const MAP_TUNNEL_RADIUS = 3.4
 const PROJECTILE_AXIS = new THREE.Vector3(0, 1, 0)
 const CHARGE_TIME = 0.45
 const ROOT_CHARGE_TIME = 0.55
-const DEATH_TIME = 0.9
+const DEATH_TIME = 1.1
+const FADE_TIME = 0.8
 const CRAWLER_HOVER = 0.46
 // The root bug circles the centre of /deploy/core. Segments trail the head
 // along the same path, `ROOT_SEGMENT_LAG` seconds apart.
@@ -208,6 +218,7 @@ export default class StackTraceEngine {
   private readonly root: RootBug
   private readonly projectiles: Array<Projectile> = []
   private readonly bursts: Array<Burst> = []
+  private readonly fades: Array<Fade> = []
   private readonly resizeObserver: ResizeObserver
 
   private mode: MissionPhase = 'idle'
@@ -752,6 +763,8 @@ export default class StackTraceEngine {
     this.exit.group.visible = false
     this.exit.group.scale.setScalar(1)
 
+    this.fades.forEach((fade) => fade.object.scale.setScalar(fade.scale))
+    this.fades.length = 0
     this.faults.forEach((fault) => {
       fault.health = fault.maxHealth
       fault.alive = true
@@ -1136,6 +1149,7 @@ export default class StackTraceEngine {
       animateBug(enemy.visual, time, delta)
       if (!enemy.alive) this.animateEnemyDeath(enemy, delta)
     })
+    this.updateFades(delta)
     if (this.root.visual.group.visible) {
       animateCentipede(this.root.visual, time, delta)
       if (!this.root.alive) this.animateRootDeath(delta)
@@ -1478,6 +1492,7 @@ export default class StackTraceEngine {
 
     let previous = this.root.head
     visual.segments.forEach((segment, index) => {
+      if (!segment.alive) return
       const position = segment.group.position
       rootPathPoint(time - (index + 1) * ROOT_SEGMENT_LAG, position)
       this.forward.copy(previous).sub(position).normalize()
@@ -1500,7 +1515,8 @@ export default class StackTraceEngine {
     )
   }
 
-  // Crawlers drop off their wall and flip over; wisps spiral down.
+  // Crawlers drop off their wall and flip over; wisps spiral down. The
+  // motion stays inside the level, so the whole fade stays in view.
   private animateEnemyDeath(enemy: Enemy, delta: number) {
     const { visual } = enemy
     visual.state.dying += delta
@@ -1509,19 +1525,21 @@ export default class StackTraceEngine {
       visual.group.visible = false
       return
     }
+    this.moveVector.set(0, 0, 0)
     if (enemy.walker && visual.kind === 'crawler') {
-      visual.group.position.addScaledVector(enemy.walker.normal, delta * 1.4)
-      visual.group.position.y -= delta * progress * 6
+      this.moveVector.addScaledVector(enemy.walker.normal, delta * 1.2)
+      this.moveVector.y -= delta * progress * 3
       visual.body.rotation.z = Math.min(Math.PI, progress * Math.PI * 2.2)
       visual.legs.forEach(({ pivot }, index) => {
         pivot.rotation.z = Math.sin(visual.state.dying * 40 + index) * 0.5
       })
     } else {
-      visual.group.position.y -= delta * (1 + progress * 5)
-      visual.body.rotation.z += delta * 14
+      this.moveVector.y -= delta * (0.6 + progress * 2.4)
+      visual.body.rotation.z += delta * 10
       visual.body.rotation.x = progress * 1.2
     }
-    setObjectOpacity(visual.group, 1 - progress)
+    this.moveDying(visual.group.position, 0.5)
+    setObjectOpacity(visual.group, 1 - progress * progress)
   }
 
   private animateRootDeath(delta: number) {
@@ -1532,9 +1550,43 @@ export default class StackTraceEngine {
       visual.group.visible = false
       return
     }
-    visual.head.position.y -= delta * progress * 5
+    this.moveVector.set(0, -delta * progress * 3, 0)
+    this.moveDying(visual.head.position, 1.1)
     visual.head.rotation.z += delta * 3
-    setObjectOpacity(visual.group, 1 - progress)
+    setObjectOpacity(visual.group, 1 - progress * progress)
+  }
+
+  // Applies `moveVector` to a dying part, unless the move would put it
+  // inside a wall.
+  private moveDying(position: THREE.Vector3, radius: number) {
+    this.candidate.copy(position).add(this.moveVector)
+    if (this.canOccupy(this.candidate, radius)) position.copy(this.candidate)
+  }
+
+  private fadeOut(object: THREE.Object3D, drift?: THREE.Vector3) {
+    this.fades.push({
+      object,
+      elapsed: 0,
+      duration: FADE_TIME,
+      scale: object.scale.x,
+      drift: drift?.clone() ?? new THREE.Vector3(),
+    })
+  }
+
+  private updateFades(delta: number) {
+    for (let index = this.fades.length - 1; index >= 0; index -= 1) {
+      const fade = this.fades[index]
+      if (!fade) continue
+      fade.elapsed += delta
+      const progress = Math.min(1, fade.elapsed / fade.duration)
+      setObjectOpacity(fade.object, 1 - progress * progress)
+      fade.object.scale.setScalar(fade.scale * (1 - progress * 0.35))
+      fade.object.position.addScaledVector(fade.drift, delta)
+      if (progress < 1) continue
+      fade.object.visible = false
+      fade.object.scale.setScalar(fade.scale)
+      this.fades.splice(index, 1)
+    }
   }
 
   private firePlayerProjectile() {
@@ -1701,7 +1753,7 @@ export default class StackTraceEngine {
         hitFault.visual.group.scale.setScalar(scale)
         if (hitFault.health <= 0) {
           hitFault.alive = false
-          hitFault.visual.group.visible = false
+          this.fadeOut(hitFault.visual.group)
           this.bugsPurged += 1
           this.audio.playDestroy()
           this.spawnBurst(hitFault.visual.group.position, '#ff694a')
@@ -1762,7 +1814,7 @@ export default class StackTraceEngine {
     this.root.visual.segments.forEach((segment, index) => {
       if (!segment.alive || index < Math.min(keep, CENTIPEDE_SEGMENTS)) return
       segment.alive = false
-      segment.group.visible = false
+      this.fadeOut(segment.group, this.moveVector.set(0, -1.2, 0))
       this.spawnBurst(segment.group.position, '#8da4ff')
       this.audio.playDestroy()
     })
