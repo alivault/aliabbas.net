@@ -80,7 +80,7 @@ function MissionBriefing({
         }`}
       >
         <div>
-          <PageHeading className="text-center uppercase">
+          <PageHeading className="text-center">
             Stack
             <span className="block text-[#d9ff43] normal-case">Trace</span>
           </PageHeading>
