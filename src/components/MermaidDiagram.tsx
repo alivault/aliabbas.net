@@ -1,4 +1,5 @@
 import { useEffect, useId, useState } from 'react'
+import MonoLabel from './MonoLabel'
 
 type MermaidDiagramValue = {
   code?: string
@@ -105,9 +106,9 @@ export function MermaidDiagram({ value }: { value: MermaidDiagramValue }) {
         />
       )}
       {value.caption && (
-        <figcaption className="text-foreground/45 mt-5 text-center font-mono text-[9px] uppercase">
+        <MonoLabel as="figcaption" className="mt-5 text-center">
           {value.caption}
-        </figcaption>
+        </MonoLabel>
       )}
     </figure>
   )

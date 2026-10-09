@@ -4,6 +4,7 @@ import { ArrowUpRight, CircleCheck, Loader2 } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
+import { monoLabelStyles } from './MonoLabel'
 import PageHeading from './PageHeading'
 import ScrollReveal from './ScrollReveal'
 import { Button } from './ui/button'
@@ -138,10 +139,7 @@ export default function ContactForm() {
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <FieldGroup className="gap-8">
             <Field data-invalid={Boolean(errors.name)}>
-              <FieldLabel
-                htmlFor="contact-name"
-                className="text-foreground/45 font-mono text-[11px] uppercase"
-              >
+              <FieldLabel htmlFor="contact-name" className={monoLabelStyles()}>
                 Name
               </FieldLabel>
               <Input
@@ -157,10 +155,7 @@ export default function ContactForm() {
             </Field>
 
             <Field data-invalid={Boolean(errors.email)}>
-              <FieldLabel
-                htmlFor="contact-email"
-                className="text-foreground/45 font-mono text-[11px] uppercase"
-              >
+              <FieldLabel htmlFor="contact-email" className={monoLabelStyles()}>
                 Email
               </FieldLabel>
               <Input
@@ -179,7 +174,7 @@ export default function ContactForm() {
             <Field data-invalid={Boolean(errors.message)}>
               <FieldLabel
                 htmlFor="contact-message"
-                className="text-foreground/45 font-mono text-[11px] uppercase"
+                className={monoLabelStyles()}
               >
                 Tell me about the opportunity
               </FieldLabel>
@@ -198,7 +193,7 @@ export default function ContactForm() {
             <Field data-invalid={Boolean(errors.verification)}>
               <FieldLabel
                 htmlFor="contact-verification"
-                className="text-foreground/45 font-mono text-[11px] uppercase"
+                className={monoLabelStyles()}
               >
                 Human check:
                 <span>

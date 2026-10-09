@@ -1,3 +1,4 @@
+import MonoLabel from './MonoLabel'
 import ScrollReveal from './ScrollReveal'
 import Title from './Title'
 
@@ -33,9 +34,7 @@ export default function ExperienceItem({
       className="border-foreground/20 grid gap-5 border-b py-10 sm:grid-cols-[180px_1fr] sm:py-14 lg:grid-cols-[240px_1fr]"
     >
       <div>
-        <span className="text-foreground/40 font-mono text-[9px] uppercase">
-          {formatDateRange(startDate, endDate)}
-        </span>
+        <MonoLabel as="span">{formatDateRange(startDate, endDate)}</MonoLabel>
         {url ? (
           <a
             href={url}

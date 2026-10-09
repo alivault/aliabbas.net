@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowUpRight } from 'lucide-react'
 import Logo from './Logo'
+import MonoLabel from './MonoLabel'
 import ScrollReveal from './ScrollReveal'
 import SectionHeading from './SectionHeading'
 
@@ -10,9 +11,7 @@ export default function Footer() {
       <div className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
         <ScrollReveal className="border-foreground/15 gap-section-content pb-section-content grid border-b lg:grid-cols-[1fr_auto] lg:items-end">
           <div>
-            <p className="text-brand font-mono text-[10px] uppercase">
-              Have an ambitious brief?
-            </p>
+            <MonoLabel tone="brand">Have an ambitious brief?</MonoLabel>
             <SectionHeading className="mt-5 max-w-5xl">
               Let’s make it
               <br />

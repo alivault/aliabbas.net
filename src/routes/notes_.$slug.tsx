@@ -11,10 +11,12 @@ import { CodeBlock } from '~/components/CodeBlock'
 import { Comments } from '~/components/Comments'
 import Main from '~/components/Main'
 import { MermaidDiagram } from '~/components/MermaidDiagram'
+import MonoLabel, { monoLabelStyles } from '~/components/MonoLabel'
 import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
 import Title from '~/components/Title'
 import getFormattedDate from '~/lib/getFormattedDate'
+import { cn } from '~/lib/utils'
 import { getArticleBySlug, sanityClient } from '~/lib/sanity'
 
 const builder = createImageUrlBuilder(sanityClient)
@@ -69,9 +71,9 @@ const portableTextComponents: PortableTextComponents = {
             className="border-foreground/10 w-full border"
           />
           {value.alt && (
-            <figcaption className="text-foreground/40 mt-3 font-mono text-[9px] uppercase">
+            <MonoLabel as="figcaption" className="mt-3">
               {value.alt}
-            </figcaption>
+            </MonoLabel>
           )}
         </figure>
       )
@@ -120,9 +122,7 @@ function NotePage() {
     return (
       <Main>
         <section className="mx-auto flex min-h-[70svh] max-w-5xl flex-col items-center justify-center gap-5 px-5 text-center">
-          <p className="text-brand font-mono text-[9px] uppercase">
-            Missing note
-          </p>
+          <MonoLabel tone="brand">Missing note</MonoLabel>
           <PageHeading>Note not found.</PageHeading>
           <Link
             to="/notes"
@@ -140,7 +140,10 @@ function NotePage() {
       <article className="py-section mx-auto max-w-[1440px] px-5 sm:px-8 lg:px-12">
         <Link
           to="/notes"
-          className="text-foreground/45 hover:text-brand mb-section-content inline-flex items-center gap-2 font-mono text-[9px] uppercase transition-colors"
+          className={cn(
+            monoLabelStyles(),
+            'hover:text-brand mb-section-content inline-flex items-center gap-2 transition-colors',
+          )}
         >
           <ArrowLeft className="size-4" /> Back to field notes
         </Link>
@@ -148,12 +151,9 @@ function NotePage() {
           as="header"
           className="border-foreground/20 pb-section-divider mx-auto max-w-3xl border-b"
         >
-          <time
-            className="text-brand font-mono text-[9px] uppercase"
-            dateTime={note.date}
-          >
+          <MonoLabel as="time" tone="brand" dateTime={note.date}>
             {getFormattedDate(note.date)}
-          </time>
+          </MonoLabel>
           <PageHeading className="mt-5">{note.title}</PageHeading>
           {note.description && (
             <p className="text-foreground/50 mt-7 max-w-2xl text-base leading-7 sm:text-lg sm:leading-8">

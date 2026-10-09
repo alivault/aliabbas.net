@@ -10,6 +10,7 @@ import {
   SheetTrigger,
 } from '~/components/ui/sheet'
 import Logo from './Logo'
+import MonoLabel from './MonoLabel'
 import Title from './Title'
 
 const navigation = [
@@ -227,9 +228,7 @@ export default function SiteHeader() {
                     <Title as="span" variant="card">
                       {item.label}
                     </Title>
-                    <span className="text-foreground/30 font-mono text-[10px]">
-                      0{index + 1}
-                    </span>
+                    <MonoLabel as="span">0{index + 1}</MonoLabel>
                   </Link>
                 </motion.div>
               </div>

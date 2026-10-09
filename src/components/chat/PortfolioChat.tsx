@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { ArrowUp, Bot, LoaderCircle, UserRound } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
+import MonoLabel from '~/components/MonoLabel'
 import PageHeading from '~/components/PageHeading'
 import Title from '~/components/Title'
 import {
@@ -508,9 +509,9 @@ export default function PortfolioChat() {
                 />
               </div>
               <div className="mt-8 w-full">
-                <p className="text-foreground/30 text-left font-mono text-[11px] uppercase lg:text-center">
+                <MonoLabel className="text-left lg:text-center">
                   Try asking
-                </p>
+                </MonoLabel>
                 <SuggestedQuestionButtons
                   disabled={isStreaming}
                   onSelect={(question) => void sendMessage(question)}

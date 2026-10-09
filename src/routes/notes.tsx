@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { ArrowUpRight } from 'lucide-react'
 import Main from '~/components/Main'
+import MonoLabel from '~/components/MonoLabel'
 import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
 import Section from '~/components/Section'
@@ -52,12 +53,9 @@ function NoteListItem({
             </span>
           )}
         </span>
-        <time
-          dateTime={article.date}
-          className="text-foreground/40 font-mono text-[9px] uppercase"
-        >
+        <MonoLabel as="time" dateTime={article.date}>
           {getFormattedDate(article.date)}
-        </time>
+        </MonoLabel>
         <ArrowUpRight className="hidden size-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 sm:block" />
       </Link>
     </ScrollReveal>

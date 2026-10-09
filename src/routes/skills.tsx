@@ -1,6 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Braces, Cloud, Database, Layers3 } from 'lucide-react'
 import Main from '~/components/Main'
+import MonoLabel from '~/components/MonoLabel'
 import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
 import Title from '~/components/Title'
@@ -96,9 +97,7 @@ function SkillsPage() {
                   edge deployment.
                 </p>
               </div>
-              <span className="text-foreground/25 font-mono text-[9px] uppercase">
-                Production architecture
-              </span>
+              <MonoLabel as="span">Production architecture</MonoLabel>
             </div>
             <div className="divide-foreground/10 grid divide-y sm:grid-cols-2 sm:divide-x sm:divide-y-0 lg:grid-cols-4">
               {architecture.map(({ icon: Icon, label, value }) => (
