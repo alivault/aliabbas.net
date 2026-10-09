@@ -384,26 +384,21 @@ html:active-view-transition-type(page) {
   }
 
   &::view-transition-new(root) {
-    box-shadow: 0 -24px 64px rgb(0 0 0 / 22%);
     animation: page-card-in 800ms cubic-bezier(0.76, 0, 0.24, 1) 100ms both;
   }
 
   /*
-   * The fixed header and its blur layer get their own snapshots, so they stay
-   * in place. Set the names only during the transition: a
-   * view-transition-name makes an element a backdrop root, which stops the
-   * backdrop blur.
+   * The nav text gets its own snapshot, so it stays in place. Its blur layer
+   * (.site-header-chrome) has no name: it stays in the old page snapshot,
+   * where the blur is captured, and leaves with the old page.
+   * Set the name only during the transition: a view-transition-name makes an
+   * element a backdrop root, which stops backdrop blur.
    */
   & .site-header {
     view-transition-name: site-header;
   }
 
-  & .site-header-chrome {
-    view-transition-name: site-header-chrome;
-  }
-
-  &::view-transition-group(site-header),
-  &::view-transition-group(site-header-chrome) {
+  &::view-transition-group(site-header) {
     animation: none;
   }
 
@@ -415,22 +410,6 @@ html:active-view-transition-type(page) {
 
   &::view-transition-new(site-header) {
     animation: none;
-  }
-
-  /* Fade the old blur and border out. Hide the new one until the end. */
-  &::view-transition-old(site-header-chrome) {
-    animation: page-fade-out 300ms ease-out both;
-  }
-
-  &::view-transition-new(site-header-chrome) {
-    animation: none;
-    opacity: 0;
-  }
-}
-
-@keyframes page-fade-out {
-  to {
-    opacity: 0;
   }
 }
 

@@ -148,9 +148,9 @@ export default function SiteHeader() {
   return (
     <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
       {/*
-        The blur and border sit before the header, not inside it. During page
-        transitions they get their own snapshot below the nav text, so they
-        can fade out on their own.
+        The blur and border sit outside the header. During page transitions
+        the header gets its own snapshot, but this layer stays in the page
+        snapshot, so it moves out with the old page.
       */}
       <motion.div
         aria-hidden="true"
