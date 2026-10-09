@@ -353,6 +353,46 @@ html:has(.stack-trace-page) body {
   }
 }
 
+/* Page transition. See src/lib/page-transition.ts. */
+html:active-view-transition-type(page) {
+  &::view-transition-group(root) {
+    background: var(--background);
+  }
+
+  &::view-transition-old(root),
+  &::view-transition-new(root) {
+    mix-blend-mode: normal;
+    transform-origin: 50% 0;
+  }
+
+  &::view-transition-old(root) {
+    animation: page-scale-out 450ms cubic-bezier(0.4, 0, 0.2, 1) both;
+  }
+
+  &::view-transition-new(root) {
+    animation: page-slide-in 700ms cubic-bezier(0.22, 1, 0.36, 1) 120ms both;
+  }
+
+  /* Keep the fixed header in place while the page moves. */
+  &::view-transition-group(site-header) {
+    animation: none;
+  }
+}
+
+@keyframes page-scale-out {
+  to {
+    opacity: 0;
+    transform: scale(0.94);
+    filter: blur(2px);
+  }
+}
+
+@keyframes page-slide-in {
+  from {
+    transform: translateY(100vh);
+  }
+}
+
 input[type='text'],
 input[type='email'],
 input[type='password'],

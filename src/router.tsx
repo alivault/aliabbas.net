@@ -3,6 +3,7 @@ import { QueryClient } from '@tanstack/react-query'
 import { createRouter as createTanStackRouter } from '@tanstack/react-router'
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query'
 import { NotFound } from './components/NotFound'
+import { pageTransitionTypes } from './lib/page-transition'
 import { routeTree } from './routeTree.gen'
 
 export function getRouter() {
@@ -32,6 +33,7 @@ export function getRouter() {
     defaultNotFoundComponent: () => <NotFound />,
     scrollRestoration: true,
     scrollRestorationBehavior: 'instant',
+    defaultViewTransition: { types: pageTransitionTypes },
     context: {
       queryClient,
       convexClient: convexQueryClient.convexClient,
