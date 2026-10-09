@@ -18,14 +18,3 @@ export function pageTransitionTypes({
   }
   return [PAGE_TRANSITION_TYPE]
 }
-
-type ActiveViewTransition = { finished: Promise<void> }
-
-/** Returns the running view transition, if any. */
-export function getActiveViewTransition(): ActiveViewTransition | null {
-  if (typeof document === 'undefined') return null
-  const doc = document as Document & {
-    activeViewTransition?: ActiveViewTransition | null
-  }
-  return doc.activeViewTransition ?? null
-}

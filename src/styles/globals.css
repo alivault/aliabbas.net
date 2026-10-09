@@ -232,16 +232,6 @@ html:has(.stack-trace-page) body {
   touch-action: none;
 }
 
-/* The game is always dark, so the site nav uses dark colours here. */
-.stack-trace-nav {
-  --background: oklch(0.155 0.006 85);
-  --foreground: oklch(0.955 0.009 94);
-  --border: oklch(0.32 0.008 85);
-  --brand: color-mix(in oklab, var(--foreground) 65%, transparent);
-  --brand-foreground: var(--background);
-  color: var(--foreground);
-}
-
 .stack-trace-hud {
   padding-top: max(1rem, env(safe-area-inset-top));
   padding-right: max(1rem, env(safe-area-inset-right));
@@ -380,7 +370,7 @@ html:active-view-transition-type(page) {
   }
 
   &::view-transition-old(root) {
-    animation: page-card-out 900ms cubic-bezier(0.76, 0, 0.24, 1) both;
+    animation: page-card-out 700ms cubic-bezier(0.4, 0, 0.2, 1) both;
   }
 
   &::view-transition-new(root) {
@@ -388,56 +378,16 @@ html:active-view-transition-type(page) {
     animation: page-card-in 800ms cubic-bezier(0.76, 0, 0.24, 1) 100ms both;
   }
 
-  /*
-   * The fixed header and its blur layer get their own snapshots, so they stay
-   * in place. Set the names only during the transition: a
-   * view-transition-name makes an element a backdrop root, which stops the
-   * backdrop blur.
-   */
-  & .site-header {
-    view-transition-name: site-header;
-  }
-
-  & .site-header-chrome {
-    view-transition-name: site-header-chrome;
-  }
-
-  &::view-transition-group(site-header),
-  &::view-transition-group(site-header-chrome) {
+  /* The fixed header has its own snapshot, so it stays in place. */
+  &::view-transition-group(site-header) {
     animation: none;
-  }
-
-  /* Swap the nav text at once. A cross-fade makes the text flash. */
-  &::view-transition-old(site-header) {
-    animation: none;
-    opacity: 0;
-  }
-
-  &::view-transition-new(site-header) {
-    animation: none;
-  }
-
-  /* Fade the old blur and border out. Hide the new one until the end. */
-  &::view-transition-old(site-header-chrome) {
-    animation: page-fade-out 300ms ease-out both;
-  }
-
-  &::view-transition-new(site-header-chrome) {
-    animation: none;
-    opacity: 0;
   }
 }
 
-@keyframes page-fade-out {
-  to {
-    opacity: 0;
-  }
-}
-
-/* Current page: move up, shrink, and fade into the base surface. */
+/* Current page: shrink and fade into the base surface. */
 @keyframes page-card-out {
   to {
-    transform: translateY(-20vh) scale(0.9);
+    transform: scale(0.9);
     opacity: 0;
   }
 }

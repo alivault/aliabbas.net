@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from '@tanstack/react-router'
-import { Map as MapIcon, X } from 'lucide-react'
+import { ArrowLeft, Map as MapIcon, X } from 'lucide-react'
 import PageHeading from '~/components/PageHeading'
 import SectionHeading from '~/components/SectionHeading'
-import SiteHeader from '~/components/SiteHeader'
 import { Kbd } from '~/components/ui/kbd'
 import StackTraceScene from './StackTraceScene'
 import StackTraceTouchControls from './StackTraceTouchControls'
@@ -69,7 +68,17 @@ function MissionBriefing({
       ]
 
   return (
-    <div className="pointer-events-auto relative z-30 flex h-svh min-h-[320px] flex-col overflow-y-auto bg-[linear-gradient(90deg,rgba(5,6,8,.94)_0%,rgba(5,6,8,.8)_48%,rgba(5,6,8,.3)_100%)] p-5 pt-[72px] text-[#f1efe8] sm:p-8 sm:pt-[72px] lg:p-12 lg:pt-[72px]">
+    <div className="pointer-events-auto relative z-30 flex h-svh min-h-[320px] flex-col overflow-y-auto bg-[linear-gradient(90deg,rgba(5,6,8,.94)_0%,rgba(5,6,8,.8)_48%,rgba(5,6,8,.3)_100%)] p-5 text-[#f1efe8] sm:p-8 lg:p-12">
+      <div className="flex items-center">
+        <Link
+          to="/"
+          className="group flex items-center gap-3 text-xs font-semibold text-white/60 transition-colors hover:text-white"
+        >
+          <ArrowLeft className="size-4 transition-transform group-hover:-translate-x-1" />
+          Portfolio
+        </Link>
+      </div>
+
       <div
         className={`mx-auto my-auto w-full ${
           isTouchPortrait
@@ -700,12 +709,6 @@ export default function StackTraceGame() {
       <div className="stack-trace-vignette pointer-events-none absolute inset-0 z-10" />
       <div className="stack-trace-scanlines pointer-events-none absolute inset-0 z-10" />
 
-      {/* Show the site nav outside the game, but not while playing. */}
-      {screen.status !== 'playing' && (
-        <div className="stack-trace-nav">
-          <SiteHeader />
-        </div>
-      )}
       {screen.status === 'briefing' && (
         <MissionBriefing
           ready={ready}
