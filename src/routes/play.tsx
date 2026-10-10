@@ -79,15 +79,13 @@ function PlayPage() {
           className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end"
         >
           <div>
-            <p className="st-display text-foreground/55 text-sm font-semibold tracking-[0.3em] uppercase">
-              A browser game
-            </p>
-            <h1 className="st-display mt-3 text-7xl leading-none font-bold italic sm:text-8xl lg:text-9xl">
+            <h1 className="st-display text-7xl leading-none font-bold italic sm:text-8xl lg:text-9xl">
               Averno
             </h1>
             <p className="text-foreground/65 mt-6 max-w-2xl text-base leading-7 lg:text-lg lg:leading-8">
-              Fly a mining ship down through a dead colony, destroy its three
-              reactors, and climb back out before each one blows.
+              A free 3D shooter that you play in your browser. Fly a mining ship
+              in any direction through the tunnels of a dead colony, destroy its
+              three reactors, and escape before each one blows.
             </p>
           </div>
           <PlayLink className="justify-self-start" />
