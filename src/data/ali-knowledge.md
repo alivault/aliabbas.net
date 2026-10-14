@@ -206,6 +206,7 @@ Stripe billing support accounts and paid room entitlements.
 
 ### Pico — local-first developer tool (2026)
 
+- Website: https://pico.aliabbas.net
 - GitHub: https://github.com/alivault/pico
 - Package: https://www.npmjs.com/package/@alivault/pico
 - Run the browser workspace with `npx @alivault/pico`.

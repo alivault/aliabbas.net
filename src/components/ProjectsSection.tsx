@@ -4,7 +4,7 @@ import SectionHeading from './SectionHeading'
 
 const projects = [
   {
-    href: 'https://github.com/alivault/pico',
+    href: 'https://pico.aliabbas.net/',
     title: 'Pico',
     description:
       'A local, keyboard-friendly browser workspace for Pi coding-agent sessions.',
