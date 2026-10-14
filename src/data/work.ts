@@ -26,15 +26,15 @@ export const recentWork = [
   },
   {
     title: 'Pico',
-    category: 'Native developer tool',
+    category: 'Developer tool · AI agents',
     description:
       'A fast, keyboard-first browser workspace designed around local Pi coding-agent sessions.',
     contribution:
-      'Product concept, interface design, native development, and local-first architecture.',
+      'Product concept, interface design, full-stack development, and local-first architecture.',
     href: 'https://pico.aliabbas.net/',
     image: '/pico.svg',
     year: '2026',
-    tools: ['Swift', 'WebKit', 'Local-first'],
+    tools: ['React', 'Node.js', 'Local-first'],
     visual: 'pico',
   },
   {

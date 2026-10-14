@@ -209,7 +209,8 @@ Stripe billing support accounts and paid room entitlements.
 - Website: https://pico.aliabbas.net
 - GitHub: https://github.com/alivault/pico
 - Package: https://www.npmjs.com/package/@alivault/pico
-- Run the browser workspace with `npx @alivault/pico`.
+- Install with `npm install -g @alivault/pico`, then run `pico-app`. Or try it
+  with `npx @alivault/pico`.
 - Pico is open source under the AGPL-3.0 license.
 
 Pico is a fast, keyboard-first workspace for local Pi coding-agent sessions. It
@@ -219,10 +220,18 @@ instructions, and concurrent work understandable and controllable.
 
 The Pico server runs on the developer's machine, loads the Pi SDK, works with
 local project files, executes Git operations, and lets the SDK manage model
-provider credentials. Browser and native clients connect to this local runtime.
-The browser app uses TanStack Start, React, and TypeScript. Native macOS and iOS
-clients use SwiftUI. HTTP/JSON and Server-Sent Events provide shared contracts
-and live updates across clients.
+provider credentials. One Node server hosts the agent runtime and serves the
+React web app, which also works on phones. The web app uses React, TypeScript,
+TanStack Router, and Tailwind CSS. HTTP/JSON and Server-Sent Events provide the
+API and live updates. Earlier versions also had native macOS and iOS clients in
+SwiftUI; Pico is now web-only.
+
+Sessions are durable. They live in one SQLite database, runs continue after a
+crash or restart, and tools with side effects do not run twice. Pico adds agent
+tools such as todo lists, questions to the user, charts and diagrams, timers,
+background jobs, child sessions in Git worktrees, LSP, browser automation,
+memory, web access, and MCP. Tool profiles limit what the agent can do, and Web
+Push or ntfy notifications report when a run ends.
 
 Pico can organize active and historical sessions by project; show files, diffs,
 branches, commits, repository status, and unpushed work; queue or steer prompts;
@@ -363,7 +372,8 @@ variables are intentionally consumed outside the shell file.
   platforms, interaction systems, wallet flows, responsive engineering, and
   motion direction.
 - Pico demonstrates self-directed product strategy plus browser, server,
-  realtime streaming, Git, local-first, TypeScript, and native SwiftUI work.
+  realtime streaming, Git, local-first, TypeScript, and durable agent runtime
+  work.
 - Whimcall demonstrates product strategy, visual design, WebRTC media systems,
   realtime Cloudflare infrastructure, authentication, billing, and production
   full-stack delivery.
