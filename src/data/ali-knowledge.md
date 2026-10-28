@@ -263,6 +263,32 @@ Ali's stated lessons from Pico include:
 - Shared behavioral contracts can support distinct browser, macOS, and iOS
   experiences without forcing identical interfaces.
 
+### aliabbas.net — this portfolio as working samples (2026)
+
+Ali's portfolio contains working samples of streaming and verification
+interfaces:
+
+- The chat at https://aliabbas.net/chat streams answers with inline
+  citations. The server checks each citation against these sources before it
+  sends it. Answers can be stopped, retried, and edited and sent again, and a
+  resizable, collapsible evidence panel (a drawer on phones) shows the cited
+  sources.
+- The claim checker at https://aliabbas.net/check splits a claim about Ali
+  into parts and grades each part as verified, partly verified, not
+  supported, contradicted, or unknown. Each grade quotes the record, and the
+  server checks every quote word for word.
+- The lab at https://aliabbas.net/lab shows the interface primitives (a
+  streamed answer, a citation drawer, a resizer, and a transition that keeps
+  state) with controls that force each state, and a reduced-motion switch.
+- Case studies at https://aliabbas.net/work/pico and
+  https://aliabbas.net/work/whimcall describe Pico and Whimcall as state
+  machines, with the failure modes each one handles.
+- https://aliabbas.net/performance shows Core Web Vitals from real visits and
+  lab measurements. Measuring them showed that the page entrance animations
+  kept content hidden until JavaScript loaded. Ali moved the entrances to CSS,
+  and the Largest Contentful Paint of the chat page went from 4.4 s to 3.5 s
+  in Lighthouse's mobile test.
+
 ### Chromagine — creative color tool (2025)
 
 Live project: https://chromagine.aliabbas.net/
