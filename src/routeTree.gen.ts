@@ -14,6 +14,7 @@ import { Route as ArticlesRouteImport } from './routes/articles'
 import { Route as ChatRouteImport } from './routes/chat'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ExperienceRouteImport } from './routes/experience'
+import { Route as LabRouteImport } from './routes/lab'
 import { Route as NotesRouteImport } from './routes/notes'
 import { Route as PlayRouteImport } from './routes/play'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -50,6 +51,11 @@ const ContactRoute = ContactRouteImport.update({
 const ExperienceRoute = ExperienceRouteImport.update({
   id: '/experience',
   path: '/experience',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LabRoute = LabRouteImport.update({
+  id: '/lab',
+  path: '/lab',
   getParentRoute: () => rootRouteImport,
 } as any)
 const NotesRoute = NotesRouteImport.update({
@@ -119,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/chat': typeof ChatRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
+  '/lab': typeof LabRoute
   '/notes': typeof NotesRoute
   '/play': typeof PlayRoute
   '/privacy': typeof PrivacyRoute
@@ -138,6 +145,7 @@ export interface FileRoutesByTo {
   '/chat': typeof ChatRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
+  '/lab': typeof LabRoute
   '/notes': typeof NotesRoute
   '/play': typeof PlayRoute
   '/privacy': typeof PrivacyRoute
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/chat': typeof ChatRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
+  '/lab': typeof LabRoute
   '/notes': typeof NotesRoute
   '/play': typeof PlayRoute
   '/privacy': typeof PrivacyRoute
@@ -179,6 +188,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/contact'
     | '/experience'
+    | '/lab'
     | '/notes'
     | '/play'
     | '/privacy'
@@ -198,6 +208,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/contact'
     | '/experience'
+    | '/lab'
     | '/notes'
     | '/play'
     | '/privacy'
@@ -217,6 +228,7 @@ export interface FileRouteTypes {
     | '/chat'
     | '/contact'
     | '/experience'
+    | '/lab'
     | '/notes'
     | '/play'
     | '/privacy'
@@ -237,6 +249,7 @@ export interface RootRouteChildren {
   ChatRoute: typeof ChatRoute
   ContactRoute: typeof ContactRoute
   ExperienceRoute: typeof ExperienceRoute
+  LabRoute: typeof LabRoute
   NotesRoute: typeof NotesRoute
   PlayRoute: typeof PlayRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -286,6 +299,13 @@ declare module '@tanstack/react-router' {
       path: '/experience'
       fullPath: '/experience'
       preLoaderRoute: typeof ExperienceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lab': {
+      id: '/lab'
+      path: '/lab'
+      fullPath: '/lab'
+      preLoaderRoute: typeof LabRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/notes': {
@@ -381,6 +401,7 @@ const rootRouteChildren: RootRouteChildren = {
   ChatRoute: ChatRoute,
   ContactRoute: ContactRoute,
   ExperienceRoute: ExperienceRoute,
+  LabRoute: LabRoute,
   NotesRoute: NotesRoute,
   PlayRoute: PlayRoute,
   PrivacyRoute: PrivacyRoute,
