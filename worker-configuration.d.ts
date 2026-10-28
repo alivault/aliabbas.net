@@ -4,6 +4,7 @@
 interface __BaseEnv_Env {
   CHAT_DB: D1Database
   CHAT_RATE_LIMITER: RateLimit
+  VITALS_RATE_LIMITER: RateLimit
   AI: Ai
   RESEND_API_KEY: string
   SITE_URL: string

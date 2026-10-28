@@ -18,6 +18,7 @@
     "@convex-dev/react-query": "^0.1.0",
     "@fontsource-variable/dm-sans": "^5.3.0",
     "@fontsource/chakra-petch": "^5.3.0",
+    "@fontsource/jetbrains-mono": "^5.3.0",
     "@hookform/resolvers": "^5.4.2",
     "@portabletext/react": "^7.0.1",
     "@sanity/client": "^7.25.0",
@@ -46,6 +47,7 @@
     "shadcn": "^4.19.0",
     "three": "^0.185.1",
     "vite": "catalog:",
+    "web-vitals": "^6.2.3",
     "zod": "^4.4.3"
   },
   "devDependencies": {

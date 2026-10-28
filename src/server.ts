@@ -1,5 +1,6 @@
 import handler from '@tanstack/react-start/server-entry'
 import { purgeExpiredConversations } from '~/lib/chat-storage'
+import { purgeExpiredVitals } from '~/lib/vitals-storage'
 
 const CANONICAL_HOST = 'aliabbas.net'
 const REDIRECT_HOSTS = new Set(['aliabbas.dev', 'www.aliabbas.dev'])
@@ -17,5 +18,6 @@ export default {
   },
   scheduled(_event: ScheduledController, env: Env, context: ExecutionContext) {
     context.waitUntil(purgeExpiredConversations(env.CHAT_DB))
+    context.waitUntil(purgeExpiredVitals(env.CHAT_DB))
   },
 }

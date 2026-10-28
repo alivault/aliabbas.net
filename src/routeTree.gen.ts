@@ -16,6 +16,7 @@ import { Route as CheckRouteImport } from './routes/check'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ExperienceRouteImport } from './routes/experience'
 import { Route as NotesRouteImport } from './routes/notes'
+import { Route as PerformanceRouteImport } from './routes/performance'
 import { Route as PlayRouteImport } from './routes/play'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -24,6 +25,7 @@ import { Route as WorkRouteImport } from './routes/work'
 import { Route as AdminConversationsRouteImport } from './routes/admin.conversations'
 import { Route as ApiChatRouteImport } from './routes/api.chat'
 import { Route as ApiCheckRouteImport } from './routes/api.check'
+import { Route as ApiVitalsRouteImport } from './routes/api.vitals'
 import { Route as ArticleSlugRouteImport } from './routes/article.$slug'
 import { Route as NotesSlugRouteImport } from './routes/notes_.$slug'
 import { Route as ApiAdminConversationsRouteImport } from './routes/api.admin.conversations'
@@ -62,6 +64,11 @@ const ExperienceRoute = ExperienceRouteImport.update({
 const NotesRoute = NotesRouteImport.update({
   id: '/notes',
   path: '/notes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerformanceRoute = PerformanceRouteImport.update({
+  id: '/performance',
+  path: '/performance',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PlayRoute = PlayRouteImport.update({
@@ -104,6 +111,11 @@ const ApiCheckRoute = ApiCheckRouteImport.update({
   path: '/api/check',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiVitalsRoute = ApiVitalsRouteImport.update({
+  id: '/api/vitals',
+  path: '/api/vitals',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ArticleSlugRoute = ArticleSlugRouteImport.update({
   id: '/article/$slug',
   path: '/article/$slug',
@@ -133,6 +145,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
   '/notes': typeof NotesRoute
+  '/performance': typeof PerformanceRoute
   '/play': typeof PlayRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -141,6 +154,7 @@ export interface FileRoutesByFullPath {
   '/admin/conversations': typeof AdminConversationsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/check': typeof ApiCheckRoute
+  '/api/vitals': typeof ApiVitalsRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/api/admin/conversations': typeof ApiAdminConversationsRoute
@@ -154,6 +168,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
   '/notes': typeof NotesRoute
+  '/performance': typeof PerformanceRoute
   '/play': typeof PlayRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -162,6 +177,7 @@ export interface FileRoutesByTo {
   '/admin/conversations': typeof AdminConversationsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/check': typeof ApiCheckRoute
+  '/api/vitals': typeof ApiVitalsRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/api/admin/conversations': typeof ApiAdminConversationsRoute
@@ -176,6 +192,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
   '/notes': typeof NotesRoute
+  '/performance': typeof PerformanceRoute
   '/play': typeof PlayRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -184,6 +201,7 @@ export interface FileRoutesById {
   '/admin/conversations': typeof AdminConversationsRoute
   '/api/chat': typeof ApiChatRoute
   '/api/check': typeof ApiCheckRoute
+  '/api/vitals': typeof ApiVitalsRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/notes_/$slug': typeof NotesSlugRoute
   '/api/admin/conversations': typeof ApiAdminConversationsRoute
@@ -199,6 +217,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/experience'
     | '/notes'
+    | '/performance'
     | '/play'
     | '/privacy'
     | '/reset-password'
@@ -207,6 +226,7 @@ export interface FileRouteTypes {
     | '/admin/conversations'
     | '/api/chat'
     | '/api/check'
+    | '/api/vitals'
     | '/article/$slug'
     | '/notes/$slug'
     | '/api/admin/conversations'
@@ -220,6 +240,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/experience'
     | '/notes'
+    | '/performance'
     | '/play'
     | '/privacy'
     | '/reset-password'
@@ -228,6 +249,7 @@ export interface FileRouteTypes {
     | '/admin/conversations'
     | '/api/chat'
     | '/api/check'
+    | '/api/vitals'
     | '/article/$slug'
     | '/notes/$slug'
     | '/api/admin/conversations'
@@ -241,6 +263,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/experience'
     | '/notes'
+    | '/performance'
     | '/play'
     | '/privacy'
     | '/reset-password'
@@ -249,6 +272,7 @@ export interface FileRouteTypes {
     | '/admin/conversations'
     | '/api/chat'
     | '/api/check'
+    | '/api/vitals'
     | '/article/$slug'
     | '/notes_/$slug'
     | '/api/admin/conversations'
@@ -263,6 +287,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   ExperienceRoute: typeof ExperienceRoute
   NotesRoute: typeof NotesRoute
+  PerformanceRoute: typeof PerformanceRoute
   PlayRoute: typeof PlayRoute
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -271,6 +296,7 @@ export interface RootRouteChildren {
   AdminConversationsRoute: typeof AdminConversationsRoute
   ApiChatRoute: typeof ApiChatRoute
   ApiCheckRoute: typeof ApiCheckRoute
+  ApiVitalsRoute: typeof ApiVitalsRoute
   ArticleSlugRoute: typeof ArticleSlugRoute
   NotesSlugRoute: typeof NotesSlugRoute
   ApiAdminConversationsRoute: typeof ApiAdminConversationsRoute
@@ -326,6 +352,13 @@ declare module '@tanstack/react-router' {
       path: '/notes'
       fullPath: '/notes'
       preLoaderRoute: typeof NotesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/performance': {
+      id: '/performance'
+      path: '/performance'
+      fullPath: '/performance'
+      preLoaderRoute: typeof PerformanceRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/play': {
@@ -384,6 +417,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiCheckRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/vitals': {
+      id: '/api/vitals'
+      path: '/api/vitals'
+      fullPath: '/api/vitals'
+      preLoaderRoute: typeof ApiVitalsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/article/$slug': {
       id: '/article/$slug'
       path: '/article/$slug'
@@ -423,6 +463,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   ExperienceRoute: ExperienceRoute,
   NotesRoute: NotesRoute,
+  PerformanceRoute: PerformanceRoute,
   PlayRoute: PlayRoute,
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
@@ -431,6 +472,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminConversationsRoute: AdminConversationsRoute,
   ApiChatRoute: ApiChatRoute,
   ApiCheckRoute: ApiCheckRoute,
+  ApiVitalsRoute: ApiVitalsRoute,
   ArticleSlugRoute: ArticleSlugRoute,
   NotesSlugRoute: NotesSlugRoute,
   ApiAdminConversationsRoute: ApiAdminConversationsRoute,

@@ -2,6 +2,8 @@
 @import 'shadcn/tailwind.css';
 @import 'tw-animate-css';
 @import '@fontsource-variable/dm-sans';
+@import '@fontsource/jetbrains-mono/latin-400.css';
+@import '@fontsource/jetbrains-mono/latin-500.css';
 
 @plugin '@tailwindcss/typography';
 
@@ -396,5 +398,85 @@ textarea {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+}
+
+/*
+  Entrance animations in CSS, not in JavaScript. The server sends the page
+  visible, and these start at the first paint. A JavaScript entrance would
+  send the content at opacity 0 and keep it hidden until hydration, which
+  delays the Largest Contentful Paint by seconds on a slow phone. Set the
+  delay with --enter-delay.
+*/
+@keyframes enter-up {
+  from {
+    opacity: 0;
+    translate: 0 var(--enter-distance, 10px);
+  }
+}
+
+@keyframes enter-blur {
+  from {
+    opacity: 0;
+    translate: 0 14px;
+    filter: blur(10px);
+  }
+}
+
+/* For elements that Tailwind places with translate (centered). */
+@keyframes enter-zoom {
+  from {
+    opacity: 0;
+    scale: 0.88;
+  }
+}
+
+@keyframes enter-pop {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+    scale: 0.9;
+    filter: blur(8px);
+  }
+}
+
+.enter-up,
+.enter-blur,
+.enter-pop,
+.enter-zoom {
+  animation-delay: var(--enter-delay, 0ms);
+  animation-fill-mode: both;
+}
+
+.enter-up {
+  animation-name: enter-up;
+  animation-duration: var(--enter-duration, 550ms);
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.enter-blur {
+  animation-name: enter-blur;
+  animation-duration: 550ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.enter-pop {
+  animation-name: enter-pop;
+  animation-duration: 420ms;
+  animation-timing-function: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.enter-zoom {
+  animation-name: enter-zoom;
+  animation-duration: 750ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enter-up,
+  .enter-blur,
+  .enter-pop,
+  .enter-zoom {
+    animation: none;
   }
 }

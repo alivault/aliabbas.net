@@ -24,6 +24,14 @@
         "period": 60,
       },
     },
+    {
+      "name": "VITALS_RATE_LIMITER",
+      "namespace_id": "2026032602",
+      "simple": {
+        "limit": 30,
+        "period": 60,
+      },
+    },
   ],
   "triggers": {
     "crons": ["17 * * * *"],

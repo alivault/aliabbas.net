@@ -1,11 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { ArrowDown, Pause, Play } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
-import type { Variants } from 'motion/react'
 import PageHeading from '~/components/PageHeading'
 import ConnectedGlobe from './ConnectedGlobe'
-
-const MotionPageHeading = motion.create(PageHeading)
 
 const productDescriptors = [
   'interactive',
@@ -35,106 +33,46 @@ function scrambleWord(word: string, revealedCharacters: number) {
   }).join('')
 }
 
-const introContainerVariants: Variants = {
-  hidden: {},
-  visible: {
-    transition: {
-      delayChildren: 0.12,
-      staggerChildren: 0.09,
-    },
-  },
+// The intro is CSS (.enter-blur in globals.css), so the server-rendered
+// heading paints at once and does not wait for hydration. Delays in ms.
+const INTRO_START = 120
+const LINE_STAGGER = 500
+const CHARACTER_STAGGER = 25
+const ARROW_DELAY = 210
+
+function enterDelay(ms: number) {
+  return { '--enter-delay': `${ms}ms` } as CSSProperties
 }
 
-const introItemVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    y: 18,
-    filter: 'blur(12px)',
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: {
-      duration: 0.7,
-      ease: [0.22, 1, 0.36, 1],
-    },
-  },
-}
-
-const titleVariants: Variants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.5,
-    },
-  },
-}
-
-const titleLineVariants: Variants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.025,
-    },
-  },
-}
-
-const titleCharacterVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    y: 14,
-    filter: 'blur(10px)',
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: {
-      duration: 0.55,
-      ease: [0.22, 1, 0.36, 1],
-    },
-  },
-}
-
-const titleWordVariants: Variants = {
-  hidden: {
-    opacity: 0,
-    y: 14,
-    filter: 'blur(10px)',
-  },
-  visible: {
-    opacity: 1,
-    y: 0,
-    filter: 'blur(0px)',
-    transition: {
-      duration: 0.55,
-      ease: [0.22, 1, 0.36, 1],
-    },
-  },
-}
-
-function TitleCharacters({ text }: { text: string }) {
+function TitleCharacters({ text, delay }: { text: string; delay: number }) {
   return Array.from(text).map((character, index) => (
-    <motion.span
+    <span
       key={`${character}-${index}`}
-      variants={titleCharacterVariants}
-      className="inline-block"
+      className="enter-blur inline-block"
+      style={enterDelay(delay + index * CHARACTER_STAGGER)}
       aria-hidden="true"
     >
       {character === ' ' ? '\u00a0' : character}
-    </motion.span>
+    </span>
   ))
 }
 
 // Screen readers do not reliably read aria-label on a plain span, so the
 // line has real, visually hidden text. The animated letters are hidden.
-function TitleLine({ text, className }: { text: string; className: string }) {
+function TitleLine({
+  className,
+  delay,
+  text,
+}: {
+  className: string
+  delay: number
+  text: string
+}) {
   return (
-    <motion.span variants={titleLineVariants} className={className}>
+    <span className={className}>
       <span className="sr-only">{text}</span>
-      <TitleCharacters text={text} />
-    </motion.span>
+      <TitleCharacters text={text} delay={delay} />
+    </span>
   )
 }
 
@@ -218,25 +156,17 @@ export function HomeHero() {
   return (
     <section className="site-noise bg-background text-foreground relative flex flex-1 overflow-hidden pt-[72px]">
       <ConnectedGlobe />
-      <motion.div
-        initial={reduceMotion ? false : 'hidden'}
-        animate="visible"
-        variants={introContainerVariants}
-        className="pointer-events-none relative z-10 mx-auto flex w-full max-w-[1600px] flex-col px-5 pt-9 pb-7 sm:px-8 sm:pt-14 lg:px-12 lg:pt-16"
-      >
+      <div className="pointer-events-none relative z-10 mx-auto flex w-full max-w-[1600px] flex-col px-5 pt-9 pb-7 sm:px-8 sm:pt-14 lg:px-12 lg:pt-16">
         <div className="flex flex-1 items-center justify-center text-center sm:mt-auto sm:flex-none lg:justify-start lg:text-left">
-          <MotionPageHeading
-            size="hero"
-            variants={titleVariants}
-            className="w-fit max-w-full"
-          >
+          <PageHeading size="hero" className="w-fit max-w-full">
             <TitleLine
               text="I design and build"
+              delay={INTRO_START}
               className="block whitespace-nowrap"
             />
             <motion.button
               type="button"
-              variants={titleWordVariants}
+              style={enterDelay(INTRO_START + LINE_STAGGER)}
               onClick={changeDescriptor}
               onPointerEnter={() => setInteracting(true)}
               onPointerLeave={() => setInteracting(false)}
@@ -244,7 +174,7 @@ export function HomeHero() {
               onBlur={() => setInteracting(false)}
               whileHover={reduceMotion ? undefined : { scale: 1.015 }}
               whileTap={reduceMotion ? undefined : { scale: 0.985 }}
-              className="text-brand focus-visible:ring-brand/70 pointer-events-auto inline-block cursor-pointer border-0 bg-transparent p-0 text-center normal-case outline-none focus-visible:ring-2 lg:text-left"
+              className="enter-blur text-brand focus-visible:ring-brand/70 pointer-events-auto inline-block cursor-pointer border-0 bg-transparent p-0 text-center normal-case outline-none focus-visible:ring-2 lg:text-left"
               // The name is only the word, so the heading reads as one
               // sentence. The title tells what a press does.
               aria-label={currentDescriptor}
@@ -268,41 +198,42 @@ export function HomeHero() {
             </motion.button>
             <TitleLine
               text="digital products."
+              delay={INTRO_START + LINE_STAGGER * 2}
               className="block whitespace-nowrap"
             />
-          </MotionPageHeading>
+          </PageHeading>
         </div>
 
         <div className="relative flex justify-center pt-5 sm:mt-auto">
           {!reduceMotion && (
-            <motion.button
+            <button
               type="button"
-              variants={introItemVariants}
+              style={enterDelay(ARROW_DELAY)}
               onClick={() => setPaused((value) => !value)}
               aria-pressed={paused}
               aria-label="Pause the changing word"
               title={
                 paused ? 'Play the changing word' : 'Pause the changing word'
               }
-              className="border-foreground/20 text-foreground/55 hover:text-foreground focus-visible:ring-brand/70 pointer-events-auto absolute bottom-2 left-0 flex size-10 items-center justify-center rounded-full border outline-none focus-visible:ring-2"
+              className="enter-blur border-foreground/20 text-foreground/55 hover:text-foreground focus-visible:ring-brand/70 pointer-events-auto absolute bottom-2 left-0 flex size-10 items-center justify-center rounded-full border outline-none focus-visible:ring-2"
             >
               {paused ? (
                 <Play aria-hidden="true" className="size-4" />
               ) : (
                 <Pause aria-hidden="true" className="size-4" />
               )}
-            </motion.button>
+            </button>
           )}
-          <motion.a
-            variants={introItemVariants}
+          <a
             href="#stack-marquee"
-            className="border-foreground/25 hover:bg-brand hover:text-brand-foreground pointer-events-auto mx-auto flex size-14 items-center justify-center rounded-full border transition-colors"
+            style={enterDelay(ARROW_DELAY)}
+            className="enter-blur border-foreground/25 hover:bg-brand hover:text-brand-foreground pointer-events-auto mx-auto flex size-14 items-center justify-center rounded-full border transition-colors"
             aria-label="View technology stack"
           >
             <ArrowDown className="size-5" />
-          </motion.a>
+          </a>
         </div>
-      </motion.div>
+      </div>
     </section>
   )
 }

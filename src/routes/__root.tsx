@@ -11,6 +11,7 @@ import type { ConvexQueryClient } from '@convex-dev/react-query'
 import type { QueryClient } from '@tanstack/react-query'
 import type { ConvexReactClient } from 'convex/react'
 import Devtools from '~/components/Devtools'
+import VitalsReporter from '~/components/VitalsReporter'
 import { sessionQueryOptions } from '~/lib/auth'
 import { authClient } from '~/lib/auth-client'
 import '../styles/globals.css'
@@ -45,22 +46,7 @@ export const Route = createRootRouteWithContext<{
           'Senior frontend engineer for interactive and streaming interfaces: state machines, motion, design systems, performance and accessibility.',
       },
     ],
-    links: [
-      { rel: 'icon', href: '/icon.png' },
-      {
-        rel: 'preconnect',
-        href: 'https://fonts.googleapis.com',
-      },
-      {
-        rel: 'preconnect',
-        href: 'https://fonts.gstatic.com',
-        crossOrigin: 'anonymous',
-      },
-      {
-        rel: 'stylesheet',
-        href: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap',
-      },
-    ],
+    links: [{ rel: 'icon', href: '/icon.png' }],
   }),
   beforeLoad: async (ctx) => {
     // Use ensureQueryData to cache auth - prevents refetch on every navigation
@@ -93,6 +79,7 @@ function RootComponent() {
           initialToken={token}
         >
           <Outlet />
+          <VitalsReporter />
           <Devtools />
         </ConvexBetterAuthProvider>
         <Scripts />

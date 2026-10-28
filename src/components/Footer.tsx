@@ -63,6 +63,12 @@ export default function Footer() {
               Ask AI
             </Link>
             <Link
+              to="/performance"
+              className="hover:text-foreground transition-colors"
+            >
+              Performance
+            </Link>
+            <Link
               to="/privacy"
               className="hover:text-foreground transition-colors"
             >

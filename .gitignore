@@ -35,3 +35,5 @@ pnpm-debug.log*
 # wrangler / cloudflare
 .wrangler
 .dev.vars
+# TanStack router temp files
+.tanstack

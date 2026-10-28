@@ -50,7 +50,7 @@ function PrivacyPage() {
             <em className="text-brand block">policy.</em>
           </PageHeading>
           <MonoLabel as="div" className="mt-10 flex flex-wrap gap-x-8 gap-y-2">
-            <span>Effective August 7, 2026</span>
+            <span>Effective October 28, 2026</span>
             <span>Operator: Ali Abbas</span>
           </MonoLabel>
         </header>
@@ -113,6 +113,27 @@ function PrivacyPage() {
               you choose to publish.
             </p>
             <p>
+              The claim checker sends the claim you enter to Workers AI to grade
+              it. The site does not store claims; a claim appears in the page
+              address only so you can share a result.
+            </p>
+            <p>
+              To measure how fast pages load, each page load sends its Core Web
+              Vitals (load, response and layout-shift timings) once. The site
+              stores only the metric values, the route without its full address
+              (for example /notes/$slug), and whether the screen is mobile or
+              desktop size. It does not store an IP address, browser details or
+              any identifier, and it does not link measurements to a visitor.
+              The results are public on the{' '}
+              <Link
+                to="/performance"
+                className="text-foreground decoration-foreground/25 font-semibold underline underline-offset-4"
+              >
+                performance page
+              </Link>
+              .
+            </p>
+            <p>
               Hosting and security providers may generate limited technical
               logs, such as request times, network information, errors, and
               security events.
@@ -122,17 +143,17 @@ function PrivacyPage() {
           <PrivacySection number="04" title="Service providers">
             <p>
               Cloudflare provides hosting, security, approximate geolocation,
-              chatbot storage through D1, and AI inference through Workers AI.
-              Cloudflare states that Workers AI customer content is not used to
-              train models or improve its services without explicit consent.
+              chatbot and performance storage through D1, and AI inference
+              through Workers AI. Cloudflare states that Workers AI customer
+              content is not used to train models or improve its services
+              without explicit consent.
             </p>
             <p>
               Convex and Better Auth provide account, authentication, and
               comment infrastructure. Resend delivers contact, verification,
               password-reset, and comment-notification emails. GitHub processes
-              information if you choose GitHub sign-in. Google provides the web
-              fonts loaded by the site, and Sanity provides public portfolio
-              content and media.
+              information if you choose GitHub sign-in. Sanity provides public
+              portfolio content and media. The site serves its own fonts.
             </p>
             <p>
               These providers process information under their own terms and
@@ -145,7 +166,8 @@ function PrivacyPage() {
               Chat conversations and associated metadata are automatically
               deleted no later than 90 days after the last message. You may also
               delete the active conversation immediately using the trash button
-              in the chat header.
+              in the chat header. Performance measurements are deleted after 90
+              days.
             </p>
             <p>
               Contact messages are retained for as long as reasonably necessary

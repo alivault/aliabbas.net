@@ -5,7 +5,7 @@ import {
   useState,
   useSyncExternalStore,
 } from 'react'
-import type { KeyboardEvent } from 'react'
+import type { CSSProperties, KeyboardEvent } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import ModeSwitch from '~/components/check/ModeSwitch'
 import MonoLabel from '~/components/MonoLabel'
@@ -73,45 +73,20 @@ function SuggestedQuestionButtons({
   onSelect: (question: string) => void
   questions: ReadonlyArray<string>
 }) {
-  const reduceMotion = useReducedMotion()
-
+  // The entrance is CSS (.enter-pop), so the questions paint before
+  // hydration. They are the largest text in the first screen.
   return (
     <div className={className}>
       {questions.map((question, index) => (
-        <motion.button
+        <button
           key={question}
           type="button"
           onClick={() => onSelect(question)}
-          initial={
-            reduceMotion
-              ? false
-              : { opacity: 0, y: 8, scale: 0.9, filter: 'blur(8px)' }
-          }
-          animate={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-          transition={
-            reduceMotion
-              ? { duration: 0 }
-              : {
-                  opacity: { duration: 0.22, delay: index * 0.08 },
-                  filter: { duration: 0.3, delay: index * 0.08 },
-                  y: {
-                    type: 'spring',
-                    stiffness: 460,
-                    damping: 28,
-                    delay: index * 0.08,
-                  },
-                  scale: {
-                    type: 'spring',
-                    stiffness: 460,
-                    damping: 22,
-                    delay: index * 0.08,
-                  },
-                }
-          }
-          className="border-foreground/15 text-foreground/60 hover:border-brand/60 hover:text-brand focus-visible:ring-brand/70 max-w-full rounded-[21px] border px-4 py-2 text-left text-base transition-colors outline-none focus-visible:ring-2"
+          style={{ '--enter-delay': `${index * 80}ms` } as CSSProperties}
+          className="enter-pop border-foreground/15 text-foreground/60 hover:border-brand/60 hover:text-brand focus-visible:ring-brand/70 max-w-full rounded-[21px] border px-4 py-2 text-left text-base transition-colors outline-none focus-visible:ring-2"
         >
           {question}
-        </motion.button>
+        </button>
       ))}
     </div>
   )

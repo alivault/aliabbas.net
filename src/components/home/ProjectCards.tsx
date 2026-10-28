@@ -1,5 +1,6 @@
 import { ArrowUpRight } from 'lucide-react'
 import { motion } from 'motion/react'
+import ScrollReveal from '~/components/ScrollReveal'
 import MonoLabel from '~/components/MonoLabel'
 import Title from '~/components/Title'
 import type { WorkItem } from '~/data/work'
@@ -57,14 +58,10 @@ function ProjectVisual({ project }: { project: WorkItem }) {
           />
           <div className="absolute top-1/2 left-1/2 size-[58%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10" />
           <div className="absolute top-1/2 left-1/2 size-[44%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10" />
-          <motion.img
+          <img
             src={project.image}
             alt=""
-            initial={{ scale: 0.88, opacity: 0 }}
-            whileInView={{ scale: 1, opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-            className="absolute top-1/2 left-1/2 z-10 w-[34%] -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_24px_40px_rgba(50,60,255,0.38)] transition-transform duration-500 group-hover:scale-[1.06]"
+            className="enter-zoom absolute top-1/2 left-1/2 z-10 w-[34%] -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_24px_40px_rgba(50,60,255,0.38)] transition-transform duration-500 group-hover:scale-[1.06]"
           />
         </>
       )}
@@ -120,13 +117,7 @@ function ProjectVisual({ project }: { project: WorkItem }) {
 
 export function FeaturedProject({ project }: { project: WorkItem }) {
   return (
-    <motion.article
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-80px' }}
-      transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
-      className="flex flex-col gap-7"
-    >
+    <ScrollReveal as="article" className="flex flex-col gap-7">
       <a
         href={project.href}
         target="_blank"
@@ -160,6 +151,6 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
           ))}
         </div>
       </div>
-    </motion.article>
+    </ScrollReveal>
   )
 }
