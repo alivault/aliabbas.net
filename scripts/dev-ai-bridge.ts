@@ -12,7 +12,7 @@
  * Claude Code runs with no tools, no MCP servers, no settings and no saved
  * session, in an empty directory.
  *
- * Environment: DEV_AI_PORT (8790), DEV_AI_MODEL (sonnet).
+ * Environment: DEV_AI_PORT (8790), DEV_AI_MODEL (claude-haiku-5-5).
  */
 import { spawn } from 'node:child_process'
 import { mkdtempSync, writeFileSync } from 'node:fs'
@@ -23,7 +23,7 @@ import { join } from 'node:path'
 import { createInterface } from 'node:readline'
 
 const PORT = Number(process.env.DEV_AI_PORT ?? 8790)
-const MODEL = process.env.DEV_AI_MODEL ?? 'sonnet'
+const MODEL = process.env.DEV_AI_MODEL ?? 'claude-haiku-5-5'
 const WORK_DIR = mkdtempSync(join(tmpdir(), 'dev-ai-bridge-'))
 
 type Message = { role: 'system' | 'user' | 'assistant'; content: string }
