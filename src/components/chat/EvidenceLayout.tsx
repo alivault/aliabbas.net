@@ -1,3 +1,4 @@
+import { useRef } from 'react'
 import type {
   CSSProperties,
   KeyboardEventHandler,
@@ -57,6 +58,8 @@ export default function EvidenceLayout({
   groupElementRef,
   onCollapsedChange,
   onEvidenceKeyDown,
+  onToggle,
+  openWidthRef,
   panelRef,
   rail,
   showEvidence,
@@ -68,10 +71,18 @@ export default function EvidenceLayout({
   groupElementRef: RefObject<HTMLDivElement | null>
   onCollapsedChange: (collapsed: boolean) => void
   onEvidenceKeyDown: KeyboardEventHandler<HTMLElement>
+  /** Open or collapse the panel, for a click on the handle. */
+  onToggle: () => void
+  /** The last width of the open panel, so it opens again at that width. */
+  openWidthRef: RefObject<number | null>
   panelRef: RefObject<PanelImperativeHandle | null>
   rail: ReactNode
   showEvidence: boolean
 }) {
+  // A click on the handle toggles the panel. A drag resizes it. The
+  // distance between press and release tells the two apart.
+  const pressRef = useRef<{ x: number; y: number } | null>(null)
+
   const { defaultLayout, onLayoutChanged } = useDefaultLayout({
     id: 'ask-ali-evidence-layout',
     panelIds: showEvidence ? ['conversation', 'evidence'] : ['conversation'],
@@ -82,7 +93,16 @@ export default function EvidenceLayout({
     <ResizablePanelGroup
       orientation="horizontal"
       defaultLayout={defaultLayout}
-      onLayoutChanged={onLayoutChanged}
+      onLayoutChanged={(layout, meta) => {
+        onLayoutChanged(layout, meta)
+        // The final layout after a drag, key press or toggle. Sizes
+        // measured during a drag or the spring are not final.
+        const percent = layout.evidence
+        const groupWidth = groupElementRef.current?.clientWidth
+        if (percent === undefined || !groupWidth) return
+        const width = (percent / 100) * groupWidth
+        if (width > EVIDENCE_COLLAPSED_PX + 1) openWidthRef.current = width
+      }}
       elementRef={groupElementRef}
       style={{ '--panel-spring': PANEL_SPRING } as CSSProperties}
       className="min-h-0 [&[data-animating]>[data-panel]]:[transition:flex-grow_var(--panel-spring)]"
@@ -99,6 +119,24 @@ export default function EvidenceLayout({
           <ResizableHandle
             withHandle
             aria-label="Resize the evidence panel"
+            title={
+              collapsed
+                ? 'Drag to resize · Click to open'
+                : 'Drag to resize · Click to collapse'
+            }
+            onPointerDown={(event) => {
+              pressRef.current = { x: event.clientX, y: event.clientY }
+            }}
+            onClick={(event) => {
+              const press = pressRef.current
+              pressRef.current = null
+              if (
+                press &&
+                Math.hypot(event.clientX - press.x, event.clientY - press.y) < 4
+              ) {
+                onToggle()
+              }
+            }}
             className="bg-foreground/10 data-[separator=active]:bg-brand data-[separator=hover]:bg-brand/50 [&>div]:bg-foreground/20 transition-colors"
           />
           <ResizablePanel

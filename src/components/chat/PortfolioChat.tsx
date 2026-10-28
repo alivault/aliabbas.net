@@ -189,6 +189,7 @@ export default function PortfolioChat() {
   const panelRef = usePanelRef()
   const groupElementRef = useRef<HTMLDivElement | null>(null)
   const animationTimerRef = useRef(0)
+  const openWidthRef = useRef<number | null>(null)
 
   const lastTurn = turns.at(-1)
   const evidenceTurn =
@@ -231,7 +232,11 @@ export default function PortfolioChat() {
         }, PANEL_SPRING_MS + 50)
       }
       setCollapsed(!open)
-      if (open) panel.expand()
+      // Open at the last width. After a drag to collapse, expand() alone
+      // would open at the minimum width.
+      const width = openWidthRef.current
+      if (open && width) panel.resize(`${Math.round(width)}px`)
+      else if (open) panel.expand()
       else panel.collapse()
     },
     [panelRef, reduceMotion],
@@ -315,6 +320,10 @@ export default function PortfolioChat() {
     setPanelOpen(true)
     requestFocus({ kind: 'heading' })
   }, [setPanelOpen, requestFocus])
+
+  const handleToggleFromHandle = useCallback(() => {
+    setPanelOpen(collapsed)
+  }, [collapsed, setPanelOpen])
 
   const handleShowLatest = useCallback(() => {
     setEvidenceTurnId(null)
@@ -535,6 +544,8 @@ export default function PortfolioChat() {
           collapsed={collapsed}
           onCollapsedChange={setCollapsed}
           onEvidenceKeyDown={handleEvidenceKeyDown}
+          onToggle={handleToggleFromHandle}
+          openWidthRef={openWidthRef}
           panelRef={panelRef}
           groupElementRef={groupElementRef}
           evidenceId={EVIDENCE_ID}
