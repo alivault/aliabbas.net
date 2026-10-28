@@ -9,6 +9,7 @@ import type { CSSProperties, KeyboardEvent } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import MonoLabel from '~/components/MonoLabel'
 import { usePanelActive } from '~/components/assistant/panel-active'
+import { revealSource } from '~/lib/chat/reveal-source'
 import PageHeading from '~/components/PageHeading'
 import {
   MessageScroller,
@@ -129,7 +130,9 @@ function focusWhenReady(find: () => HTMLElement | null, scroll: boolean) {
     const element = find()
     if (element) {
       element.focus({ preventScroll: true })
-      if (scroll) element.scrollIntoView({ block: 'nearest' })
+      // Wait one frame more: the card that was active collapses and this
+      // one opens in the same commit.
+      if (scroll) requestAnimationFrame(() => revealSource(element))
       return
     }
     tries += 1

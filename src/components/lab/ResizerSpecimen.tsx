@@ -14,6 +14,7 @@ import Specimen from './Specimen'
 import { useIsDesktop } from './use-is-desktop'
 import { useLabStream } from './use-lab-stream'
 import { usePanelRef } from 'react-resizable-panels'
+import { revealSource } from '~/lib/chat/reveal-source'
 
 const ID = 'fluid-resizer'
 const PREFIX = 'lab-aside'
@@ -90,7 +91,7 @@ export default function ResizerSpecimen() {
       if (element) {
         element.focus({ preventScroll: true })
         if (typeof target === 'object') {
-          element.scrollIntoView({ block: 'nearest' })
+          requestAnimationFrame(() => revealSource(element))
         }
         return
       }
