@@ -13,7 +13,7 @@ export default function Main({
   hideFooterOnMobile?: boolean
 }) {
   return (
-    <div className="bg-background text-foreground min-h-svh overflow-x-hidden">
+    <div className="bg-background text-foreground min-h-svh overflow-x-clip">
       <SiteHeader />
       <PageAnimation>
         <main className="min-h-[70svh] [&>:first-child]:border-t-[72px] [&>:first-child]:border-t-transparent">
