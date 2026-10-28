@@ -1,6 +1,5 @@
 import { useId } from 'react'
 import type { ReactNode } from 'react'
-import MonoLabel from '~/components/MonoLabel'
 import ScrollReveal from '~/components/ScrollReveal'
 import Title from '~/components/Title'
 import { cn } from 'cn'
@@ -66,11 +65,12 @@ export default function Specimen({
         }}
       >
         <header className="space-y-4 lg:col-start-1 lg:row-start-1">
-          <MonoLabel tone="brand">{number}</MonoLabel>
-          <Title as="h2" variant="subsection" id={headingId}>
-            {title}
+          <Title as="h2" variant="card" id={headingId} className="text-balance">
+            <span className="text-brand tabular-nums">{number}.</span> {title}
           </Title>
-          <p className="text-foreground/55 text-sm leading-6">{description}</p>
+          <p className="text-foreground/60 text-base leading-7">
+            {description}
+          </p>
         </header>
         <div
           className={cn(
@@ -85,29 +85,25 @@ export default function Specimen({
         </div>
         <dl
           className={cn(
-            'text-foreground/55 text-sm leading-6',
+            'text-foreground/60 text-base leading-7',
             wide
               ? 'grid gap-4 sm:grid-cols-3 lg:col-start-2 lg:row-start-1 lg:self-end'
               : 'space-y-4 lg:col-start-1 lg:row-start-2',
           )}
         >
           <div>
-            <dt className="text-foreground/40 font-mono text-[11px] uppercase">
-              States
-            </dt>
-            <dd>{notes.states}</dd>
+            <dt className="text-foreground inline font-semibold">States. </dt>
+            <dd className="inline">{notes.states}</dd>
           </div>
           <div>
-            <dt className="text-foreground/40 font-mono text-[11px] uppercase">
-              Keyboard path
-            </dt>
-            <dd>{notes.keyboard}</dd>
+            <dt className="text-foreground inline font-semibold">Keyboard. </dt>
+            <dd className="inline">{notes.keyboard}</dd>
           </div>
           <div>
-            <dt className="text-foreground/40 font-mono text-[11px] uppercase">
-              What it proves
+            <dt className="text-foreground inline font-semibold">
+              What it proves.{' '}
             </dt>
-            <dd>{notes.proves}</dd>
+            <dd className="inline">{notes.proves}</dd>
           </div>
         </dl>
       </section>

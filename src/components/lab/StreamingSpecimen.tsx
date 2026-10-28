@@ -1,11 +1,11 @@
 import { useCallback, useState } from 'react'
 import { AnimatePresence, motion } from 'motion/react'
-import MonoLabel from '~/components/MonoLabel'
 import { cn } from 'cn'
 import LabAnswer from './LabAnswer'
 import { useLabMotion } from './lab-motion'
 import Specimen from './Specimen'
 import { useLabStream } from './use-lab-stream'
+import PathText from '~/components/PathText'
 
 const ID = 'streaming-list'
 
@@ -39,7 +39,7 @@ export default function StreamingSpecimen() {
   return (
     <Specimen
       id={ID}
-      number="01"
+      number="1"
       title="Streaming answer"
       stream={labStream}
       description="An answer that arrives token by token, with inline citations. It uses the chat's real renderer, citation filter and state machine. A local fake stream sends the tokens."
@@ -62,9 +62,9 @@ export default function StreamingSpecimen() {
           onRetry={stream.retry}
         />
         <div className="xl:border-foreground/10 xl:border-l xl:pl-6">
-          <MonoLabel as="p" id={`${ID}-sources-label`}>
+          <h3 id={`${ID}-sources-label`} className="text-base font-semibold">
             Sources, in order of first citation
-          </MonoLabel>
+          </h3>
           {turn && turn.sources.length > 0 ? (
             <ol
               aria-labelledby={`${ID}-sources-label`}
@@ -85,7 +85,7 @@ export default function StreamingSpecimen() {
                       onPointerEnter={() => setHoveredSourceId(source.id)}
                       onPointerLeave={() => setHoveredSourceId(null)}
                       className={cn(
-                        'focus-visible:ring-brand/70 flex gap-2 rounded-lg border p-2.5 text-xs leading-5 transition-colors outline-none focus-visible:ring-2',
+                        'focus-visible:ring-brand/70 flex gap-2.5 rounded-lg border p-3 text-sm leading-5 transition-colors outline-none focus-visible:ring-2',
                         activeSourceId === source.id
                           ? 'border-brand bg-brand/[0.06]'
                           : hoveredSourceId === source.id
@@ -95,7 +95,7 @@ export default function StreamingSpecimen() {
                     >
                       <span
                         aria-hidden="true"
-                        className="border-foreground/20 flex size-5 shrink-0 items-center justify-center rounded-full border font-mono text-[10px] tabular-nums"
+                        className="border-foreground/20 flex size-6 shrink-0 items-center justify-center rounded-full border text-sm tabular-nums"
                       >
                         {index + 1}
                       </span>
@@ -104,8 +104,8 @@ export default function StreamingSpecimen() {
                         <span className="text-foreground block font-semibold">
                           {source.title}
                         </span>
-                        <span className="text-foreground/45 block font-mono text-[10px] break-all">
-                          {source.group}
+                        <span className="text-foreground/55 mt-0.5 block font-mono text-sm [overflow-wrap:anywhere]">
+                          <PathText path={source.group ?? ''} />
                         </span>
                       </span>
                     </p>
@@ -114,7 +114,7 @@ export default function StreamingSpecimen() {
               </AnimatePresence>
             </ol>
           ) : (
-            <p className="text-foreground/40 mt-3 text-xs leading-5">
+            <p className="text-foreground/55 mt-3 text-sm leading-6">
               {stream.isActive
                 ? 'Sources appear here as the answer cites them.'
                 : 'No sources yet.'}

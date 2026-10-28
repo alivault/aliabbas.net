@@ -29,7 +29,7 @@ function StateTrack({ state }: { state: LabMachineState }) {
     <span
       key={name}
       className={cn(
-        'rounded-full border px-2 py-0.5 font-mono text-[10px] uppercase transition-colors',
+        'rounded-full border px-2.5 py-0.5 text-sm capitalize transition-colors',
         state === name
           ? name === 'failed'
             ? 'border-destructive bg-destructive text-white'
@@ -41,7 +41,7 @@ function StateTrack({ state }: { state: LabMachineState }) {
     </span>
   )
   const arrow = (
-    <span aria-hidden="true" className="text-foreground/25 font-mono text-xs">
+    <span aria-hidden="true" className="text-foreground/30 text-sm">
       →
     </span>
   )
@@ -122,7 +122,7 @@ function ScenarioRadioGroup({
               onClick={() => onChange(scenario)}
               onKeyDown={(event) => move(event, index)}
               className={cn(
-                'focus-visible:ring-brand/70 focus-visible:ring-offset-background rounded-full border px-3 py-1 text-xs transition-colors outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+                'focus-visible:ring-brand/70 focus-visible:ring-offset-background rounded-full border px-3.5 py-1.5 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
                 checked
                   ? 'border-foreground bg-foreground text-background'
                   : 'border-foreground/15 text-foreground/60 hover:border-foreground/40 hover:text-foreground',
@@ -133,7 +133,7 @@ function ScenarioRadioGroup({
           )
         })}
       </div>
-      <p id={hintId} className="text-foreground/45 text-xs">
+      <p id={hintId} className="text-foreground/55 text-sm">
         {LAB_SCENARIO_HINTS[value]}
       </p>
     </div>
@@ -170,7 +170,7 @@ export default function StateBar({
         <div className="flex shrink-0 items-center gap-1.5">
           <Button
             variant="outline"
-            size="sm"
+            size="default"
             onClick={stop}
             disabled={!isActive}
             // Focus stays on Stop when the stream ends, so it is not lost.
@@ -181,16 +181,18 @@ export default function StateBar({
             <Square className="fill-current" aria-hidden="true" />
             Stop
           </Button>
-          <Button variant="outline" size="sm" onClick={() => run(scenario)}>
+          <Button
+            variant="outline"
+            size="default"
+            onClick={() => run(scenario)}
+          >
             <RotateCcw aria-hidden="true" />
             Replay
           </Button>
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-        <span className="text-foreground/40 font-mono text-[11px] uppercase">
-          Machine state
-        </span>
+        <span className="text-foreground/55 text-sm">Machine state</span>
         <StateTrack state={machineState} />
         <p role="status" className="sr-only">
           {STATE_ANNOUNCEMENTS[machineState]}

@@ -155,7 +155,7 @@ export default function LabAnswer({
               </p>
               <Button
                 variant="outline"
-                size="sm"
+                size="default"
                 onClick={(event) => {
                   // The Retry button goes away. Focus moves to Stop, so Esc
                   // and Tab still work from the specimen.
@@ -175,23 +175,21 @@ export default function LabAnswer({
           )}
 
           {turn.status === 'stopped' && (
-            <p className="text-foreground/40 flex items-center gap-1.5 font-mono text-[11px] uppercase">
-              <Square className="size-2.5 fill-current" aria-hidden="true" />
+            <p className="text-foreground/55 flex items-center gap-2 text-sm">
+              <Square className="size-3 fill-current" aria-hidden="true" />
               {turn.answer ? 'Stopped' : 'Stopped before the answer started'}
             </p>
           )}
 
           {turn.status === 'streaming' && (
-            <p className="text-foreground/40 flex items-center gap-2 font-mono text-[11px] uppercase">
-              <span className="bg-brand size-1.5 animate-pulse rounded-full motion-reduce:animate-none" />
-              Writing · Esc stops
+            <p className="text-foreground/55 flex items-center gap-2 text-sm">
+              <span className="bg-brand size-2 animate-pulse rounded-full motion-reduce:animate-none" />
+              Writing. Press Esc to stop.
             </p>
           )}
 
           {metrics && (
-            <p className="text-foreground/40 font-mono text-[11px] uppercase">
-              {metrics}
-            </p>
+            <p className="text-foreground/55 text-sm tabular-nums">{metrics}</p>
           )}
         </div>
       </div>

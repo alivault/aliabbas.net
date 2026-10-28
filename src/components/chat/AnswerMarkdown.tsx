@@ -13,6 +13,7 @@ import { cn } from 'cn'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import PathText from '~/components/PathText'
 
 export type CitationContextValue = {
   sourceNumber: (sourceId: string) => number | undefined
@@ -84,7 +85,7 @@ function CitationChip({ sourceId }: { sourceId: string }) {
       animate={{ scale: 1, opacity: 1 }}
       transition={{ type: 'spring', stiffness: 520, damping: 26 }}
       className={cn(
-        'focus-visible:ring-brand/70 mx-0.5 inline-flex h-[1.2rem] min-w-[1.2rem] -translate-y-px cursor-pointer items-center justify-center rounded-full border px-1 align-middle font-mono text-[0.68rem] leading-none tabular-nums transition-colors outline-none focus-visible:ring-2',
+        'focus-visible:ring-brand/70 mx-0.5 inline-flex h-[1.375rem] min-w-[1.375rem] -translate-y-px cursor-pointer items-center justify-center rounded-full border px-1.5 align-middle text-sm leading-none tabular-nums transition-colors outline-none focus-visible:ring-2',
         active
           ? 'border-brand bg-brand text-brand-foreground'
           : hovered
@@ -109,14 +110,14 @@ function CitationChip({ sourceId }: { sourceId: string }) {
         <div className="flex items-start gap-2.5">
           <span
             aria-hidden="true"
-            className="border-brand bg-brand text-brand-foreground mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border font-mono text-[0.65rem] tabular-nums"
+            className="border-brand bg-brand text-brand-foreground mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border text-sm tabular-nums"
           >
             {number}
           </span>
           <div className="min-w-0">
             {source.group && (
-              <p className="text-foreground/45 font-mono text-[10px] uppercase">
-                {source.group}
+              <p className="text-foreground/55 font-mono text-sm [overflow-wrap:anywhere]">
+                <PathText path={source.group} />
               </p>
             )}
             <p className="text-foreground text-sm leading-5 font-semibold">
@@ -124,10 +125,10 @@ function CitationChip({ sourceId }: { sourceId: string }) {
             </p>
           </div>
         </div>
-        <p className="text-foreground/65 text-[0.8rem] leading-5">
+        <p className="text-foreground/65 text-sm leading-6">
           {excerpt(source.body)}
         </p>
-        <p className="text-foreground/40 flex items-center justify-between gap-3 font-mono text-[10px] uppercase">
+        <p className="text-foreground/55 flex items-center justify-between gap-3 text-sm">
           <span className="truncate">
             {source.href
               ? hostname(source.href)
@@ -143,7 +144,17 @@ function CitationChip({ sourceId }: { sourceId: string }) {
 const markdownComponents: Components = {
   a: ({ children, href }) => {
     if (href?.startsWith(CITE_HREF_PREFIX)) {
-      return <CitationChip sourceId={href.slice(CITE_HREF_PREFIX.length)} />
+      // Punctuation right after a marker is in the link text. It stays on
+      // the line of its chip; a chip at the end of a line must not leave a
+      // full stop alone on the next line.
+      const trailing =
+        typeof children === 'string' ? children.replace(/^S\d{1,3}/, '') : ''
+      return (
+        <span className="whitespace-nowrap">
+          <CitationChip sourceId={href.slice(CITE_HREF_PREFIX.length)} />
+          {trailing}
+        </span>
+      )
     }
     return (
       <a
@@ -200,13 +211,13 @@ const markdownComponents: Components = {
     </code>
   ),
   pre: ({ children }) => (
-    <pre className="border-foreground/10 bg-muted overflow-x-auto rounded-lg border p-3 text-xs leading-6 [&_code]:bg-transparent [&_code]:p-0">
+    <pre className="border-foreground/10 bg-muted overflow-x-auto rounded-lg border p-3 text-sm leading-6 [&_code]:bg-transparent [&_code]:p-0">
       {children}
     </pre>
   ),
   table: ({ children }) => (
     <div className="overflow-x-auto">
-      <table className="w-full border-collapse text-left text-xs">
+      <table className="w-full border-collapse text-left text-sm">
         {children}
       </table>
     </div>
@@ -233,7 +244,7 @@ const remarkPlugins = [remarkGfm]
 function linkCitations(markdown: string) {
   return markdown
     .replace(/(https?:\/\/[^\s<[]+)(?=\[S\d{1,3}\])/g, '$1 ')
-    .replace(/\[(S\d{1,3})\]/g, `[$1](${CITE_HREF_PREFIX}$1)`)
+    .replace(/\[(S\d{1,3})\]([.,;:!?)]*)/g, `[$1$2](${CITE_HREF_PREFIX}$1)`)
 }
 
 const MarkdownChunk = memo(function MarkdownChunk({ text }: { text: string }) {

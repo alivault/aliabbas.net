@@ -7,12 +7,12 @@ import {
   PanelRightOpen,
 } from 'lucide-react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
-import MonoLabel from '~/components/MonoLabel'
 import type { Turn } from '~/lib/chat/chat-machine'
 import type { ChatSource } from '~/lib/chat/protocol'
 import { cn } from 'cn'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
+import PathText from '~/components/PathText'
 
 export function evidenceSourceElementId(prefix: string, sourceId: string) {
   return `${prefix}-source-${sourceId}`
@@ -36,9 +36,7 @@ const sourceMarkdownComponents: Components = {
     <ol className="list-decimal space-y-1 pl-4">{children}</ol>
   ),
   code: ({ children }) => (
-    <code className="bg-foreground/10 rounded px-1 font-mono text-[0.9em]">
-      {children}
-    </code>
+    <code className="bg-foreground/10 rounded px-1 font-mono">{children}</code>
   ),
 }
 
@@ -119,7 +117,7 @@ function SourceCard({
           <span
             aria-hidden="true"
             className={cn(
-              'flex size-6 shrink-0 items-center justify-center rounded-full border font-mono text-[0.7rem] tabular-nums transition-colors',
+              'flex size-7 shrink-0 items-center justify-center rounded-full border text-sm tabular-nums transition-colors',
               active || hovered
                 ? 'border-brand bg-brand text-brand-foreground'
                 : 'border-foreground/20 text-foreground/70',
@@ -128,7 +126,11 @@ function SourceCard({
             {number}
           </span>
           <div className="min-w-0">
-            {source.group && <MonoLabel>{source.group}</MonoLabel>}
+            {source.group && (
+              <p className="text-foreground/55 font-mono text-sm [overflow-wrap:anywhere]">
+                <PathText path={source.group} />
+              </p>
+            )}
             <h3
               id={`${elementId}-title`}
               className="text-foreground text-sm leading-5 font-semibold"
@@ -143,7 +145,7 @@ function SourceCard({
           ref={bodyRef}
           id={bodyId}
           className={cn(
-            'text-foreground/65 mt-3 space-y-2 text-[0.8rem] leading-5 [overflow-wrap:anywhere]',
+            'text-foreground/65 mt-3 space-y-2 text-sm leading-6 [overflow-wrap:anywhere]',
             !open && 'line-clamp-4',
           )}
         >
@@ -158,7 +160,7 @@ function SourceCard({
               href={source.href}
               target="_blank"
               rel="noreferrer"
-              className="text-foreground/60 hover:text-brand inline-flex min-w-0 items-center gap-1 font-mono text-[11px] uppercase transition-colors"
+              className="text-foreground/60 hover:text-brand inline-flex min-w-0 items-center gap-1 text-sm transition-colors"
             >
               <span className="truncate">{hostname(source.href)}</span>
               <ArrowUpRight className="size-3 shrink-0" aria-hidden="true" />
@@ -173,7 +175,7 @@ function SourceCard({
               aria-expanded={expanded}
               aria-controls={bodyId}
               onClick={() => setExpanded((value) => !value)}
-              className="text-foreground/50 hover:text-foreground focus-visible:ring-brand/70 shrink-0 rounded font-mono text-[11px] uppercase outline-none focus-visible:ring-2"
+              className="text-foreground/60 hover:text-foreground focus-visible:ring-brand/70 shrink-0 rounded text-sm font-medium outline-none focus-visible:ring-2"
             >
               {expanded ? 'Show less' : 'Show more'}
             </button>
@@ -268,8 +270,8 @@ export default function EvidencePanel({
         {turn ? (
           <>
             {scope && scope.total > 1 && (
-              <div className="flex items-center gap-2 font-mono text-[11px] uppercase">
-                <span className="text-foreground/40">
+              <div className="flex items-center gap-3 text-sm">
+                <span className="text-foreground/55">
                   {scope.pinned
                     ? `Answer ${scope.index} of ${scope.total}`
                     : 'Latest answer'}
@@ -278,7 +280,7 @@ export default function EvidencePanel({
                   <button
                     type="button"
                     onClick={onShowLatest}
-                    className="text-foreground/60 hover:text-foreground focus-visible:ring-brand/70 inline-flex items-center gap-1 rounded uppercase outline-none focus-visible:ring-2"
+                    className="text-foreground/60 hover:text-foreground focus-visible:ring-brand/70 inline-flex items-center gap-1 rounded font-medium outline-none focus-visible:ring-2"
                   >
                     <CornerDownLeft className="size-3" aria-hidden="true" />
                     Show latest
@@ -290,9 +292,9 @@ export default function EvidencePanel({
               <span className="sr-only">For the question: </span>“
               {turn.question}”
             </p>
-            <MonoLabel>
+            <p className="text-foreground/55 text-sm">
               <PanelStatus turn={turn} />
-            </MonoLabel>
+            </p>
           </>
         ) : (
           <p className="text-foreground/50 text-sm">
@@ -377,7 +379,7 @@ export function EvidenceRail({
             exit={reduceMotion ? undefined : { scale: 0.5, opacity: 0, y: -6 }}
             transition={{ type: 'spring', stiffness: 560, damping: 28 }}
             className={cn(
-              'relative flex size-7 items-center justify-center rounded-full border font-mono text-xs tabular-nums',
+              'relative flex size-7 items-center justify-center rounded-full border text-sm tabular-nums',
               sourceCount > 0
                 ? 'border-brand bg-brand text-brand-foreground'
                 : 'border-foreground/20',
@@ -389,7 +391,7 @@ export function EvidenceRail({
       </span>
       <span
         aria-hidden="true"
-        className="font-mono text-[11px] tracking-wider uppercase [writing-mode:vertical-rl]"
+        className="text-sm font-medium [writing-mode:vertical-rl]"
       >
         Evidence
       </span>

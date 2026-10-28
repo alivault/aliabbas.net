@@ -50,7 +50,7 @@ export default function CitationDrawerSpecimen() {
   return (
     <Specimen
       id={ID}
-      number="02"
+      number="2"
       title="Citation drawer"
       stream={labStream}
       description="The evidence for an answer, in a drawer. On a phone it comes up from the bottom and stops at 60% or full height. On a wide screen it comes in from the right. The source cards are the chat's real EvidencePanel."

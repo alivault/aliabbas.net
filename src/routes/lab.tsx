@@ -8,7 +8,6 @@ import ResizerSpecimen from '~/components/lab/ResizerSpecimen'
 import StreamingSpecimen from '~/components/lab/StreamingSpecimen'
 import TransitionSpecimen from '~/components/lab/TransitionSpecimen'
 import Main from '~/components/Main'
-import MonoLabel from '~/components/MonoLabel'
 import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
 
@@ -44,14 +43,11 @@ function LabPage() {
               trigger="mount"
               className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end"
             >
-              <div>
-                <MonoLabel tone="brand">Lab — interface primitives</MonoLabel>
-                <PageHeading className="mt-4">
-                  Every state,
-                  <br />
-                  <em className="text-brand">on purpose.</em>
-                </PageHeading>
-              </div>
+              <PageHeading>
+                Every state,
+                <br />
+                <em className="text-brand">on purpose.</em>
+              </PageHeading>
               <p className="text-foreground/55 max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
                 These are the parts behind the chat on this site, as live
                 specimens. A local fake stream drives them. It makes no network
@@ -62,15 +58,15 @@ function LabPage() {
 
             <div className="border-foreground/15 mt-12 flex flex-col gap-5 border-t pt-5 lg:flex-row lg:items-center lg:justify-between">
               <nav aria-label="Specimens">
-                <ol className="flex flex-wrap gap-x-5 gap-y-2 text-sm">
+                <ol className="flex flex-wrap gap-2">
                   {specimens.map((specimen, index) => (
                     <li key={specimen.id}>
                       <a
                         href={`#${specimen.id}`}
-                        className="text-foreground/60 hover:text-foreground focus-visible:ring-brand/70 rounded outline-none focus-visible:ring-2"
+                        className="bg-foreground/5 hover:bg-foreground/10 focus-visible:ring-brand/70 inline-flex rounded-full px-4 py-2 text-sm font-medium transition-colors outline-none focus-visible:ring-2"
                       >
-                        <span className="text-foreground/35 mr-1.5 font-mono text-[11px]">
-                          0{index + 1}
+                        <span className="text-foreground/45 mr-1.5 tabular-nums">
+                          {index + 1}.
                         </span>
                         {specimen.label}
                       </a>
@@ -88,7 +84,7 @@ function LabPage() {
               <TransitionSpecimen />
             </div>
 
-            <p className="text-foreground/40 mt-16 max-w-2xl text-sm leading-6">
+            <p className="text-foreground/55 mt-16 max-w-2xl text-base leading-7">
               The demo answer and its sources describe the code of this
               site&apos;s chat. The text is fixed, and the timings are fixed in
               src/lib/lab/fake-stream.ts. The renderer, the citation filter and

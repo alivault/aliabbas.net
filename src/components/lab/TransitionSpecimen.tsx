@@ -1,7 +1,6 @@
 import { useEffect, useId, useRef, useState } from 'react'
 import type { KeyboardEvent } from 'react'
 import { LayoutGroup, motion } from 'motion/react'
-import MonoLabel from '~/components/MonoLabel'
 import { cn } from 'cn'
 import LabAnswer from './LabAnswer'
 import { useLabMotion } from './lab-motion'
@@ -58,7 +57,7 @@ function PlacementGroup({
           onClick={() => onChange(placement)}
           onKeyDown={(event) => onKeyDown(event, index)}
           className={cn(
-            'focus-visible:ring-brand/70 rounded-full px-3 py-1 text-xs transition-colors outline-none focus-visible:ring-2',
+            'focus-visible:ring-brand/70 rounded-full px-3.5 py-1.5 text-sm transition-colors outline-none focus-visible:ring-2',
             value === placement
               ? 'bg-foreground text-background'
               : 'text-foreground/60 hover:text-foreground',
@@ -115,11 +114,11 @@ function SavedAnswerCard({
         transition={SPRING}
         className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1"
       >
-        <MonoLabel tone="brand">Saved answer</MonoLabel>
-        <MonoLabel as="span" className="tabular-nums">
-          Mounted {mounts} {mounts === 1 ? 'time' : 'times'} · scroll{' '}
+        <h3 className="text-base font-semibold">Saved answer</h3>
+        <span className="text-foreground/55 text-sm tabular-nums">
+          Mounted {mounts} {mounts === 1 ? 'time' : 'times'}, scrolled{' '}
           {Math.round(scrollTop)} px
-        </MonoLabel>
+        </span>
       </motion.header>
 
       <motion.div
@@ -148,7 +147,7 @@ function SavedAnswerCard({
         className={cn('grid gap-4', !docked && 'sm:grid-cols-2')}
       >
         <fieldset className="min-w-0">
-          <legend className="text-foreground/40 font-mono text-[11px] uppercase">
+          <legend className="text-foreground/70 text-sm font-medium">
             Pin a source
           </legend>
           <div className="mt-2 flex flex-wrap gap-1.5">
@@ -164,7 +163,7 @@ function SavedAnswerCard({
                     )
                   }
                   className={cn(
-                    'focus-visible:ring-brand/70 rounded-full border px-2.5 py-1 text-xs transition-colors outline-none focus-visible:ring-2',
+                    'focus-visible:ring-brand/70 rounded-full border px-3 py-1 text-sm transition-colors outline-none focus-visible:ring-2',
                     pinned === source.id
                       ? 'border-brand bg-brand text-brand-foreground'
                       : 'border-foreground/15 text-foreground/60 hover:text-foreground',
@@ -174,7 +173,7 @@ function SavedAnswerCard({
                 </button>
               ))
             ) : (
-              <span className="text-foreground/40 text-xs">
+              <span className="text-foreground/55 text-sm">
                 No sources yet.
               </span>
             )}
@@ -183,7 +182,7 @@ function SavedAnswerCard({
         <div className="min-w-0">
           <label
             htmlFor={noteId}
-            className="text-foreground/40 font-mono text-[11px] uppercase"
+            className="text-foreground/70 text-sm font-medium"
           >
             Your note
           </label>
@@ -214,7 +213,7 @@ function Placeholder({
       transition={SPRING}
       aria-hidden="true"
       className={cn(
-        'border-foreground/10 text-foreground/30 flex min-h-20 items-center rounded-xl border border-dashed px-4 font-mono text-[11px] uppercase',
+        'border-foreground/10 text-foreground/45 flex min-h-20 items-center rounded-xl border border-dashed px-4 text-sm',
         className,
       )}
     >
@@ -230,7 +229,7 @@ export default function TransitionSpecimen() {
   return (
     <Specimen
       id={ID}
-      number="04"
+      number="4"
       title="A move that keeps state"
       stream={stream}
       description="A card moves between the feed and a side dock. Type a note, pin a source, or scroll the answer, then move the card. Start a slow stream and move it while the text arrives."
