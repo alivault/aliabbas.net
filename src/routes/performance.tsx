@@ -198,8 +198,9 @@ function PerformancePage() {
               <p>
                 The same test for this site and two of my projects: Lighthouse
                 {liveLighthouse.tool.replace('Lighthouse', '')}, on{' '}
-                {liveLighthouse.measuredOn}. The site numbers are from before
-                the fix shipped.
+                {liveLighthouse.measuredOn}. For this site, “before” rows ran
+                before the fix shipped and “after” rows ran after it, on the
+                same day.
               </p>
             }
           >
@@ -220,7 +221,7 @@ function PerformancePage() {
                 </thead>
                 <tbody>
                   {liveLighthouse.results.map((row) => (
-                    <tr key={row.url} className="align-top">
+                    <tr key={row.label} className="align-top">
                       <td>
                         <a
                           href={row.url}

@@ -18,31 +18,70 @@ export type LighthouseResult = {
 /**
  * Lighthouse 12.8.2, mobile preset (Moto G Power, simulated slow 4G, 4×
  * CPU slowdown), headless Chromium, against the live sites. Median of three
- * runs per URL. aliabbas.net was measured before the LCP fix below shipped.
+ * runs per URL. The aliabbas.net rows marked "before" ran before the LCP fix
+ * below shipped; the "after" rows ran on the same day, after it shipped.
+ * The after runs blocked /api/vitals, so lab loads are not counted as real
+ * visits.
  */
 export const liveLighthouse = {
   measuredOn: '2026-10-28',
   tool: 'Lighthouse 12.8.2, mobile preset, median of 3 runs',
   results: [
     {
-      label: 'aliabbas.net — home',
+      label: 'aliabbas.net — home, before',
       url: 'https://aliabbas.net/',
       score: 30,
       lcpMs: 6451,
       fcpMs: 4060,
       cls: 0.004,
       tbtMs: null,
-      note: 'Before the fix. The test machine has no GPU, so the WebGL globe draws in software and blocks the main thread; that blocking time describes the test machine, not a phone.',
+      note: 'The test machine has no GPU, so the WebGL globe draws in software and blocks the main thread. That blocking time describes the test machine, not a phone, and it also slows the simulated LCP.',
     },
     {
-      label: 'aliabbas.net — chat',
+      label: 'aliabbas.net — home, after',
+      url: 'https://aliabbas.net/',
+      score: 31,
+      lcpMs: 5881,
+      fcpMs: 3725,
+      cls: 0.003,
+      tbtMs: null,
+      note: 'The same note about the globe applies.',
+    },
+    {
+      label: 'aliabbas.net — chat, before',
       url: 'https://aliabbas.net/chat',
       score: 72,
       lcpMs: 4425,
       fcpMs: 4350,
       cls: 0,
       tbtMs: 0,
-      note: 'Before the fix.',
+    },
+    {
+      label: 'aliabbas.net — chat, after',
+      url: 'https://aliabbas.net/chat',
+      score: 85,
+      lcpMs: 3494,
+      fcpMs: 3125,
+      cls: 0,
+      tbtMs: 44,
+    },
+    {
+      label: 'aliabbas.net — work, after',
+      url: 'https://aliabbas.net/work',
+      score: 87,
+      lcpMs: 3240,
+      fcpMs: 2940,
+      cls: 0.017,
+      tbtMs: 12,
+    },
+    {
+      label: 'aliabbas.net — skills, after',
+      url: 'https://aliabbas.net/skills',
+      score: 86,
+      lcpMs: 3252,
+      fcpMs: 3102,
+      cls: 0,
+      tbtMs: 16,
     },
     {
       label: 'Pico',
