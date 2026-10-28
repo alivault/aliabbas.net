@@ -178,7 +178,7 @@ export default function EvidenceLayout({
               {collapsed ? (
                 rail
               ) : (
-                <div className="h-full min-w-[300px] overflow-y-auto overscroll-contain px-5 py-6">
+                <div className="h-full min-w-[300px] overflow-y-auto overscroll-contain px-5 pb-6">
                   {evidence}
                 </div>
               )}

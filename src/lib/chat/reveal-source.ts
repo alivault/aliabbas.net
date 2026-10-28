@@ -44,14 +44,16 @@ export function revealSource(element: HTMLElement) {
   }
   const top = layoutTop(element) - layoutTop(container) - container.clientTop
   const bottom = top + element.offsetHeight
-  const viewTop = container.scrollTop
-  const viewBottom = viewTop + container.clientHeight
+  // A sticky header covers the top of the panel, so the visible area
+  // starts below it.
+  const header = container.querySelector<HTMLElement>('[data-evidence-header]')
+  const covered = header?.offsetHeight ?? 0
+  const viewTop = container.scrollTop + covered
+  const viewBottom = container.scrollTop + container.clientHeight
+  const viewHeight = viewBottom - viewTop
   let next: number | null = null
-  if (
-    top < viewTop + MARGIN ||
-    bottom - top > container.clientHeight - 2 * MARGIN
-  ) {
-    next = top - MARGIN
+  if (top < viewTop + MARGIN || bottom - top > viewHeight - 2 * MARGIN) {
+    next = top - covered - MARGIN
   } else if (bottom > viewBottom - MARGIN) {
     next = bottom - container.clientHeight + MARGIN
   }

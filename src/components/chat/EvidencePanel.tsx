@@ -244,8 +244,14 @@ export default function EvidencePanel({
   turn: Turn | undefined
 }) {
   return (
-    <div className="flex flex-col gap-5">
-      <header className="space-y-2">
+    <div className="flex flex-col gap-4">
+      {/* Sticky, so the heading and the hide button stay at hand while the
+          sources scroll. The scroll container sets the padding above it and
+          the surface color (see .evidence-header in globals.css). */}
+      <header
+        data-evidence-header
+        className="evidence-header sticky top-0 z-10 -mx-5 space-y-2 bg-(--evidence-surface,var(--color-background)) px-5 pt-(--evidence-pad,1.5rem) pb-3"
+      >
         <div className="flex items-center justify-between gap-3">
           <h2
             id={headingId}

@@ -574,7 +574,7 @@ export default function PortfolioChat() {
             <DrawerDescription className="sr-only">
               The sources that the answer cites. Drag up to see more.
             </DrawerDescription>
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pt-3 pb-8">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-8 [--evidence-pad:0.75rem] [--evidence-surface:var(--color-popover)]">
               <EvidencePanel
                 idPrefix={DRAWER_PREFIX}
                 headingId={`${DRAWER_PREFIX}-heading`}

@@ -580,3 +580,26 @@ textarea {
     }
   }
 }
+
+/*
+ * Evidence panel header (EvidencePanel.tsx): a hairline under it appears
+ * once the sources scroll under it. Without scroll-driven animations there
+ * is no line, which is fine.
+ */
+@supports (animation-timeline: scroll()) {
+  .evidence-header {
+    animation: evidence-header-line linear both;
+    animation-timeline: scroll(nearest);
+    animation-range: 0 16px;
+  }
+}
+
+@keyframes evidence-header-line {
+  from {
+    box-shadow: 0 1px 0 transparent;
+  }
+  to {
+    box-shadow: 0 1px 0
+      color-mix(in oklab, var(--color-foreground) 10%, transparent);
+  }
+}
