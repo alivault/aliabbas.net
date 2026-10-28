@@ -1,6 +1,7 @@
-import { ArrowUpRight } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { motion } from 'motion/react'
-import MonoLabel from '~/components/MonoLabel'
+import MonoLabel, { monoLabelStyles } from '~/components/MonoLabel'
 import Title from '~/components/Title'
 import type { WorkItem } from '~/data/work'
 import { cn } from 'cn'
@@ -21,6 +22,14 @@ const chromaginePetals = [
   '#bf5af2',
   '#ff2d95',
 ] as const
+
+const visualLinkStyles =
+  'group focus-visible:outline-foreground block rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-4'
+
+const cardLinkStyles = cn(
+  monoLabelStyles('brand'),
+  'hover:text-foreground focus-visible:outline-foreground inline-flex min-h-6 items-center gap-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4',
+)
 
 function ProjectVisual({ project }: { project: WorkItem }) {
   return (
@@ -112,7 +121,11 @@ function ProjectVisual({ project }: { project: WorkItem }) {
         aria-hidden="true"
         className="absolute right-5 bottom-5 z-30 flex size-12 items-center justify-center rounded-full bg-[#10100f] text-white transition-transform group-hover:scale-105 group-hover:rotate-6 sm:right-7 sm:bottom-7 sm:size-14"
       >
-        <ArrowUpRight className="size-5" />
+        {project.caseStudy ? (
+          <ArrowRight className="size-5" />
+        ) : (
+          <ArrowUpRight className="size-5" />
+        )}
       </span>
     </div>
   )
@@ -127,15 +140,26 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
       transition={{ duration: 0.75, ease: [0.22, 1, 0.36, 1] }}
       className="flex flex-col gap-7"
     >
-      <a
-        href={project.href}
-        target="_blank"
-        rel="noreferrer"
-        className="group focus-visible:outline-foreground block rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-4"
-        aria-label={`Open ${project.title}`}
-      >
-        <ProjectVisual project={project} />
-      </a>
+      {project.caseStudy ? (
+        <Link
+          to="/work/$slug"
+          params={{ slug: project.caseStudy }}
+          className={visualLinkStyles}
+          aria-label={`Read the ${project.title} case study`}
+        >
+          <ProjectVisual project={project} />
+        </Link>
+      ) : (
+        <a
+          href={project.href}
+          target="_blank"
+          rel="noreferrer"
+          className={visualLinkStyles}
+          aria-label={`Open ${project.title}`}
+        >
+          <ProjectVisual project={project} />
+        </a>
+      )}
       <div className="flex flex-1 flex-col">
         <Title as="h3" variant="card">
           {project.title}
@@ -149,7 +173,32 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
             {project.contribution}
           </p>
         </div>
-        <div className="mt-8 flex flex-wrap gap-2">
+        <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2">
+          {project.caseStudy && (
+            <Link
+              to="/work/$slug"
+              params={{ slug: project.caseStudy }}
+              className={cardLinkStyles}
+            >
+              Case study
+              <ArrowRight className="size-3.5" aria-hidden="true" />
+              <span className="sr-only">: {project.title}</span>
+            </Link>
+          )}
+          <a
+            href={project.href}
+            target="_blank"
+            rel="noreferrer"
+            className={cardLinkStyles}
+          >
+            Visit site
+            <ArrowUpRight className="size-3.5" aria-hidden="true" />
+            <span className="sr-only">
+              : {project.title} (opens in a new tab)
+            </span>
+          </a>
+        </div>
+        <div className="mt-6 flex flex-wrap gap-2">
           {project.tools.map((tool) => (
             <span
               key={tool}

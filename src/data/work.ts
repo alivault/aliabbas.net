@@ -1,3 +1,5 @@
+import type { CaseStudySlug } from '~/data/case-studies'
+
 export type WorkItem = {
   title: string
   category: string
@@ -8,6 +10,8 @@ export type WorkItem = {
   year: string
   tools: Array<string>
   visual: 'whimcall' | 'pico' | 'chromagine'
+  /** Slug of the case study at /work/$slug, if there is one. */
+  caseStudy?: CaseStudySlug
 }
 
 export const recentWork = [
@@ -23,6 +27,7 @@ export const recentWork = [
     year: '2026',
     tools: ['TanStack Start', 'WebRTC', 'Cloudflare'],
     visual: 'whimcall',
+    caseStudy: 'whimcall',
   },
   {
     title: 'Pico',
@@ -36,6 +41,7 @@ export const recentWork = [
     year: '2026',
     tools: ['React', 'Node.js', 'Local-first'],
     visual: 'pico',
+    caseStudy: 'pico',
   },
   {
     title: 'Chromagine',
