@@ -34,11 +34,12 @@ export default function Footer() {
         <div className="site-footer-content mx-auto flex h-full max-w-[1600px] flex-col px-5 pt-24 pb-5 sm:px-8 sm:pt-28 sm:pb-6 lg:px-12 lg:pt-24">
           <div className="grid gap-10 lg:grid-cols-[1fr_auto] lg:items-end">
             <h2 className="text-[clamp(2.25rem,1.5rem+3.5vw,5rem)] leading-[1.05] font-normal text-balance">
-              <span className="text-background/45">
-                Have an ambitious brief?
+              <span className="text-background/45 block text-balance">
+                Hard problem, high bar?
+              </span>{' '}
+              <span className="block text-balance">
+                That’s my favorite kind.
               </span>
-              <br />
-              Let’s make it unmissable.
             </h2>
             <Link
               to="/contact"
