@@ -10,6 +10,7 @@ import TransitionSpecimen from '~/components/lab/TransitionSpecimen'
 import Main from '~/components/Main'
 import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
+import { scrollToSection } from '~/lib/scroll-to-section'
 
 export const Route = createFileRoute('/lab')({
   head: () => ({
@@ -63,6 +64,7 @@ function LabPage() {
                     <li key={specimen.id}>
                       <a
                         href={`#${specimen.id}`}
+                        onClick={scrollToSection}
                         className="bg-foreground/5 hover:bg-foreground/10 focus-visible:ring-brand/70 inline-flex rounded-full px-4 py-2 text-sm font-medium transition-colors outline-none focus-visible:ring-2"
                       >
                         <span className="text-foreground/45 mr-1.5 tabular-nums">

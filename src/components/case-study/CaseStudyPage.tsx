@@ -9,6 +9,7 @@ import { caseStudies } from '~/data/case-studies'
 import type { CaseStudy } from '~/data/case-studies'
 import EvidenceList from './EvidenceList'
 import StateMachineSection from './StateMachineSection'
+import { scrollToSection } from '~/lib/scroll-to-section'
 
 const pillLink =
   'border-foreground/20 hover:border-foreground focus-visible:outline-foreground inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
@@ -99,6 +100,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
             <a
               key={href}
               href={href}
+              onClick={scrollToSection}
               className="bg-foreground/5 hover:bg-foreground/10 focus-visible:outline-foreground rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2"
             >
               {text}
