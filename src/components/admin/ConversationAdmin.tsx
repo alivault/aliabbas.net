@@ -30,7 +30,7 @@ import type {
   StoredConversation,
 } from '~/lib/chat-storage'
 import { authClient } from '~/lib/auth-client'
-import { cn } from '~/lib/utils'
+import { cn } from 'cn'
 
 type AdminIdentity = {
   email: string

@@ -1,6 +1,6 @@
 import type { ComponentProps } from 'react'
 import Title from '~/components/Title'
-import { cn } from '~/lib/utils'
+import { cn } from 'cn'
 
 type SectionHeadingProps = ComponentProps<'h2'> & {
   size?: 'default' | 'compact'

@@ -13,7 +13,7 @@ import { Button } from '~/components/ui/button'
 import { isActive } from '~/lib/chat/chat-machine'
 import type { Turn } from '~/lib/chat/chat-machine'
 import { answerToPlainText } from '~/lib/chat/streaming-markdown'
-import { cn } from '~/lib/utils'
+import { cn } from 'cn'
 import { AnswerMarkdown, CitationContext } from './AnswerMarkdown'
 import type { CitationContextValue } from './AnswerMarkdown'
 

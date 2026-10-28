@@ -10,7 +10,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import MonoLabel from '~/components/MonoLabel'
 import type { Turn } from '~/lib/chat/chat-machine'
 import type { ChatSource } from '~/lib/chat/protocol'
-import { cn } from '~/lib/utils'
+import { cn } from 'cn'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 

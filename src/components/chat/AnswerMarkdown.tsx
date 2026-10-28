@@ -9,7 +9,7 @@ import {
 } from '~/components/ui/hover-card'
 import type { ChatSource } from '~/lib/chat/protocol'
 import { splitStreamingMarkdown } from '~/lib/chat/streaming-markdown'
-import { cn } from '~/lib/utils'
+import { cn } from 'cn'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'

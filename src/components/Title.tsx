@@ -1,6 +1,6 @@
 import { createElement } from 'react'
 import type { ComponentProps } from 'react'
-import { cn } from '~/lib/utils'
+import { cn } from 'cn'
 
 const titleStyles = {
   page: 'text-[clamp(2.75rem,2rem+4vw,5.5rem)] leading-[1.08]',

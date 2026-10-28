@@ -1,6 +1,6 @@
 import { createElement } from 'react'
 import type { ComponentProps } from 'react'
-import { cn } from '~/lib/utils'
+import { cn } from 'cn'
 
 const monoLabelTones = {
   muted: 'text-foreground/40',

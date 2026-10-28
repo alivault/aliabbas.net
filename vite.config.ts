@@ -44,6 +44,10 @@ export default defineConfig({
   },
   resolve: {
     tsconfigPaths: true,
+    // A dependency that imports tailwind-merge uses cn too, so the bundle
+    // has one merge engine. clsx is not aliased: TanStack Devtools uses its
+    // default export, which cn does not provide.
+    alias: { 'tailwind-merge': 'cn' },
   },
   ssr: {
     noExternal: ['@convex-dev/better-auth'],

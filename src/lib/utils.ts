@@ -1,7 +1,3 @@
-import { clsx } from 'clsx'
-import { twMerge } from 'tailwind-merge'
-import type { ClassValue } from 'clsx'
-
-export function cn(...inputs: Array<ClassValue>) {
-  return twMerge(clsx(inputs))
-}
+// The shadcn CLI resolves its `utils` alias (components.json) here.
+// App code imports `cn` from 'cn' directly.
+export { cn } from 'cn'

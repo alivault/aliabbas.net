@@ -3,7 +3,7 @@ import { motion } from 'motion/react'
 import MonoLabel from '~/components/MonoLabel'
 import Title from '~/components/Title'
 import type { WorkItem } from '~/data/work'
-import { cn } from '~/lib/utils'
+import { cn } from 'cn'
 
 const visualStyles = {
   whimcall: 'bg-[#080b12] text-white',

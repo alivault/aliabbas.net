@@ -3,7 +3,7 @@ import { ArrowUp, Square } from 'lucide-react'
 import { Button } from '~/components/ui/button'
 import { Kbd } from '~/components/ui/kbd'
 import { Textarea } from '~/components/ui/textarea'
-import { cn } from '~/lib/utils'
+import { cn } from 'cn'
 
 /**
  * The composer stays editable while an answer streams. With an empty draft

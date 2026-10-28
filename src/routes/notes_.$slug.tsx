@@ -16,7 +16,7 @@ import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
 import Title from '~/components/Title'
 import getFormattedDate from '~/lib/getFormattedDate'
-import { cn } from '~/lib/utils'
+import { cn } from 'cn'
 import { getArticleBySlug, sanityClient } from '~/lib/sanity'
 
 const builder = createImageUrlBuilder(sanityClient)
