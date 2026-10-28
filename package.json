@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vp dev",
+    "dev:ai": "node scripts/dev-ai-bridge.ts",
     "build": "vp build",
     "preview": "vp preview",
     "check": "vp check",

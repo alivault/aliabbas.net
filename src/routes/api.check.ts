@@ -6,6 +6,7 @@ import {
   encodeCheckStreamEvent,
 } from '~/lib/check/protocol'
 import type { CheckStreamEvent, ClaimPart } from '~/lib/check/protocol'
+import { runAi } from '~/lib/ai'
 import { errorResponse, isSameOrigin, rateLimitKey } from '~/lib/http'
 import { SOURCES, SOURCES_BY_ID } from '~/lib/knowledge'
 import { createFileRoute } from '@tanstack/react-router'
@@ -96,7 +97,7 @@ const gradeSchema = {
 
 /** One JSON-mode call. JSON mode does not stream, so each step is one call. */
 async function runJson(system: string, user: string, schema: object) {
-  const call = env.AI.run(MODEL, {
+  const call = runAi(MODEL, {
     messages: [
       { role: 'system', content: system },
       { role: 'user', content: user },

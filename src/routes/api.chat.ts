@@ -12,6 +12,7 @@ import {
   storeMessage,
   updateConversationStatus,
 } from '~/lib/chat-storage'
+import { runAi } from '~/lib/ai'
 import { errorResponse, isSameOrigin, rateLimitKey } from '~/lib/http'
 import { SOURCES, SOURCES_BY_ID, SOURCE_IDS } from '~/lib/knowledge'
 import { createFileRoute } from '@tanstack/react-router'
@@ -362,7 +363,7 @@ export const Route = createFileRoute('/api/chat')({
         }
 
         try {
-          const stream = await env.AI.run(MODEL, {
+          const stream = await runAi(MODEL, {
             messages: [{ role: 'system', content: SYSTEM_PROMPT }, ...messages],
             max_tokens: 800,
             temperature: 0.2,

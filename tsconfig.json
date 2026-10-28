@@ -21,5 +21,10 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*", "vite.config.ts", "worker-configuration.d.ts"]
+  "include": [
+    "src/**/*",
+    "scripts/**/*",
+    "vite.config.ts",
+    "worker-configuration.d.ts"
+  ]
 }
