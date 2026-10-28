@@ -16,20 +16,6 @@ export type WorkItem = {
 
 export const recentWork = [
   {
-    title: 'Whimcall',
-    category: 'Real-time communication',
-    description:
-      'Fast, browser-based video calls that start with a link—no guest account, download, or setup required.',
-    contribution:
-      'Product concept, brand and interface design, full-stack development, realtime media architecture, and deployment.',
-    href: 'https://whimcall.com/',
-    image: '/whimcall.png',
-    year: '2026',
-    tools: ['TanStack Start', 'WebRTC', 'Cloudflare'],
-    visual: 'whimcall',
-    caseStudy: 'whimcall',
-  },
-  {
     title: 'Pico',
     category: 'Developer tool · AI agents',
     description:
@@ -42,6 +28,20 @@ export const recentWork = [
     tools: ['React', 'Node.js', 'Local-first'],
     visual: 'pico',
     caseStudy: 'pico',
+  },
+  {
+    title: 'Whimcall',
+    category: 'Real-time communication',
+    description:
+      'Fast, browser-based video calls that start with a link—no guest account, download, or setup required.',
+    contribution:
+      'Product concept, brand and interface design, full-stack development, realtime media architecture, and deployment.',
+    href: 'https://whimcall.com/',
+    image: '/whimcall.png',
+    year: '2026',
+    tools: ['TanStack Start', 'WebRTC', 'Cloudflare'],
+    visual: 'whimcall',
+    caseStudy: 'whimcall',
   },
   {
     title: 'Chromagine',
