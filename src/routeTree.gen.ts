@@ -24,6 +24,7 @@ import { Route as AdminConversationsRouteImport } from './routes/admin.conversat
 import { Route as ApiChatRouteImport } from './routes/api.chat'
 import { Route as ArticleSlugRouteImport } from './routes/article.$slug'
 import { Route as NotesSlugRouteImport } from './routes/notes_.$slug'
+import { Route as WorkSlugRouteImport } from './routes/work_.$slug'
 import { Route as ApiAdminConversationsRouteImport } from './routes/api.admin.conversations'
 import { Route as ApiAuthSplatRouteImport } from './routes/api.auth.$'
 
@@ -102,6 +103,11 @@ const NotesSlugRoute = NotesSlugRouteImport.update({
   path: '/notes/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WorkSlugRoute = WorkSlugRouteImport.update({
+  id: '/work_/$slug',
+  path: '/work/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAdminConversationsRoute = ApiAdminConversationsRouteImport.update({
   id: '/api/admin/conversations',
   path: '/api/admin/conversations',
@@ -129,6 +135,7 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
+  '/work/$slug': typeof WorkSlugRoute
   '/api/admin/conversations': typeof ApiAdminConversationsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -148,6 +155,7 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
+  '/work/$slug': typeof WorkSlugRoute
   '/api/admin/conversations': typeof ApiAdminConversationsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -168,6 +176,7 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/notes_/$slug': typeof NotesSlugRoute
+  '/work_/$slug': typeof WorkSlugRoute
   '/api/admin/conversations': typeof ApiAdminConversationsRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/article/$slug'
     | '/notes/$slug'
+    | '/work/$slug'
     | '/api/admin/conversations'
     | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
@@ -208,6 +218,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/article/$slug'
     | '/notes/$slug'
+    | '/work/$slug'
     | '/api/admin/conversations'
     | '/api/auth/$'
   id:
@@ -227,6 +238,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/article/$slug'
     | '/notes_/$slug'
+    | '/work_/$slug'
     | '/api/admin/conversations'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
@@ -247,6 +259,7 @@ export interface RootRouteChildren {
   ApiChatRoute: typeof ApiChatRoute
   ArticleSlugRoute: typeof ArticleSlugRoute
   NotesSlugRoute: typeof NotesSlugRoute
+  WorkSlugRoute: typeof WorkSlugRoute
   ApiAdminConversationsRoute: typeof ApiAdminConversationsRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
@@ -358,6 +371,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotesSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/work_/$slug': {
+      id: '/work_/$slug'
+      path: '/work/$slug'
+      fullPath: '/work/$slug'
+      preLoaderRoute: typeof WorkSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/admin/conversations': {
       id: '/api/admin/conversations'
       path: '/api/admin/conversations'
@@ -391,6 +411,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiChatRoute: ApiChatRoute,
   ArticleSlugRoute: ArticleSlugRoute,
   NotesSlugRoute: NotesSlugRoute,
+  WorkSlugRoute: WorkSlugRoute,
   ApiAdminConversationsRoute: ApiAdminConversationsRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
