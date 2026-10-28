@@ -66,6 +66,12 @@ export default function Footer() {
               Lab
             </Link>
             <Link
+              to="/play"
+              className="hover:text-foreground transition-colors"
+            >
+              Play
+            </Link>
+            <Link
               to="/performance"
               className="hover:text-foreground transition-colors"
             >

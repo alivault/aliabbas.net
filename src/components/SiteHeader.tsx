@@ -20,7 +20,6 @@ const navigation = [
   { label: 'Experience', to: '/experience' as const },
   { label: 'Lab', to: '/lab' as const },
   { label: 'Notes', to: '/notes' as const },
-  { label: 'Play', to: '/play' as const },
   { label: 'Ask AI', to: '/chat' as const },
 ] as const
 

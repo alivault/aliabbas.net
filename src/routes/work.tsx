@@ -2,6 +2,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import Main from '~/components/Main'
 import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
+import SideProjects from '~/components/SideProjects'
 import WorkSection from '~/components/WorkSection'
 
 export const Route = createFileRoute('/work')({
@@ -41,6 +42,7 @@ function WorkPage() {
           </ScrollReveal>
         }
       />
+      <SideProjects />
     </Main>
   )
 }

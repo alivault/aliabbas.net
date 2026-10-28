@@ -12,6 +12,7 @@ import '@fontsource/chakra-petch/latin-700-italic.css'
 const GAME_URL = 'https://averno.aliabbas.net'
 const VERSION = '0.1'
 const UPDATED = '9 October 2026'
+const NOTE_SLUG = 'averno-engineering-a-3d-shooter-for-the-browser'
 
 const TITLE = 'Averno — a free 3D shooter you play in your browser'
 const DESCRIPTION =
@@ -318,6 +319,15 @@ function PlayPage() {
                 builds the robots in Blender and exports them as glTF. The sound
                 effects are synthesized in code, and the music plays live
                 through the Web Audio API.
+              </p>
+              <p>
+                <Link
+                  to="/notes/$slug"
+                  params={{ slug: NOTE_SLUG }}
+                  className="text-foreground hover:text-foreground/70 underline underline-offset-4"
+                >
+                  Read how Averno is built, with measured sizes and bake times
+                </Link>
               </p>
             </div>
             <ul className="mt-8 flex flex-wrap gap-2">
