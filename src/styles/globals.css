@@ -545,6 +545,13 @@ textarea {
   margin-inline-start: -0.04em;
 }
 
+/* The text box is taller than the 0.78 line, so it reaches over the links
+   above. Only the link box, which matches the visible letters, takes
+   clicks. */
+.site-footer-wordmark > span {
+  pointer-events: none;
+}
+
 .footer-link {
   background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px
     no-repeat;
