@@ -3,7 +3,7 @@
 @import 'tw-animate-css';
 @import '@fontsource-variable/dm-sans';
 
-@plugin "@tailwindcss/typography";
+@plugin '@tailwindcss/typography';
 
 @theme inline {
   --font-sans: 'DM Sans Variable', sans-serif;
