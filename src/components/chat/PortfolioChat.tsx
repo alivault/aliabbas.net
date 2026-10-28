@@ -450,7 +450,7 @@ export default function PortfolioChat() {
           </MessageScrollerViewport>
           <MessageScrollerButton
             size="icon-lg"
-            className="border-foreground/15 bg-background/80 text-foreground hover:bg-brand hover:text-brand-foreground rounded-full backdrop-blur-[12px] backdrop-saturate-[1.8]"
+            className="border-foreground/15 bg-background text-foreground hover:bg-brand hover:text-brand-foreground rounded-full shadow-[0_4px_16px_-4px_rgb(0_0_0/0.18)]"
           />
         </MessageScroller>
       </MessageScrollerProvider>
