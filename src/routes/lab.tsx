@@ -70,7 +70,7 @@ function LabPage() {
               className="mt-2"
             />
 
-            <div className="mt-12 flex flex-col gap-16 lg:gap-24">
+            <div className="mt-10 flex flex-col gap-16 lg:gap-24 [&>:first-child>section]:border-t-0 [&>:first-child>section]:pt-0">
               <StreamingSpecimen />
               <CitationDrawerSpecimen />
               <ResizerSpecimen />
