@@ -172,8 +172,11 @@ export function HomeHero() {
               onPointerLeave={() => setInteracting(false)}
               onFocus={() => setInteracting(true)}
               onBlur={() => setInteracting(false)}
-              whileHover={reduceMotion ? undefined : { scale: 1.015 }}
-              whileTap={reduceMotion ? undefined : { scale: 0.985 }}
+              // Always set, so the server and the client render the same
+              // attributes. The scale is too small to matter for reduced
+              // motion.
+              whileHover={{ scale: 1.015 }}
+              whileTap={{ scale: 0.985 }}
               className="enter-blur text-brand focus-visible:ring-brand/70 pointer-events-auto inline-block cursor-pointer border-0 bg-transparent p-0 text-center normal-case outline-none focus-visible:ring-2 lg:text-left"
               // The name is only the word, so the heading reads as one
               // sentence. The title tells what a press does.
@@ -205,7 +208,10 @@ export function HomeHero() {
         </div>
 
         <div className="relative flex justify-center pt-5 sm:mt-auto">
-          {!reduceMotion && (
+          {/* Hidden with CSS, not by a hook, so the server and the client
+              render the same. With reduced motion, the word does not
+              change by itself, so there is nothing to pause. */}
+          {
             <button
               type="button"
               style={enterDelay(ARROW_DELAY)}
@@ -215,7 +221,7 @@ export function HomeHero() {
               title={
                 paused ? 'Play the changing word' : 'Pause the changing word'
               }
-              className="enter-blur border-foreground/20 text-foreground/55 hover:text-foreground focus-visible:ring-brand/70 pointer-events-auto absolute bottom-2 left-0 flex size-10 items-center justify-center rounded-full border outline-none focus-visible:ring-2"
+              className="enter-blur border-foreground/20 text-foreground/55 hover:text-foreground focus-visible:ring-brand/70 pointer-events-auto absolute bottom-2 left-0 flex size-10 items-center justify-center rounded-full border outline-none focus-visible:ring-2 motion-reduce:hidden"
             >
               {paused ? (
                 <Play aria-hidden="true" className="size-4" />
@@ -223,7 +229,7 @@ export function HomeHero() {
                 <Pause aria-hidden="true" className="size-4" />
               )}
             </button>
-          )}
+          }
           <a
             href="#stack-marquee"
             style={enterDelay(ARROW_DELAY)}

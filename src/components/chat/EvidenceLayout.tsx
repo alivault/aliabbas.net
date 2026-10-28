@@ -130,6 +130,14 @@ export default function EvidenceLayout({
             onPointerDown={(event) => {
               pressRef.current = { x: event.clientX, y: event.clientY }
             }}
+            onKeyDown={(event) => {
+              // The library's Enter collapses only the first panel, and the
+              // conversation cannot collapse. Enter toggles the evidence
+              // panel instead, like a click.
+              if (event.key !== 'Enter') return
+              event.preventDefault()
+              onToggle()
+            }}
             onClick={(event) => {
               const press = pressRef.current
               pressRef.current = null

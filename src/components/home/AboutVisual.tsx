@@ -86,15 +86,21 @@ function DraggableLogo() {
     >
       <motion.div
         ref={logoRef}
-        drag={!reduceMotion}
+        // Props that change the HTML do not depend on the reduced-motion
+        // hook, which is null on the server. Dragging is the visitor's own
+        // motion, so it stays on; only the entrance becomes instant.
+        drag
         dragConstraints={dragConstraints}
         dragElastic={0.08}
         dragMomentum={false}
-        initial={reduceMotion ? undefined : { opacity: 0, scale: 0.94 }}
-        whileInView={reduceMotion ? undefined : { opacity: 1, scale: 1 }}
+        initial={{ opacity: 0, scale: 0.94 }}
+        whileInView={{ opacity: 1, scale: 1 }}
         whileDrag={{ cursor: 'grabbing', scale: 1.03 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+        transition={{
+          duration: reduceMotion ? 0 : 0.8,
+          ease: [0.22, 1, 0.36, 1],
+        }}
         className="border-foreground/30 pointer-events-auto relative aspect-square w-[48%] max-w-[360px] cursor-grab touch-none rounded-full border shadow-[0_18px_38px_rgb(0_0_0_/_18%)] backdrop-blur-md sm:w-[44%]"
         aria-label="Draggable logo"
       >

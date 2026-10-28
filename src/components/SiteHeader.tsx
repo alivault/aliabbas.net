@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from '@tanstack/react-router'
+import { Link, useLocation } from '@tanstack/react-router'
 import { ArrowUpRight } from 'lucide-react'
 import { motion, useReducedMotion, useScroll, useTransform } from 'motion/react'
 import type { Variants } from 'motion/react'
@@ -9,6 +9,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '~/components/ui/sheet'
+import { cn } from '~/lib/utils'
 import Logo from './Logo'
 import MonoLabel from './MonoLabel'
 import Title from './Title'
@@ -17,6 +18,7 @@ const navigation = [
   { label: 'Work', to: '/work' as const },
   { label: 'Skills', to: '/skills' as const },
   { label: 'Experience', to: '/experience' as const },
+  { label: 'Lab', to: '/lab' as const },
   { label: 'Notes', to: '/notes' as const },
   { label: 'Play', to: '/play' as const },
   { label: 'Ask AI', to: '/chat' as const },
@@ -143,6 +145,10 @@ function SpinMenuIcon({ open }: { open: boolean }) {
 
 export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false)
+  // The claim checker is the second mode of Ask AI.
+  const onCheck = useLocation({
+    select: (location) => location.pathname.startsWith('/check'),
+  })
   const { scrollY } = useScroll()
   const headerChromeOpacity = useTransform(scrollY, [0, 96], [0, 1])
 
@@ -174,7 +180,10 @@ export default function SiteHeader() {
               <Link
                 key={item.label}
                 to={item.to}
-                className="hover:text-foreground transition-colors"
+                className={cn(
+                  'hover:text-foreground transition-colors',
+                  item.to === '/chat' && onCheck && 'text-foreground',
+                )}
                 activeProps={{ className: 'text-foreground' }}
               >
                 {item.label}
