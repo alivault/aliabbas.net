@@ -4,20 +4,23 @@ import HomeExperience from '~/components/HomeExperience'
 export const Route = createFileRoute('/')({
   head: () => ({
     meta: [
-      { title: 'Ali Abbas — Full-stack Product Engineer' },
+      {
+        title:
+          'Ali Abbas — Senior Frontend Engineer, Interactive & Streaming Interfaces',
+      },
       {
         name: 'description',
         content:
-          'Full-stack product engineer with a strong frontend design background. I design and build expressive digital products.',
+          'Senior frontend engineer for interactive and streaming interfaces: state machines, motion, design systems, performance and accessibility.',
       },
       {
         property: 'og:title',
-        content: 'Ali Abbas — Full-stack Product Engineer',
+        content: 'Ali Abbas — Senior Frontend Engineer',
       },
       {
         property: 'og:description',
         content:
-          'Full-stack product engineer with a strong frontend design background.',
+          'Senior frontend engineer for interactive and streaming interfaces: state machines, motion, design systems, performance and accessibility.',
       },
       { property: 'og:url', content: 'https://aliabbas.net' },
       { property: 'og:type', content: 'website' },
@@ -35,12 +38,12 @@ export const Route = createFileRoute('/')({
       { name: 'twitter:card', content: 'summary_large_image' },
       {
         name: 'twitter:title',
-        content: 'Ali Abbas — Full-stack Product Engineer',
+        content: 'Ali Abbas — Senior Frontend Engineer',
       },
       {
         name: 'twitter:description',
         content:
-          'I design and build expressive digital products from interface to infrastructure.',
+          'Senior frontend engineer for interactive and streaming interfaces: state machines, motion, design systems, performance and accessibility.',
       },
       {
         name: 'twitter:image',

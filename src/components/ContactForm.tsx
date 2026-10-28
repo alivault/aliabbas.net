@@ -117,15 +117,15 @@ export default function ContactForm() {
           <span className="text-brand block">remarkable.</span>
         </PageHeading>
         <p className="text-foreground/55 mt-9 max-w-md text-base leading-7">
-          I’m interested in product engineering and creative frontend roles
-          where design quality matters as much as technical execution. If that
-          sounds like your team, I’d like to hear from you.
+          I’m interested in senior frontend roles on interactive and streaming
+          interfaces, where design quality matters as much as technical
+          execution. If that sounds like your team, I’d like to hear from you.
         </p>
         <div className="border-foreground/20 mt-12 grid grid-cols-2 gap-5 border-t pt-6 text-xs lg:mt-auto">
           <div>
             <span className="text-foreground/35 block">Best fit</span>
             <span className="mt-2 block font-bold">
-              Product & design engineering
+              Senior frontend · Interactive UI
             </span>
           </div>
           <div>

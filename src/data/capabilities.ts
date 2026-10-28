@@ -1,26 +1,26 @@
 export const capabilities = [
   {
     number: '01',
-    title: 'Product thinking',
+    title: 'Streaming state',
     description:
-      'I turn fuzzy requirements into focused user flows, clear priorities, and interfaces people understand quickly.',
+      'I model every state a screen can enter: loading, streaming, interrupted, error and done. Typed state machines keep the interface correct when the network is slow or the user stops halfway.',
   },
   {
     number: '02',
-    title: 'Frontend systems',
+    title: 'Motion and interaction',
     description:
-      'Responsive React interfaces, design systems, accessible interactions, motion, and performance built for production.',
+      'Spring physics, resizers, drawers and layout transitions that keep their state. Every motion has a keyboard path and respects reduced-motion settings.',
   },
   {
     number: '03',
-    title: 'Application engineering',
+    title: 'Design systems',
     description:
-      'Typed APIs, authentication, realtime data, forms, content workflows, and the unglamorous details that make software reliable.',
+      'Tokens, shadcn/ui and Base UI components, and written rules, so designers, engineers and coding agents build inside one system.',
   },
   {
     number: '04',
-    title: 'Creative direction',
+    title: 'Performance and accessibility',
     description:
-      'A strong visual point of view, translated into art direction and interaction—not lost between a mockup and the browser.',
+      'Screen-reader announcements, visible focus and Core Web Vitals that I measure on real visits. I measure a screen before I call it fast.',
   },
 ] as const

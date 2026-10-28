@@ -42,7 +42,7 @@ export const Route = createRootRouteWithContext<{
       {
         name: 'description',
         content:
-          'Full-stack product engineer with a strong frontend design background.',
+          'Senior frontend engineer for interactive and streaming interfaces: state machines, motion, design systems, performance and accessibility.',
       },
     ],
     links: [

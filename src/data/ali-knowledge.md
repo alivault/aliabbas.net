@@ -11,13 +11,15 @@ clients. Do not infer facts that are not stated here.
 - Portfolio: https://aliabbas.net
 - LinkedIn: https://www.linkedin.com/in/webdevali/
 - GitHub: https://github.com/alivault
-- Public positioning: full-stack product engineer with a strong frontend design
-  background.
+- Public positioning: senior frontend engineer for interactive and streaming
+  interfaces, with a strong design background and full-stack range.
 - Location/work mode shown on the site: US / Remote.
 - Current status shown on the site: open to opportunities.
-- Primary focus: product engineering and creative frontend.
-- Best-fit work: product and design engineering roles where design quality
-  matters as much as technical execution.
+- Primary focus: senior frontend engineering for interactive and streaming
+  interfaces: state machines, motion, design systems, performance and
+  accessibility.
+- Best-fit work: senior frontend roles where design quality matters as much as
+  technical execution.
 - Contact: use https://aliabbas.net/contact. The site says Ali usually responds
   within one to two days.
 
@@ -30,34 +32,42 @@ product without losing the original design intent during implementation.
 
 ## Capabilities and working strengths
 
-### Product thinking
+### Streaming state
 
-Ali turns fuzzy requirements into focused user flows, clear priorities, and
-interfaces people can understand quickly. He values defining the product
-problem, constraints, smallest coherent solution, edge cases, and evidence of
-success before treating implementation as complete.
+Ali models every state a screen can enter: loading, streaming, interrupted,
+error, and done. The portfolio chat uses a typed state machine with Stop,
+Retry, and Edit-and-resend, typed Server-Sent Events, and citations that the
+server checks before it sends them. Pico's live updates use a reliable state
+baseline followed by patch-friendly updates. He also turns fuzzy requirements
+into focused user flows, and defines the problem, constraints, edge cases, and
+evidence of success before he treats implementation as complete.
 
-### Frontend systems
+### Motion and interaction
 
-Ali builds responsive React interfaces, design systems, accessible
-interactions, motion, and performance-minded production experiences. His site
-emphasizes both visual ambition and engineering rigor, including attention to
-the final details in the shipped interface.
+Ali builds spring-based motion, resizable and collapsible panels, drawers with
+snap points, and layout transitions that keep their state. The portfolio's
+evidence panel is a resizable panel with a spring collapse, a rail, and a
+mobile drawer. He gives every interaction a keyboard path and respects
+reduced-motion settings. He brings a strong visual point of view to art
+direction and interaction.
 
-### Application engineering
+### Design systems
 
-Ali works with typed APIs, authentication, realtime data, forms, content
-workflows, and the operational details that make software reliable. His own
+Ali builds design systems from tokens, shadcn/ui and Base UI components, and
+written rules, so designers, engineers, and coding agents build inside one
+system. His career moved from events and brand leadership through product and
+web design into senior frontend engineering, so he communicates well across
+design, product, and engineering.
+
+### Performance and accessibility
+
+Ali treats performance and accessibility as measured requirements: keyboard
+paths, visible focus, screen-reader announcements for streamed text, and Core
+Web Vitals measured on real visits. He also works across the stack: typed
+APIs, authentication, realtime data, forms, and content workflows. His own
 portfolio is a production full-stack system with server rendering, managed
 content, authentication, realtime comments, transactional email, and edge
 deployment.
-
-### Creative direction
-
-Ali brings a strong visual point of view to art direction and interaction. His
-career moved from events and brand leadership through product and web design
-into senior frontend and full-stack product engineering, giving him experience
-communicating across design, product, and engineering disciplines.
 
 ### Collaboration and approach
 

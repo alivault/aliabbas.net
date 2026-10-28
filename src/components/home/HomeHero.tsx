@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ArrowDown } from 'lucide-react'
+import { ArrowDown, Pause, Play } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import type { Variants } from 'motion/react'
 import PageHeading from '~/components/PageHeading'
@@ -8,17 +8,17 @@ import ConnectedGlobe from './ConnectedGlobe'
 const MotionPageHeading = motion.create(PageHeading)
 
 const productDescriptors = [
-  'full-stack',
-  'thoughtful',
-  'intuitive',
+  'interactive',
+  'streaming',
   'accessible',
   'performant',
-  'scalable',
   'resilient',
+  'intuitive',
   'polished',
-  'secure',
   'cohesive',
 ] as const
+
+const AUTOPLAY_MS = 4000
 
 const scrambleCharacters = Array.from(
   'abcdefghijklmnopqrstuvwxyz0123456789∆⟐⌬⎔⏣◈◇◆░▒▓╳⌁∿λΩΣΨϟ',
@@ -127,13 +127,12 @@ function TitleCharacters({ text }: { text: string }) {
   ))
 }
 
+// Screen readers do not reliably read aria-label on a plain span, so the
+// line has real, visually hidden text. The animated letters are hidden.
 function TitleLine({ text, className }: { text: string; className: string }) {
   return (
-    <motion.span
-      variants={titleLineVariants}
-      className={className}
-      aria-label={text}
-    >
+    <motion.span variants={titleLineVariants} className={className}>
+      <span className="sr-only">{text}</span>
       <TitleCharacters text={text} />
     </motion.span>
   )
@@ -146,6 +145,13 @@ export function HomeHero() {
     productDescriptors[0],
   )
   const [isScrambling, setIsScrambling] = useState(false)
+  // The word changes by itself. WCAG 2.2.2 needs a way to pause that, so the
+  // visitor can pause it, and it also pauses on hover and focus, while the
+  // tab is hidden, and when the visitor prefers reduced motion.
+  const [paused, setPaused] = useState(false)
+  const [interacting, setInteracting] = useState(false)
+  const [pageHidden, setPageHidden] = useState(false)
+  const autoplay = !paused && !interacting && !pageHidden && !reduceMotion
   const scrambleIntervalRef = useRef<number | null>(null)
 
   useEffect(
@@ -195,9 +201,19 @@ export function HomeHero() {
   }, [descriptorIndex, isScrambling, reduceMotion])
 
   useEffect(() => {
-    const autoplayInterval = window.setInterval(changeDescriptor, 4000)
+    const update = () => setPageHidden(document.hidden)
+    update()
+    document.addEventListener('visibilitychange', update)
+    return () => document.removeEventListener('visibilitychange', update)
+  }, [])
+
+  useEffect(() => {
+    if (!autoplay) return
+    const autoplayInterval = window.setInterval(changeDescriptor, AUTOPLAY_MS)
     return () => window.clearInterval(autoplayInterval)
-  }, [changeDescriptor])
+  }, [autoplay, changeDescriptor])
+
+  const currentDescriptor = productDescriptors[descriptorIndex]
 
   return (
     <section className="site-noise bg-background text-foreground relative flex flex-1 overflow-hidden pt-[72px]">
@@ -222,12 +238,20 @@ export function HomeHero() {
               type="button"
               variants={titleWordVariants}
               onClick={changeDescriptor}
+              onPointerEnter={() => setInteracting(true)}
+              onPointerLeave={() => setInteracting(false)}
+              onFocus={() => setInteracting(true)}
+              onBlur={() => setInteracting(false)}
               whileHover={reduceMotion ? undefined : { scale: 1.015 }}
               whileTap={reduceMotion ? undefined : { scale: 0.985 }}
               className="text-brand focus-visible:ring-brand/70 pointer-events-auto inline-block cursor-pointer border-0 bg-transparent p-0 text-center normal-case outline-none focus-visible:ring-2 lg:text-left"
-              aria-label={`Change descriptor. Current descriptor: ${productDescriptors[descriptorIndex]}`}
+              // The name is only the word, so the heading reads as one
+              // sentence. The title tells what a press does.
+              aria-label={currentDescriptor}
+              title="Show the next word"
             >
               <motion.span
+                aria-hidden="true"
                 className="block"
                 animate={
                   isScrambling
@@ -249,7 +273,26 @@ export function HomeHero() {
           </MotionPageHeading>
         </div>
 
-        <div className="flex justify-center pt-5 sm:mt-auto">
+        <div className="relative flex justify-center pt-5 sm:mt-auto">
+          {!reduceMotion && (
+            <motion.button
+              type="button"
+              variants={introItemVariants}
+              onClick={() => setPaused((value) => !value)}
+              aria-pressed={paused}
+              aria-label="Pause the changing word"
+              title={
+                paused ? 'Play the changing word' : 'Pause the changing word'
+              }
+              className="border-foreground/20 text-foreground/55 hover:text-foreground focus-visible:ring-brand/70 pointer-events-auto absolute bottom-2 left-0 flex size-10 items-center justify-center rounded-full border outline-none focus-visible:ring-2"
+            >
+              {paused ? (
+                <Play aria-hidden="true" className="size-4" />
+              ) : (
+                <Pause aria-hidden="true" className="size-4" />
+              )}
+            </motion.button>
+          )}
           <motion.a
             variants={introItemVariants}
             href="#stack-marquee"

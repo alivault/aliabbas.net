@@ -37,7 +37,7 @@ export const Route = createFileRoute('/skills')({
       {
         name: 'description',
         content:
-          'Product thinking, frontend systems, application engineering, and creative direction.',
+          'Streaming state, motion and interaction, design systems, and performance and accessibility.',
       },
     ],
   }),
@@ -61,9 +61,9 @@ function SkillsPage() {
               </PageHeading>
             </div>
             <p className="text-foreground/55 max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
-              I bridge product design and full-stack engineering, so the idea
-              survives implementation—and the implementation holds up after
-              launch.
+              I bridge product design and frontend engineering, so the idea
+              survives implementation—and the interface holds up in every state
+              after launch.
             </p>
           </ScrollReveal>
 

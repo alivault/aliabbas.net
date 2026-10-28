@@ -14,7 +14,7 @@ export const Route = createFileRoute('/experience')({
       {
         name: 'description',
         content:
-          'Product engineering and creative frontend experience across ambitious digital products.',
+          'Senior frontend engineering and design experience across interactive, streaming and realtime products.',
       },
     ],
   }),
