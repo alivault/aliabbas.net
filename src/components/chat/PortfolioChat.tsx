@@ -7,6 +7,7 @@ import {
 } from 'react'
 import type { KeyboardEvent } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
+import ModeSwitch from '~/components/check/ModeSwitch'
 import MonoLabel from '~/components/MonoLabel'
 import PageHeading from '~/components/PageHeading'
 import {
@@ -505,6 +506,7 @@ export default function PortfolioChat() {
         <section className="flex min-h-0 flex-1 flex-col">
           <div className="flex min-h-0 flex-1 items-end justify-start overflow-y-auto px-4 py-8 sm:px-6 sm:py-10 lg:items-center lg:justify-center lg:py-12">
             <div className="flex w-full max-w-3xl flex-col items-start lg:items-center">
+              <ModeSwitch current="/chat" className="mb-8" />
               <PageHeading className="text-left lg:text-center">
                 Ask about <em className="text-brand">Ali.</em>
               </PageHeading>

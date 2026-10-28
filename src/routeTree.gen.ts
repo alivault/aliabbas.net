@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ArticlesRouteImport } from './routes/articles'
 import { Route as ChatRouteImport } from './routes/chat'
+import { Route as CheckRouteImport } from './routes/check'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ExperienceRouteImport } from './routes/experience'
 import { Route as NotesRouteImport } from './routes/notes'
@@ -22,6 +23,7 @@ import { Route as SkillsRouteImport } from './routes/skills'
 import { Route as WorkRouteImport } from './routes/work'
 import { Route as AdminConversationsRouteImport } from './routes/admin.conversations'
 import { Route as ApiChatRouteImport } from './routes/api.chat'
+import { Route as ApiCheckRouteImport } from './routes/api.check'
 import { Route as ArticleSlugRouteImport } from './routes/article.$slug'
 import { Route as NotesSlugRouteImport } from './routes/notes_.$slug'
 import { Route as ApiAdminConversationsRouteImport } from './routes/api.admin.conversations'
@@ -40,6 +42,11 @@ const ArticlesRoute = ArticlesRouteImport.update({
 const ChatRoute = ChatRouteImport.update({
   id: '/chat',
   path: '/chat',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckRoute = CheckRouteImport.update({
+  id: '/check',
+  path: '/check',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -92,6 +99,11 @@ const ApiChatRoute = ApiChatRouteImport.update({
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCheckRoute = ApiCheckRouteImport.update({
+  id: '/api/check',
+  path: '/api/check',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ArticleSlugRoute = ArticleSlugRouteImport.update({
   id: '/article/$slug',
   path: '/article/$slug',
@@ -117,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/articles': typeof ArticlesRoute
   '/chat': typeof ChatRoute
+  '/check': typeof CheckRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
   '/notes': typeof NotesRoute
@@ -127,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/work': typeof WorkRoute
   '/admin/conversations': typeof AdminConversationsRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/check': typeof ApiCheckRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/api/admin/conversations': typeof ApiAdminConversationsRoute
@@ -136,6 +150,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/articles': typeof ArticlesRoute
   '/chat': typeof ChatRoute
+  '/check': typeof CheckRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
   '/notes': typeof NotesRoute
@@ -146,6 +161,7 @@ export interface FileRoutesByTo {
   '/work': typeof WorkRoute
   '/admin/conversations': typeof AdminConversationsRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/check': typeof ApiCheckRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/api/admin/conversations': typeof ApiAdminConversationsRoute
@@ -156,6 +172,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/articles': typeof ArticlesRoute
   '/chat': typeof ChatRoute
+  '/check': typeof CheckRoute
   '/contact': typeof ContactRoute
   '/experience': typeof ExperienceRoute
   '/notes': typeof NotesRoute
@@ -166,6 +183,7 @@ export interface FileRoutesById {
   '/work': typeof WorkRoute
   '/admin/conversations': typeof AdminConversationsRoute
   '/api/chat': typeof ApiChatRoute
+  '/api/check': typeof ApiCheckRoute
   '/article/$slug': typeof ArticleSlugRoute
   '/notes_/$slug': typeof NotesSlugRoute
   '/api/admin/conversations': typeof ApiAdminConversationsRoute
@@ -177,6 +195,7 @@ export interface FileRouteTypes {
     | '/'
     | '/articles'
     | '/chat'
+    | '/check'
     | '/contact'
     | '/experience'
     | '/notes'
@@ -187,6 +206,7 @@ export interface FileRouteTypes {
     | '/work'
     | '/admin/conversations'
     | '/api/chat'
+    | '/api/check'
     | '/article/$slug'
     | '/notes/$slug'
     | '/api/admin/conversations'
@@ -196,6 +216,7 @@ export interface FileRouteTypes {
     | '/'
     | '/articles'
     | '/chat'
+    | '/check'
     | '/contact'
     | '/experience'
     | '/notes'
@@ -206,6 +227,7 @@ export interface FileRouteTypes {
     | '/work'
     | '/admin/conversations'
     | '/api/chat'
+    | '/api/check'
     | '/article/$slug'
     | '/notes/$slug'
     | '/api/admin/conversations'
@@ -215,6 +237,7 @@ export interface FileRouteTypes {
     | '/'
     | '/articles'
     | '/chat'
+    | '/check'
     | '/contact'
     | '/experience'
     | '/notes'
@@ -225,6 +248,7 @@ export interface FileRouteTypes {
     | '/work'
     | '/admin/conversations'
     | '/api/chat'
+    | '/api/check'
     | '/article/$slug'
     | '/notes_/$slug'
     | '/api/admin/conversations'
@@ -235,6 +259,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   ArticlesRoute: typeof ArticlesRoute
   ChatRoute: typeof ChatRoute
+  CheckRoute: typeof CheckRoute
   ContactRoute: typeof ContactRoute
   ExperienceRoute: typeof ExperienceRoute
   NotesRoute: typeof NotesRoute
@@ -245,6 +270,7 @@ export interface RootRouteChildren {
   WorkRoute: typeof WorkRoute
   AdminConversationsRoute: typeof AdminConversationsRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiCheckRoute: typeof ApiCheckRoute
   ArticleSlugRoute: typeof ArticleSlugRoute
   NotesSlugRoute: typeof NotesSlugRoute
   ApiAdminConversationsRoute: typeof ApiAdminConversationsRoute
@@ -272,6 +298,13 @@ declare module '@tanstack/react-router' {
       path: '/chat'
       fullPath: '/chat'
       preLoaderRoute: typeof ChatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/check': {
+      id: '/check'
+      path: '/check'
+      fullPath: '/check'
+      preLoaderRoute: typeof CheckRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -344,6 +377,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/check': {
+      id: '/api/check'
+      path: '/api/check'
+      fullPath: '/api/check'
+      preLoaderRoute: typeof ApiCheckRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/article/$slug': {
       id: '/article/$slug'
       path: '/article/$slug'
@@ -379,6 +419,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ArticlesRoute: ArticlesRoute,
   ChatRoute: ChatRoute,
+  CheckRoute: CheckRoute,
   ContactRoute: ContactRoute,
   ExperienceRoute: ExperienceRoute,
   NotesRoute: NotesRoute,
@@ -389,6 +430,7 @@ const rootRouteChildren: RootRouteChildren = {
   WorkRoute: WorkRoute,
   AdminConversationsRoute: AdminConversationsRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiCheckRoute: ApiCheckRoute,
   ArticleSlugRoute: ArticleSlugRoute,
   NotesSlugRoute: NotesSlugRoute,
   ApiAdminConversationsRoute: ApiAdminConversationsRoute,

@@ -39,6 +39,9 @@
   --color-ring: var(--ring);
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
+  --color-verified: var(--verified);
+  --color-partial: var(--partial);
+  --color-contradicted: var(--contradicted);
 }
 
 :root {
@@ -62,6 +65,11 @@
   --accent: color-mix(in oklab, var(--foreground) 10%, transparent);
   --accent-foreground: var(--foreground);
   --destructive: oklch(0.58 0.22 27);
+  /* Claim checker grades. Each grade also has an icon and a label, so
+     color is never the only signal. */
+  --verified: oklch(0.52 0.12 152);
+  --partial: oklch(0.58 0.13 70);
+  --contradicted: oklch(0.55 0.2 27);
   --border: oklch(0.82 0.012 94);
   --input: oklch(0.82 0.012 94);
   --ring: color-mix(in oklab, var(--foreground) 50%, transparent);
@@ -100,6 +108,9 @@
     --muted: oklch(0.245 0.008 85);
     --muted-foreground: oklch(0.7 0.01 94);
     --destructive: oklch(0.7 0.19 25);
+    --verified: oklch(0.76 0.13 152);
+    --partial: oklch(0.8 0.13 80);
+    --contradicted: oklch(0.72 0.17 25);
     --border: oklch(0.32 0.008 85);
     --input: oklch(0.32 0.008 85);
     --page-base: oklch(0.06 0.004 85);
