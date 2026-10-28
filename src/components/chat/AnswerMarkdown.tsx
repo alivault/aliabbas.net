@@ -26,6 +26,8 @@ export type CitationContextValue = {
    * already shows this answer, because the panel highlights the source.
    */
   preview: boolean
+  /** The origin to show for a source without a link. */
+  fallbackOrigin?: string
   onCite: (sourceId: string) => void
   onHover: (sourceId: string | null) => void
 }
@@ -127,7 +129,9 @@ function CitationChip({ sourceId }: { sourceId: string }) {
         </p>
         <p className="text-foreground/40 flex items-center justify-between gap-3 font-mono text-[10px] uppercase">
           <span className="truncate">
-            {source.href ? hostname(source.href) : 'Ali’s public record'}
+            {source.href
+              ? hostname(source.href)
+              : (context.fallbackOrigin ?? 'Ali’s public record')}
           </span>
           <span className="shrink-0">Select to open</span>
         </p>

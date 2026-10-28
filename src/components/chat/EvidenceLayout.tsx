@@ -56,6 +56,7 @@ export default function EvidenceLayout({
   evidence,
   evidenceId,
   groupElementRef,
+  layoutId = 'ask-ali-evidence-layout',
   onCollapsedChange,
   onEvidenceKeyDown,
   onToggle,
@@ -69,6 +70,8 @@ export default function EvidenceLayout({
   evidence: ReactNode
   evidenceId: string
   groupElementRef: RefObject<HTMLDivElement | null>
+  /** The key for the saved layout, so two layouts do not share it. */
+  layoutId?: string
   onCollapsedChange: (collapsed: boolean) => void
   onEvidenceKeyDown: KeyboardEventHandler<HTMLElement>
   /** Open or collapse the panel, for a click on the handle. */
@@ -84,7 +87,7 @@ export default function EvidenceLayout({
   const pressRef = useRef<{ x: number; y: number } | null>(null)
 
   const { defaultLayout, onLayoutChanged } = useDefaultLayout({
-    id: 'ask-ali-evidence-layout',
+    id: layoutId,
     panelIds: showEvidence ? ['conversation', 'evidence'] : ['conversation'],
     storage: layoutStorage,
   })
