@@ -1,4 +1,4 @@
-import { useEffect, useId, useState } from 'react'
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
 import MonoLabel from './MonoLabel'
 
 type MermaidDiagramValue = {
@@ -19,6 +19,26 @@ function loadMermaid() {
   return mermaidPromise
 }
 
+const DIAGRAM_PADDING = 8
+
+/**
+ * Mermaid sizes the SVG while it is off screen. With reduced motion on, that
+ * size can be wrong (much too large), and the diagram shows very small. Size
+ * the SVG again from its content once it is in the page.
+ */
+function fitSvgToContent(container: HTMLElement | null) {
+  const svg = container?.querySelector('svg')
+  if (!svg) return
+  const box = svg.getBBox()
+  if (!box.width || !box.height) return
+  const width = box.width + DIAGRAM_PADDING * 2
+  svg.setAttribute(
+    'viewBox',
+    `${box.x - DIAGRAM_PADDING} ${box.y - DIAGRAM_PADDING} ${width} ${box.height + DIAGRAM_PADDING * 2}`,
+  )
+  svg.style.maxWidth = `${width}px`
+}
+
 function getPrefersDarkMode() {
   return (
     typeof window !== 'undefined' &&
@@ -30,6 +50,11 @@ export function MermaidDiagram({ value }: { value: MermaidDiagramValue }) {
   const renderId = `mermaid-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`
   const [state, setState] = useState<RenderState>({ status: 'loading' })
   const [prefersDarkMode, setPrefersDarkMode] = useState(getPrefersDarkMode)
+  const svgContainerRef = useRef<HTMLDivElement>(null)
+
+  useLayoutEffect(() => {
+    if (state.status === 'rendered') fitSvgToContent(svgContainerRef.current)
+  }, [state])
 
   useEffect(() => {
     const colorScheme = window.matchMedia('(prefers-color-scheme: dark)')
@@ -90,6 +115,7 @@ export function MermaidDiagram({ value }: { value: MermaidDiagramValue }) {
     <figure className="not-prose border-foreground/15 my-10 border-y py-8 sm:py-10">
       {state.status === 'rendered' ? (
         <div
+          ref={svgContainerRef}
           className="flex min-h-52 items-center justify-center overflow-x-auto [&_svg]:h-auto [&_svg]:max-w-full"
           role="img"
           aria-label={value.caption || 'Architecture diagram'}
