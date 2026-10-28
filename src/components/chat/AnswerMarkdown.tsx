@@ -2,6 +2,12 @@ import { createContext, memo, use } from 'react'
 import type { ComponentProps } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import Title from '~/components/Title'
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '~/components/ui/hover-card'
+import type { ChatSource } from '~/lib/chat/protocol'
 import { splitStreamingMarkdown } from '~/lib/chat/streaming-markdown'
 import { cn } from '~/lib/utils'
 import ReactMarkdown from 'react-markdown'
@@ -10,11 +16,16 @@ import remarkGfm from 'remark-gfm'
 
 export type CitationContextValue = {
   sourceNumber: (sourceId: string) => number | undefined
-  sourceTitle: (sourceId: string) => string | undefined
+  getSource: (sourceId: string) => ChatSource | undefined
   activeSourceId: string | null
   hoveredSourceId: string | null
   /** True while the answer streams. New chips animate in only then. */
   animateIn: boolean
+  /**
+   * Show a preview of the source on hover. Off when the evidence panel
+   * already shows this answer, because the panel highlights the source.
+   */
+  preview: boolean
   onCite: (sourceId: string) => void
   onHover: (sourceId: string | null) => void
 }
@@ -23,20 +34,42 @@ export const CitationContext = createContext<CitationContextValue | null>(null)
 
 const CITE_HREF_PREFIX = '#cite-'
 
+/** The first sentences of a source, for the preview card. */
+function excerpt(body: string, maxLength = 220) {
+  const text = body
+    .replace(/!?\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/^[-*]\s+/gm, '')
+    .replace(/(\*\*|__|`)/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+  return text.length > maxLength
+    ? `${text.slice(0, maxLength).replace(/\s+\S*$/, '')}…`
+    : text
+}
+
+function hostname(href: string) {
+  try {
+    return new URL(href).hostname.replace(/^www\./, '')
+  } catch {
+    return href
+  }
+}
+
 function CitationChip({ sourceId }: { sourceId: string }) {
   const context = use(CitationContext)
   const reduceMotion = useReducedMotion()
   const number = context?.sourceNumber(sourceId)
-  if (!context || number === undefined) return null
+  const source = context?.getSource(sourceId)
+  if (!context || number === undefined || !source) return null
 
   const active = context.activeSourceId === sourceId
   const hovered = context.hoveredSourceId === sourceId
 
-  return (
+  const chip = (
     <motion.button
       type="button"
       data-citation={sourceId}
-      aria-label={`Source ${number}: ${context.sourceTitle(sourceId) ?? ''}`}
+      aria-label={`Source ${number}: ${source.title}`}
       aria-pressed={active}
       onClick={() => context.onCite(sourceId)}
       onPointerEnter={() => context.onHover(sourceId)}
@@ -59,6 +92,47 @@ function CitationChip({ sourceId }: { sourceId: string }) {
     >
       {number}
     </motion.button>
+  )
+
+  if (!context.preview) return chip
+
+  return (
+    <HoverCard>
+      <HoverCardTrigger delay={250} closeDelay={120} render={chip} />
+      <HoverCardContent
+        side="top"
+        sideOffset={8}
+        className="w-80 space-y-2 p-4"
+      >
+        <div className="flex items-start gap-2.5">
+          <span
+            aria-hidden="true"
+            className="border-brand bg-brand text-brand-foreground mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border font-mono text-[0.65rem] tabular-nums"
+          >
+            {number}
+          </span>
+          <div className="min-w-0">
+            {source.group && (
+              <p className="text-foreground/45 font-mono text-[10px] uppercase">
+                {source.group}
+              </p>
+            )}
+            <p className="text-foreground text-sm leading-5 font-semibold">
+              {source.title}
+            </p>
+          </div>
+        </div>
+        <p className="text-foreground/65 text-[0.8rem] leading-5">
+          {excerpt(source.body)}
+        </p>
+        <p className="text-foreground/40 flex items-center justify-between gap-3 font-mono text-[10px] uppercase">
+          <span className="truncate">
+            {source.href ? hostname(source.href) : 'Ali’s public record'}
+          </span>
+          <span className="shrink-0">Select to open</span>
+        </p>
+      </HoverCardContent>
+    </HoverCard>
   )
 }
 

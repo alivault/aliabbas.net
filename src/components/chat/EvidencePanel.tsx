@@ -1,5 +1,11 @@
 import { useLayoutEffect, useRef, useState } from 'react'
-import { ArrowUpRight, FileSearch } from 'lucide-react'
+import {
+  ArrowUpRight,
+  CornerDownLeft,
+  FileSearch,
+  PanelRightClose,
+  PanelRightOpen,
+} from 'lucide-react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import MonoLabel from '~/components/MonoLabel'
 import type { Turn } from '~/lib/chat/chat-machine'
@@ -206,34 +212,80 @@ function PanelStatus({ turn }: { turn: Turn }) {
   )
 }
 
+export type EvidenceScope = {
+  /** 1-based position of the answer the panel shows. */
+  index: number
+  total: number
+  /** The panel stays on this answer. Otherwise it follows the latest. */
+  pinned: boolean
+}
+
 export default function EvidencePanel({
   activeSourceId,
   headingId,
   hoveredSourceId,
   idPrefix,
+  onCollapse,
   onHover,
+  onShowLatest,
+  scope,
   turn,
 }: {
   activeSourceId: string | null
   headingId: string
   hoveredSourceId: string | null
   idPrefix: string
+  onCollapse?: () => void
   onHover: (sourceId: string | null) => void
+  onShowLatest: () => void
+  scope: EvidenceScope | undefined
   turn: Turn | undefined
 }) {
   return (
     <div className="flex flex-col gap-5">
       <header className="space-y-2">
-        <h2
-          id={headingId}
-          tabIndex={-1}
-          className="text-foreground flex items-center gap-2 text-base font-semibold outline-none"
-        >
-          <FileSearch className="text-brand size-4" aria-hidden="true" />
-          Evidence
-        </h2>
+        <div className="flex items-center justify-between gap-3">
+          <h2
+            id={headingId}
+            tabIndex={-1}
+            className="text-foreground flex items-center gap-2 text-base font-semibold outline-none"
+          >
+            <FileSearch className="text-brand size-4" aria-hidden="true" />
+            Evidence
+          </h2>
+          {onCollapse && (
+            <button
+              type="button"
+              onClick={onCollapse}
+              aria-label="Hide evidence"
+              aria-expanded="true"
+              className="text-foreground/50 hover:text-foreground hover:bg-foreground/[0.06] focus-visible:ring-brand/70 -mr-1.5 flex size-8 items-center justify-center rounded-lg transition-colors outline-none focus-visible:ring-2"
+            >
+              <PanelRightClose className="size-4" aria-hidden="true" />
+            </button>
+          )}
+        </div>
         {turn ? (
           <>
+            {scope && scope.total > 1 && (
+              <div className="flex items-center gap-2 font-mono text-[11px] uppercase">
+                <span className="text-foreground/40">
+                  {scope.pinned
+                    ? `Answer ${scope.index} of ${scope.total}`
+                    : 'Latest answer'}
+                </span>
+                {scope.pinned && (
+                  <button
+                    type="button"
+                    onClick={onShowLatest}
+                    className="text-foreground/60 hover:text-foreground focus-visible:ring-brand/70 inline-flex items-center gap-1 rounded uppercase outline-none focus-visible:ring-2"
+                  >
+                    <CornerDownLeft className="size-3" aria-hidden="true" />
+                    Show latest
+                  </button>
+                )}
+              </div>
+            )}
             <p className="text-foreground/50 line-clamp-2 text-sm">
               <span className="sr-only">For the question: </span>“
               {turn.question}”
@@ -280,5 +332,67 @@ export default function EvidencePanel({
         </ol>
       )}
     </div>
+  )
+}
+
+/**
+ * The collapsed panel. It keeps the evidence present: the source count
+ * updates while an answer streams, and the whole rail opens the panel.
+ */
+export function EvidenceRail({
+  controlsId,
+  onExpand,
+  sourceCount,
+  streaming,
+}: {
+  controlsId: string
+  onExpand: () => void
+  sourceCount: number
+  streaming: boolean
+}) {
+  const reduceMotion = useReducedMotion()
+
+  return (
+    <button
+      type="button"
+      onClick={onExpand}
+      aria-expanded="false"
+      aria-controls={controlsId}
+      aria-label={`Show evidence, ${sourceCount} ${sourceCount === 1 ? 'source' : 'sources'}`}
+      className="group/rail text-foreground/55 hover:text-foreground hover:bg-foreground/[0.03] focus-visible:ring-brand/70 flex h-full w-full flex-col items-center gap-4 py-6 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-inset"
+    >
+      <PanelRightOpen className="size-4" aria-hidden="true" />
+      <span className="relative flex size-7 items-center justify-center">
+        {streaming && (
+          <span
+            aria-hidden="true"
+            className="bg-brand/25 absolute inset-0 animate-ping rounded-full motion-reduce:animate-none"
+          />
+        )}
+        <AnimatePresence initial={false} mode="popLayout">
+          <motion.span
+            key={sourceCount}
+            initial={reduceMotion ? false : { scale: 0.5, opacity: 0, y: 6 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={reduceMotion ? undefined : { scale: 0.5, opacity: 0, y: -6 }}
+            transition={{ type: 'spring', stiffness: 560, damping: 28 }}
+            className={cn(
+              'relative flex size-7 items-center justify-center rounded-full border font-mono text-xs tabular-nums',
+              sourceCount > 0
+                ? 'border-brand bg-brand text-brand-foreground'
+                : 'border-foreground/20',
+            )}
+          >
+            {sourceCount}
+          </motion.span>
+        </AnimatePresence>
+      </span>
+      <span
+        aria-hidden="true"
+        className="font-mono text-[11px] tracking-wider uppercase [writing-mode:vertical-rl]"
+      >
+        Evidence
+      </span>
+    </button>
   )
 }

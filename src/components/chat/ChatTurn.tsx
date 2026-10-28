@@ -63,41 +63,33 @@ function CopyButton({ text }: { text: string }) {
 }
 
 function TurnStatusLine({ turn }: { turn: Turn }) {
-  const count = turn.sources.length
-  const sources = `${count} ${count === 1 ? 'source' : 'sources'}`
-
   if (turn.status === 'streaming') {
     return (
       <span className="flex items-center gap-2">
         <span className="bg-brand size-1.5 animate-pulse rounded-full motion-reduce:animate-none" />
-        Writing · {sources}
+        Writing
       </span>
     )
   }
   if (turn.status === 'complete') {
     const metrics =
       turn.firstTokenAt !== undefined && turn.endedAt !== undefined
-        ? ` · first token ${formatDuration(turn.firstTokenAt - turn.startedAt)} · done in ${formatDuration(turn.endedAt - turn.startedAt)}`
+        ? `First token ${formatDuration(turn.firstTokenAt - turn.startedAt)} · done in ${formatDuration(turn.endedAt - turn.startedAt)}`
         : ''
-    return count === 0 ? (
+    return turn.sources.length === 0 ? (
       <span className="flex items-center gap-1.5">
         <CircleAlert className="size-3" aria-hidden="true" />
-        No sources cited{metrics}
+        No sources cited{metrics && ` · ${metrics}`}
       </span>
     ) : (
-      <span>
-        {sources}
-        {metrics}
-      </span>
+      <span>{metrics}</span>
     )
   }
   if (turn.status === 'stopped') {
     return (
       <span className="flex items-center gap-1.5">
         <Square className="size-2.5 fill-current" aria-hidden="true" />
-        {turn.answer
-          ? `Stopped · ${sources}`
-          : 'Stopped before the answer started'}
+        {turn.answer ? 'Stopped' : 'Stopped before the answer started'}
       </span>
     )
   }
@@ -108,11 +100,13 @@ export type ChatTurnProps = {
   turn: Turn
   isLast: boolean
   showsEvidence: boolean
+  /** The evidence panel is open and shows this answer. */
+  evidenceVisible: boolean
   activeSourceId: string | null
   hoveredSourceId: string | null
   onCite: (turnId: string, sourceId: string) => void
   onHover: (turnId: string, sourceId: string | null) => void
-  onShowEvidence: (turnId: string) => void
+  onToggleEvidence: (turnId: string) => void
   onRetry: (turnId: string) => void
   onEdit: (turn: Turn) => void
 }
@@ -121,11 +115,12 @@ function ChatTurn({
   turn,
   isLast,
   showsEvidence,
+  evidenceVisible,
   activeSourceId,
   hoveredSourceId,
   onCite,
   onHover,
-  onShowEvidence,
+  onToggleEvidence,
   onRetry,
   onEdit,
 }: ChatTurnProps) {
@@ -136,15 +131,14 @@ function ChatTurn({
     const numbers = new Map(
       turn.sources.map((source, index) => [source.id, index + 1]),
     )
-    const titles = new Map(
-      turn.sources.map((source) => [source.id, source.title]),
-    )
+    const byId = new Map(turn.sources.map((source) => [source.id, source]))
     return {
       sourceNumber: (id) => numbers.get(id),
-      sourceTitle: (id) => titles.get(id),
+      getSource: (id) => byId.get(id),
       activeSourceId: showsEvidence ? activeSourceId : null,
       hoveredSourceId: showsEvidence ? hoveredSourceId : null,
       animateIn: active,
+      preview: !evidenceVisible,
       onCite: (id) => onCite(turn.id, id),
       onHover: (id) => onHover(turn.id, id),
     }
@@ -152,6 +146,7 @@ function ChatTurn({
     turn.id,
     turn.sources,
     showsEvidence,
+    evidenceVisible,
     activeSourceId,
     hoveredSourceId,
     active,
@@ -236,16 +231,18 @@ function ChatTurn({
               <span className="text-foreground/40 mr-2 font-mono text-[11px] uppercase">
                 <TurnStatusLine turn={turn} />
               </span>
-              {!active && turn.sources.length > 0 && (
+              {turn.sources.length > 0 && (
                 <Button
                   variant="ghost"
                   size="sm"
-                  aria-pressed={showsEvidence}
-                  onClick={() => onShowEvidence(turn.id)}
-                  className="text-foreground/55 hover:text-foreground aria-pressed:text-foreground"
+                  aria-pressed={evidenceVisible}
+                  aria-label={`${turn.sources.length} ${turn.sources.length === 1 ? 'source' : 'sources'}: ${evidenceVisible ? 'hide' : 'show'} evidence`}
+                  onClick={() => onToggleEvidence(turn.id)}
+                  className="text-foreground/55 hover:text-foreground aria-pressed:bg-foreground/[0.07] aria-pressed:text-foreground"
                 >
                   <FileSearch aria-hidden="true" />
-                  Evidence
+                  <span className="tabular-nums">{turn.sources.length}</span>
+                  {turn.sources.length === 1 ? 'source' : 'sources'}
                 </Button>
               )}
               {copyText && <CopyButton text={copyText} />}

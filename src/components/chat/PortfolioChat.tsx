@@ -18,17 +18,22 @@ import {
   MessageScrollerViewport,
 } from '~/components/ui/message-scroller'
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetTitle,
-} from '~/components/ui/sheet'
+  Drawer,
+  DrawerContent,
+  DrawerDescription,
+  DrawerTitle,
+} from '~/components/ui/drawer'
 import type { Turn } from '~/lib/chat/chat-machine'
 import { answerToPlainText } from '~/lib/chat/streaming-markdown'
 import ChatComposer from './ChatComposer'
 import ChatTurn from './ChatTurn'
-import EvidencePanel, { evidenceSourceElementId } from './EvidencePanel'
+import EvidenceLayout, { PANEL_SPRING_MS } from './EvidenceLayout'
+import EvidencePanel, {
+  EvidenceRail,
+  evidenceSourceElementId,
+} from './EvidencePanel'
 import { useChatSession } from './use-chat-session'
+import { usePanelRef } from 'react-resizable-panels'
 
 const suggestedQuestions = [
   'What makes Ali a strong frontend engineer?',
@@ -41,7 +46,8 @@ const AnimatedMessageScrollerItem = motion.create(MessageScrollerItem)
 
 const DESKTOP_QUERY = '(min-width: 1024px)'
 const ASIDE_PREFIX = 'evidence-aside'
-const SHEET_PREFIX = 'evidence-sheet'
+const DRAWER_PREFIX = 'evidence-drawer'
+const EVIDENCE_ID = 'evidence-panel'
 
 function subscribeToDesktop(onChange: () => void) {
   const query = window.matchMedia(DESKTOP_QUERY)
@@ -134,6 +140,29 @@ function announcementFor(turn: Turn | undefined) {
   }
 }
 
+type FocusTarget =
+  | { kind: 'source'; sourceId: string }
+  | { kind: 'heading' }
+  | { kind: 'rail' }
+
+/** Focus an element that can mount a few frames late, after a transition. */
+function focusWhenReady(find: () => HTMLElement | null, scroll: boolean) {
+  let frame = 0
+  let tries = 0
+  const attempt = () => {
+    const element = find()
+    if (element) {
+      element.focus({ preventScroll: true })
+      if (scroll) element.scrollIntoView({ block: 'nearest' })
+      return
+    }
+    tries += 1
+    if (tries < 30) frame = requestAnimationFrame(attempt)
+  }
+  frame = requestAnimationFrame(attempt)
+  return () => cancelAnimationFrame(frame)
+}
+
 export default function PortfolioChat() {
   const { turns, activeTurn, send, stop, retry, remove } = useChatSession()
   const isDesktop = useIsDesktop()
@@ -141,29 +170,42 @@ export default function PortfolioChat() {
   const [draft, setDraft] = useState('')
   const composerRef = useRef<HTMLTextAreaElement>(null)
 
-  // Evidence: which turn the panel shows (null follows the latest turn), the
-  // selected source, and the source under the pointer or keyboard focus.
+  // Evidence state. The panel shows one answer: the latest one, or an
+  // answer the visitor pinned. On desktop it is open or collapsed to a
+  // rail; on mobile it is a drawer.
   const [evidenceTurnId, setEvidenceTurnId] = useState<string | null>(null)
   const [activeSourceId, setActiveSourceId] = useState<string | null>(null)
   const [hovered, setHovered] = useState<{
     turnId: string
     sourceId: string
   } | null>(null)
-  const [sheetOpen, setSheetOpen] = useState(false)
+  const [collapsed, setCollapsed] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
   const [focusRequest, setFocusRequest] = useState<{
-    target: 'source' | 'heading'
-    sourceId: string | null
+    target: FocusTarget
     nonce: number
   } | null>(null)
   const citeTriggerRef = useRef<HTMLElement | null>(null)
+  const panelRef = usePanelRef()
+  const groupElementRef = useRef<HTMLDivElement | null>(null)
+  const animationTimerRef = useRef(0)
 
   const lastTurn = turns.at(-1)
   const evidenceTurn =
     turns.find((turn) => turn.id === evidenceTurnId) ?? lastTurn
+  const evidenceIndex = evidenceTurn ? turns.indexOf(evidenceTurn) : -1
   const hoveredSourceId =
     hovered && hovered.turnId === evidenceTurn?.id ? hovered.sourceId : null
+  const evidenceVisible = isDesktop ? !collapsed : drawerOpen
   const isStreaming = activeTurn !== undefined
   const hasConversation = turns.length > 0
+
+  const requestFocus = useCallback((target: FocusTarget) => {
+    setFocusRequest((request) => ({
+      target,
+      nonce: (request?.nonce ?? 0) + 1,
+    }))
+  }, [])
 
   const focusComposer = useCallback(() => {
     requestAnimationFrame(() => {
@@ -174,58 +216,110 @@ export default function PortfolioChat() {
     })
   }, [])
 
+  /** Open or collapse the desktop panel with the spring transition. */
+  const setPanelOpen = useCallback(
+    (open: boolean) => {
+      const panel = panelRef.current
+      if (!panel || panel.isCollapsed() !== open) return
+      const group = groupElementRef.current
+      if (group && !reduceMotion) {
+        group.setAttribute('data-animating', '')
+        window.clearTimeout(animationTimerRef.current)
+        animationTimerRef.current = window.setTimeout(() => {
+          group.removeAttribute('data-animating')
+          setCollapsed(panelRef.current?.isCollapsed() ?? !open)
+        }, PANEL_SPRING_MS + 50)
+      }
+      setCollapsed(!open)
+      if (open) panel.expand()
+      else panel.collapse()
+    },
+    [panelRef, reduceMotion],
+  )
+
+  const rememberTrigger = () => {
+    citeTriggerRef.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null
+  }
+
+  /** Show an answer in the panel. Pin it unless it is the latest. */
+  const scopeTo = useCallback(
+    (turnId: string) => {
+      setEvidenceTurnId(turnId === lastTurn?.id ? null : turnId)
+    },
+    [lastTurn?.id],
+  )
+
   const submit = useCallback(
     (question: string) => {
       if (!send(question)) return
       setDraft('')
       setEvidenceTurnId(null)
       setActiveSourceId(null)
-      setSheetOpen(false)
+      setDrawerOpen(false)
     },
     [send],
   )
 
   const handleCite = useCallback(
     (turnId: string, sourceId: string) => {
-      citeTriggerRef.current =
-        document.activeElement instanceof HTMLElement
-          ? document.activeElement
-          : null
-      setEvidenceTurnId(turnId)
+      rememberTrigger()
+      scopeTo(turnId)
       setActiveSourceId(sourceId)
       if (isDesktop) {
-        setFocusRequest((request) => ({
-          target: 'source',
-          sourceId,
-          nonce: (request?.nonce ?? 0) + 1,
-        }))
+        setPanelOpen(true)
+        requestFocus({ kind: 'source', sourceId })
       } else {
-        setSheetOpen(true)
+        setDrawerOpen(true)
       }
     },
-    [isDesktop],
+    [isDesktop, scopeTo, setPanelOpen, requestFocus],
   )
 
-  const handleShowEvidence = useCallback(
+  const handleToggleEvidence = useCallback(
     (turnId: string) => {
-      citeTriggerRef.current =
-        document.activeElement instanceof HTMLElement
-          ? document.activeElement
-          : null
-      setEvidenceTurnId(turnId)
+      const showing = evidenceVisible && evidenceTurn?.id === turnId
+      if (showing) {
+        if (isDesktop) setPanelOpen(false)
+        else setDrawerOpen(false)
+        return
+      }
+      rememberTrigger()
+      scopeTo(turnId)
       setActiveSourceId(null)
       if (isDesktop) {
-        setFocusRequest((request) => ({
-          target: 'heading',
-          sourceId: null,
-          nonce: (request?.nonce ?? 0) + 1,
-        }))
+        setPanelOpen(true)
+        requestFocus({ kind: 'heading' })
       } else {
-        setSheetOpen(true)
+        setDrawerOpen(true)
       }
     },
-    [isDesktop],
+    [
+      evidenceVisible,
+      evidenceTurn?.id,
+      isDesktop,
+      scopeTo,
+      setPanelOpen,
+      requestFocus,
+    ],
   )
+
+  const handleCollapse = useCallback(() => {
+    setPanelOpen(false)
+    requestFocus({ kind: 'rail' })
+  }, [setPanelOpen, requestFocus])
+
+  const handleExpand = useCallback(() => {
+    setPanelOpen(true)
+    requestFocus({ kind: 'heading' })
+  }, [setPanelOpen, requestFocus])
+
+  const handleShowLatest = useCallback(() => {
+    setEvidenceTurnId(null)
+    setActiveSourceId(null)
+  }, [])
 
   const handleHover = useCallback((turnId: string, sourceId: string | null) => {
     setHovered(sourceId ? { turnId, sourceId } : null)
@@ -258,29 +352,30 @@ export default function PortfolioChat() {
     [remove, focusComposer],
   )
 
-  // Move focus into the desktop panel after it shows the requested source.
+  // Move focus in the desktop panel after it renders the requested state.
   useEffect(() => {
     if (!focusRequest) return
-    const frame = requestAnimationFrame(() => {
-      const element =
-        focusRequest.target === 'source' && focusRequest.sourceId
-          ? document.getElementById(
-              evidenceSourceElementId(ASIDE_PREFIX, focusRequest.sourceId),
-            )
-          : document.getElementById(`${ASIDE_PREFIX}-heading`)
-      if (!element) return
-      element.focus({ preventScroll: true })
-      element.scrollIntoView({
-        block: 'nearest',
-        behavior: reduceMotion ? 'auto' : 'smooth',
-      })
-    })
-    return () => cancelAnimationFrame(frame)
-  }, [focusRequest, reduceMotion])
+    const { target } = focusRequest
+    return focusWhenReady(() => {
+      if (target.kind === 'source') {
+        return document.getElementById(
+          evidenceSourceElementId(ASIDE_PREFIX, target.sourceId),
+        )
+      }
+      if (target.kind === 'heading') {
+        return document.getElementById(`${ASIDE_PREFIX}-heading`)
+      }
+      return document.querySelector<HTMLElement>(
+        `#${EVIDENCE_ID} button[aria-expanded="false"]`,
+      )
+    }, target.kind === 'source')
+  }, [focusRequest])
+
+  useEffect(() => () => window.clearTimeout(animationTimerRef.current), [])
 
   // Esc stops the answer, anywhere on the page.
   useEffect(() => {
-    if (!isStreaming || sheetOpen) return
+    if (!isStreaming || drawerOpen) return
     const onKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key !== 'Escape' || event.defaultPrevented) return
       event.preventDefault()
@@ -288,10 +383,10 @@ export default function PortfolioChat() {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [isStreaming, sheetOpen, stop])
+  }, [isStreaming, drawerOpen, stop])
 
-  // Esc in the panel goes back to the citation that opened it.
-  const handleAsideKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+  // Esc in the panel goes back to the control that opened it.
+  const handleEvidenceKeyDown = (event: KeyboardEvent<HTMLElement>) => {
     if (event.key !== 'Escape') return
     const trigger = citeTriggerRef.current
     if (!trigger?.isConnected) return
@@ -313,6 +408,83 @@ export default function PortfolioChat() {
     onStop: stop,
     onSubmit: () => submit(draft),
   }
+
+  const scope =
+    evidenceTurn && evidenceIndex >= 0
+      ? {
+          index: evidenceIndex + 1,
+          total: turns.length,
+          pinned: evidenceTurnId !== null && evidenceTurn !== lastTurn,
+        }
+      : undefined
+
+  const conversation = (
+    <section
+      aria-label="Conversation"
+      className="flex min-h-0 min-w-0 flex-1 flex-col"
+    >
+      <MessageScrollerProvider scrollPreviousItemPeek={48}>
+        <MessageScroller className="flex-1">
+          <MessageScrollerViewport className="px-4 py-6 sm:px-6 sm:py-8">
+            <MessageScrollerContent className="mx-auto w-full max-w-3xl gap-10">
+              {turns.map((turn, index) => {
+                const showsEvidence = turn.id === evidenceTurn?.id
+                return (
+                  <AnimatedMessageScrollerItem
+                    key={turn.id}
+                    messageId={turn.id}
+                    scrollAnchor
+                    initial={reduceMotion ? false : { opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: reduceMotion ? 0 : 0.28,
+                      ease: [0.22, 1, 0.36, 1],
+                    }}
+                  >
+                    <ChatTurn
+                      turn={turn}
+                      isLast={index === turns.length - 1}
+                      showsEvidence={showsEvidence}
+                      evidenceVisible={showsEvidence && evidenceVisible}
+                      activeSourceId={showsEvidence ? activeSourceId : null}
+                      hoveredSourceId={showsEvidence ? hoveredSourceId : null}
+                      onCite={handleCite}
+                      onHover={handleHover}
+                      onToggleEvidence={handleToggleEvidence}
+                      onRetry={handleRetry}
+                      onEdit={handleEdit}
+                    />
+                  </AnimatedMessageScrollerItem>
+                )
+              })}
+            </MessageScrollerContent>
+          </MessageScrollerViewport>
+          <MessageScrollerButton
+            size="icon-lg"
+            className="border-foreground/15 bg-background/80 text-foreground hover:bg-brand hover:text-brand-foreground rounded-full backdrop-blur-[12px] backdrop-saturate-[1.8]"
+          />
+        </MessageScroller>
+      </MessageScrollerProvider>
+
+      <div className="shrink-0 px-3 pb-5 sm:px-4 sm:pb-6">
+        <div className="mx-auto w-full max-w-3xl">
+          {!isStreaming && unusedQuestions.length > 0 && (
+            <SuggestedQuestionButtons
+              questions={unusedQuestions}
+              onSelect={submit}
+              className="-mx-3 mb-3 flex [scrollbar-width:none] gap-2 overflow-x-auto px-3 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 [&>button]:shrink-0 [&>button]:whitespace-nowrap sm:[&>button]:shrink sm:[&>button]:whitespace-normal"
+            />
+          )}
+          <ChatComposer
+            id="portfolio-question"
+            textareaRef={composerRef}
+            showHints
+            {...composerProps}
+          />
+        </div>
+      </div>
+    </section>
+  )
 
   return (
     <div className="flex h-[calc(100svh-72px)] min-h-0 min-w-0 overflow-hidden">
@@ -358,122 +530,73 @@ export default function PortfolioChat() {
       )}
 
       {hasConversation && (
-        <>
-          <section
-            aria-label="Conversation"
-            className="flex min-h-0 min-w-0 flex-1 flex-col"
-          >
-            <MessageScrollerProvider scrollPreviousItemPeek={48}>
-              <MessageScroller className="flex-1">
-                <MessageScrollerViewport className="px-4 py-6 sm:px-6 sm:py-8">
-                  <MessageScrollerContent className="mx-auto w-full max-w-3xl gap-10">
-                    {turns.map((turn, index) => {
-                      const showsEvidence = turn.id === evidenceTurn?.id
-                      return (
-                        <AnimatedMessageScrollerItem
-                          key={turn.id}
-                          messageId={turn.id}
-                          scrollAnchor
-                          initial={reduceMotion ? false : { opacity: 0, y: 14 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{
-                            duration: reduceMotion ? 0 : 0.28,
-                            ease: [0.22, 1, 0.36, 1],
-                          }}
-                        >
-                          <ChatTurn
-                            turn={turn}
-                            isLast={index === turns.length - 1}
-                            showsEvidence={showsEvidence}
-                            activeSourceId={
-                              showsEvidence ? activeSourceId : null
-                            }
-                            hoveredSourceId={
-                              showsEvidence ? hoveredSourceId : null
-                            }
-                            onCite={handleCite}
-                            onHover={handleHover}
-                            onShowEvidence={handleShowEvidence}
-                            onRetry={handleRetry}
-                            onEdit={handleEdit}
-                          />
-                        </AnimatedMessageScrollerItem>
-                      )
-                    })}
-                  </MessageScrollerContent>
-                </MessageScrollerViewport>
-                <MessageScrollerButton
-                  size="icon-lg"
-                  className="border-foreground/15 bg-background/80 text-foreground hover:bg-brand hover:text-brand-foreground rounded-full backdrop-blur-[12px] backdrop-saturate-[1.8]"
-                />
-              </MessageScroller>
-            </MessageScrollerProvider>
-
-            <div className="shrink-0 px-3 pb-5 sm:px-4 sm:pb-6">
-              <div className="mx-auto w-full max-w-3xl">
-                {!isStreaming && unusedQuestions.length > 0 && (
-                  <SuggestedQuestionButtons
-                    questions={unusedQuestions}
-                    onSelect={submit}
-                    className="-mx-3 mb-3 flex [scrollbar-width:none] gap-2 overflow-x-auto px-3 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 [&>button]:shrink-0 [&>button]:whitespace-nowrap sm:[&>button]:shrink sm:[&>button]:whitespace-normal"
-                  />
-                )}
-                <ChatComposer
-                  id="portfolio-question"
-                  textareaRef={composerRef}
-                  showHints
-                  {...composerProps}
-                />
-              </div>
-            </div>
-          </section>
-
-          <aside
-            aria-labelledby={`${ASIDE_PREFIX}-heading`}
-            onKeyDown={handleAsideKeyDown}
-            className="border-foreground/10 hidden w-[min(400px,34vw)] shrink-0 overflow-y-auto overscroll-contain border-l px-5 py-6 lg:block"
-          >
+        <EvidenceLayout
+          showEvidence={isDesktop}
+          collapsed={collapsed}
+          onCollapsedChange={setCollapsed}
+          onEvidenceKeyDown={handleEvidenceKeyDown}
+          panelRef={panelRef}
+          groupElementRef={groupElementRef}
+          evidenceId={EVIDENCE_ID}
+          conversation={conversation}
+          evidence={
             <EvidencePanel
               idPrefix={ASIDE_PREFIX}
               headingId={`${ASIDE_PREFIX}-heading`}
               turn={evidenceTurn}
+              scope={scope}
               activeSourceId={activeSourceId}
               hoveredSourceId={hoveredSourceId}
               onHover={handlePanelHover}
+              onShowLatest={handleShowLatest}
+              onCollapse={handleCollapse}
             />
-          </aside>
-        </>
+          }
+          rail={
+            <EvidenceRail
+              controlsId={EVIDENCE_ID}
+              onExpand={handleExpand}
+              sourceCount={evidenceTurn?.sources.length ?? 0}
+              streaming={evidenceTurn?.status === 'streaming'}
+            />
+          }
+        />
       )}
 
       {!isDesktop && (
-        <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-          <SheetContent
-            side="bottom"
-            className="max-h-[85svh] rounded-t-2xl"
+        <Drawer
+          open={drawerOpen}
+          onOpenChange={setDrawerOpen}
+          snapPoints={[0.6, 1]}
+          showSwipeHandle
+        >
+          <DrawerContent
             initialFocus={() =>
               (activeSourceId &&
                 document.getElementById(
-                  evidenceSourceElementId(SHEET_PREFIX, activeSourceId),
+                  evidenceSourceElementId(DRAWER_PREFIX, activeSourceId),
                 )) ||
               true
             }
           >
-            <SheetTitle className="sr-only">Evidence</SheetTitle>
-            <SheetDescription className="sr-only">
-              The sources that the answer cites.
-            </SheetDescription>
-            <div className="overflow-y-auto overscroll-contain px-5 pt-6 pb-8">
+            <DrawerTitle className="sr-only">Evidence</DrawerTitle>
+            <DrawerDescription className="sr-only">
+              The sources that the answer cites. Drag up to see more.
+            </DrawerDescription>
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pt-3 pb-8">
               <EvidencePanel
-                idPrefix={SHEET_PREFIX}
-                headingId={`${SHEET_PREFIX}-heading`}
+                idPrefix={DRAWER_PREFIX}
+                headingId={`${DRAWER_PREFIX}-heading`}
                 turn={evidenceTurn}
+                scope={scope}
                 activeSourceId={activeSourceId}
                 hoveredSourceId={hoveredSourceId}
                 onHover={handlePanelHover}
+                onShowLatest={handleShowLatest}
               />
             </div>
-          </SheetContent>
-        </Sheet>
+          </DrawerContent>
+        </Drawer>
       )}
     </div>
   )
