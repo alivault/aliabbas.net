@@ -7,8 +7,8 @@ import {
 } from 'react'
 import type { CSSProperties, KeyboardEvent } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
-import ModeSwitch from '~/components/check/ModeSwitch'
 import MonoLabel from '~/components/MonoLabel'
+import { usePanelActive } from '~/components/assistant/panel-active'
 import PageHeading from '~/components/PageHeading'
 import {
   MessageScroller,
@@ -140,6 +140,7 @@ function focusWhenReady(find: () => HTMLElement | null, scroll: boolean) {
 }
 
 export default function PortfolioChat() {
+  const panelActive = usePanelActive()
   const { turns, activeTurn, send, stop, retry, remove } = useChatSession()
   const isDesktop = useIsDesktop()
   const reduceMotion = useReducedMotion()
@@ -360,7 +361,7 @@ export default function PortfolioChat() {
 
   // Esc stops the answer, anywhere on the page.
   useEffect(() => {
-    if (!isStreaming || drawerOpen) return
+    if (!isStreaming || drawerOpen || !panelActive) return
     const onKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key !== 'Escape' || event.defaultPrevented) return
       event.preventDefault()
@@ -368,7 +369,7 @@ export default function PortfolioChat() {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [isStreaming, drawerOpen, stop])
+  }, [isStreaming, drawerOpen, stop, panelActive])
 
   // Esc in the panel goes back to the control that opened it.
   const handleEvidenceKeyDown = (event: KeyboardEvent<HTMLElement>) => {
@@ -472,7 +473,7 @@ export default function PortfolioChat() {
   )
 
   return (
-    <div className="flex h-[calc(100svh-72px)] min-h-0 min-w-0 overflow-hidden">
+    <div className="flex h-[calc(100svh-72px-var(--assistant-bar,0px))] min-h-0 min-w-0 overflow-hidden">
       <p role="status" aria-live="polite" className="sr-only">
         {announcementFor(lastTurn)}
       </p>
@@ -481,7 +482,6 @@ export default function PortfolioChat() {
         <section className="flex min-h-0 flex-1 flex-col">
           <div className="flex min-h-0 flex-1 items-end justify-start overflow-y-auto px-4 py-8 sm:px-6 sm:py-10 lg:items-center lg:justify-center lg:py-12">
             <div className="flex w-full max-w-3xl flex-col items-start lg:items-center">
-              <ModeSwitch current="/chat" className="mb-8" />
               <PageHeading className="text-left lg:text-center">
                 Ask about <em className="text-brand">Ali.</em>
               </PageHeading>

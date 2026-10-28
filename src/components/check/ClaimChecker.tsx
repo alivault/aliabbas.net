@@ -4,6 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import ChatComposer from '~/components/chat/ChatComposer'
 import type { ComposerLabels } from '~/components/chat/ChatComposer'
 import MonoLabel from '~/components/MonoLabel'
+import { usePanelActive } from '~/components/assistant/panel-active'
 import PageHeading from '~/components/PageHeading'
 import type { ChatSource } from '~/lib/chat/protocol'
 import { isChecking } from '~/lib/check/check-machine'
@@ -13,7 +14,6 @@ import type { EvidenceQuote } from '~/lib/check/evidence'
 import { MAX_CLAIM_LENGTH } from '~/lib/check/protocol'
 import { VERDICTS, VERDICT_INFO } from '~/lib/check/verdicts'
 import { cn } from '~/lib/utils'
-import ModeSwitch from './ModeSwitch'
 import { useClaimCheck } from './use-claim-check'
 import VerdictBadge, { VERDICT_STYLE } from './VerdictBadge'
 
@@ -497,6 +497,7 @@ export default function ClaimChecker({
   const [claimAtLoad] = useState(initialClaim)
   const startedFromUrl = useRef(false)
   const busy = isChecking(state)
+  const panelActive = usePanelActive()
   const announcement = useAnnouncement(state)
 
   const submit = useCallback(
@@ -519,7 +520,7 @@ export default function ClaimChecker({
 
   // Esc stops the check, anywhere on the page.
   useEffect(() => {
-    if (!busy) return
+    if (!busy || !panelActive) return
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key !== 'Escape' || event.defaultPrevented) return
       event.preventDefault()
@@ -527,7 +528,7 @@ export default function ClaimChecker({
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [busy, stop])
+  }, [busy, stop, panelActive])
 
   const edit = () => {
     setDraft(state.claim)
@@ -546,16 +547,15 @@ export default function ClaimChecker({
   }
 
   return (
-    <div className="mx-auto w-full max-w-3xl px-4 pt-8 pb-16 sm:px-6 lg:pt-14">
+    <div className="mx-auto w-full max-w-3xl px-4 pt-8 pb-16 sm:px-6 lg:pt-12">
       <p role="status" aria-live="polite" className="sr-only">
         {announcement}
       </p>
 
-      <ModeSwitch current="/check" />
-      <PageHeading className="mt-8">
+      <PageHeading className="lg:text-center">
         Check a claim about <em className="text-brand">Ali.</em>
       </PageHeading>
-      <p className="text-foreground/55 mt-5 max-w-xl text-base leading-7">
+      <p className="text-foreground/55 mt-5 max-w-xl text-base leading-7 lg:mx-auto lg:text-center">
         Paste a claim from a résumé, a profile or a recruiter note. The checker
         grades each part of it against Ali&apos;s public record and shows the
         exact words that each grade rests on.
