@@ -161,7 +161,7 @@ export default function ResizerSpecimen() {
         states:
           'Open at any width from 300 to 560 px, or collapsed to a 56 px rail. The rail keeps the source count live while the answer streams.',
         keyboard:
-          'Tab to the handle. Left and Right arrows resize the panel, Home and End go to the limits. In the panel, the hide button collapses it and moves focus to the rail. Enter on the rail opens it and moves focus to the heading. Enter on a chip opens the panel at its source, and Esc goes back to the chip.',
+          'Tab to the handle. Left and Right arrows resize the panel, Home and End go to the limits, and Enter opens or collapses the panel. In the panel, the hide button collapses it and moves focus to the rail. Enter on the rail opens it and moves focus to the heading. Enter on a chip opens the panel at its source, and Esc goes back to the chip.',
         proves:
           'A drag follows the pointer with no spring. A toggle springs, and it opens again at the last width. With reduced motion, the panel moves at once.',
       }}
