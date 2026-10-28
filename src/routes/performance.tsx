@@ -6,7 +6,7 @@ import PageHeading from '~/components/PageHeading'
 import VitalsPanel from '~/components/performance/VitalsPanel'
 import ScrollReveal from '~/components/ScrollReveal'
 import Title from '~/components/Title'
-import { lcpFix, liveLighthouse } from '~/data/performance-lab'
+import { avernoFix, lcpFix, liveLighthouse } from '~/data/performance-lab'
 import { formatMetric, rate } from '~/lib/vitals'
 import type { MetricName } from '~/lib/vitals'
 import { getVitalsSummary } from '~/lib/vitals-server'
@@ -94,7 +94,7 @@ function PerformancePage() {
             </PageHeading>
             <p className="text-foreground/55 max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
               Fast is a number. This page shows the Core Web Vitals of this site
-              from real visits, lab numbers for my projects, and the fix the
+              from real visits, lab numbers for my projects, and the fixes the
               numbers led to.
             </p>
           </ScrollReveal>
@@ -187,6 +187,77 @@ function PerformancePage() {
               throttling: 150 ms latency, 1.6 Mbps, 4× slower CPU, a 412 × 823
               phone viewport, no cache. LCP and FCP come from the browser’s
               PerformanceObserver. Median of three loads per page.
+            </p>
+          </Section>
+
+          <Section
+            id="averno-fix"
+            label="What the numbers changed"
+            title="A browser game downloaded too much, every time"
+            description={
+              <>
+                <p>
+                  I measured{' '}
+                  <a
+                    href="/play"
+                    className="underline decoration-current/30 underline-offset-2"
+                  >
+                    Averno
+                  </a>
+                  , my 3D browser game, and two problems stood out. The 3D
+                  models were the largest part of the download, because they
+                  were stored uncompressed and Cloudflare does not compress glTF
+                  files. And every file had a fixed name, so the browser had to
+                  ask the server about each one again on every visit.
+                </p>
+                <p>
+                  The models now use meshopt compression. Positions stay exact;
+                  normals move by 0.3° on average and 1.1° at most. When a model
+                  loads, the game unpacks it back into the format that its code
+                  expects. Screenshots of the same scene before and after differ
+                  in fewer than 0.03% of pixels. Each model and texture now has
+                  a content hash in its name, so the browser keeps it for a year
+                  and asks for nothing on a repeat visit. The cost: 16 KB more
+                  JavaScript for the decoder.
+                </p>
+              </>
+            }
+          >
+            <div className="overflow-x-auto">
+              <table className={tableClass}>
+                <caption className="sr-only">
+                  Averno download before and after the fix
+                </caption>
+                <thead>
+                  <tr>
+                    <th scope="col">What</th>
+                    <th scope="col">Before</th>
+                    <th scope="col">After</th>
+                    <th scope="col">Change</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {avernoFix.results.map((row) => (
+                    <tr key={row.label}>
+                      <td>{row.label}</td>
+                      <td className="tabular-nums">{row.before}</td>
+                      <td className="tabular-nums">{row.after}</td>
+                      <td className="font-semibold tabular-nums">
+                        {row.change ?? '—'}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-foreground/40 mt-4 max-w-2xl text-xs leading-5">
+              Measured {avernoFix.measuredOn}, on the live game, before and
+              after the deploy. Headless Chromium, empty cache, bytes over the
+              network, three runs per profile. The phone is an emulated touch
+              device, which starts on medium quality. For the repeat visit, the
+              old version ran in the local Workers runtime, which sends the same
+              cache headers as Cloudflare. Frame rate is not measured: the test
+              machine draws WebGL in software.
             </p>
           </Section>
 

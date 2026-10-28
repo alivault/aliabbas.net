@@ -153,3 +153,53 @@ export const lcpFix = {
     },
   ] satisfies Array<FixResult>,
 }
+
+export type DownloadRow = {
+  label: string
+  before: string
+  after: string
+  /** Signed change, for example "−64%". Absent when a percent says nothing. */
+  change?: string
+}
+
+/**
+ * Averno asset fix, before and after (averno-game commit 37473c6).
+ * Download sizes: the live game at averno.aliabbas.net, headless Chromium on
+ * an M1 Max, empty cache, bytes over the network from the DevTools protocol,
+ * 3 runs per profile (all 3 the same to within 1 KB). "Before" ran on the
+ * same day, before the deploy. Desktop is the high quality profile; the
+ * phone is an emulated touch device, which starts on medium quality.
+ * Repeat visit: the same browser loads the page again. "Before" ran the old
+ * commit in the local Workers runtime, which sends Cloudflare's default
+ * asset headers (max-age=0, must-revalidate, ETag); "after" is live.
+ * Requests do not include Cloudflare's analytics beacon.
+ */
+export const avernoFix = {
+  measuredOn: '2026-10-27',
+  results: [
+    { label: 'Models', before: '1,405 KB', after: '507 KB', change: '−64%' },
+    {
+      label: 'JavaScript',
+      before: '393 KB',
+      after: '409 KB',
+      change: '+4%',
+    },
+    {
+      label: 'First visit, desktop',
+      before: '2,762 KB',
+      after: '1,877 KB',
+      change: '−32%',
+    },
+    {
+      label: 'First visit, phone',
+      before: '2,318 KB',
+      after: '1,429 KB',
+      change: '−38%',
+    },
+    {
+      label: 'Repeat visit, requests to the server',
+      before: '40',
+      after: '2',
+    },
+  ] satisfies Array<DownloadRow>,
+}
