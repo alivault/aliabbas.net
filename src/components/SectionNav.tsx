@@ -33,36 +33,26 @@ export default function SectionNav({
   /** Content at the end of the row, such as a page setting. */
   trailing?: ReactNode
 }) {
-  const sentinelRef = useRef<HTMLDivElement>(null)
   const barRef = useRef<HTMLDivElement>(null)
   const [stuck, setStuck] = useState(false)
   const [activeId, setActiveId] = useState<string | null>(null)
 
-  // The row is stuck when the point just above it has scrolled under the
-  // header.
-  useEffect(() => {
-    const sentinel = sentinelRef.current
-    if (!sentinel) return
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry) return
-        setStuck(
-          !entry.isIntersecting && entry.boundingClientRect.top < HEADER_HEIGHT,
-        )
-      },
-      { rootMargin: `-${HEADER_HEIGHT + 1}px 0px 0px 0px` },
-    )
-    observer.observe(sentinel)
-    return () => observer.disconnect()
-  }, [])
-
-  // The section in view is the last one whose top has passed the bottom of
-  // the row. Measured on scroll, once per frame.
+  // Measured on scroll, on resize and on a theme change, once per frame.
+  // The row is stuck when it sits at the header line and the page has
+  // scrolled. The section in view is the last one whose top has passed the
+  // bottom of the row.
   useEffect(() => {
     let frame = 0
     const measure = () => {
       frame = 0
-      const barBottom = barRef.current?.getBoundingClientRect().bottom ?? 0
+      const bar = barRef.current?.getBoundingClientRect()
+      setStuck(
+        window.innerWidth >= 1024 &&
+          bar != null &&
+          Math.round(bar.top) <= HEADER_HEIGHT &&
+          window.scrollY > 0,
+      )
+      const barBottom = bar?.bottom ?? 0
       const line = Math.max(barBottom, HEADER_HEIGHT) + 32
       let current: string | null = null
       for (const item of items) {
@@ -89,29 +79,35 @@ export default function SectionNav({
     const onScroll = () => {
       if (!frame) frame = requestAnimationFrame(measure)
     }
+    const scheme = window.matchMedia('(prefers-color-scheme: dark)')
     measure()
     window.addEventListener('scroll', onScroll, { passive: true })
     window.addEventListener('resize', onScroll)
+    scheme.addEventListener('change', onScroll)
     return () => {
       window.removeEventListener('scroll', onScroll)
       window.removeEventListener('resize', onScroll)
+      scheme.removeEventListener('change', onScroll)
       if (frame) cancelAnimationFrame(frame)
     }
   }, [items])
 
   return (
     <>
-      <div ref={sentinelRef} aria-hidden="true" />
       <div
         ref={barRef}
         data-stuck={stuck || undefined}
         className={cn(
-          'z-40 -mx-5 px-5 py-3 transition-[background-color,border-color,box-shadow] duration-300 sm:-mx-8 sm:px-8 lg:sticky lg:top-[72px] lg:-mx-12 lg:px-12',
-          'border-b border-transparent',
-          'lg:data-stuck:border-foreground/10 lg:data-stuck:bg-background/85 lg:data-stuck:backdrop-blur-[12px] lg:data-stuck:backdrop-saturate-[1.8]',
+          'group/bar relative z-40 -mx-5 px-5 py-3 sm:-mx-8 sm:px-8 lg:sticky lg:top-[72px] lg:-mx-12 lg:px-12',
           className,
         )}
       >
+        {/* The surface only fades its opacity. Its colors never animate, so
+            a theme switch cannot catch them in a transition. */}
+        <div
+          aria-hidden="true"
+          className="border-foreground/10 bg-background/85 pointer-events-none absolute inset-0 -z-10 border-b opacity-0 backdrop-blur-[12px] backdrop-saturate-[1.8] transition-opacity duration-300 lg:group-data-stuck/bar:opacity-100"
+        />
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <nav aria-label={label}>
             <ol className="flex flex-wrap gap-2">
