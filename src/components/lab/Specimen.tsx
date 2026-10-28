@@ -45,7 +45,7 @@ export default function Specimen({
         id={id}
         aria-labelledby={headingId}
         className={cn(
-          'border-foreground/15 grid scroll-mt-24 gap-8 border-t pt-8 lg:gap-x-12 lg:pt-10',
+          'border-foreground/15 grid scroll-mt-24 gap-8 lg:scroll-mt-40 border-t pt-8 lg:gap-x-12 lg:pt-10',
           wide
             ? 'lg:grid-cols-[minmax(0,0.75fr)_minmax(0,2fr)]'
             : 'lg:grid-cols-[minmax(0,0.75fr)_minmax(0,2fr)] lg:grid-rows-[auto_1fr]',

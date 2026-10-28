@@ -4,15 +4,23 @@ import Main from '~/components/Main'
 import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
 import SectionHeading from '~/components/SectionHeading'
+import SectionNav from '~/components/SectionNav'
 import Title from '~/components/Title'
 import { caseStudies } from '~/data/case-studies'
 import type { CaseStudy } from '~/data/case-studies'
 import EvidenceList from './EvidenceList'
 import StateMachineSection from './StateMachineSection'
-import { scrollToSection } from '~/lib/scroll-to-section'
 
 const pillLink =
   'border-foreground/20 hover:border-foreground focus-visible:outline-foreground inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
+
+const sectionLinks = [
+  { id: 'problem', label: 'Problem and role' },
+  { id: 'machines', label: 'State machines' },
+  { id: 'failure-modes', label: 'Failure modes' },
+  { id: 'numbers', label: 'Numbers' },
+  { id: 'sources', label: 'Sources' },
+]
 
 function allEvidence(study: CaseStudy) {
   const paths = new Set<string>()
@@ -89,30 +97,17 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
           </div>
         </ScrollReveal>
 
-        <nav aria-label="On this page" className="mt-8 flex flex-wrap gap-2">
-          {[
-            ['#problem', 'Problem and role'],
-            ['#machines', 'State machines'],
-            ['#failure-modes', 'Failure modes'],
-            ['#numbers', 'Numbers'],
-            ['#sources', 'Sources'],
-          ].map(([href, text]) => (
-            <a
-              key={href}
-              href={href}
-              onClick={scrollToSection}
-              className="bg-foreground/5 hover:bg-foreground/10 focus-visible:outline-foreground rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2"
-            >
-              {text}
-            </a>
-          ))}
-        </nav>
+        <SectionNav
+          label="On this page"
+          items={sectionLinks}
+          className="mt-6"
+        />
 
-        <ScrollReveal className="mt-section-content grid scroll-mt-24 gap-10 lg:grid-cols-2 lg:gap-16">
+        <ScrollReveal className="mt-section-content grid scroll-mt-24 gap-10 lg:scroll-mt-40 lg:grid-cols-2 lg:gap-16">
           <section
             id="problem"
             aria-labelledby="problem-heading"
-            className="scroll-mt-24"
+            className="scroll-mt-24 lg:scroll-mt-40"
           >
             <Title as="h2" variant="card" id="problem-heading">
               The problem
@@ -148,7 +143,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
         <section
           id="machines"
           aria-labelledby="machines-heading"
-          className="mt-section scroll-mt-24"
+          className="mt-section scroll-mt-24 lg:scroll-mt-40"
         >
           <ScrollReveal className="pb-section-divider">
             <SectionHeading id="machines-heading">
@@ -174,7 +169,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
         <section
           id="failure-modes"
           aria-labelledby="failure-heading"
-          className="mt-section scroll-mt-24"
+          className="mt-section scroll-mt-24 lg:scroll-mt-40"
         >
           <ScrollReveal className="pb-section-divider">
             <SectionHeading id="failure-heading">
@@ -234,7 +229,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
         <section
           id="numbers"
           aria-labelledby="numbers-heading"
-          className="mt-section scroll-mt-24"
+          className="mt-section scroll-mt-24 lg:scroll-mt-40"
         >
           <ScrollReveal className="pb-section-divider">
             <SectionHeading id="numbers-heading">Numbers</SectionHeading>
@@ -268,7 +263,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
         <section
           id="sources"
           aria-labelledby="sources-heading"
-          className="mt-section scroll-mt-24"
+          className="mt-section scroll-mt-24 lg:scroll-mt-40"
         >
           <ScrollReveal>
             <SectionHeading id="sources-heading" size="compact">

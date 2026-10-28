@@ -10,7 +10,7 @@ import TransitionSpecimen from '~/components/lab/TransitionSpecimen'
 import Main from '~/components/Main'
 import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
-import { scrollToSection } from '~/lib/scroll-to-section'
+import SectionNav from '~/components/SectionNav'
 
 export const Route = createFileRoute('/lab')({
   head: () => ({
@@ -32,6 +32,11 @@ const specimens = [
   { id: 'fluid-resizer', label: 'Fluid resizer' },
   { id: 'state-transition', label: 'A move that keeps state' },
 ] as const
+
+const specimenLinks = specimens.map((specimen, index) => ({
+  ...specimen,
+  number: `${index + 1}.`,
+}))
 
 function LabPage() {
   return (
@@ -57,27 +62,13 @@ function LabPage() {
               </p>
             </ScrollReveal>
 
-            <div className="border-foreground/15 mt-12 flex flex-col gap-5 border-t pt-5 lg:flex-row lg:items-center lg:justify-between">
-              <nav aria-label="Specimens">
-                <ol className="flex flex-wrap gap-2">
-                  {specimens.map((specimen, index) => (
-                    <li key={specimen.id}>
-                      <a
-                        href={`#${specimen.id}`}
-                        onClick={scrollToSection}
-                        className="bg-foreground/5 hover:bg-foreground/10 focus-visible:ring-brand/70 inline-flex rounded-full px-4 py-2 text-sm font-medium transition-colors outline-none focus-visible:ring-2"
-                      >
-                        <span className="text-foreground/45 mr-1.5 tabular-nums">
-                          {index + 1}.
-                        </span>
-                        {specimen.label}
-                      </a>
-                    </li>
-                  ))}
-                </ol>
-              </nav>
-              <ReducedMotionSwitch />
-            </div>
+            <div className="border-foreground/15 mt-12 border-t" />
+            <SectionNav
+              label="Specimens"
+              items={specimenLinks}
+              trailing={<ReducedMotionSwitch />}
+              className="mt-2"
+            />
 
             <div className="mt-12 flex flex-col gap-16 lg:gap-24">
               <StreamingSpecimen />
