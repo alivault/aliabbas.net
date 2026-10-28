@@ -53,7 +53,7 @@ export default function SectionNav({
           window.scrollY > 0,
       )
       const barBottom = bar?.bottom ?? 0
-      const line = Math.max(barBottom, HEADER_HEIGHT) + 32
+      const line = Math.max(barBottom, HEADER_HEIGHT) + 80
       let current: string | null = null
       for (const item of items) {
         const element = document.getElementById(item.id)
