@@ -6,14 +6,13 @@ import {
   encodeCheckStreamEvent,
 } from '~/lib/check/protocol'
 import type { CheckStreamEvent, ClaimPart } from '~/lib/check/protocol'
-import { runAi } from '~/lib/ai'
+import { generateJson } from '~/lib/ai'
 import { errorResponse, isSameOrigin, rateLimitKey } from '~/lib/http'
 import { SOURCES, SOURCES_BY_ID } from '~/lib/knowledge'
 import { createFileRoute } from '@tanstack/react-router'
 import { env, waitUntil } from 'cloudflare:workers'
 import { z } from 'zod'
 
-const MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast'
 const CALL_TIMEOUT_MS = 25_000
 
 const CheckRequestSchema = z.object({
@@ -97,15 +96,7 @@ const gradeSchema = {
 
 /** One JSON-mode call. JSON mode does not stream, so each step is one call. */
 async function runJson(system: string, user: string, schema: object) {
-  const call = runAi(MODEL, {
-    messages: [
-      { role: 'system', content: system },
-      { role: 'user', content: user },
-    ],
-    max_tokens: 600,
-    temperature: 0,
-    response_format: { type: 'json_schema', json_schema: schema },
-  } as never) as Promise<unknown>
+  const call = generateJson({ system, user, schema, maxTokens: 600 })
 
   let timer = 0 as unknown as ReturnType<typeof setTimeout>
   const timeout = new Promise<never>((_, reject) => {
@@ -115,14 +106,7 @@ async function runJson(system: string, user: string, schema: object) {
     )
   })
   try {
-    const result = await Promise.race([call, timeout])
-    const response =
-      result && typeof result === 'object' && 'response' in result
-        ? result.response
-        : result
-    return typeof response === 'string'
-      ? (JSON.parse(response) as unknown)
-      : response
+    return await Promise.race([call, timeout])
   } finally {
     clearTimeout(timer)
   }
