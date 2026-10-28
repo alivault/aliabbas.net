@@ -1,5 +1,4 @@
 import { MermaidDiagram } from '~/components/MermaidDiagram'
-import MonoLabel from '~/components/MonoLabel'
 import ScrollReveal from '~/components/ScrollReveal'
 import Title from '~/components/Title'
 import { toMermaid } from '~/data/case-studies'
@@ -24,27 +23,22 @@ export default function StateMachineSection({
     <ScrollReveal className="border-foreground/15 border-t pt-10 sm:pt-12">
       <section aria-labelledby={headingId}>
         <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
-          <div>
-            <MonoLabel tone="brand">
-              Machine {String(index + 1).padStart(2, '0')} ·{' '}
-              {machine.states.length} states · {machine.transitions.length}{' '}
-              transitions
-            </MonoLabel>
-            <Title
-              as="h3"
-              variant="subsection"
-              id={headingId}
-              className="mt-4 max-w-sm"
-            >
-              {machine.title}
-            </Title>
-          </div>
+          <Title
+            as="h3"
+            variant="card"
+            id={headingId}
+            className="max-w-sm text-balance"
+          >
+            <span className="text-brand tabular-nums">{index + 1}.</span>{' '}
+            {machine.title}
+          </Title>
           <p className="text-foreground/60 max-w-2xl text-base leading-7">
             {machine.intro}
           </p>
         </div>
 
         <MermaidDiagram
+          captionStyle="text"
           value={{
             code: toMermaid(machine),
             caption: `${machine.title}: state diagram. The tables below list the same states and transitions.`,
@@ -54,7 +48,10 @@ export default function StateMachineSection({
         <div className="grid gap-10 lg:grid-cols-2 lg:gap-16">
           <div className="min-w-0">
             <Title as="h4" variant="detail">
-              States
+              States{' '}
+              <span className="text-foreground/45 tabular-nums">
+                ({machine.states.length})
+              </span>
             </Title>
             <dl className="border-foreground/15 mt-4 border-t">
               {machine.states.map((state) => (
@@ -73,7 +70,10 @@ export default function StateMachineSection({
 
           <div className="min-w-0">
             <Title as="h4" variant="detail">
-              Transitions
+              Transitions{' '}
+              <span className="text-foreground/45 tabular-nums">
+                ({machine.transitions.length})
+              </span>
             </Title>
             <div className="mt-4 overflow-x-auto">
               <table className="w-full border-collapse text-left text-sm">
@@ -85,19 +85,19 @@ export default function StateMachineSection({
                   <tr className="border-foreground/15 border-y">
                     <th
                       scope="col"
-                      className="text-foreground/45 py-3 pr-4 font-mono text-[11px] font-normal uppercase"
+                      className="text-foreground/55 py-3 pr-4 text-sm font-semibold"
                     >
                       From
                     </th>
                     <th
                       scope="col"
-                      className="text-foreground/45 py-3 pr-4 font-mono text-[11px] font-normal uppercase"
+                      className="text-foreground/55 py-3 pr-4 text-sm font-semibold"
                     >
                       Event
                     </th>
                     <th
                       scope="col"
-                      className="text-foreground/45 py-3 font-mono text-[11px] font-normal uppercase"
+                      className="text-foreground/55 py-3 text-sm font-semibold"
                     >
                       To
                     </th>
@@ -130,7 +130,9 @@ export default function StateMachineSection({
         </div>
 
         <div className="mt-8">
-          <MonoLabel>In the code</MonoLabel>
+          <Title as="h4" variant="detail">
+            In the code
+          </Title>
           <EvidenceList
             paths={machine.source}
             baseHref={evidenceBaseHref}

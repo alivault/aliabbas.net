@@ -46,7 +46,14 @@ function getPrefersDarkMode() {
   )
 }
 
-export function MermaidDiagram({ value }: { value: MermaidDiagramValue }) {
+export function MermaidDiagram({
+  value,
+  captionStyle = 'label',
+}: {
+  value: MermaidDiagramValue
+  /** `label`: small mono caption, as in notes. `text`: a normal sentence. */
+  captionStyle?: 'label' | 'text'
+}) {
   const renderId = `mermaid-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`
   const [state, setState] = useState<RenderState>({ status: 'loading' })
   const [prefersDarkMode, setPrefersDarkMode] = useState(getPrefersDarkMode)
@@ -131,11 +138,16 @@ export function MermaidDiagram({ value }: { value: MermaidDiagramValue }) {
           aria-hidden="true"
         />
       )}
-      {value.caption && (
-        <MonoLabel as="figcaption" className="mt-5 text-center">
-          {value.caption}
-        </MonoLabel>
-      )}
+      {value.caption &&
+        (captionStyle === 'text' ? (
+          <figcaption className="text-foreground/55 mx-auto mt-5 max-w-2xl text-center text-sm leading-6">
+            {value.caption}
+          </figcaption>
+        ) : (
+          <MonoLabel as="figcaption" className="mt-5 text-center">
+            {value.caption}
+          </MonoLabel>
+        ))}
     </figure>
   )
 }

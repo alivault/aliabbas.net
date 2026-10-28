@@ -1,19 +1,17 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react'
 import Main from '~/components/Main'
-import MonoLabel, { monoLabelStyles } from '~/components/MonoLabel'
 import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
 import SectionHeading from '~/components/SectionHeading'
 import Title from '~/components/Title'
 import { caseStudies } from '~/data/case-studies'
 import type { CaseStudy } from '~/data/case-studies'
-import { cn } from 'cn'
 import EvidenceList from './EvidenceList'
 import StateMachineSection from './StateMachineSection'
 
 const pillLink =
-  'border-foreground/20 hover:border-foreground focus-visible:outline-foreground inline-flex items-center gap-2 rounded-full border px-4 py-2 text-xs font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
+  'border-foreground/20 hover:border-foreground focus-visible:outline-foreground inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
 
 function allEvidence(study: CaseStudy) {
   const paths = new Set<string>()
@@ -36,10 +34,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
       <article className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
         <Link
           to="/work"
-          className={cn(
-            monoLabelStyles(),
-            'hover:text-brand focus-visible:outline-foreground mb-section-content inline-flex items-center gap-2 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4',
-          )}
+          className="text-foreground/60 hover:text-brand focus-visible:outline-foreground mb-section-content inline-flex items-center gap-2 text-base transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
         >
           <ArrowLeft className="size-4" aria-hidden="true" /> Back to work
         </Link>
@@ -50,10 +45,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
           className="border-foreground/20 pb-section-divider grid gap-8 border-b lg:grid-cols-[1.1fr_0.9fr] lg:items-end"
         >
           <div>
-            <MonoLabel tone="brand">
-              Case study · {study.category} · {study.year}
-            </MonoLabel>
-            <PageHeading className="mt-5">
+            <PageHeading>
               {study.title}
               <br />
               <em className="text-brand">as state machines.</em>
@@ -63,6 +55,12 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
             <p className="text-foreground/55 max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
               {study.summary}
             </p>
+            <dl className="mt-6 grid max-w-xl grid-cols-[auto_1fr] gap-x-6 gap-y-1 text-base">
+              <dt className="text-foreground/50">Product</dt>
+              <dd>{study.category}</dd>
+              <dt className="text-foreground/50">Year</dt>
+              <dd>{study.year}</dd>
+            </dl>
             <div className="mt-7 flex flex-wrap gap-3">
               <a
                 href={study.liveHref}
@@ -90,10 +88,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
           </div>
         </ScrollReveal>
 
-        <nav
-          aria-label="On this page"
-          className="border-foreground/15 mt-8 flex flex-wrap gap-x-6 gap-y-2"
-        >
+        <nav aria-label="On this page" className="mt-8 flex flex-wrap gap-2">
           {[
             ['#problem', 'Problem and role'],
             ['#machines', 'State machines'],
@@ -104,10 +99,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
             <a
               key={href}
               href={href}
-              className={cn(
-                monoLabelStyles(),
-                'hover:text-brand focus-visible:outline-foreground transition-colors focus-visible:outline-2 focus-visible:outline-offset-4',
-              )}
+              className="bg-foreground/5 hover:bg-foreground/10 focus-visible:outline-foreground rounded-full px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2"
             >
               {text}
             </a>
@@ -115,8 +107,14 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
         </nav>
 
         <ScrollReveal className="mt-section-content grid scroll-mt-24 gap-10 lg:grid-cols-2 lg:gap-16">
-          <section id="problem" className="scroll-mt-24">
-            <MonoLabel tone="brand">The problem</MonoLabel>
+          <section
+            id="problem"
+            aria-labelledby="problem-heading"
+            className="scroll-mt-24"
+          >
+            <Title as="h2" variant="card" id="problem-heading">
+              The problem
+            </Title>
             <div className="mt-4 space-y-4">
               {study.problem.map((paragraph) => (
                 <p
@@ -128,15 +126,15 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
               ))}
             </div>
           </section>
-          <section aria-labelledby="role-label">
-            <MonoLabel tone="brand" id="role-label">
+          <section aria-labelledby="role-heading">
+            <Title as="h2" variant="card" id="role-heading">
               Ali&apos;s role
-            </MonoLabel>
+            </Title>
             <div className="border-foreground/25 mt-4 space-y-4 border-l pl-5">
               {study.role.map((paragraph) => (
                 <p
                   key={paragraph}
-                  className="text-foreground/60 max-w-xl text-sm leading-6 sm:text-base sm:leading-7"
+                  className="text-foreground/60 max-w-xl text-base leading-7"
                 >
                   {paragraph}
                 </p>
@@ -188,19 +186,28 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
                 key={mode.title}
                 className="border-foreground/15 grid gap-6 border-b py-9 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16 lg:py-12"
               >
-                <div className="min-w-0">
-                  <MonoLabel tone="brand">
-                    Failure {String(index + 1).padStart(2, '0')}
-                  </MonoLabel>
-                  <Title as="h3" variant="subsection" className="mt-3">
-                    {mode.title}
+                <div className="grid min-w-0 grid-cols-[auto_1fr] gap-x-5">
+                  <Title
+                    as="span"
+                    variant="section"
+                    aria-hidden="true"
+                    className="text-brand leading-none tabular-nums"
+                  >
+                    {index + 1}
                   </Title>
-                  <p className="text-foreground/55 mt-4 max-w-md text-sm leading-6">
-                    {mode.risk}
-                  </p>
+                  <div>
+                    <Title as="h3" variant="subsection">
+                      {mode.title}
+                    </Title>
+                    <p className="text-foreground/55 mt-3 max-w-md text-base leading-7">
+                      {mode.risk}
+                    </p>
+                  </div>
                 </div>
                 <div className="min-w-0">
-                  <MonoLabel>How the design handles it</MonoLabel>
+                  <Title as="h4" variant="detail">
+                    How the design handles it
+                  </Title>
                   <ul className="mt-4 space-y-3">
                     {mode.design.map((line) => (
                       <li
@@ -247,7 +254,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
                       {number.value}
                     </Title>
                   </dd>
-                  <dd className="text-foreground/45 font-mono text-[11px] leading-5 break-words">
+                  <dd className="text-foreground/55 text-sm leading-6 break-words">
                     {number.method}
                   </dd>
                 </div>
@@ -265,7 +272,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
             <SectionHeading id="sources-heading" size="compact">
               Sources
             </SectionHeading>
-            <p className="text-foreground/55 mt-3 max-w-2xl text-sm leading-6">
+            <p className="text-foreground/55 mt-3 max-w-2xl text-base leading-7">
               {study.evidenceNote} Every claim on this page comes from these
               files.
             </p>
@@ -279,13 +286,13 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
 
         {next && next.slug !== study.slug && (
           <ScrollReveal className="border-foreground/20 mt-section border-t pt-10">
-            <MonoLabel>Next case study</MonoLabel>
             <Link
               to="/work/$slug"
               params={{ slug: next.slug }}
-              className="group hover:text-brand focus-visible:outline-foreground mt-3 inline-flex items-center gap-4 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
+              className="group hover:text-brand focus-visible:outline-foreground inline-flex items-center gap-4 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
             >
               <Title as="span" variant="section">
+                <span className="text-foreground/45">Next case study:</span>{' '}
                 {next.title}
               </Title>
               <ArrowRight

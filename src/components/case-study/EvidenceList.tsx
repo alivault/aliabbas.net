@@ -31,7 +31,7 @@ export default function EvidenceList({
         const href = evidenceHref(path, baseHref)
         const label = evidenceLabel(path)
         const chip =
-          'border-foreground/15 inline-flex max-w-full items-center gap-1.5 rounded-full border px-3 py-1.5 font-mono text-[11px] break-all'
+          'border-foreground/15 inline-flex max-w-full items-center gap-1.5 rounded-full border px-3.5 py-1.5 font-mono text-sm break-all'
 
         return (
           <li key={path} className="max-w-full">
@@ -46,7 +46,10 @@ export default function EvidenceList({
                 )}
               >
                 {label}
-                <ArrowUpRight className="size-3 shrink-0" aria-hidden="true" />
+                <ArrowUpRight
+                  className="size-3.5 shrink-0"
+                  aria-hidden="true"
+                />
                 <span className="sr-only">(opens in a new tab)</span>
               </a>
             ) : (
