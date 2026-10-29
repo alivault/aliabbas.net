@@ -68,7 +68,7 @@ export default function ChatComposer({
           event.preventDefault()
           if (hasDraft) onSubmit()
         }}
-        className="border-foreground/15 bg-background focus-within:border-brand/60 relative flex items-center gap-2 rounded-[23px] border p-1"
+        className="border-foreground/15 bg-background focus-within:border-brand/60 relative flex items-end gap-2 rounded-[23px] border p-1"
       >
         <label htmlFor={id} className="sr-only">
           {labels.field}
