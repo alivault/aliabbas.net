@@ -5,11 +5,14 @@
  * can split a marker (`[S` + `4]`), so the filter holds back a tail that can
  * still become a marker. Each marker is rewritten to `[S4][S7]` form. A
  * marker with an id that is not in the knowledge base is removed, so the
- * client can show only citations that have evidence.
+ * client can show only citations that have evidence. A marker with no
+ * number, such as `[S]`, is removed too.
  */
 
 const MARKER = / ?\[\s*(S\d{1,3}(?:\s*[,;]\s*S?\d{1,3})*)\s*\]/g
 const MARKER_PREFIX = /\[\s*(?:S(?:\d{1,3}(?:\s*[,;]\s*S?\d{0,3})*)?)?\s*$/
+/** `[S]`, `[S, S]`: the model meant to cite but wrote no number. */
+const EMPTY_MARKER = / ?\[\s*S\s*(?:[,;]\s*S?\s*)*\]/g
 const MAX_HELD_LENGTH = 48
 
 export type CitationFilterOutput = {
@@ -44,7 +47,7 @@ export function createCitationFilter(validIds: ReadonlySet<string>) {
 
       return ids.map((id) => `[${id}]`).join('')
     })
-    return { text: output, newSourceIds }
+    return { text: output.replace(EMPTY_MARKER, ''), newSourceIds }
   }
 
   return {
