@@ -59,6 +59,27 @@ function hostname(href: string) {
   }
 }
 
+/**
+ * The chip styles by state. Exported for the design page, which shows each
+ * state without the chat context.
+ */
+export function citationChipClass({
+  active = false,
+  hovered = false,
+}: {
+  active?: boolean
+  hovered?: boolean
+}) {
+  return cn(
+    'focus-visible:ring-brand/70 mx-0.5 inline-flex h-[1.375rem] min-w-[1.375rem] -translate-y-px cursor-pointer items-center justify-center rounded-full border px-1.5 align-middle text-sm leading-none tabular-nums transition-colors outline-none focus-visible:ring-2',
+    active
+      ? 'border-brand bg-brand text-brand-foreground'
+      : hovered
+        ? 'border-brand/70 bg-brand/15 text-foreground'
+        : 'border-foreground/20 text-foreground/70 hover:border-brand/70 hover:text-foreground',
+  )
+}
+
 function CitationChip({ sourceId }: { sourceId: string }) {
   const context = use(CitationContext)
   const reduceMotion = useReducedMotion()
@@ -85,14 +106,7 @@ function CitationChip({ sourceId }: { sourceId: string }) {
       }
       animate={{ scale: 1, opacity: 1 }}
       transition={SPRINGS.pop}
-      className={cn(
-        'focus-visible:ring-brand/70 mx-0.5 inline-flex h-[1.375rem] min-w-[1.375rem] -translate-y-px cursor-pointer items-center justify-center rounded-full border px-1.5 align-middle text-sm leading-none tabular-nums transition-colors outline-none focus-visible:ring-2',
-        active
-          ? 'border-brand bg-brand text-brand-foreground'
-          : hovered
-            ? 'border-brand/70 bg-brand/15 text-foreground'
-            : 'border-foreground/20 text-foreground/70 hover:border-brand/70 hover:text-foreground',
-      )}
+      className={citationChipClass({ active, hovered })}
     >
       {number}
     </motion.button>

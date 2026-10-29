@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssistantRouteImport } from './routes/_assistant'
 import { Route as ArticlesRouteImport } from './routes/articles'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as DesignRouteImport } from './routes/design'
 import { Route as ExperienceRouteImport } from './routes/experience'
 import { Route as LabRouteImport } from './routes/lab'
 import { Route as NotesRouteImport } from './routes/notes'
@@ -29,6 +30,7 @@ import { Route as ApiChatRouteImport } from './routes/api.chat'
 import { Route as ApiCheckRouteImport } from './routes/api.check'
 import { Route as ApiVitalsRouteImport } from './routes/api.vitals'
 import { Route as ArticleSlugRouteImport } from './routes/article.$slug'
+import { Route as DesignTokensDotjsonRouteImport } from './routes/design_.tokens[.]json'
 import { Route as NotesSlugRouteImport } from './routes/notes_.$slug'
 import { Route as WorkSlugRouteImport } from './routes/work_.$slug'
 import { Route as ApiAdminConversationsRouteImport } from './routes/api.admin.conversations'
@@ -51,6 +53,11 @@ const ArticlesRoute = ArticlesRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DesignRoute = DesignRouteImport.update({
+  id: '/design',
+  path: '/design',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ExperienceRoute = ExperienceRouteImport.update({
@@ -133,6 +140,11 @@ const ArticleSlugRoute = ArticleSlugRouteImport.update({
   path: '/article/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DesignTokensDotjsonRoute = DesignTokensDotjsonRouteImport.update({
+  id: '/design_/tokens.json',
+  path: '/design/tokens.json',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const NotesSlugRoute = NotesSlugRouteImport.update({
   id: '/notes_/$slug',
   path: '/notes/$slug',
@@ -158,6 +170,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/articles': typeof ArticlesRoute
   '/contact': typeof ContactRoute
+  '/design': typeof DesignRoute
   '/experience': typeof ExperienceRoute
   '/lab': typeof LabRoute
   '/notes': typeof NotesRoute
@@ -174,6 +187,7 @@ export interface FileRoutesByFullPath {
   '/api/check': typeof ApiCheckRoute
   '/api/vitals': typeof ApiVitalsRoute
   '/article/$slug': typeof ArticleSlugRoute
+  '/design/tokens.json': typeof DesignTokensDotjsonRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/work/$slug': typeof WorkSlugRoute
   '/api/admin/conversations': typeof ApiAdminConversationsRoute
@@ -183,6 +197,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/articles': typeof ArticlesRoute
   '/contact': typeof ContactRoute
+  '/design': typeof DesignRoute
   '/experience': typeof ExperienceRoute
   '/lab': typeof LabRoute
   '/notes': typeof NotesRoute
@@ -199,6 +214,7 @@ export interface FileRoutesByTo {
   '/api/check': typeof ApiCheckRoute
   '/api/vitals': typeof ApiVitalsRoute
   '/article/$slug': typeof ArticleSlugRoute
+  '/design/tokens.json': typeof DesignTokensDotjsonRoute
   '/notes/$slug': typeof NotesSlugRoute
   '/work/$slug': typeof WorkSlugRoute
   '/api/admin/conversations': typeof ApiAdminConversationsRoute
@@ -210,6 +226,7 @@ export interface FileRoutesById {
   '/_assistant': typeof AssistantRouteWithChildren
   '/articles': typeof ArticlesRoute
   '/contact': typeof ContactRoute
+  '/design': typeof DesignRoute
   '/experience': typeof ExperienceRoute
   '/lab': typeof LabRoute
   '/notes': typeof NotesRoute
@@ -226,6 +243,7 @@ export interface FileRoutesById {
   '/api/check': typeof ApiCheckRoute
   '/api/vitals': typeof ApiVitalsRoute
   '/article/$slug': typeof ArticleSlugRoute
+  '/design_/tokens.json': typeof DesignTokensDotjsonRoute
   '/notes_/$slug': typeof NotesSlugRoute
   '/work_/$slug': typeof WorkSlugRoute
   '/api/admin/conversations': typeof ApiAdminConversationsRoute
@@ -237,6 +255,7 @@ export interface FileRouteTypes {
     | '/'
     | '/articles'
     | '/contact'
+    | '/design'
     | '/experience'
     | '/lab'
     | '/notes'
@@ -253,6 +272,7 @@ export interface FileRouteTypes {
     | '/api/check'
     | '/api/vitals'
     | '/article/$slug'
+    | '/design/tokens.json'
     | '/notes/$slug'
     | '/work/$slug'
     | '/api/admin/conversations'
@@ -262,6 +282,7 @@ export interface FileRouteTypes {
     | '/'
     | '/articles'
     | '/contact'
+    | '/design'
     | '/experience'
     | '/lab'
     | '/notes'
@@ -278,6 +299,7 @@ export interface FileRouteTypes {
     | '/api/check'
     | '/api/vitals'
     | '/article/$slug'
+    | '/design/tokens.json'
     | '/notes/$slug'
     | '/work/$slug'
     | '/api/admin/conversations'
@@ -288,6 +310,7 @@ export interface FileRouteTypes {
     | '/_assistant'
     | '/articles'
     | '/contact'
+    | '/design'
     | '/experience'
     | '/lab'
     | '/notes'
@@ -304,6 +327,7 @@ export interface FileRouteTypes {
     | '/api/check'
     | '/api/vitals'
     | '/article/$slug'
+    | '/design_/tokens.json'
     | '/notes_/$slug'
     | '/work_/$slug'
     | '/api/admin/conversations'
@@ -315,6 +339,7 @@ export interface RootRouteChildren {
   AssistantRoute: typeof AssistantRouteWithChildren
   ArticlesRoute: typeof ArticlesRoute
   ContactRoute: typeof ContactRoute
+  DesignRoute: typeof DesignRoute
   ExperienceRoute: typeof ExperienceRoute
   LabRoute: typeof LabRoute
   NotesRoute: typeof NotesRoute
@@ -329,6 +354,7 @@ export interface RootRouteChildren {
   ApiCheckRoute: typeof ApiCheckRoute
   ApiVitalsRoute: typeof ApiVitalsRoute
   ArticleSlugRoute: typeof ArticleSlugRoute
+  DesignTokensDotjsonRoute: typeof DesignTokensDotjsonRoute
   NotesSlugRoute: typeof NotesSlugRoute
   WorkSlugRoute: typeof WorkSlugRoute
   ApiAdminConversationsRoute: typeof ApiAdminConversationsRoute
@@ -363,6 +389,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/design': {
+      id: '/design'
+      path: '/design'
+      fullPath: '/design'
+      preLoaderRoute: typeof DesignRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/experience': {
@@ -477,6 +510,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ArticleSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/design_/tokens.json': {
+      id: '/design_/tokens.json'
+      path: '/design/tokens.json'
+      fullPath: '/design/tokens.json'
+      preLoaderRoute: typeof DesignTokensDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/notes_/$slug': {
       id: '/notes_/$slug'
       path: '/notes/$slug'
@@ -527,6 +567,7 @@ const rootRouteChildren: RootRouteChildren = {
   AssistantRoute: AssistantRouteWithChildren,
   ArticlesRoute: ArticlesRoute,
   ContactRoute: ContactRoute,
+  DesignRoute: DesignRoute,
   ExperienceRoute: ExperienceRoute,
   LabRoute: LabRoute,
   NotesRoute: NotesRoute,
@@ -541,6 +582,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiCheckRoute: ApiCheckRoute,
   ApiVitalsRoute: ApiVitalsRoute,
   ArticleSlugRoute: ArticleSlugRoute,
+  DesignTokensDotjsonRoute: DesignTokensDotjsonRoute,
   NotesSlugRoute: NotesSlugRoute,
   WorkSlugRoute: WorkSlugRoute,
   ApiAdminConversationsRoute: ApiAdminConversationsRoute,

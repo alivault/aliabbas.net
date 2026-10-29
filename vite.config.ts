@@ -55,6 +55,8 @@ export default defineConfig({
   test: {
     // Unit tests only. Playwright runs the end-to-end tests in e2e/.
     include: ['src/**/*.test.ts'],
+    // The design tokens read globals.css as text.
+    css: { include: [/globals\.css/] },
   },
   plugins: lazyPlugins(() =>
     // Unit tests test plain modules: they need no Worker and no router.

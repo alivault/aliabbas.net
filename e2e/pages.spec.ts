@@ -46,6 +46,7 @@ for (const path of [
   '/check',
   '/work/pico',
   '/performance',
+  '/design',
 ]) {
   test(`${path} has no text under 14px and no CSS capitals`, async ({
     page,
@@ -88,3 +89,15 @@ for (const [path, name, target] of [
     )
   })
 }
+
+test('/design/tokens.json lists the tokens and the rules', async ({
+  request,
+}) => {
+  const response = await request.get('/design/tokens.json')
+  expect(response.ok()).toBe(true)
+  const tokens = await response.json()
+  expect(tokens.color.background.light).toMatch(/^oklch\(/)
+  expect(tokens.color.background.dark).toMatch(/^oklch\(/)
+  expect(tokens.motion.springs.layout).toMatchObject({ type: 'spring' })
+  expect(tokens.rules.length).toBeGreaterThan(10)
+})

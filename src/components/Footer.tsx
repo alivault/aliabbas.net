@@ -4,6 +4,7 @@ import { ArrowUp, ArrowUpRight } from 'lucide-react'
 const links = [
   { label: 'Work', to: '/work' },
   { label: 'Lab', to: '/lab' },
+  { label: 'Design', to: '/design' },
   { label: 'Notes', to: '/notes' },
   { label: 'Ask AI', to: '/chat' },
   { label: 'Skills', to: '/skills' },
