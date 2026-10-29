@@ -47,7 +47,7 @@ function CopyButton({ text }: { text: string }) {
   return (
     <Button
       variant="ghost"
-      size="sm"
+      size="default"
       onClick={() => {
         void navigator.clipboard
           .writeText(text)
@@ -228,13 +228,13 @@ function ChatTurn({
 
           {turn.status !== 'pending' && (
             <div className="flex flex-wrap items-center gap-x-1 gap-y-2">
-              <span className="text-foreground/40 mr-2 font-mono text-[11px] uppercase">
+              <span className="text-foreground/50 mr-2 text-sm tabular-nums">
                 <TurnStatusLine turn={turn} />
               </span>
               {turn.sources.length > 0 && (
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="default"
                   aria-pressed={evidenceVisible}
                   aria-label={`${turn.sources.length} ${turn.sources.length === 1 ? 'source' : 'sources'}: ${evidenceVisible ? 'hide' : 'show'} evidence`}
                   onClick={() => onToggleEvidence(turn.id)}
@@ -249,7 +249,7 @@ function ChatTurn({
               {isLast && !active && (
                 <Button
                   variant="ghost"
-                  size="sm"
+                  size="default"
                   onClick={() => onRetry(turn.id)}
                   className="text-foreground/55 hover:text-foreground"
                 >
@@ -261,7 +261,7 @@ function ChatTurn({
                 (turn.status === 'failed' || turn.status === 'stopped') && (
                   <Button
                     variant="ghost"
-                    size="sm"
+                    size="default"
                     onClick={() => onEdit(turn)}
                     className="text-foreground/55 hover:text-foreground"
                   >

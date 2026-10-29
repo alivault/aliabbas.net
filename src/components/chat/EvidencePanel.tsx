@@ -127,7 +127,13 @@ function SourceCard({
           </span>
           <div className="min-w-0">
             {source.group && (
-              <p className="text-foreground/55 font-mono text-sm [overflow-wrap:anywhere]">
+              <p
+                className={cn(
+                  'text-foreground/55 text-sm [overflow-wrap:anywhere]',
+                  // A code path reads as code; a category reads as text.
+                  source.group.includes('/') && 'font-mono',
+                )}
+              >
                 <PathText path={source.group} />
               </p>
             )}

@@ -65,7 +65,7 @@ export default function VerdictBadge({
         style.text,
         style.ring,
         style.fill,
-        size === 'lg' ? 'h-10 px-4 text-base' : 'h-7 px-2.5 text-xs',
+        size === 'lg' ? 'h-10 px-4 text-base' : 'h-8 px-3 text-sm',
         className,
       )}
     >

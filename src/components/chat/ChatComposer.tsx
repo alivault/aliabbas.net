@@ -125,7 +125,7 @@ export default function ChatComposer({
       {showHints && (
         <p
           id={hintId}
-          className="text-foreground/35 mt-2 hidden items-center justify-center gap-3 text-xs sm:flex"
+          className="text-foreground/50 mt-2 hidden items-center justify-center gap-4 text-sm sm:flex [&_kbd]:h-6 [&_kbd]:px-1.5 [&_kbd]:text-sm"
         >
           <span>
             <Kbd>Enter</Kbd> {labels.submitHint}

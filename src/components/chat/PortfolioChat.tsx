@@ -7,7 +7,6 @@ import {
 } from 'react'
 import type { CSSProperties, KeyboardEvent } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
-import MonoLabel from '~/components/MonoLabel'
 import { usePanelActive } from '~/components/assistant/panel-active'
 import { revealSource } from '~/lib/chat/reveal-source'
 import PageHeading from '~/components/PageHeading'
@@ -499,9 +498,9 @@ export default function PortfolioChat() {
                 {...composerProps}
               />
               <div className="mt-8 w-full">
-                <MonoLabel className="text-left lg:text-center">
+                <h2 className="text-foreground text-left text-base font-semibold lg:text-center">
                   Try asking
-                </MonoLabel>
+                </h2>
                 <SuggestedQuestionButtons
                   questions={suggestedQuestions}
                   onSelect={submit}

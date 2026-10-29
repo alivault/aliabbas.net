@@ -3,7 +3,6 @@ import { ArrowUpRight, Check, Link2, Pencil, RotateCcw } from 'lucide-react'
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
 import ChatComposer from '~/components/chat/ChatComposer'
 import type { ComposerLabels } from '~/components/chat/ChatComposer'
-import MonoLabel from '~/components/MonoLabel'
 import { usePanelActive } from '~/components/assistant/panel-active'
 import PageHeading from '~/components/PageHeading'
 import type { ChatSource } from '~/lib/chat/protocol'
@@ -52,7 +51,7 @@ function ExampleClaims({
 }) {
   return (
     <div>
-      <MonoLabel>Try a claim</MonoLabel>
+      <h2 className="text-foreground text-base font-semibold">Try a claim</h2>
       <ul className="mt-3 flex flex-wrap gap-2">
         {exampleClaims.map((claim) => (
           <li key={claim} className="max-w-full">
@@ -74,8 +73,11 @@ function ExampleClaims({
 function VerdictLegend() {
   return (
     <section aria-labelledby="verdict-legend-heading">
-      <h2 id="verdict-legend-heading">
-        <MonoLabel as="span">How the grades work</MonoLabel>
+      <h2
+        id="verdict-legend-heading"
+        className="text-foreground text-base font-semibold"
+      >
+        How the grades work
       </h2>
       <p className="text-foreground/50 mt-3 max-w-xl text-sm leading-6">
         The checker splits a claim into parts and grades each part against the
@@ -119,9 +121,11 @@ function SourceExcerpt({
       id={id}
       className="border-foreground/10 bg-foreground/[0.02] mt-3 rounded-lg border p-4"
     >
-      {source.group && <MonoLabel>{source.group}</MonoLabel>}
+      {source.group && (
+        <p className="text-foreground/55 text-sm">{source.group}</p>
+      )}
       <p className="text-foreground text-sm font-semibold">{source.title}</p>
-      <p className="text-foreground/60 mt-2 text-[0.8rem] leading-5 [overflow-wrap:anywhere] whitespace-pre-line">
+      <p className="text-foreground/60 mt-2 text-sm leading-6 [overflow-wrap:anywhere] whitespace-pre-line">
         {highlightQuote(body, quote).map((part, index) =>
           part.match ? (
             <mark
@@ -140,7 +144,7 @@ function SourceExcerpt({
           href={source.href}
           target="_blank"
           rel="noreferrer"
-          className="text-foreground/60 hover:text-brand mt-3 inline-flex items-center gap-1 font-mono text-[11px] uppercase transition-colors"
+          className="text-foreground/60 hover:text-brand mt-3 inline-flex items-center gap-1 text-sm transition-colors"
         >
           {new URL(source.href).hostname.replace(/^www\./, '')}
           <ArrowUpRight aria-hidden="true" className="size-3" />
@@ -171,9 +175,9 @@ function Quote({
           aria-expanded={open}
           aria-controls={excerptId}
           onClick={() => setOpen((value) => !value)}
-          className="text-foreground/50 hover:text-foreground focus-visible:ring-brand/70 inline-flex max-w-full items-center gap-2 rounded text-left font-mono text-[11px] uppercase outline-none focus-visible:ring-2"
+          className="text-foreground/50 hover:text-foreground focus-visible:ring-brand/70 inline-flex max-w-full items-center gap-2 rounded text-left text-sm outline-none focus-visible:ring-2"
         >
-          <span className="border-foreground/20 rounded border px-1 tabular-nums">
+          <span className="border-foreground/20 rounded border px-1.5 font-mono tabular-nums">
             {evidence.sourceId}
           </span>
           <span className="truncate">
@@ -207,7 +211,7 @@ function PartStatus({ part }: { part: CheckedPart }) {
         {part.status === 'graded' && part.grade ? (
           <VerdictBadge verdict={part.grade.verdict} />
         ) : part.status === 'checking' ? (
-          <span className="border-foreground/15 text-foreground/50 inline-flex h-7 items-center gap-2 rounded-full border px-2.5 text-xs font-semibold">
+          <span className="border-foreground/15 text-foreground/50 inline-flex h-8 items-center gap-2 rounded-full border px-3 text-sm font-semibold">
             <span
               aria-hidden="true"
               className="bg-foreground/40 size-1.5 rounded-full motion-safe:animate-pulse"
@@ -215,7 +219,7 @@ function PartStatus({ part }: { part: CheckedPart }) {
             Checking
           </span>
         ) : (
-          <span className="border-foreground/15 text-foreground/50 inline-flex h-7 items-center rounded-full border border-dashed px-2.5 text-xs font-semibold">
+          <span className="border-foreground/15 text-foreground/50 inline-flex h-8 items-center rounded-full border border-dashed px-3 text-sm font-semibold">
             {part.status === 'stopped' ? 'Stopped' : 'Not graded'}
           </span>
         )}
@@ -249,7 +253,7 @@ function PartRow({
         <p className="flex gap-3 text-base leading-7 font-medium">
           <span
             aria-hidden="true"
-            className="border-foreground/20 text-foreground/60 mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full border font-mono text-[0.7rem] tabular-nums"
+            className="border-foreground/20 text-foreground/60 flex size-7 shrink-0 items-center justify-center rounded-full border text-sm tabular-nums"
           >
             {index + 1}
           </span>
@@ -258,31 +262,24 @@ function PartRow({
             {part.text}
           </span>
         </p>
-        <div className="pl-9 sm:pl-0">
+        <div className="pl-10 sm:pl-0">
           <PartStatus part={part} />
         </div>
       </div>
 
-      {part.status === 'checking' && (
-        <div aria-hidden="true" className="mt-4 space-y-2 pl-9">
-          <div className="bg-foreground/[0.06] h-3 w-4/5 rounded motion-safe:animate-pulse" />
-          <div className="bg-foreground/[0.06] h-3 w-3/5 rounded motion-safe:animate-pulse" />
-        </div>
-      )}
-
       {part.status === 'failed' && (
-        <p className="text-foreground/50 mt-3 pl-9 text-sm">{part.error}</p>
+        <p className="text-foreground/50 mt-3 pl-10 text-sm">{part.error}</p>
       )}
 
       {grade && (
-        <div className="mt-3 space-y-4 pl-9">
+        <div className="mt-3 space-y-4 pl-10">
           {grade.reason && (
             <p className="text-foreground/65 text-sm leading-6">
               {grade.reason}
             </p>
           )}
           {grade.downgraded && (
-            <p className="text-foreground/45 text-xs leading-5">
+            <p className="text-foreground/50 text-sm leading-6">
               The model quoted words that are not in its source, twice. The
               server removed those quotes and does not show a grade.
             </p>
@@ -376,7 +373,7 @@ function Summary({
             transition={reduceMotion ? { duration: 0 } : SPRING}
           />
         </div>
-        <p className="text-foreground/35 text-xs">
+        <p className="text-foreground/50 text-sm">
           Press <kbd className="font-mono">Esc</kbd> to stop.
         </p>
       </div>
@@ -423,14 +420,14 @@ function Summary({
       transition={reduceMotion ? { duration: 0 } : SPRING}
       className={cn('bg-background rounded-2xl border p-5 sm:p-6', style.ring)}
     >
-      <MonoLabel>Overall grade</MonoLabel>
+      <h3 className="text-foreground/60 text-sm font-medium">Overall grade</h3>
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
         <VerdictBadge size="lg" verdict={state.verdict} />
         <p className="text-foreground/70 text-sm">
           {VERDICT_INFO[state.verdict].description}
         </p>
       </div>
-      <p className="text-foreground/45 mt-4 text-xs">
+      <p className="text-foreground/55 mt-4 text-sm tabular-nums">
         {plural(total, 'part')} · {plural(state.sources.length, 'source')}{' '}
         quoted
         {seconds && <> · {seconds} s</>}
@@ -580,7 +577,7 @@ export default function ClaimChecker({
           <h2 id="check-result-heading" className="sr-only">
             Result
           </h2>
-          <MonoLabel>Claim</MonoLabel>
+          <p className="text-foreground/60 text-sm font-medium">Claim</p>
           <p className="font-display mt-2 text-xl leading-8 font-medium sm:text-2xl sm:leading-9">
             “{state.claim}”
           </p>
