@@ -13,6 +13,7 @@ import { cn } from '~/lib/utils'
 import Logo from './Logo'
 import MonoLabel from './MonoLabel'
 import Title from './Title'
+import { DURATIONS, EASE_IN, EASE_OUT } from '~/lib/design/motion'
 
 const navigation = [
   { label: 'Work', to: '/work' as const },
@@ -42,15 +43,15 @@ const mobileLinkVariants: Variants = {
   open: {
     y: 0,
     transition: {
-      duration: 0.68,
-      ease: [0.22, 1, 0.36, 1],
+      duration: DURATIONS.reveal,
+      ease: EASE_OUT,
     },
   },
   closed: {
     y: '110%',
     transition: {
-      duration: 0.2,
-      ease: [0.64, 0, 0.78, 0],
+      duration: DURATIONS.exit,
+      ease: EASE_IN,
     },
   },
 }
@@ -59,15 +60,15 @@ const mobileContactVariants: Variants = {
   open: {
     y: 0,
     transition: {
-      duration: 0.68,
-      ease: [0.22, 1, 0.36, 1],
+      duration: DURATIONS.reveal,
+      ease: EASE_OUT,
     },
   },
   closed: {
     y: 'calc(100% + 2rem)',
     transition: {
-      duration: 0.2,
-      ease: [0.64, 0, 0.78, 0],
+      duration: DURATIONS.exit,
+      ease: EASE_IN,
     },
   },
 }
@@ -86,12 +87,12 @@ function SpinMenuIcon({ open }: { open: boolean }) {
             : open
               ? {
                   delay: 0.12,
-                  duration: 0.22,
-                  ease: [0.215, 0.61, 0.355, 1],
+                  duration: DURATIONS.exit,
+                  ease: EASE_OUT,
                 }
               : {
-                  duration: 0.22,
-                  ease: [0.55, 0.055, 0.675, 0.19],
+                  duration: DURATIONS.exit,
+                  ease: EASE_IN,
                 }
         }
         className="absolute top-[6px] left-0 block h-[1.5px] w-full rounded-full bg-current"
@@ -123,15 +124,15 @@ function SpinMenuIcon({ open }: { open: boolean }) {
                     y: { duration: 0.1, ease: 'easeOut' },
                     rotate: {
                       delay: 0.12,
-                      duration: 0.22,
-                      ease: [0.215, 0.61, 0.355, 1],
+                      duration: DURATIONS.exit,
+                      ease: EASE_OUT,
                     },
                   }
                 : {
                     y: { delay: 0.25, duration: 0.1, ease: 'easeIn' },
                     rotate: {
-                      duration: 0.22,
-                      ease: [0.55, 0.055, 0.675, 0.19],
+                      duration: DURATIONS.exit,
+                      ease: EASE_IN,
                     },
                   }
           }

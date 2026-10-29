@@ -13,6 +13,7 @@ import { cn } from 'cn'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import PathText from '~/components/PathText'
+import { SPRINGS } from '~/lib/design/motion'
 
 export function evidenceSourceElementId(prefix: string, sourceId: string) {
   return `${prefix}-source-${sourceId}`
@@ -87,14 +88,14 @@ function SourceCard({
       layout={reduceMotion ? false : 'position'}
       initial={reduceMotion ? false : { opacity: 0, y: 10, scale: 0.98 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ type: 'spring', stiffness: 420, damping: 34 }}
+      transition={SPRINGS.settle}
       className="relative"
     >
       {active && (
         <motion.span
           layoutId={`${idPrefix}-active-source`}
           aria-hidden="true"
-          transition={{ type: 'spring', stiffness: 480, damping: 38 }}
+          transition={SPRINGS.settle}
           className="border-brand bg-brand/[0.06] pointer-events-none absolute inset-0 rounded-xl border"
         />
       )}
@@ -377,7 +378,7 @@ export function EvidenceRail({
             initial={reduceMotion ? false : { scale: 0.5, opacity: 0, y: 6 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={reduceMotion ? undefined : { scale: 0.5, opacity: 0, y: -6 }}
-            transition={{ type: 'spring', stiffness: 560, damping: 28 }}
+            transition={SPRINGS.pop}
             className={cn(
               'relative flex size-7 items-center justify-center rounded-full border text-sm tabular-nums',
               sourceCount > 0

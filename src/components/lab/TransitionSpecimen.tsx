@@ -7,6 +7,7 @@ import { useLabMotion } from './lab-motion'
 import Specimen from './Specimen'
 import { useLabStream } from './use-lab-stream'
 import type { LabStream } from './use-lab-stream'
+import { SPRINGS } from '~/lib/design/motion'
 
 const ID = 'state-transition'
 
@@ -17,7 +18,7 @@ const PLACEMENT_LABELS: Record<Placement, string> = {
   dock: 'Dock',
 }
 
-const SPRING = { type: 'spring', stiffness: 380, damping: 36 } as const
+const SPRING = SPRINGS.layout
 
 function PlacementGroup({
   value,

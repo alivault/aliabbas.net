@@ -2,6 +2,7 @@ import { Link } from '@tanstack/react-router'
 import { MessageSquareText, ScanSearch } from 'lucide-react'
 import { motion } from 'motion/react'
 import { cn } from '~/lib/utils'
+import { SPRINGS } from '~/lib/design/motion'
 
 export type AssistantMode = 'chat' | 'check'
 
@@ -62,7 +63,7 @@ export default function ModeSwitch({
                 layoutId="assistant-mode-pill"
                 aria-hidden="true"
                 className="bg-foreground absolute inset-0 -z-10 rounded-full"
-                transition={{ type: 'spring', stiffness: 420, damping: 36 }}
+                transition={SPRINGS.settle}
               />
             )}
             <Icon aria-hidden="true" className="size-4" />

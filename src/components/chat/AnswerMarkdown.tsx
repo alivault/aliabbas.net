@@ -14,6 +14,7 @@ import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import PathText from '~/components/PathText'
+import { SPRINGS } from '~/lib/design/motion'
 
 export type CitationContextValue = {
   sourceNumber: (sourceId: string) => number | undefined
@@ -83,7 +84,7 @@ function CitationChip({ sourceId }: { sourceId: string }) {
         context.animateIn && !reduceMotion ? { scale: 0.4, opacity: 0 } : false
       }
       animate={{ scale: 1, opacity: 1 }}
-      transition={{ type: 'spring', stiffness: 520, damping: 26 }}
+      transition={SPRINGS.pop}
       className={cn(
         'focus-visible:ring-brand/70 mx-0.5 inline-flex h-[1.375rem] min-w-[1.375rem] -translate-y-px cursor-pointer items-center justify-center rounded-full border px-1.5 align-middle text-sm leading-none tabular-nums transition-colors outline-none focus-visible:ring-2',
         active

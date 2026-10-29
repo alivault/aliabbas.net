@@ -13,6 +13,7 @@ import {
 } from '~/components/ui/resizable'
 import { useDefaultLayout } from 'react-resizable-panels'
 import type { PanelImperativeHandle } from 'react-resizable-panels'
+import { SPRINGS } from '~/lib/design/motion'
 
 export const EVIDENCE_COLLAPSED_PX = 56
 
@@ -23,7 +24,11 @@ export const EVIDENCE_COLLAPSED_PX = 56
  * not use it: the panel follows the pointer directly.
  */
 export const PANEL_SPRING = String(
-  spring({ keyframes: [0, 1], stiffness: 380, damping: 36, mass: 1 }),
+  spring({
+    keyframes: [0, 1],
+    stiffness: SPRINGS.layout.stiffness,
+    damping: SPRINGS.layout.damping,
+  }),
 )
 export const PANEL_SPRING_MS = Number.parseInt(PANEL_SPRING, 10) || 400
 

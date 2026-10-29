@@ -15,6 +15,7 @@ import { VERDICTS, VERDICT_INFO } from '~/lib/check/verdicts'
 import { cn } from '~/lib/utils'
 import { useClaimCheck } from './use-claim-check'
 import VerdictBadge, { VERDICT_STYLE } from './VerdictBadge'
+import { SPRINGS } from '~/lib/design/motion'
 
 const COMPOSER_ID = 'claim-input'
 
@@ -36,7 +37,7 @@ const exampleClaims = [
   'Ali has five years of Kubernetes experience.',
 ] as const
 
-const SPRING = { type: 'spring', stiffness: 420, damping: 32 } as const
+const SPRING = SPRINGS.settle
 
 function plural(count: number, word: string) {
   return `${count} ${word}${count === 1 ? '' : 's'}`

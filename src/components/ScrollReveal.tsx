@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef, useState } from 'react'
 import type { CSSProperties, ReactNode } from 'react'
 import { motion, useAnimationControls, useInView } from 'motion/react'
 import { cn } from '~/lib/utils'
+import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
 
 const revealElements = {
   article: motion.article,
@@ -66,7 +67,7 @@ export default function ScrollReveal({
     void controls.start({
       opacity: 1,
       y: 0,
-      transition: { delay, duration: 0.7, ease: [0.22, 1, 0.36, 1] },
+      transition: { delay, duration: DURATIONS.reveal, ease: EASE_OUT },
     })
   }, [waiting, inView])
 

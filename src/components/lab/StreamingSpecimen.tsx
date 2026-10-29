@@ -6,6 +6,7 @@ import { useLabMotion } from './lab-motion'
 import Specimen from './Specimen'
 import { useLabStream } from './use-lab-stream'
 import PathText from '~/components/PathText'
+import { SPRINGS } from '~/lib/design/motion'
 
 const ID = 'streaming-list'
 
@@ -77,7 +78,7 @@ export default function StreamingSpecimen() {
                     layout={reduce ? false : 'position'}
                     initial={reduce ? false : { opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ type: 'spring', stiffness: 420, damping: 32 }}
+                    transition={SPRINGS.settle}
                   >
                     <p
                       id={footnoteId(source.id)}

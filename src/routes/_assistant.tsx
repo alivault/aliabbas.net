@@ -15,6 +15,7 @@ import type { AssistantMode } from '~/components/check/ModeSwitch'
 import Main from '~/components/Main'
 import { motion, useReducedMotion } from 'motion/react'
 import { cn } from 'cn'
+import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
 
 /**
  * Chat and the claim checker are two modes of one page. The layout stays
@@ -27,7 +28,6 @@ export const Route = createFileRoute('/_assistant')({
 })
 
 const ORDER: ReadonlyArray<AssistantMode> = ['chat', 'check']
-const EASE = [0.22, 1, 0.36, 1] as const
 
 function modeOf(pathname: string): AssistantMode {
   return pathname.startsWith('/check') ? 'check' : 'chat'
@@ -164,8 +164,8 @@ function Panel({
           reduce
             ? { duration: 0 }
             : active
-              ? { duration: 0.55, ease: EASE, delay: 0.1 }
-              : { duration: 0.28, ease: EASE }
+              ? { duration: DURATIONS.page, ease: EASE_OUT, delay: 0.1 }
+              : { duration: DURATIONS.enter, ease: EASE_OUT }
         }
         onAnimationComplete={() => {
           if (leaving) onExitEnd()

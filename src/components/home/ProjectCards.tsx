@@ -6,6 +6,7 @@ import ScrollReveal from '~/components/ScrollReveal'
 import Title from '~/components/Title'
 import type { WorkItem } from '~/data/work'
 import { cn } from 'cn'
+import { SPRINGS } from '~/lib/design/motion'
 
 const visualStyles = {
   whimcall: 'bg-[#080b12] text-white',
@@ -92,19 +93,13 @@ function ProjectVisual({ project }: { project: WorkItem }) {
                 viewport={{ once: true }}
                 transition={{
                   delay: petalIndex * 0.05,
-                  type: 'spring',
-                  stiffness: 220,
-                  damping: 18,
+                  ...SPRINGS.bloom,
                 }}
                 className="pointer-events-none absolute inset-0"
               >
                 <motion.span
                   whileHover={{ scale: 1.14, y: -10, opacity: 1 }}
-                  transition={{
-                    type: 'spring',
-                    stiffness: 320,
-                    damping: 18,
-                  }}
+                  transition={SPRINGS.hover}
                   className="pointer-events-auto absolute top-[2%] left-1/2 h-[43%] w-[29%] origin-bottom -translate-x-1/2 cursor-pointer rounded-[999px] border border-white/35 opacity-90 mix-blend-screen shadow-[0_12px_30px_rgba(16,16,15,0.14)] backdrop-blur-[2px]"
                   style={{ backgroundColor: color }}
                 />

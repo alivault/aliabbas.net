@@ -35,6 +35,7 @@ import EvidencePanel, {
 } from './EvidencePanel'
 import { useChatSession } from './use-chat-session'
 import { usePanelRef } from 'react-resizable-panels'
+import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
 
 const suggestedQuestions = [
   'What makes Ali a strong frontend engineer?',
@@ -425,8 +426,8 @@ export default function PortfolioChat() {
                     initial={reduceMotion ? false : { opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{
-                      duration: reduceMotion ? 0 : 0.28,
-                      ease: [0.22, 1, 0.36, 1],
+                      duration: reduceMotion ? 0 : DURATIONS.enter,
+                      ease: EASE_OUT,
                     }}
                   >
                     <ChatTurn

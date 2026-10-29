@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { CodeXml, SplinePointer } from 'lucide-react'
 import { motion, useReducedMotion } from 'motion/react'
 import Logo from '../Logo'
+import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
 
 function AboutDecorations() {
   return (
@@ -10,7 +11,7 @@ function AboutDecorations() {
         initial={{ rotate: -18, x: -24, y: 20 }}
         whileInView={{ rotate: -8, x: 0, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: DURATIONS.showcase, ease: EASE_OUT }}
         className="text-brand absolute top-[9%] left-[4%] z-0 size-[46%]"
       >
         <SplinePointer
@@ -23,7 +24,7 @@ function AboutDecorations() {
         initial={{ rotate: 16, x: 30, y: 24 }}
         whileInView={{ rotate: 6, x: 0, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
+        transition={{ duration: DURATIONS.showcase, ease: EASE_OUT }}
         className="text-brand absolute right-[-7%] bottom-[3%] z-0 size-[54%]"
       >
         <CodeXml aria-hidden="true" strokeWidth={1} className="size-full" />
@@ -98,8 +99,8 @@ function DraggableLogo() {
         whileDrag={{ cursor: 'grabbing', scale: 1.03 }}
         viewport={{ once: true }}
         transition={{
-          duration: reduceMotion ? 0 : 0.8,
-          ease: [0.22, 1, 0.36, 1],
+          duration: reduceMotion ? 0 : DURATIONS.reveal,
+          ease: EASE_OUT,
         }}
         className="border-foreground/30 pointer-events-auto relative aspect-square w-[48%] max-w-[360px] cursor-grab touch-none rounded-full border shadow-[0_18px_38px_rgb(0_0_0_/_18%)] backdrop-blur-md sm:w-[44%]"
         aria-label="Draggable logo"

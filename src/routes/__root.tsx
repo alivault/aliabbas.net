@@ -15,6 +15,7 @@ import VitalsReporter from '~/components/VitalsReporter'
 import { sessionQueryOptions } from '~/lib/auth'
 import { authClient } from '~/lib/auth-client'
 import '../styles/globals.css'
+import { MotionConfig } from 'motion/react'
 
 export const Route = createRootRouteWithContext<{
   queryClient: QueryClient
@@ -78,7 +79,10 @@ function RootComponent() {
           authClient={authClient as unknown as AuthClient}
           initialToken={token}
         >
-          <Outlet />
+          {/* Motion follows the OS setting for reduced motion on every page. */}
+          <MotionConfig reducedMotion="user">
+            <Outlet />
+          </MotionConfig>
           <VitalsReporter />
           <Devtools />
         </ConvexBetterAuthProvider>
