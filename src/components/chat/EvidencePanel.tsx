@@ -310,18 +310,6 @@ export default function EvidencePanel({
         )}
       </header>
 
-      {turn && turn.status === 'pending' && (
-        <div aria-hidden="true" className="space-y-3">
-          {[0, 1].map((index) => (
-            <div
-              key={index}
-              className="border-foreground/10 h-28 animate-pulse rounded-xl border"
-              style={{ animationDelay: `${index * 160}ms` }}
-            />
-          ))}
-        </div>
-      )}
-
       {turn && turn.sources.length > 0 && (
         <ol className="space-y-3" aria-label="Sources">
           <AnimatePresence initial={false}>

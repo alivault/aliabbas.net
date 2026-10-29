@@ -56,7 +56,7 @@ export default function CitationDrawerSpecimen() {
       description="The evidence for an answer, in a drawer. On a phone it comes up from the bottom and stops at 60% or full height. On a wide screen it comes in from the right. The source cards are the chat's real EvidencePanel."
       notes={{
         states:
-          'Closed or open, and in each the answer state: pending shows card skeletons, streaming adds cards as the answer cites them, and stopped or failed says how the answer ended.',
+          'Closed or open, and in each the answer state: pending says that it searches, streaming adds cards as the answer cites them, and stopped or failed says how the answer ended.',
         keyboard:
           'Enter on a chip opens the drawer with focus on that source. Enter on “Open evidence” opens it at the heading. Tab stays in the drawer. Esc closes it, and focus goes back to the control that opened it.',
         proves:
