@@ -26,14 +26,15 @@ export const Route = createFileRoute('/')({
       { property: 'og:type', content: 'website' },
       {
         property: 'og:image',
-        content: 'https://aliabbas.net/og-image.png',
+        content: 'https://aliabbas.net/og-image.png?v=2',
       },
       { property: 'og:image:width', content: '1200' },
       { property: 'og:image:height', content: '630' },
       { property: 'og:image:type', content: 'image/png' },
       {
         property: 'og:image:alt',
-        content: 'Ali Abbas — I design and build full-stack digital products.',
+        content:
+          'Ali Abbas, Senior Frontend Engineer: streaming interfaces, state machines, motion and accessibility.',
       },
       { name: 'twitter:card', content: 'summary_large_image' },
       {
@@ -47,11 +48,12 @@ export const Route = createFileRoute('/')({
       },
       {
         name: 'twitter:image',
-        content: 'https://aliabbas.net/og-image.png',
+        content: 'https://aliabbas.net/og-image.png?v=2',
       },
       {
         name: 'twitter:image:alt',
-        content: 'Ali Abbas — I design and build full-stack digital products.',
+        content:
+          'Ali Abbas, Senior Frontend Engineer: streaming interfaces, state machines, motion and accessibility.',
       },
     ],
   }),

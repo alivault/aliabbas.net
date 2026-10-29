@@ -1,0 +1,115 @@
+<!doctype html>
+<!--
+  Source of public/og-image.png (1200 × 630), the link preview of the site.
+  To render it again: node scripts/og-image.ts
+-->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      @font-face {
+        font-family: 'DM Sans';
+        src: url('../node_modules/@fontsource-variable/dm-sans/files/dm-sans-latin-wght-normal.woff2')
+          format('woff2');
+        font-weight: 100 1000;
+      }
+      * {
+        margin: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1200px;
+        height: 630px;
+      }
+      body {
+        position: relative;
+        overflow: hidden;
+        background: #10100f;
+        color: #f1efe8;
+        font-family: 'DM Sans', sans-serif;
+      }
+      .grid {
+        position: absolute;
+        inset: 0;
+        background-image:
+          linear-gradient(rgb(255 255 255 / 0.045) 1px, transparent 1px),
+          linear-gradient(90deg, rgb(255 255 255 / 0.045) 1px, transparent 1px);
+        background-size: 66px 66px;
+        background-position: -1px -1px;
+      }
+      .glow {
+        position: absolute;
+        right: -260px;
+        top: -120px;
+        width: 900px;
+        height: 900px;
+        border-radius: 50%;
+        background: radial-gradient(
+          circle,
+          rgb(34 52 126 / 0.95) 0%,
+          rgb(34 52 126 / 0.35) 42%,
+          transparent 70%
+        );
+      }
+      main {
+        position: absolute;
+        inset: 72px 80px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+      }
+      .logo {
+        width: 96px;
+        filter: drop-shadow(0 0 40px rgb(217 255 67 / 0.35));
+      }
+      h1 {
+        font-size: 104px;
+        font-weight: 500;
+        line-height: 0.95;
+        letter-spacing: -0.035em;
+      }
+      .role {
+        margin-top: 22px;
+        font-size: 40px;
+        font-weight: 500;
+        letter-spacing: -0.015em;
+        color: #d9ff43;
+      }
+      .focus {
+        margin-top: 18px;
+        font-size: 28px;
+        color: rgb(241 239 232 / 0.62);
+      }
+      .site {
+        position: absolute;
+        right: 0;
+        top: 10px;
+        font-size: 26px;
+        color: rgb(241 239 232 / 0.55);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grid"></div>
+    <div class="glow"></div>
+    <main>
+      <svg class="logo" viewBox="0 0 87 69" fill="#d9ff43" aria-hidden="true">
+        <path
+          d="M19.4196 53.5981C25.5133 64.2833 38.8393 68.3571 38.8393 68.3571H19.4196H0C0 68.3571 13.326 64.2833 19.4196 53.5981Z"
+        />
+        <path
+          d="M38.8393 15.931L68.5289 68.3571H87L48.0474 0L38.8393 15.931Z"
+        />
+      </svg>
+      <span class="site">aliabbas.net</span>
+      <div>
+        <h1>Ali Abbas</h1>
+        <p class="role">Senior Frontend Engineer</p>
+        <p class="focus">
+          Streaming interfaces · state machines · motion · accessibility
+        </p>
+      </div>
+    </main>
+  </body>
+</html>
