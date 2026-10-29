@@ -15,6 +15,7 @@ import LabAnswer from './LabAnswer'
 import Specimen from './Specimen'
 import { useIsDesktop } from './use-is-desktop'
 import { useLabStream } from './use-lab-stream'
+import { revealSource } from '~/lib/chat/reveal-source'
 
 const ID = 'citation-drawer'
 const PREFIX = 'lab-drawer'
@@ -97,6 +98,18 @@ export default function CitationDrawerSpecimen() {
         onOpenChange={setOpen}
         swipeDirection={isDesktop ? 'right' : 'down'}
         snapPoints={isDesktop ? undefined : [0.6, 1]}
+        // Focus scrolls the card into the drawer's full height, which can
+        // reach below the screen at a snap point. Once the drawer settles,
+        // bring the card into the part on screen.
+        onOpenChangeComplete={(open) => {
+          const card =
+            open && activeSourceId
+              ? document.getElementById(
+                  evidenceSourceElementId(PREFIX, activeSourceId),
+                )
+              : null
+          if (card) revealSource(card)
+        }}
         showSwipeHandle
       >
         <DrawerContent
@@ -119,7 +132,7 @@ export default function CitationDrawerSpecimen() {
             The sources that the answer cites.
             {!isDesktop && ' Drag up to see more.'}
           </DrawerDescription>
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-8 [--evidence-pad:0.75rem] [--evidence-surface:var(--color-popover)]">
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-[calc(2rem_+_var(--drawer-snap-offset,0px))] [--evidence-pad:0.75rem] [--evidence-surface:var(--color-popover)]">
             <EvidencePanel
               idPrefix={PREFIX}
               headingId={`${PREFIX}-heading`}

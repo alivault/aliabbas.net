@@ -49,13 +49,19 @@ export function revealSource(element: HTMLElement) {
   const header = container.querySelector<HTMLElement>('[data-evidence-header]')
   const covered = header?.offsetHeight ?? 0
   const viewTop = container.scrollTop + covered
-  const viewBottom = container.scrollTop + container.clientHeight
+  // A drawer at a snap point can hold part of the panel below the screen.
+  const screenBottom = window.visualViewport?.height ?? window.innerHeight
+  const hiddenBelow = Math.max(
+    0,
+    container.getBoundingClientRect().bottom - screenBottom,
+  )
+  const viewBottom = container.scrollTop + container.clientHeight - hiddenBelow
   const viewHeight = viewBottom - viewTop
   let next: number | null = null
   if (top < viewTop + MARGIN || bottom - top > viewHeight - 2 * MARGIN) {
     next = top - covered - MARGIN
   } else if (bottom > viewBottom - MARGIN) {
-    next = bottom - container.clientHeight + MARGIN
+    next = bottom - (viewBottom - container.scrollTop) + MARGIN
   }
   if (next !== null) container.scrollTo({ top: Math.max(0, next), behavior })
 }

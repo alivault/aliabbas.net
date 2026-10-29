@@ -559,6 +559,18 @@ export default function PortfolioChat() {
           open={drawerOpen}
           onOpenChange={setDrawerOpen}
           snapPoints={[0.6, 1]}
+          // Focus scrolls the card into the drawer's full height, which can
+          // reach below the screen at a snap point. Once the drawer settles,
+          // bring the card into the part on screen.
+          onOpenChangeComplete={(open) => {
+            const card =
+              open && activeSourceId
+                ? document.getElementById(
+                    evidenceSourceElementId(DRAWER_PREFIX, activeSourceId),
+                  )
+                : null
+            if (card) revealSource(card)
+          }}
           showSwipeHandle
         >
           <DrawerContent
@@ -574,7 +586,7 @@ export default function PortfolioChat() {
             <DrawerDescription className="sr-only">
               The sources that the answer cites. Drag up to see more.
             </DrawerDescription>
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-8 [--evidence-pad:0.75rem] [--evidence-surface:var(--color-popover)]">
+            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 pb-[calc(2rem_+_var(--drawer-snap-offset,0px))] [--evidence-pad:0.75rem] [--evidence-surface:var(--color-popover)]">
               <EvidencePanel
                 idPrefix={DRAWER_PREFIX}
                 headingId={`${DRAWER_PREFIX}-heading`}
