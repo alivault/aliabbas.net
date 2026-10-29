@@ -1,21 +1,22 @@
-name: Deploy to Cloudflare
+name: Test and deploy
 
 on:
   push:
     branches:
       - master
+  pull_request:
   workflow_dispatch:
 
 concurrency:
-  group: production
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  deploy:
-    name: Check, build, and deploy
+  test:
+    name: Check and test
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -30,6 +31,41 @@ jobs:
 
       - name: Check project
         run: vp check
+
+      - name: Unit tests
+        run: vp test run
+
+      - name: Install Chromium
+        run: vp exec playwright install --with-deps chromium
+
+      - name: End-to-end tests
+        run: vp run test:e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+
+  deploy:
+    name: Build and deploy
+    needs: test
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Vite+
+        uses: voidzero-dev/setup-vp@v1
+
+      - name: Install dependencies
+        run: vp install --frozen-lockfile
 
       - name: Deploy Worker
         run: vp run deploy

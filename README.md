@@ -41,6 +41,7 @@ Some parts that took the most care:
 - Tailwind CSS 4, shadcn/ui `base-nova` on Base UI, Motion
 - Cloudflare Workers, D1 and rate limiting; Convex and Better Auth for
   comments; Sanity for notes and experience
+- Vitest (through Vite+) and Playwright for tests
 - Claude Haiku 5.5 for chat and the claim checker, with a cached system
   prompt; Workers AI as fallback ([`ai.ts`](src/lib/ai.ts))
 
@@ -51,12 +52,19 @@ vp install       # Install dependencies
 vp dev           # Start the development server on http://localhost:3000
 vp check         # Format, lint and type-check
 vp check --fix   # Fix formatting and lint issues
+vp test run      # Unit tests
+vp run test:e2e  # End-to-end tests (Playwright, AI mocked)
 vp build         # Create a production build
 vp run deploy    # Build and deploy with Wrangler
 ```
 
-A push to `master` checks, builds and deploys the site through GitHub
-Actions.
+A push to `master` checks, tests, builds and deploys the site through
+GitHub Actions. A pull request runs the checks and tests only.
+
+The end-to-end tests run at 1440px and 390px. They replace the AI routes
+with a timed stream in the page ([`e2e/fixtures.ts`](e2e/fixtures.ts)), so
+they can stop an answer part way through, and they need no API key. Set
+`CHROMIUM_PATH` to use a system Chromium.
 
 ## AI in local development
 

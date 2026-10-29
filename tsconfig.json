@@ -25,6 +25,8 @@
     "src/**/*",
     "scripts/**/*",
     "vite.config.ts",
+    "playwright.config.ts",
+    "e2e/**/*",
     "worker-configuration.d.ts"
   ]
 }

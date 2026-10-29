@@ -37,3 +37,7 @@ pnpm-debug.log*
 .dev.vars
 # TanStack router temp files
 .tanstack
+
+# playwright
+/test-results
+/playwright-report

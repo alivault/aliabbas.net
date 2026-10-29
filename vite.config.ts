@@ -52,11 +52,24 @@ export default defineConfig({
   ssr: {
     noExternal: ['@convex-dev/better-auth'],
   },
-  plugins: lazyPlugins(() => [
-    devtools({ injectSource: { enabled: true } }),
-    tailwindcss(),
-    cloudflare({ viteEnvironment: { name: 'ssr' } }),
-    tanstackStart(),
-    react(),
-  ]),
+  test: {
+    // Unit tests only. Playwright runs the end-to-end tests in e2e/.
+    include: ['src/**/*.test.ts'],
+  },
+  plugins: lazyPlugins(() =>
+    // Unit tests test plain modules: they need no Worker and no router.
+    process.env.VITEST
+      ? []
+      : [
+          devtools({ injectSource: { enabled: true } }),
+          tailwindcss(),
+          cloudflare({
+            viteEnvironment: { name: 'ssr' },
+            // End-to-end tests mock the AI routes, so they need no Cloudflare login.
+            remoteBindings: process.env.E2E !== '1',
+          }),
+          tanstackStart(),
+          react(),
+        ],
+  ),
 })
