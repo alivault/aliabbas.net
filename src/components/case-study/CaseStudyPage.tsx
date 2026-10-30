@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
-import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react'
+import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import Main from '~/components/Main'
+import { metaStyles } from '~/components/Meta'
 import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
 import SectionHeading from '~/components/SectionHeading'
@@ -10,6 +11,7 @@ import { caseStudies } from '~/data/case-studies'
 import type { CaseStudy } from '~/data/case-studies'
 import EvidenceList from './EvidenceList'
 import StateMachineSection from './StateMachineSection'
+import { cn } from 'cn'
 
 const pillLink =
   'border-foreground/20 hover:border-foreground focus-visible:outline-foreground inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
@@ -41,13 +43,6 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
   return (
     <Main>
       <article className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
-        <Link
-          to="/work"
-          className="text-fg-muted hover:text-brand focus-visible:outline-foreground mb-section-content inline-flex items-center gap-2 text-base transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
-        >
-          <ArrowLeft className="size-4" aria-hidden="true" /> Back to work
-        </Link>
-
         <ScrollReveal
           as="header"
           trigger="mount"
@@ -60,13 +55,27 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
             <p className="text-fg-muted max-w-xl text-base leading-7 text-pretty lg:text-lg lg:leading-8">
               {study.summary}
             </p>
-            <dl className="mx-auto mt-6 grid w-fit grid-cols-[auto_auto] gap-x-6 gap-y-1 text-left text-base">
-              <dt className="text-fg-muted">Product</dt>
-              <dd>{study.category}</dd>
-              <dt className="text-fg-muted">Year</dt>
-              <dd>{study.year}</dd>
+            {/* The values tell what they are, so the labels are for
+                screen readers only. */}
+            <dl
+              className={cn(
+                metaStyles(),
+                'mt-5 flex flex-wrap justify-center gap-x-1',
+              )}
+            >
+              <div>
+                <dt className="sr-only">Product</dt>
+                <dd>
+                  {study.category}
+                  <span aria-hidden="true"> ·</span>
+                </dd>
+              </div>
+              <div>
+                <dt className="sr-only">Year</dt>
+                <dd>{study.year}</dd>
+              </div>
             </dl>
-            <div className="mt-7 flex flex-wrap justify-center gap-3">
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
               <a
                 href={study.liveHref}
                 target="_blank"
