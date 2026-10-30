@@ -1,3 +1,5 @@
+import { useEffect, useRef, useState } from 'react'
+import type { CSSProperties } from 'react'
 import { Link } from '@tanstack/react-router'
 import { ArrowUp, ArrowUpRight } from 'lucide-react'
 
@@ -27,12 +29,49 @@ function scrollToTop() {
  * flow and clips its content (clip-path); the content is fixed to the
  * bottom of the viewport, so it shows only through that box. See
  * .site-footer in globals.css.
+ *
+ * The fixed box grows to fit its content, and the footer box takes the
+ * same height. A fixed box cannot scroll, so when the content is taller
+ * than the screen (a short screen that is wide, because the wordmark grows
+ * with the width), the footer becomes a normal block.
  */
 export default function Footer() {
+  const innerRef = useRef<HTMLDivElement>(null)
+  const screenRef = useRef<HTMLDivElement>(null)
+  // The height of the fixed box in px, 'static' for a normal block, or
+  // null before the first measure (the CSS minimum height applies).
+  const [height, setHeight] = useState<number | 'static' | null>(null)
+
+  useEffect(() => {
+    const inner = innerRef.current
+    const screen = screenRef.current
+    if (!inner || !screen) return
+    // Fixed, the box is the larger of its content and its minimum height.
+    // As a normal block, it is its content. Either way, it is taller than
+    // the screen only when the content does not fit.
+    const measure = () => {
+      const box = inner.offsetHeight
+      setHeight(box <= screen.offsetHeight + 1 ? box : 'static')
+    }
+    const observer = new ResizeObserver(measure)
+    observer.observe(inner)
+    observer.observe(screen)
+    return () => observer.disconnect()
+  }, [])
+
   return (
-    <footer className="site-footer bg-foreground text-background">
-      <div className="site-footer-inner bg-foreground">
-        <div className="site-footer-content mx-auto flex h-full max-w-[1600px] flex-col px-5 pt-24 pb-5 sm:px-8 sm:pt-28 sm:pb-6 lg:px-12 lg:pt-24">
+    <footer
+      className="site-footer bg-foreground text-background"
+      data-static={height === 'static' ? '' : undefined}
+      style={
+        typeof height === 'number'
+          ? ({ '--footer-box': `${height}px` } as CSSProperties)
+          : undefined
+      }
+    >
+      <div ref={screenRef} aria-hidden="true" className="site-footer-screen" />
+      <div ref={innerRef} className="site-footer-inner bg-foreground">
+        <div className="site-footer-content mx-auto flex w-full max-w-[1600px] flex-1 flex-col px-5 pt-24 pb-5 sm:px-8 sm:pt-28 sm:pb-6 lg:px-12 lg:pt-24">
           <div className="grid gap-10 xl:grid-cols-[1fr_auto] xl:items-end">
             <h2 className="text-[clamp(2.25rem,1.5rem+3.5vw,5rem)] leading-[1.05] font-normal text-balance">
               <span className="text-background/45 block text-balance">

@@ -521,12 +521,16 @@ textarea {
   Footer reveal. The footer box stays in the flow at a fixed height and
   clips its content. The content is fixed to the bottom of the viewport,
   so as the page scrolls up, it uncovers a footer that does not move. The
-  height fits the screen; on short screens the footer is a normal block.
+  fixed box is at least --footer-height and grows to fit the content;
+  Footer.tsx gives the footer box the same height (--footer-box). When the
+  content is taller than the screen, Footer.tsx sets data-static and the
+  footer is a normal block. The media query does the same before the
+  script runs.
 */
 .site-footer {
   --footer-height: min(100svh, 52rem);
   position: relative;
-  height: var(--footer-height);
+  height: var(--footer-box, var(--footer-height));
   clip-path: inset(0);
   view-timeline: --site-footer block;
 }
@@ -535,7 +539,31 @@ textarea {
   position: fixed;
   inset-inline: 0;
   bottom: 0;
-  height: var(--footer-height);
+  display: flex;
+  flex-direction: column;
+  min-height: var(--footer-height);
+}
+
+/* Has the height of the small screen, so Footer.tsx can compare the
+   footer with it. It grows up from the bottom, because a box that goes
+   below the page makes the page scroll further. */
+.site-footer-screen {
+  position: absolute;
+  bottom: 0;
+  width: 0;
+  height: 100svh;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.site-footer[data-static] {
+  height: auto;
+  clip-path: none;
+}
+
+.site-footer[data-static] .site-footer-inner {
+  position: static;
+  min-height: 0;
 }
 
 @media (max-height: 560px) {
@@ -546,7 +574,7 @@ textarea {
 
   .site-footer-inner {
     position: static;
-    height: auto;
+    min-height: 0;
   }
 }
 
@@ -593,7 +621,7 @@ textarea {
 
 @supports (animation-timeline: view()) {
   @media (prefers-reduced-motion: no-preference) and (min-height: 561px) {
-    .site-footer-content {
+    .site-footer:not([data-static]) .site-footer-content {
       animation: footer-rise linear both;
       animation-timeline: --site-footer;
       animation-range: entry 0% entry 100%;
