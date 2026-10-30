@@ -56,7 +56,7 @@ function SkillsPage() {
               <PageHeading>
                 Ideas,
                 <br />
-                <span className="text-fg-muted">engineered.</span>
+                engineered.
               </PageHeading>
             </div>
             <p className="text-fg-muted max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">

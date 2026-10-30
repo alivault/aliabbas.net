@@ -57,7 +57,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
             <PageHeading>
               {study.title}
               <br />
-              <em className="text-fg-muted">as state machines.</em>
+              as state machines.
             </PageHeading>
           </div>
           <div className="lg:justify-self-end">
@@ -188,7 +188,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
                     as="span"
                     variant="section"
                     aria-hidden="true"
-                    className="text-fg-muted leading-none tabular-nums"
+                    className="leading-none tabular-nums"
                   >
                     {index + 1}
                   </Title>
@@ -289,8 +289,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
               className="group hover:text-brand focus-visible:outline-foreground inline-flex items-center gap-4 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
             >
               <Title as="span" variant="section">
-                <span className="text-fg-muted">Next case study:</span>{' '}
-                {next.title}
+                Next case study: {next.title}
               </Title>
               <ArrowRight
                 className="size-8 transition-transform group-hover:translate-x-1"

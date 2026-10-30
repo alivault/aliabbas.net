@@ -37,10 +37,10 @@ looser than the hero. This is the only bespoke display-size exception.
   Prose spacing stays with the typography plugin; there are no global heading
   size or weight overrides.
 - Use `className` on heading components for layout and alignment, not alternate
-  font sizes, weights, or line heights. Emphasized words inherit the title's
-  weight; differentiate them with `text-fg-muted` instead. Section numbers
-  in titles use `text-fg-muted` too. The one exception is the changing word
-  in the homepage hero, which uses `text-brand`.
+  font sizes, weights, line heights, or colors. A title has one color: do
+  not give some of its words or its section number another shade. The one
+  exception is the changing word in the homepage hero, which uses
+  `text-brand`.
 - Body copy, metadata, controls, and game HUD metrics keep their existing styles.
 
 Change a variant in `Title.tsx` rather than tuning individual pages.

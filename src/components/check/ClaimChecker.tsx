@@ -549,7 +549,7 @@ export default function ClaimChecker({
       </p>
 
       <PageHeading className="lg:text-center">
-        Check a claim about <em className="text-fg-muted">Ali.</em>
+        Check a claim about Ali.
       </PageHeading>
       <p className="text-fg-muted mt-5 max-w-xl text-base leading-7 lg:mx-auto lg:text-center">
         Paste a claim from a résumé, a profile or a recruiter note. The checker

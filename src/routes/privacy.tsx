@@ -30,8 +30,7 @@ function PrivacySection({
   return (
     <section className="border-foreground/20 py-section-content grid gap-5 border-t lg:grid-cols-[360px_1fr] lg:gap-10">
       <Title as="h2" variant="subsection">
-        <span className="text-fg-muted tabular-nums">{Number(number)}.</span>{' '}
-        {title}
+        <span className="tabular-nums">{Number(number)}.</span> {title}
       </Title>
       <div className="text-fg-muted max-w-3xl space-y-5 text-base leading-7">
         {children}
@@ -47,7 +46,7 @@ function PrivacyPage() {
         <header className="pt-section pb-section-content mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
           <PageHeading>
             Privacy
-            <em className="text-fg-muted block">policy.</em>
+            <span className="block">policy.</span>
           </PageHeading>
           <Meta as="div" className="mt-10 flex flex-wrap gap-x-8 gap-y-2">
             <span>Effective October 28, 2026</span>

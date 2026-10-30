@@ -35,8 +35,8 @@ export const DESIGN_RULES: Array<DesignRule> = [
   },
   {
     id: 'titles',
-    rule: 'Make headings with Title, PageHeading or SectionHeading. Use className for layout only, not for size or weight.',
-    why: 'One scale for the whole site. To change a size, change the variant in Title.tsx.',
+    rule: 'Make headings with Title, PageHeading or SectionHeading. Use className for layout only, not for size, weight or color. A title has one color: do not give some of its words or its number another shade. The one exception is the changing word of the homepage hero.',
+    why: 'One scale for the whole site. To change a size, change the variant in Title.tsx. A second shade in a title makes one title read as two.',
   },
   {
     id: 'text-tones',

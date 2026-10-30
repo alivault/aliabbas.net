@@ -60,7 +60,7 @@ function Section({
     >
       <div>
         <Title as="h2" id={id} variant="subsection" className="max-w-xl">
-          <span className="text-fg-muted tabular-nums">{number}.</span> {title}
+          <span className="tabular-nums">{number}.</span> {title}
         </Title>
         <div className="text-fg-muted mt-4 max-w-2xl space-y-3 text-sm leading-6">
           {description}
@@ -88,7 +88,7 @@ function PerformancePage() {
             <PageHeading>
               Measured,
               <br />
-              <span className="text-fg-muted">not claimed.</span>
+              not claimed.
             </PageHeading>
             <p className="text-fg-muted max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
               Fast is a number. This page shows the Core Web Vitals of this site

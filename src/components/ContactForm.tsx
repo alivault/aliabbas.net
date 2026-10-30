@@ -115,7 +115,7 @@ export default function ContactForm() {
         <PageHeading>
           Let’s build
           <span className="block">something</span>
-          <span className="text-fg-muted block">remarkable.</span>
+          <span className="block">remarkable.</span>
         </PageHeading>
         <p className="text-fg-muted mt-9 max-w-md text-base leading-7">
           I’m interested in senior frontend roles on interactive and streaming

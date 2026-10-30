@@ -29,8 +29,7 @@ export default function StateMachineSection({
             id={headingId}
             className="max-w-sm text-balance"
           >
-            <span className="text-fg-muted tabular-nums">{index + 1}.</span>{' '}
-            {machine.title}
+            <span className="tabular-nums">{index + 1}.</span> {machine.title}
           </Title>
           <p className="text-fg-muted max-w-2xl text-base leading-7">
             {machine.intro}
@@ -48,9 +47,7 @@ export default function StateMachineSection({
           <div className="min-w-0">
             <Title as="h4" variant="detail">
               States{' '}
-              <span className="text-fg-muted tabular-nums">
-                ({machine.states.length})
-              </span>
+              <span className="tabular-nums">({machine.states.length})</span>
             </Title>
             <dl className="border-foreground/15 mt-4 border-t">
               {machine.states.map((state) => (
@@ -70,7 +67,7 @@ export default function StateMachineSection({
           <div className="min-w-0">
             <Title as="h4" variant="detail">
               Transitions{' '}
-              <span className="text-fg-muted tabular-nums">
+              <span className="tabular-nums">
                 ({machine.transitions.length})
               </span>
             </Title>

@@ -66,8 +66,7 @@ export default function Specimen({
       >
         <header className="space-y-4 lg:col-start-1 lg:row-start-1">
           <Title as="h2" variant="card" id={headingId} className="text-balance">
-            <span className="text-fg-muted tabular-nums">{number}.</span>{' '}
-            {title}
+            <span className="tabular-nums">{number}.</span> {title}
           </Title>
           <p className="text-fg-muted text-base leading-7">{description}</p>
         </header>

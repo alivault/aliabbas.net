@@ -101,7 +101,7 @@ function MetricCard({
     >
       <header>
         <h3 id={`metric-${name}`} className="text-base font-semibold">
-          {info.label} <span className="text-fg-muted">({name})</span>
+          {info.label} ({name})
         </h3>
         <p className="text-fg-muted mt-1 text-sm leading-6">
           {info.core && (
