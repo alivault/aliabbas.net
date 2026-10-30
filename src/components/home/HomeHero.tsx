@@ -4,8 +4,8 @@ import { ArrowDown, MessageCircle, Pause, Play } from 'lucide-react'
 import { Link } from '@tanstack/react-router'
 import { motion, useReducedMotion } from 'motion/react'
 import PageHeading from '~/components/PageHeading'
+import { buttonVariants } from '~/components/ui/button'
 import ConnectedGlobe from './ConnectedGlobe'
-import { cn } from 'cn'
 
 const productDescriptors = [
   'interactive',
@@ -42,9 +42,6 @@ const LINE_STAGGER = 500
 const CHARACTER_STAGGER = 25
 const PAUSE_DELAY = 210
 const ACTIONS_DELAY = INTRO_START + LINE_STAGGER * 2 + 300
-
-const actionStyles =
-  'enter-blur pointer-events-auto inline-flex h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold sm:px-5 sm:text-base transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand/70'
 
 function enterDelay(ms: number) {
   return { '--enter-delay': `${ms}ms` } as CSSProperties
@@ -215,10 +212,10 @@ export function HomeHero() {
             <a
               href="#work"
               style={enterDelay(ACTIONS_DELAY)}
-              className={cn(
-                actionStyles,
-                'bg-brand text-brand-foreground hover:bg-brand/85',
-              )}
+              className={buttonVariants({
+                size: 'pill-lg',
+                className: 'enter-blur pointer-events-auto',
+              })}
             >
               See the work
               <ArrowDown aria-hidden="true" className="size-4" />
@@ -226,10 +223,11 @@ export function HomeHero() {
             <Link
               to="/chat"
               style={enterDelay(ACTIONS_DELAY + 80)}
-              className={cn(
-                actionStyles,
-                'bg-card border-border text-fg-secondary hover:bg-secondary hover:text-foreground border',
-              )}
+              className={buttonVariants({
+                variant: 'secondary',
+                size: 'pill-lg',
+                className: 'enter-blur pointer-events-auto',
+              })}
             >
               <MessageCircle aria-hidden="true" className="size-4" />
               Ask AI about me

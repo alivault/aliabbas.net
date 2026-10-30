@@ -7,14 +7,14 @@ import ScrollReveal from '~/components/ScrollReveal'
 import SectionHeading from '~/components/SectionHeading'
 import SectionNav from '~/components/SectionNav'
 import Title from '~/components/Title'
+import { buttonVariants } from '~/components/ui/button'
 import { caseStudies } from '~/data/case-studies'
 import type { CaseStudy } from '~/data/case-studies'
 import EvidenceList from './EvidenceList'
 import StateMachineSection from './StateMachineSection'
 import { cn } from 'cn'
 
-const pillLink =
-  'border-foreground/20 hover:border-foreground focus-visible:outline-foreground inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
+const pillLink = buttonVariants({ variant: 'secondary', size: 'pill' })
 
 const sectionLinks = [
   { id: 'problem', label: 'Problem and role' },

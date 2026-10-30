@@ -13,6 +13,7 @@ import { cn } from '~/lib/utils'
 import Logo from './Logo'
 import Meta from './Meta'
 import Title from './Title'
+import { buttonVariants } from './ui/button'
 import { DURATIONS, EASE_IN, EASE_OUT } from '~/lib/design/motion'
 
 const navigation = [
@@ -194,7 +195,11 @@ export default function SiteHeader() {
           <div className="flex items-center gap-3 justify-self-end">
             <Link
               to="/contact"
-              className="bg-card border-border text-fg-secondary hover:bg-secondary hover:text-foreground hidden h-9 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition-colors sm:flex"
+              className={buttonVariants({
+                variant: 'secondary',
+                size: 'pill',
+                className: 'hidden sm:inline-flex',
+              })}
             >
               Contact <ArrowUpRight aria-hidden="true" className="size-4" />
             </Link>

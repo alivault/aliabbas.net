@@ -8,9 +8,15 @@ import { VERDICTS, VERDICT_INFO } from '~/lib/check/verdicts'
 import { cn } from 'cn'
 
 const BUTTON_VARIANTS = [
-  ['default', 'The main action of a view. One for each view.'],
+  [
+    'default',
+    'The main action of a view, in the brand color. One for each view.',
+  ],
   ['outline', 'Other actions, such as Stop and Replay.'],
-  ['secondary', 'Quiet actions in a group.'],
+  [
+    'secondary',
+    'A quiet action next to the main one, such as Contact in the header.',
+  ],
   ['ghost', 'Actions in toolbars and lists.'],
   ['destructive', 'Actions that delete or stop for good.'],
   ['link', 'Actions inside text.'],
