@@ -85,3 +85,14 @@ test('switching to Check keeps the chat draft', async ({ page }) => {
   await expect(page).toHaveURL(/\/chat/)
   await expect(composer(page)).toHaveValue('a draft that must survive')
 })
+
+test('the checker has the footer, and the chat does not', async ({ page }) => {
+  await open(page, '/check')
+  await expect(page.locator('footer.site-footer')).toHaveCount(1)
+  await page
+    .getByRole('navigation', { name: 'Assistant mode' })
+    .getByRole('link', { name: 'Ask a question' })
+    .click()
+  await expect(page).toHaveURL(/\/chat/)
+  await expect(page.locator('footer.site-footer')).toHaveCount(0)
+})
