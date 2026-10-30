@@ -11,15 +11,17 @@ respect the reader's font settings.
 
 | Role                 | `Title` variant | Size    | Weight | Line height |
 | -------------------- | --------------- | ------- | ------ | ----------- |
-| Page title           | `page`          | 44–88px | 400    | 1.08        |
+| Page title           | `page`          | 44–88px | 400    | 1.02        |
 | Section title        | `section`       | 32–56px | 400    | 1.15        |
 | Card / compact title | `card`          | 24–32px | 400    | 1.2         |
 | Subsection title     | `subsection`    | 20–24px | 400    | 1.3         |
 | Detail title         | `detail`        | 18px    | 400    | 1.4         |
 
-The homepage's `hero` variant shares the page-title weight and line height,
-with a smaller mobile size to fit its animated three-line composition. This is
-the only bespoke display-size exception.
+The homepage's `hero` variant shares the page-title weight. It uses a line
+height of 1.08 and a smaller size: on mobile to fit its animated three-line
+composition, and on desktop (5vw) it is smaller than the page title at most
+widths. The page title has tighter leading so that its larger lines do not look
+looser than the hero. This is the only bespoke display-size exception.
 
 ## Usage
 

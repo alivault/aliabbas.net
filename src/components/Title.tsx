@@ -3,7 +3,9 @@ import type { ComponentProps } from 'react'
 import { cn } from 'cn'
 
 const titleStyles = {
-  page: 'text-[clamp(2.75rem,2rem+4vw,5.5rem)] leading-[1.08]',
+  // Tighter than the hero: at most widths this size is larger, and the same
+  // ratio makes the line gap look loose.
+  page: 'text-[clamp(2.75rem,2rem+4vw,5.5rem)] leading-[1.02]',
   section: 'text-[clamp(2rem,1.5rem+2vw,3.5rem)] leading-[1.15]',
   card: 'text-[clamp(1.5rem,1.25rem+1vw,2rem)] leading-[1.2]',
   subsection: 'text-[clamp(1.25rem,1.125rem+0.5vw,1.5rem)] leading-[1.3]',
