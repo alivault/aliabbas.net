@@ -472,7 +472,9 @@ textarea {
 .enter-zoom,
 .enter-soft {
   animation-delay: var(--enter-delay, 0ms);
-  animation-fill-mode: both;
+  /* Backwards only: a forwards fill keeps the animated properties (scale,
+     translate) after the entrance, so a hover transition on them jumps. */
+  animation-fill-mode: backwards;
 }
 
 .enter-up {
