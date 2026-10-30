@@ -84,7 +84,7 @@ function SuggestedQuestionButtons({
           type="button"
           onClick={() => onSelect(question)}
           style={{ '--enter-delay': `${index * 80}ms` } as CSSProperties}
-          className="enter-pop border-foreground/15 text-foreground/60 hover:border-brand/60 hover:text-brand focus-visible:ring-brand/70 max-w-full rounded-[21px] border px-4 py-2 text-left text-base transition-colors outline-none focus-visible:ring-2"
+          className="enter-pop border-foreground/15 text-foreground/55 hover:border-brand/60 hover:text-brand focus-visible:ring-brand/70 max-w-full rounded-[21px] border px-4 py-2 text-left text-base transition-colors outline-none focus-visible:ring-2"
         >
           {question}
         </button>

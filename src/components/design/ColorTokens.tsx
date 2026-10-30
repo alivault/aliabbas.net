@@ -44,7 +44,7 @@ export default function ColorTokens() {
                   <p className="text-foreground font-mono text-sm">
                     {color.tailwind}
                   </p>
-                  <p className="text-foreground/60 text-sm leading-6">
+                  <p className="text-foreground/55 text-sm leading-6">
                     {color.use}
                   </p>
                 </div>

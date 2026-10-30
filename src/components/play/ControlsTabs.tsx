@@ -122,7 +122,7 @@ export default function ControlsTabs() {
               key={action}
               className="bg-foreground/[0.04] flex min-h-12 items-center justify-between gap-3 px-4 py-2"
             >
-              <span className="text-foreground/75 text-sm">{action}</span>
+              <span className="text-foreground/70 text-sm">{action}</span>
               <span className="flex flex-wrap justify-end gap-1">
                 {keys.map((key) => (
                   <kbd

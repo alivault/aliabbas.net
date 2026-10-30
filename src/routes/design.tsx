@@ -116,11 +116,11 @@ function DesignPage() {
                       <p className="text-foreground text-base leading-7">
                         {rule.rule}
                       </p>
-                      <p className="text-foreground/60 text-sm leading-6">
+                      <p className="text-foreground/55 text-sm leading-6">
                         {rule.why}
                       </p>
                       {rule.checkedBy && (
-                        <p className="text-foreground/60 flex flex-wrap items-baseline gap-x-2 text-sm leading-6">
+                        <p className="text-foreground/55 flex flex-wrap items-baseline gap-x-2 text-sm leading-6">
                           <span>Checked by</span>
                           {rule.checkedBy.split(', ').map((path) => (
                             <RepoLink key={path} path={path} />
@@ -395,7 +395,7 @@ function DesignPage() {
                       <h3 className="text-foreground text-base font-semibold">
                         {item.title}
                       </h3>
-                      <p className="text-foreground/60 text-base leading-7">
+                      <p className="text-foreground/55 text-base leading-7">
                         {item.body}
                       </p>
                       <p>{item.link}</p>

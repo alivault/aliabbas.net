@@ -210,7 +210,7 @@ function PlayPage() {
               loading="lazy"
               className="st-cut aspect-video w-full bg-black object-cover"
             />
-            <figcaption className="text-foreground/50 mt-3 text-sm">
+            <figcaption className="text-foreground/55 mt-3 text-sm">
               When a reactor goes, the exit opens and the countdown starts.
             </figcaption>
           </figure>
@@ -223,7 +223,7 @@ function PlayPage() {
               <h3 className="st-display mt-4 text-lg font-semibold uppercase">
                 {title}
               </h3>
-              <p className="text-foreground/60 mt-2 leading-7">{text}</p>
+              <p className="text-foreground/55 mt-2 leading-7">{text}</p>
             </div>
           ))}
         </ScrollReveal>
@@ -269,13 +269,13 @@ function PlayPage() {
                 <div
                   className={`lg:col-span-5 ${index % 2 ? 'lg:order-1' : ''}`}
                 >
-                  <p className="st-display text-foreground/45 text-sm font-semibold tracking-widest uppercase">
+                  <p className="st-display text-foreground/55 text-sm font-semibold tracking-widest uppercase">
                     Level {index + 1} · {level.place}
                   </p>
                   <h3 className="st-display mt-2 text-4xl leading-none font-bold uppercase italic sm:text-5xl">
                     {level.name}
                   </h3>
-                  <p className="text-foreground/65 mt-5 max-w-lg text-base leading-7 lg:text-lg lg:leading-8">
+                  <p className="text-foreground/70 mt-5 max-w-lg text-base leading-7 lg:text-lg lg:leading-8">
                     {level.text}
                   </p>
                 </div>
@@ -286,7 +286,7 @@ function PlayPage() {
 
         <ScrollReveal as="section" className="mt-28">
           <SectionTitle>Controls</SectionTitle>
-          <p className="text-foreground/65 mt-5 max-w-2xl text-base leading-7 lg:text-lg lg:leading-8">
+          <p className="text-foreground/70 mt-5 max-w-2xl text-base leading-7 lg:text-lg lg:leading-8">
             Six degrees of freedom takes a few minutes to learn. Turn with the
             mouse, then use roll and slide to dodge. In the game settings, you
             can change the look speed and turn on auto-level.
@@ -354,7 +354,7 @@ function PlayPage() {
                 label: 'Wireframe',
               }}
             />
-            <figcaption className="text-foreground/50 mt-3 text-sm">
+            <figcaption className="text-foreground/55 mt-3 text-sm">
               The Overseer above the last reactor. Drag to see the geometry.
             </figcaption>
           </figure>
@@ -366,14 +366,14 @@ function PlayPage() {
               <p className="st-display text-4xl leading-none font-bold uppercase italic sm:text-5xl">
                 Nothing to install
               </p>
-              <p className="text-foreground/65 mt-4 max-w-xl leading-7">
+              <p className="text-foreground/70 mt-4 max-w-xl leading-7">
                 Averno opens in your browser on a computer or a phone. Your
                 progress saves on your device.
               </p>
             </div>
             <PlayLink className="self-start lg:self-auto" />
           </div>
-          <p className="text-foreground/45 mt-10 text-sm">
+          <p className="text-foreground/55 mt-10 text-sm">
             Version {VERSION} · Updated {UPDATED} · Found a bug?{' '}
             <Link
               to="/contact"

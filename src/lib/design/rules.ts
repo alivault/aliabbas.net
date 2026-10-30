@@ -41,7 +41,8 @@ export const DESIGN_RULES: Array<DesignRule> = [
   {
     id: 'text-tones',
     rule: 'Show less important text with the foreground at lower opacity: /70, /55 or /40. Do not use /40 for text that people must read.',
-    why: 'The tones follow the background in both color schemes and keep contrast predictable.',
+    why: 'The tones follow the background in both color schemes. /55 keeps about 4.9:1 contrast; /40 is about 3:1, too low for text.',
+    checkedBy: 'src/lib/design/tokens.test.ts',
   },
   {
     id: 'color-not-alone',

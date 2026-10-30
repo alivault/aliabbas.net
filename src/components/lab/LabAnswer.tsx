@@ -83,7 +83,7 @@ export default function LabAnswer({
     return (
       <div
         className={cn(
-          'border-foreground/15 text-foreground/45 flex min-h-32 items-center justify-center rounded-xl border border-dashed p-6 text-center text-sm',
+          'border-foreground/15 text-foreground/55 flex min-h-32 items-center justify-center rounded-xl border border-dashed p-6 text-center text-sm',
           className,
         )}
       >

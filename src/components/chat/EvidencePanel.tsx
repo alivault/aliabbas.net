@@ -152,7 +152,7 @@ function SourceCard({
           ref={bodyRef}
           id={bodyId}
           className={cn(
-            'text-foreground/65 mt-3 space-y-2 text-sm leading-6 [overflow-wrap:anywhere]',
+            'text-foreground/70 mt-3 space-y-2 text-sm leading-6 [overflow-wrap:anywhere]',
             !open && 'line-clamp-4',
           )}
         >
@@ -167,7 +167,7 @@ function SourceCard({
               href={source.href}
               target="_blank"
               rel="noreferrer"
-              className="text-foreground/60 hover:text-brand inline-flex min-w-0 items-center gap-1 text-sm transition-colors"
+              className="text-foreground/55 hover:text-brand inline-flex min-w-0 items-center gap-1 text-sm transition-colors"
             >
               <span className="truncate">{hostname(source.href)}</span>
               <ArrowUpRight className="size-3 shrink-0" aria-hidden="true" />
@@ -182,7 +182,7 @@ function SourceCard({
               aria-expanded={expanded}
               aria-controls={bodyId}
               onClick={() => setExpanded((value) => !value)}
-              className="text-foreground/60 hover:text-foreground focus-visible:ring-brand/70 shrink-0 rounded text-sm font-medium outline-none focus-visible:ring-2"
+              className="text-foreground/55 hover:text-foreground focus-visible:ring-brand/70 shrink-0 rounded text-sm font-medium outline-none focus-visible:ring-2"
             >
               {expanded ? 'Show less' : 'Show more'}
             </button>
@@ -274,7 +274,7 @@ export default function EvidencePanel({
               onClick={onCollapse}
               aria-label="Hide evidence"
               aria-expanded="true"
-              className="text-foreground/50 hover:text-foreground hover:bg-foreground/[0.06] focus-visible:ring-brand/70 -mr-1.5 flex size-8 items-center justify-center rounded-lg transition-colors outline-none focus-visible:ring-2"
+              className="text-foreground/55 hover:text-foreground hover:bg-foreground/[0.06] focus-visible:ring-brand/70 -mr-1.5 flex size-8 items-center justify-center rounded-lg transition-colors outline-none focus-visible:ring-2"
             >
               <PanelRightClose className="size-4" aria-hidden="true" />
             </button>
@@ -293,7 +293,7 @@ export default function EvidencePanel({
                   <button
                     type="button"
                     onClick={onShowLatest}
-                    className="text-foreground/60 hover:text-foreground focus-visible:ring-brand/70 inline-flex items-center gap-1 rounded font-medium outline-none focus-visible:ring-2"
+                    className="text-foreground/55 hover:text-foreground focus-visible:ring-brand/70 inline-flex items-center gap-1 rounded font-medium outline-none focus-visible:ring-2"
                   >
                     <CornerDownLeft className="size-3" aria-hidden="true" />
                     Show latest
@@ -301,7 +301,7 @@ export default function EvidencePanel({
                 )}
               </div>
             )}
-            <p className="text-foreground/50 line-clamp-2 text-sm">
+            <p className="text-foreground/55 line-clamp-2 text-sm">
               <span className="sr-only">For the question: </span>“
               {turn.question}”
             </p>
@@ -310,7 +310,7 @@ export default function EvidencePanel({
             </p>
           </>
         ) : (
-          <p className="text-foreground/50 text-sm">
+          <p className="text-foreground/55 text-sm">
             Ask a question. Each claim in the answer links to the source that
             supports it.
           </p>

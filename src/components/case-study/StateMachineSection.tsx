@@ -32,7 +32,7 @@ export default function StateMachineSection({
             <span className="text-brand tabular-nums">{index + 1}.</span>{' '}
             {machine.title}
           </Title>
-          <p className="text-foreground/60 max-w-2xl text-base leading-7">
+          <p className="text-foreground/55 max-w-2xl text-base leading-7">
             {machine.intro}
           </p>
         </div>
@@ -48,7 +48,7 @@ export default function StateMachineSection({
           <div className="min-w-0">
             <Title as="h4" variant="detail">
               States{' '}
-              <span className="text-foreground/45 tabular-nums">
+              <span className="text-foreground/55 tabular-nums">
                 ({machine.states.length})
               </span>
             </Title>
@@ -59,7 +59,7 @@ export default function StateMachineSection({
                   className="border-foreground/15 grid gap-1 border-b py-4 sm:grid-cols-[9rem_1fr] sm:gap-6"
                 >
                   <dt className="text-sm font-bold">{state.label}</dt>
-                  <dd className="text-foreground/60 text-sm leading-6">
+                  <dd className="text-foreground/55 text-sm leading-6">
                     {state.meaning}
                   </dd>
                 </div>
@@ -70,7 +70,7 @@ export default function StateMachineSection({
           <div className="min-w-0">
             <Title as="h4" variant="detail">
               Transitions{' '}
-              <span className="text-foreground/45 tabular-nums">
+              <span className="text-foreground/55 tabular-nums">
                 ({machine.transitions.length})
               </span>
             </Title>
@@ -114,7 +114,7 @@ export default function StateMachineSection({
                       >
                         {label(transition.from)}
                       </th>
-                      <td className="text-foreground/60 py-3 pr-4 leading-6">
+                      <td className="text-foreground/55 py-3 pr-4 leading-6">
                         {transition.event}
                       </td>
                       <td className="py-3 font-bold sm:whitespace-nowrap">

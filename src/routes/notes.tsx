@@ -51,7 +51,7 @@ function NoteListItem({
             {article.title}
           </Title>
           {article.description && (
-            <span className="text-foreground/45 mt-3 block max-w-2xl text-sm leading-6">
+            <span className="text-foreground/55 mt-3 block max-w-2xl text-sm leading-6">
               {article.description}
             </span>
           )}
@@ -98,7 +98,7 @@ function NotesPage() {
             ))}
           </div>
         ) : articles.length === 0 ? (
-          <p className="text-foreground/45 py-section-content text-sm">
+          <p className="text-foreground/55 py-section-content text-sm">
             New notes are being written. Check back soon.
           </p>
         ) : (

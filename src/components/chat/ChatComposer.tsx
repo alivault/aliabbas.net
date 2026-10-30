@@ -94,7 +94,7 @@ export default function ChatComposer({
           placeholder={
             isStreaming ? labels.busyPlaceholder : labels.placeholder
           }
-          className="text-foreground placeholder:text-foreground/35 max-h-32 min-h-9 resize-none border-0 bg-transparent px-2 py-2 text-base shadow-none focus-visible:border-0 focus-visible:ring-0 md:text-base dark:bg-transparent"
+          className="text-foreground placeholder:text-foreground/55 max-h-32 min-h-9 resize-none border-0 bg-transparent px-2 py-2 text-base shadow-none focus-visible:border-0 focus-visible:ring-0 md:text-base dark:bg-transparent"
         />
         <Button
           type={showStop ? 'button' : 'submit'}
@@ -125,7 +125,7 @@ export default function ChatComposer({
       {showHints && (
         <p
           id={hintId}
-          className="text-foreground/50 mt-2 hidden items-center justify-center gap-4 text-sm sm:flex [&_kbd]:h-6 [&_kbd]:px-1.5 [&_kbd]:text-sm"
+          className="text-foreground/55 mt-2 hidden items-center justify-center gap-4 text-sm sm:flex [&_kbd]:h-6 [&_kbd]:px-1.5 [&_kbd]:text-sm"
         >
           <span>
             <Kbd>Enter</Kbd> {labels.submitHint}

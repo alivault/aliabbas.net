@@ -41,7 +41,7 @@ function StateTrack({ state }: { state: LabMachineState }) {
     </span>
   )
   const arrow = (
-    <span aria-hidden="true" className="text-foreground/30 text-sm">
+    <span aria-hidden="true" className="text-foreground/40 text-sm">
       →
     </span>
   )
@@ -125,7 +125,7 @@ function ScenarioRadioGroup({
                 'focus-visible:ring-brand/70 focus-visible:ring-offset-background rounded-full border px-3.5 py-1.5 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
                 checked
                   ? 'border-foreground bg-foreground text-background'
-                  : 'border-foreground/15 text-foreground/60 hover:border-foreground/40 hover:text-foreground',
+                  : 'border-foreground/15 text-foreground/55 hover:border-foreground/40 hover:text-foreground',
               )}
             >
               {LAB_SCENARIO_LABELS[scenario]}

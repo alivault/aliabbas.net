@@ -78,7 +78,7 @@ export default function MotionTokens() {
                     className="bg-brand block size-8 rounded-full"
                   />
                 </div>
-                <p className="text-foreground/60 text-sm leading-6">
+                <p className="text-foreground/55 text-sm leading-6">
                   {SPRING_USE[name]}
                 </p>
               </div>
@@ -111,7 +111,7 @@ export default function MotionTokens() {
           ].map(([name, value, use]) => (
             <div key={name} className="border-foreground/10 border-b py-4">
               <dt className="text-foreground font-mono text-sm">{name}</dt>
-              <dd className="text-foreground/60 text-sm leading-6 tabular-nums">
+              <dd className="text-foreground/55 text-sm leading-6 tabular-nums">
                 {value} · {use}
               </dd>
             </div>

@@ -73,7 +73,7 @@ function ResetPasswordPage() {
           <PageHeading size="compact" className="mb-2">
             Invalid reset link
           </PageHeading>
-          <p className="text-foreground/45 mb-5 text-sm">
+          <p className="text-foreground/55 mb-5 text-sm">
             This password reset link is invalid or has expired.
           </p>
           <Button onClick={() => navigate({ to: '/' })} variant="outline">
@@ -95,7 +95,7 @@ function ResetPasswordPage() {
           <PageHeading size="compact" className="mb-2">
             Password reset!
           </PageHeading>
-          <p className="text-foreground/45 mb-5 text-sm">
+          <p className="text-foreground/55 mb-5 text-sm">
             Your password has been successfully reset. You can now sign in with
             your new password.
           </p>
@@ -112,7 +112,7 @@ function ResetPasswordPage() {
         <PageHeading size="compact" className="mb-2 text-center">
           Reset your password
         </PageHeading>
-        <p className="text-foreground/45 mb-6 text-center text-sm">
+        <p className="text-foreground/55 mb-6 text-center text-sm">
           Enter your new password below.
         </p>
 
@@ -124,7 +124,7 @@ function ResetPasswordPage() {
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength={8}
-            className="border-foreground/15 bg-foreground/5 text-foreground placeholder:text-foreground/30 focus:border-brand w-full border px-3 py-3 text-sm focus:outline-none"
+            className="border-foreground/15 bg-foreground/5 text-foreground placeholder:text-foreground/55 focus:border-brand w-full border px-3 py-3 text-sm focus:outline-none"
           />
           <input
             type="password"
@@ -133,7 +133,7 @@ function ResetPasswordPage() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             minLength={8}
-            className="border-foreground/15 bg-foreground/5 text-foreground placeholder:text-foreground/30 focus:border-brand w-full border px-3 py-3 text-sm focus:outline-none"
+            className="border-foreground/15 bg-foreground/5 text-foreground placeholder:text-foreground/55 focus:border-brand w-full border px-3 py-3 text-sm focus:outline-none"
           />
 
           {error && <p className="text-sm text-red-500">{error}</p>}

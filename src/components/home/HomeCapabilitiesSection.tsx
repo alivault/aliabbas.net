@@ -22,7 +22,7 @@ export default function HomeCapabilitiesSection() {
               <Title as="h3" variant="card">
                 {capability.title}
               </Title>
-              <p className="text-foreground/45 max-w-xl text-sm leading-6 sm:justify-self-end">
+              <p className="text-foreground/55 max-w-xl text-sm leading-6 sm:justify-self-end">
                 {capability.description}
               </p>
             </ScrollReveal>

@@ -53,7 +53,7 @@ export default function EvidenceList({
                 <span className="sr-only">(opens in a new tab)</span>
               </a>
             ) : (
-              <code className={cn(chip, 'text-foreground/60')}>{label}</code>
+              <code className={cn(chip, 'text-foreground/55')}>{label}</code>
             )}
           </li>
         )

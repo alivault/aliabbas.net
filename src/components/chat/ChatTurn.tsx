@@ -228,7 +228,7 @@ function ChatTurn({
 
           {turn.status !== 'pending' && (
             <div className="flex flex-wrap items-center gap-x-1 gap-y-2">
-              <span className="text-foreground/50 mr-2 text-sm tabular-nums">
+              <span className="text-foreground/55 mr-2 text-sm tabular-nums">
                 <TurnStatusLine turn={turn} />
               </span>
               {turn.sources.length > 0 && (

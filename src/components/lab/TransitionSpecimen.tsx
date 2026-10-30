@@ -61,7 +61,7 @@ function PlacementGroup({
             'focus-visible:ring-brand/70 rounded-full px-3.5 py-1.5 text-sm transition-colors outline-none focus-visible:ring-2',
             value === placement
               ? 'bg-foreground text-background'
-              : 'text-foreground/60 hover:text-foreground',
+              : 'text-foreground/55 hover:text-foreground',
           )}
         >
           {PLACEMENT_LABELS[placement]}
@@ -167,7 +167,7 @@ function SavedAnswerCard({
                     'focus-visible:ring-brand/70 rounded-full border px-3 py-1 text-sm transition-colors outline-none focus-visible:ring-2',
                     pinned === source.id
                       ? 'border-brand bg-brand text-brand-foreground'
-                      : 'border-foreground/15 text-foreground/60 hover:text-foreground',
+                      : 'border-foreground/15 text-foreground/55 hover:text-foreground',
                   )}
                 >
                   {index + 1}. {source.title}
@@ -214,7 +214,7 @@ function Placeholder({
       transition={SPRING}
       aria-hidden="true"
       className={cn(
-        'border-foreground/10 text-foreground/45 flex min-h-20 items-center rounded-xl border border-dashed px-4 text-sm',
+        'border-foreground/10 text-foreground/55 flex min-h-20 items-center rounded-xl border border-dashed px-4 text-sm',
         className,
       )}
     >

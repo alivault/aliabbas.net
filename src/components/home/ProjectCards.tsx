@@ -150,11 +150,11 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
         <Title as="h3" variant="card">
           {project.title}
         </Title>
-        <p className="text-foreground/60 mt-7 max-w-md text-base leading-7">
+        <p className="text-foreground/55 mt-7 max-w-md text-base leading-7">
           {project.description}
         </p>
         <div className="border-foreground/25 mt-7 border-l pl-4">
-          <p className="text-foreground/60 max-w-sm text-sm leading-6">
+          <p className="text-foreground/55 max-w-sm text-sm leading-6">
             <span className="text-foreground font-semibold">Contribution.</span>{' '}
             {project.contribution}
           </p>

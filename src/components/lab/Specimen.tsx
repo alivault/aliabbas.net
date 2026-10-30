@@ -68,7 +68,7 @@ export default function Specimen({
           <Title as="h2" variant="card" id={headingId} className="text-balance">
             <span className="text-brand tabular-nums">{number}.</span> {title}
           </Title>
-          <p className="text-foreground/60 text-base leading-7">
+          <p className="text-foreground/55 text-base leading-7">
             {description}
           </p>
         </header>
@@ -85,7 +85,7 @@ export default function Specimen({
         </div>
         <dl
           className={cn(
-            'text-foreground/60 text-base leading-7',
+            'text-foreground/55 text-base leading-7',
             wide
               ? 'grid gap-4 sm:grid-cols-3 lg:col-start-2 lg:row-start-1 lg:self-end'
               : 'space-y-4 lg:col-start-1 lg:row-start-2',

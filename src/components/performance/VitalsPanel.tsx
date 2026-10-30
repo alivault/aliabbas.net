@@ -159,7 +159,7 @@ export default function VitalsPanel({
 }) {
   if (!summary) {
     return (
-      <p role="alert" className="text-foreground/60 text-sm">
+      <p role="alert" className="text-foreground/55 text-sm">
         The measurements could not be read right now. Please reload the page.
       </p>
     )

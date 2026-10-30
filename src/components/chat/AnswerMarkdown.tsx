@@ -140,7 +140,7 @@ function CitationChip({ sourceId }: { sourceId: string }) {
             </p>
           </div>
         </div>
-        <p className="text-foreground/65 text-sm leading-6">
+        <p className="text-foreground/70 text-sm leading-6">
           {excerpt(source.body)}
         </p>
         <p className="text-foreground/55 flex items-center justify-between gap-3 text-sm">

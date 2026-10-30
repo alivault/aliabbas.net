@@ -318,7 +318,7 @@ function PerformancePage() {
                       </td>
                       <td className="tabular-nums">
                         {row.tbtMs === null ? (
-                          <span className="text-foreground/40">Not shown</span>
+                          <span className="text-foreground/55">Not shown</span>
                         ) : (
                           `${row.tbtMs} ms`
                         )}

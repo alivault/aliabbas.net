@@ -1,6 +1,12 @@
-import { existsSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { DESIGN_RULES } from './rules'
-import { COLORS, COLOR_ROLES, CSS_COLOR_NAMES, LAYOUT_TOKENS } from './tokens'
+import {
+  COLORS,
+  COLOR_ROLES,
+  CSS_COLOR_NAMES,
+  LAYOUT_TOKENS,
+  TEXT_TONES,
+} from './tokens'
 import { describe, expect, it } from 'vite-plus/test'
 
 describe('design tokens', () => {
@@ -39,5 +45,30 @@ describe('design rules', () => {
       (rule) => rule.checkedBy?.split(', ') ?? [],
     )
     for (const file of files) expect(existsSync(file), file).toBe(true)
+  })
+})
+
+describe('text tones', () => {
+  it('the code uses only the tones on /design', () => {
+    const allowed = new Set(
+      TEXT_TONES.map((tone) => tone.className).filter((name) =>
+        name.includes('/'),
+      ),
+    )
+    const files = readdirSync('src', {
+      recursive: true,
+      encoding: 'utf8',
+    }).filter((file) => /\.tsx?$/.test(file) && !file.endsWith('.test.ts'))
+    const wrong = files.flatMap((file) =>
+      [
+        ...readFileSync(`src/${file}`, 'utf8').matchAll(
+          /\btext-foreground\/\d+\b(?!\])/g,
+        ),
+      ]
+        .map((match) => match[0])
+        .filter((name) => !allowed.has(name))
+        .map((name) => `${file}: ${name}`),
+    )
+    expect(wrong).toEqual([])
   })
 })

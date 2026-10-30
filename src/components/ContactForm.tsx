@@ -102,7 +102,7 @@ export default function ContactForm() {
           <CircleCheck className="size-9" strokeWidth={1.5} />
         </span>
         <PageHeading className="mt-8">Message received.</PageHeading>
-        <p className="text-foreground/50 mt-6 max-w-md text-base leading-7">
+        <p className="text-foreground/55 mt-6 max-w-md text-base leading-7">
           Thanks for reaching out. I’ll read your note and get back to you soon.
         </p>
       </motion.section>

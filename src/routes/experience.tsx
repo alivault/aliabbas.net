@@ -58,7 +58,7 @@ function ExperiencePage() {
             ))}
           </div>
         ) : experiences.length === 0 ? (
-          <p className="text-foreground/45 py-section-content text-sm">
+          <p className="text-foreground/55 py-section-content text-sm">
             No experience yet.
           </p>
         ) : (

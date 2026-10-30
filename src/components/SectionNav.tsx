@@ -132,7 +132,7 @@ export default function SectionNav({
                             'mr-1.5 tabular-nums',
                             active
                               ? 'text-background/60'
-                              : 'text-foreground/45',
+                              : 'text-foreground/55',
                           )}
                         >
                           {item.number}

@@ -29,7 +29,7 @@ export default function DesignSection({
           <Title as="h2" variant="card" id={headingId} className="text-balance">
             <span className="text-brand tabular-nums">{number}</span> {title}
           </Title>
-          <div className="text-foreground/60 space-y-3 text-base leading-7">
+          <div className="text-foreground/55 space-y-3 text-base leading-7">
             {description}
           </div>
         </header>

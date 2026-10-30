@@ -33,7 +33,7 @@ function PrivacySection({
         <span className="text-brand tabular-nums">{Number(number)}.</span>{' '}
         {title}
       </Title>
-      <div className="text-foreground/60 max-w-3xl space-y-5 text-base leading-7">
+      <div className="text-foreground/55 max-w-3xl space-y-5 text-base leading-7">
         {children}
       </div>
     </section>
