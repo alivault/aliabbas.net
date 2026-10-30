@@ -228,7 +228,7 @@ export function HomeHero() {
               style={enterDelay(ACTIONS_DELAY + 80)}
               className={cn(
                 actionStyles,
-                'border-foreground/25 hover:border-foreground bg-background/60 border backdrop-blur-sm',
+                'bg-card border-border text-fg-secondary hover:bg-secondary hover:text-foreground border',
               )}
             >
               <MessageCircle aria-hidden="true" className="size-4" />

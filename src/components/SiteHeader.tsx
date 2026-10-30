@@ -194,7 +194,7 @@ export default function SiteHeader() {
           <div className="flex items-center gap-3 justify-self-end">
             <Link
               to="/contact"
-              className="bg-foreground text-background hover:bg-brand hover:text-brand-foreground hidden h-9 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-colors sm:flex"
+              className="bg-card border-border text-fg-secondary hover:bg-secondary hover:text-foreground hidden h-9 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition-colors sm:flex"
             >
               Let’s talk <ArrowUpRight aria-hidden="true" className="size-4" />
             </Link>
