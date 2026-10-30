@@ -2,7 +2,7 @@
 
 DM Sans is the site's text family. Heading styles are defined once in the
 `src/components/Title.tsx` component using Tailwind classes, not global CSS. Keep default letter spacing
-(except the page title, which is `tracking-tight`), upright text, and the
+(except the page and hero titles, which are `tracking-tight`), upright text, and the
 foreground colors. Titles do not use the brand color.
 
 ## Scale
@@ -22,9 +22,8 @@ The page title is `text-4xl` (36px), and `text-5xl` (48px) from the `lg`
 breakpoint, with the line heights of those Tailwind sizes. It wraps with
 `text-pretty`. Do not put line breaks in it.
 
-The homepage's `hero` variant has weight 400, a line height of 1.08 and its own
-fluid size, to fit its animated three-line composition. This is the only
-bespoke display-size exception.
+The homepage's `hero` variant has the size, weight and letter spacing of the
+page title. It keeps its three set lines, with the changing word in the middle.
 
 ## Usage
 
