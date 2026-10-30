@@ -86,7 +86,7 @@ function PerformancePage() {
             className="grid justify-items-center gap-6 text-center"
           >
             <PageHeading>Measured, not claimed.</PageHeading>
-            <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
+            <p className="text-fg-muted max-w-xl text-base leading-7 text-pretty lg:text-lg lg:leading-8">
               Fast is a number. This page shows the Core Web Vitals of this site
               from real visits, lab numbers for my projects, and the fixes the
               numbers led to.

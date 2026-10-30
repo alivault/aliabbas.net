@@ -30,7 +30,7 @@ function WorkPage() {
             <div>
               <PageHeading>Built for the real world.</PageHeading>
             </div>
-            <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
+            <p className="text-fg-muted max-w-xl text-base leading-7 text-pretty lg:text-lg lg:leading-8">
               Product experiences where visual ambition and engineering rigor
               have to coexist. I care about the concept, the system, and the
               final 2px in production.

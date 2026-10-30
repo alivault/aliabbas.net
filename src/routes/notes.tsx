@@ -78,7 +78,7 @@ function NotesPage() {
           <div>
             <PageHeading>Thinking in public.</PageHeading>
           </div>
-          <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
+          <p className="text-fg-muted max-w-xl text-base leading-7 text-pretty lg:text-lg lg:leading-8">
             Notes on software, interaction design, developer tools, and the
             small decisions that make products feel considered.
           </p>

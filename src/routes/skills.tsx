@@ -55,7 +55,7 @@ function SkillsPage() {
             <div>
               <PageHeading>Ideas, engineered.</PageHeading>
             </div>
-            <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
+            <p className="text-fg-muted max-w-xl text-base leading-7 text-pretty lg:text-lg lg:leading-8">
               I bridge product design and frontend engineering, so the idea
               survives implementation—and the interface holds up in every state
               after launch.

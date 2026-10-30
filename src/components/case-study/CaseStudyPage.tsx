@@ -57,7 +57,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
             <PageHeading>{study.title} as state machines.</PageHeading>
           </div>
           <div>
-            <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
+            <p className="text-fg-muted max-w-xl text-base leading-7 text-pretty lg:text-lg lg:leading-8">
               {study.summary}
             </p>
             <dl className="mx-auto mt-6 grid w-fit grid-cols-[auto_auto] gap-x-6 gap-y-1 text-left text-base">

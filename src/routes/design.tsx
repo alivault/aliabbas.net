@@ -61,7 +61,7 @@ function DesignPage() {
             className="grid justify-items-center gap-6 text-center"
           >
             <PageHeading>One source, read by people and agents.</PageHeading>
-            <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
+            <p className="text-fg-muted max-w-xl text-base leading-7 text-pretty lg:text-lg lg:leading-8">
               The design system of this site. This page reads the tokens from
               the CSS and the code, so it cannot show a value that the site does
               not use. Coding agents read the same tokens and rules as{' '}

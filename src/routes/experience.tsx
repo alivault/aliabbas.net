@@ -38,7 +38,7 @@ function ExperiencePage() {
           <div>
             <PageHeading>Work that shaped me.</PageHeading>
           </div>
-          <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
+          <p className="text-fg-muted max-w-xl text-base leading-7 text-pretty lg:text-lg lg:leading-8">
             A path through product teams, creative development, frontend
             systems, and the problems that taught me how to ship better work.
           </p>

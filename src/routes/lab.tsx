@@ -50,7 +50,7 @@ function LabPage() {
               className="grid justify-items-center gap-6 text-center"
             >
               <PageHeading>Every state, on purpose.</PageHeading>
-              <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
+              <p className="text-fg-muted max-w-xl text-base leading-7 text-pretty lg:text-lg lg:leading-8">
                 These are the parts behind the chat on this site, as live
                 specimens. A local fake stream drives them. It makes no network
                 calls and runs the same way each time. Use the controls to force
