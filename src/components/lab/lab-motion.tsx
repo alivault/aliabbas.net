@@ -126,7 +126,7 @@ export function ReducedMotionSwitch({ className }: { className?: string }) {
           Reduce motion
         </span>
       </button>
-      <span id={descriptionId} className="text-foreground/55 text-sm">
+      <span id={descriptionId} className="text-fg-muted text-sm">
         {system
           ? 'On. Your system asks for reduced motion.'
           : forced

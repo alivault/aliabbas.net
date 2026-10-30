@@ -105,7 +105,7 @@ export default function StreamingSpecimen() {
                         <span className="text-foreground block font-semibold">
                           {source.title}
                         </span>
-                        <span className="text-foreground/55 mt-0.5 block font-mono text-sm [overflow-wrap:anywhere]">
+                        <span className="text-fg-muted mt-0.5 block font-mono text-sm [overflow-wrap:anywhere]">
                           <PathText path={source.group ?? ''} />
                         </span>
                       </span>
@@ -115,7 +115,7 @@ export default function StreamingSpecimen() {
               </AnimatePresence>
             </ol>
           ) : (
-            <p className="text-foreground/55 mt-3 text-sm leading-6">
+            <p className="text-fg-muted mt-3 text-sm leading-6">
               {stream.isActive
                 ? 'Sources appear here as the answer cites them.'
                 : 'No sources yet.'}

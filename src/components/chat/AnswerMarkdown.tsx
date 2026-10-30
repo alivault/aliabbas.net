@@ -76,7 +76,7 @@ export function citationChipClass({
       ? 'border-brand bg-brand text-brand-foreground'
       : hovered
         ? 'border-brand/70 bg-brand/15 text-foreground'
-        : 'border-foreground/20 text-foreground/70 hover:border-brand/70 hover:text-foreground',
+        : 'border-foreground/20 text-fg-secondary hover:border-brand/70 hover:text-foreground',
   )
 }
 
@@ -131,7 +131,7 @@ function CitationChip({ sourceId }: { sourceId: string }) {
           </span>
           <div className="min-w-0">
             {source.group && (
-              <p className="text-foreground/55 font-mono text-sm [overflow-wrap:anywhere]">
+              <p className="text-fg-muted font-mono text-sm [overflow-wrap:anywhere]">
                 <PathText path={source.group} />
               </p>
             )}
@@ -140,10 +140,10 @@ function CitationChip({ sourceId }: { sourceId: string }) {
             </p>
           </div>
         </div>
-        <p className="text-foreground/70 text-sm leading-6">
+        <p className="text-fg-secondary text-sm leading-6">
           {excerpt(source.body)}
         </p>
-        <p className="text-foreground/55 flex items-center justify-between gap-3 text-sm">
+        <p className="text-fg-muted flex items-center justify-between gap-3 text-sm">
           <span className="truncate">
             {source.href
               ? hostname(source.href)
@@ -211,7 +211,7 @@ const markdownComponents: Components = {
     </ol>
   ),
   blockquote: ({ children }) => (
-    <blockquote className="border-brand/60 text-foreground/55 border-l pl-4">
+    <blockquote className="border-brand/60 text-fg-muted border-l pl-4">
       {children}
     </blockquote>
   ),

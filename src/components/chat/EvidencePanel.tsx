@@ -121,7 +121,7 @@ function SourceCard({
               'flex size-7 shrink-0 items-center justify-center rounded-full border text-sm tabular-nums transition-colors',
               active || hovered
                 ? 'border-brand bg-brand text-brand-foreground'
-                : 'border-foreground/20 text-foreground/70',
+                : 'border-foreground/20 text-fg-secondary',
             )}
           >
             {number}
@@ -130,7 +130,7 @@ function SourceCard({
             {source.group && (
               <p
                 className={cn(
-                  'text-foreground/55 text-sm [overflow-wrap:anywhere]',
+                  'text-fg-muted text-sm [overflow-wrap:anywhere]',
                   // A code path reads as code; a category reads as text.
                   source.group.includes('/') && 'font-mono',
                 )}
@@ -152,7 +152,7 @@ function SourceCard({
           ref={bodyRef}
           id={bodyId}
           className={cn(
-            'text-foreground/70 mt-3 space-y-2 text-sm leading-6 [overflow-wrap:anywhere]',
+            'text-fg-secondary mt-3 space-y-2 text-sm leading-6 [overflow-wrap:anywhere]',
             !open && 'line-clamp-4',
           )}
         >
@@ -167,7 +167,7 @@ function SourceCard({
               href={source.href}
               target="_blank"
               rel="noreferrer"
-              className="text-foreground/55 hover:text-brand inline-flex min-w-0 items-center gap-1 text-sm transition-colors"
+              className="text-fg-muted hover:text-brand inline-flex min-w-0 items-center gap-1 text-sm transition-colors"
             >
               <span className="truncate">{hostname(source.href)}</span>
               <ArrowUpRight className="size-3 shrink-0" aria-hidden="true" />
@@ -182,7 +182,7 @@ function SourceCard({
               aria-expanded={expanded}
               aria-controls={bodyId}
               onClick={() => setExpanded((value) => !value)}
-              className="text-foreground/55 hover:text-foreground focus-visible:ring-brand/70 shrink-0 rounded text-sm font-medium outline-none focus-visible:ring-2"
+              className="text-fg-muted hover:text-foreground focus-visible:ring-brand/70 shrink-0 rounded text-sm font-medium outline-none focus-visible:ring-2"
             >
               {expanded ? 'Show less' : 'Show more'}
             </button>
@@ -274,7 +274,7 @@ export default function EvidencePanel({
               onClick={onCollapse}
               aria-label="Hide evidence"
               aria-expanded="true"
-              className="text-foreground/55 hover:text-foreground hover:bg-foreground/[0.06] focus-visible:ring-brand/70 -mr-1.5 flex size-8 items-center justify-center rounded-lg transition-colors outline-none focus-visible:ring-2"
+              className="text-fg-muted hover:text-foreground hover:bg-foreground/[0.06] focus-visible:ring-brand/70 -mr-1.5 flex size-8 items-center justify-center rounded-lg transition-colors outline-none focus-visible:ring-2"
             >
               <PanelRightClose className="size-4" aria-hidden="true" />
             </button>
@@ -284,7 +284,7 @@ export default function EvidencePanel({
           <>
             {scope && scope.total > 1 && (
               <div className="flex items-center gap-3 text-sm">
-                <span className="text-foreground/55">
+                <span className="text-fg-muted">
                   {scope.pinned
                     ? `Answer ${scope.index} of ${scope.total}`
                     : 'Latest answer'}
@@ -293,7 +293,7 @@ export default function EvidencePanel({
                   <button
                     type="button"
                     onClick={onShowLatest}
-                    className="text-foreground/55 hover:text-foreground focus-visible:ring-brand/70 inline-flex items-center gap-1 rounded font-medium outline-none focus-visible:ring-2"
+                    className="text-fg-muted hover:text-foreground focus-visible:ring-brand/70 inline-flex items-center gap-1 rounded font-medium outline-none focus-visible:ring-2"
                   >
                     <CornerDownLeft className="size-3" aria-hidden="true" />
                     Show latest
@@ -301,16 +301,16 @@ export default function EvidencePanel({
                 )}
               </div>
             )}
-            <p className="text-foreground/55 line-clamp-2 text-sm">
+            <p className="text-fg-muted line-clamp-2 text-sm">
               <span className="sr-only">For the question: </span>“
               {turn.question}”
             </p>
-            <p className="text-foreground/55 text-sm">
+            <p className="text-fg-muted text-sm">
               <PanelStatus turn={turn} />
             </p>
           </>
         ) : (
-          <p className="text-foreground/55 text-sm">
+          <p className="text-fg-muted text-sm">
             Ask a question. Each claim in the answer links to the source that
             supports it.
           </p>
@@ -362,7 +362,7 @@ export function EvidenceRail({
       aria-expanded="false"
       aria-controls={controlsId}
       aria-label={`Show evidence, ${sourceCount} ${sourceCount === 1 ? 'source' : 'sources'}`}
-      className="group/rail text-foreground/55 hover:text-foreground hover:bg-foreground/[0.03] focus-visible:ring-brand/70 flex h-full w-full flex-col items-center gap-4 py-6 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-inset"
+      className="group/rail text-fg-muted hover:text-foreground hover:bg-foreground/[0.03] focus-visible:ring-brand/70 flex h-full w-full flex-col items-center gap-4 py-6 transition-colors outline-none focus-visible:ring-2 focus-visible:ring-inset"
     >
       <PanelRightOpen className="size-4" aria-hidden="true" />
       <span className="relative flex size-7 items-center justify-center">

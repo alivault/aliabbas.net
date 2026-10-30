@@ -36,9 +36,9 @@ export default function SideProjects() {
           </Link>
           <div>
             <Title as="h2" variant="card" id="side-projects">
-              Averno<span className="text-foreground/55">, a side project</span>
+              Averno<span className="text-fg-muted">, a side project</span>
             </Title>
-            <p className="text-foreground/55 mt-3 max-w-2xl text-base leading-7">
+            <p className="text-fg-muted mt-3 max-w-2xl text-base leading-7">
               A 3D shooter that runs in the browser on a computer or a phone.
               Three.js and React, light baked in a web worker, and one input
               model for keyboard, gamepad and touch.

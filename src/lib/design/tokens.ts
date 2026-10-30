@@ -58,6 +58,18 @@ export const COLOR_ROLES: Record<string, { group: ColorGroup; use: string }> = {
   'popover-foreground': { group: 'Text', use: 'Text on a popover.' },
   'secondary-foreground': { group: 'Text', use: 'Text on a secondary fill.' },
   'muted-foreground': { group: 'Text', use: 'Text on a muted fill.' },
+  'fg-secondary': {
+    group: 'Text',
+    use: 'Supporting text next to primary text. APCA Lc 75 or more.',
+  },
+  'fg-muted': {
+    group: 'Text',
+    use: 'Descriptions, metadata and hints. APCA Lc 60 or more.',
+  },
+  'fg-faint': {
+    group: 'Text',
+    use: 'Disabled text and decoration only.',
+  },
   primary: { group: 'Action', use: 'The main button of a view.' },
   'primary-foreground': { group: 'Action', use: 'Text on a primary fill.' },
   brand: {
@@ -137,17 +149,17 @@ export const TEXT_TONES = [
   },
   {
     name: 'Secondary',
-    className: 'text-foreground/70',
+    className: 'text-fg-secondary',
     use: 'Supporting text next to primary text.',
   },
   {
     name: 'Muted',
-    className: 'text-foreground/55',
+    className: 'text-fg-muted',
     use: 'Descriptions, metadata and hints.',
   },
   {
     name: 'Faint',
-    className: 'text-foreground/40',
+    className: 'text-fg-faint',
     use: 'Disabled text and decoration. Never for text that people must read.',
   },
 ] as const

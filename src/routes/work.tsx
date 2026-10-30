@@ -34,7 +34,7 @@ function WorkPage() {
                 <em className="text-brand">real world.</em>
               </PageHeading>
             </div>
-            <p className="text-foreground/55 max-w-xl text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
+            <p className="text-fg-muted max-w-xl text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
               Product experiences where visual ambition and engineering rigor
               have to coexist. I care about the concept, the system, and the
               final 2px in production.

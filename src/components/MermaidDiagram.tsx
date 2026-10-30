@@ -131,7 +131,7 @@ export function MermaidDiagram({ value }: { value: MermaidDiagramValue }) {
         />
       )}
       {value.caption && (
-        <figcaption className="text-foreground/55 mx-auto mt-5 max-w-2xl text-center text-sm leading-6">
+        <figcaption className="text-fg-muted mx-auto mt-5 max-w-2xl text-center text-sm leading-6">
           {value.caption}
         </figcaption>
       )}

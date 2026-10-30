@@ -65,7 +65,7 @@ function DesignPage() {
               <br />
               <em className="text-brand">read by people and agents.</em>
             </PageHeading>
-            <p className="text-foreground/55 max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
+            <p className="text-fg-muted max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
               The design system of this site. This page reads the tokens from
               the CSS and the code, so it cannot show a value that the site does
               not use. Coding agents read the same tokens and rules as{' '}
@@ -116,11 +116,11 @@ function DesignPage() {
                       <p className="text-foreground text-base leading-7">
                         {rule.rule}
                       </p>
-                      <p className="text-foreground/55 text-sm leading-6">
+                      <p className="text-fg-muted text-sm leading-6">
                         {rule.why}
                       </p>
                       {rule.checkedBy && (
-                        <p className="text-foreground/55 flex flex-wrap items-baseline gap-x-2 text-sm leading-6">
+                        <p className="text-fg-muted flex flex-wrap items-baseline gap-x-2 text-sm leading-6">
                           <span>Checked by</span>
                           {rule.checkedBy.split(', ').map((path) => (
                             <RepoLink key={path} path={path} />
@@ -181,7 +181,7 @@ function DesignPage() {
                         <p className="text-foreground font-mono text-sm">
                           {step.variant}
                         </p>
-                        <p className="text-foreground/55 text-sm leading-6">
+                        <p className="text-fg-muted text-sm leading-6">
                           {step.role} · {step.size} · {step.lineHeight}
                         </p>
                       </div>
@@ -206,7 +206,7 @@ function DesignPage() {
                           <p className="text-foreground font-mono text-sm">
                             {step.className}
                           </p>
-                          <p className="text-foreground/55 text-sm leading-6">
+                          <p className="text-fg-muted text-sm leading-6">
                             {step.size} on {step.lineHeight}
                           </p>
                         </div>
@@ -259,7 +259,7 @@ function DesignPage() {
               <div className="border-foreground/10 overflow-x-auto border-t">
                 <table className="w-full min-w-[32rem] text-left text-sm">
                   <thead>
-                    <tr className="text-foreground/55 border-foreground/10 border-b">
+                    <tr className="text-fg-muted border-foreground/10 border-b">
                       <th scope="col" className="py-3 pr-4 font-normal">
                         Token
                       </th>
@@ -284,7 +284,7 @@ function DesignPage() {
                           <span className="text-foreground block font-mono">
                             --{token.name}
                           </span>
-                          <span className="text-foreground/55 block leading-6">
+                          <span className="text-fg-muted block leading-6">
                             {token.use}
                           </span>
                         </th>
@@ -364,7 +364,7 @@ function DesignPage() {
                     link: (
                       <a
                         href="/design/tokens.json"
-                        className="text-foreground/70 hover:text-brand font-mono text-sm underline decoration-current/30 underline-offset-4 transition-colors"
+                        className="text-fg-secondary hover:text-brand font-mono text-sm underline decoration-current/30 underline-offset-4 transition-colors"
                       >
                         /design/tokens.json
                       </a>
@@ -395,7 +395,7 @@ function DesignPage() {
                       <h3 className="text-foreground text-base font-semibold">
                         {item.title}
                       </h3>
-                      <p className="text-foreground/55 text-base leading-7">
+                      <p className="text-fg-muted text-base leading-7">
                         {item.body}
                       </p>
                       <p>{item.link}</p>

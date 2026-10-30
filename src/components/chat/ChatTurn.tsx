@@ -54,7 +54,7 @@ function CopyButton({ text }: { text: string }) {
           .then(() => setCopied(true))
           .catch(() => undefined)
       }}
-      className="text-foreground/55 hover:text-foreground"
+      className="text-fg-muted hover:text-foreground"
     >
       {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
       <span aria-live="polite">{copied ? 'Copied' : 'Copy'}</span>
@@ -200,9 +200,9 @@ function ChatTurn({
               <AnswerMarkdown
                 text={turn.answer}
                 className={cn(
-                  'text-foreground/70 text-base leading-7',
+                  'text-fg-secondary text-base leading-7',
                   (turn.status === 'stopped' || turn.status === 'failed') &&
-                    'text-foreground/55',
+                    'text-fg-muted',
                 )}
               />
             </CitationContext>
@@ -228,7 +228,7 @@ function ChatTurn({
 
           {turn.status !== 'pending' && (
             <div className="flex flex-wrap items-center gap-x-1 gap-y-2">
-              <span className="text-foreground/55 mr-2 text-sm tabular-nums">
+              <span className="text-fg-muted mr-2 text-sm tabular-nums">
                 <TurnStatusLine turn={turn} />
               </span>
               {turn.sources.length > 0 && (
@@ -238,7 +238,7 @@ function ChatTurn({
                   aria-pressed={evidenceVisible}
                   aria-label={`${turn.sources.length} ${turn.sources.length === 1 ? 'source' : 'sources'}: ${evidenceVisible ? 'hide' : 'show'} evidence`}
                   onClick={() => onToggleEvidence(turn.id)}
-                  className="text-foreground/55 hover:text-foreground aria-pressed:bg-foreground/[0.07] aria-pressed:text-foreground"
+                  className="text-fg-muted hover:text-foreground aria-pressed:bg-foreground/[0.07] aria-pressed:text-foreground"
                 >
                   <FileSearch aria-hidden="true" />
                   <span className="tabular-nums">{turn.sources.length}</span>
@@ -251,7 +251,7 @@ function ChatTurn({
                   variant="ghost"
                   size="default"
                   onClick={() => onRetry(turn.id)}
-                  className="text-foreground/55 hover:text-foreground"
+                  className="text-fg-muted hover:text-foreground"
                 >
                   <RotateCcw aria-hidden="true" />
                   {turn.status === 'complete' ? 'Regenerate' : 'Retry'}
@@ -263,7 +263,7 @@ function ChatTurn({
                     variant="ghost"
                     size="default"
                     onClick={() => onEdit(turn)}
-                    className="text-foreground/55 hover:text-foreground"
+                    className="text-fg-muted hover:text-foreground"
                   >
                     <Pencil aria-hidden="true" />
                     Edit question

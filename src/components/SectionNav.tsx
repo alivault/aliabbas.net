@@ -130,9 +130,7 @@ export default function SectionNav({
                         <span
                           className={cn(
                             'mr-1.5 tabular-nums',
-                            active
-                              ? 'text-background/60'
-                              : 'text-foreground/55',
+                            active ? 'text-background/60' : 'text-fg-muted',
                           )}
                         >
                           {item.number}

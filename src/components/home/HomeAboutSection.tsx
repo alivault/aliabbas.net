@@ -12,7 +12,7 @@ export default function HomeAboutSection() {
         <ScrollReveal className="py-section flex flex-col justify-between px-5 sm:px-8 lg:px-12">
           <div>
             <SectionHeading>Design + Engineering</SectionHeading>
-            <p className="text-foreground/70 mt-9 max-w-xl text-base leading-8">
+            <p className="text-fg-secondary mt-9 max-w-xl text-base leading-8">
               That overlap means fewer gaps between intent and implementation,
               faster iteration, and products that keep their character all the
               way to production. I’m equally at home refining a visual system,

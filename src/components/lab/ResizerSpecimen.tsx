@@ -212,7 +212,7 @@ export default function ResizerSpecimen() {
         </div>
       ) : (
         <div className="space-y-4">
-          <p className="border-foreground/15 text-foreground/55 rounded-lg border border-dashed p-4 text-sm leading-6">
+          <p className="border-foreground/15 text-fg-muted rounded-lg border border-dashed p-4 text-sm leading-6">
             The resizer needs a screen at least 1024 px wide. On a narrow
             screen, the chat uses the drawer in specimen 02 instead.
           </p>

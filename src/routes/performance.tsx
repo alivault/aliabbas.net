@@ -62,7 +62,7 @@ function Section({
         <Title as="h2" id={id} variant="subsection" className="max-w-xl">
           <span className="text-brand tabular-nums">{number}.</span> {title}
         </Title>
-        <div className="text-foreground/55 mt-4 max-w-2xl space-y-3 text-sm leading-6">
+        <div className="text-fg-muted mt-4 max-w-2xl space-y-3 text-sm leading-6">
           {description}
         </div>
         {children && <div className="mt-8">{children}</div>}
@@ -72,7 +72,7 @@ function Section({
 }
 
 const tableClass =
-  'w-full min-w-[640px] border-collapse text-left text-sm [&_td]:border-foreground/10 [&_td]:border-t [&_td]:py-3 [&_td]:pr-4 [&_th]:text-foreground/55 [&_th]:pb-3 [&_th]:pr-4 [&_th]:text-sm [&_th]:font-medium'
+  'w-full min-w-[640px] border-collapse text-left text-sm [&_td]:border-foreground/10 [&_td]:border-t [&_td]:py-3 [&_td]:pr-4 [&_th]:text-fg-muted [&_th]:pb-3 [&_th]:pr-4 [&_th]:text-sm [&_th]:font-medium'
 
 function PerformancePage() {
   const summary = Route.useLoaderData()
@@ -90,7 +90,7 @@ function PerformancePage() {
               <br />
               <span className="text-brand">not claimed.</span>
             </PageHeading>
-            <p className="text-foreground/55 max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
+            <p className="text-fg-muted max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
               Fast is a number. This page shows the Core Web Vitals of this site
               from real visits, lab numbers for my projects, and the fixes the
               numbers led to.
@@ -169,7 +169,7 @@ function PerformancePage() {
                         )}
                         %
                       </td>
-                      <td className="text-foreground/55 tabular-nums">
+                      <td className="text-fg-muted tabular-nums">
                         {formatMetric('FCP', row.beforeFcpMs)} →{' '}
                         {formatMetric('FCP', row.afterFcpMs)}
                       </td>
@@ -178,7 +178,7 @@ function PerformancePage() {
                 </tbody>
               </table>
             </div>
-            <p className="text-foreground/55 mt-4 max-w-2xl text-sm leading-6">
+            <p className="text-fg-muted mt-4 max-w-2xl text-sm leading-6">
               Measured {lcpFix.measuredOn}. Both production builds ran in the
               local Workers runtime, which does not compress files, so all
               numbers are slower than live. Headless Chromium with real
@@ -248,7 +248,7 @@ function PerformancePage() {
                 </tbody>
               </table>
             </div>
-            <p className="text-foreground/55 mt-4 max-w-2xl text-sm leading-6">
+            <p className="text-fg-muted mt-4 max-w-2xl text-sm leading-6">
               Measured {avernoFix.measuredOn}, on the live game, before and
               after the deploy. Headless Chromium, empty cache, bytes over the
               network, three runs per profile. The phone is an emulated touch
@@ -301,7 +301,7 @@ function PerformancePage() {
                           {row.label}
                         </a>
                         {row.note && (
-                          <p className="text-foreground/55 mt-1 max-w-sm text-sm leading-6">
+                          <p className="text-fg-muted mt-1 max-w-sm text-sm leading-6">
                             {row.note}
                           </p>
                         )}
@@ -318,7 +318,7 @@ function PerformancePage() {
                       </td>
                       <td className="tabular-nums">
                         {row.tbtMs === null ? (
-                          <span className="text-foreground/55">Not shown</span>
+                          <span className="text-fg-muted">Not shown</span>
                         ) : (
                           `${row.tbtMs} ms`
                         )}

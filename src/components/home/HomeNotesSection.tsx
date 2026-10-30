@@ -28,7 +28,7 @@ export default function HomeNotesSection({
       </ScrollReveal>
       <div>
         {articles.length === 0 ? (
-          <p className="text-foreground/55 py-section-content text-sm">
+          <p className="text-fg-muted py-section-content text-sm">
             New notes are in progress. Check back soon.
           </p>
         ) : (
@@ -47,7 +47,7 @@ export default function HomeNotesSection({
                   >
                     {article.title}
                   </Title>
-                  <span className="text-foreground/55 mt-2 block text-sm">
+                  <span className="text-fg-muted mt-2 block text-sm">
                     {getFormattedDate(article.date)}
                   </span>
                 </span>
