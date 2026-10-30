@@ -11,7 +11,7 @@ import {
 } from '~/components/ui/sheet'
 import { cn } from '~/lib/utils'
 import Logo from './Logo'
-import MonoLabel from './MonoLabel'
+import Meta from './Meta'
 import Title from './Title'
 import { DURATIONS, EASE_IN, EASE_OUT } from '~/lib/design/motion'
 
@@ -175,7 +175,7 @@ export default function SiteHeader() {
             <span className="text-sm font-semibold">Ali Abbas</span>
           </Link>
 
-          <nav className="text-foreground/55 hidden items-center gap-8 justify-self-center text-[12px] font-semibold lg:flex">
+          <nav className="text-foreground/55 hidden items-center gap-7 justify-self-center text-sm font-medium lg:flex">
             {navigation.map((item) => (
               <Link
                 key={item.label}
@@ -194,9 +194,9 @@ export default function SiteHeader() {
           <div className="flex items-center gap-3 justify-self-end">
             <Link
               to="/contact"
-              className="bg-foreground text-background hover:bg-brand hover:text-brand-foreground hidden h-9 items-center gap-2 rounded-full px-4 text-[11px] font-bold transition-colors sm:flex"
+              className="bg-foreground text-background hover:bg-brand hover:text-brand-foreground hidden h-9 items-center gap-2 rounded-full px-4 text-sm font-semibold transition-colors sm:flex"
             >
-              Let’s talk <ArrowUpRight className="size-3.5" />
+              Let’s talk <ArrowUpRight aria-hidden="true" className="size-4" />
             </Link>
             <SheetTrigger
               className="border-foreground/15 text-foreground flex size-9 items-center justify-center rounded-full border lg:hidden"
@@ -237,7 +237,9 @@ export default function SiteHeader() {
                     <Title as="span" variant="card">
                       {item.label}
                     </Title>
-                    <MonoLabel as="span">0{index + 1}</MonoLabel>
+                    <Meta as="span" aria-hidden="true" className="tabular-nums">
+                      0{index + 1}
+                    </Meta>
                   </Link>
                 </motion.div>
               </div>

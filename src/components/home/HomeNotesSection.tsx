@@ -19,16 +19,16 @@ export default function HomeNotesSection({
         </div>
         <Link
           to="/notes"
-          className="group border-foreground/25 hover:text-background relative hidden items-center gap-8 overflow-hidden border-b px-3 py-4 text-xs font-bold uppercase transition-colors duration-300 sm:flex"
+          className="group border-foreground/25 hover:text-background relative hidden items-center gap-8 overflow-hidden border-b px-3 py-4 text-base font-medium transition-colors duration-300 sm:flex"
         >
           <span className="bg-foreground absolute inset-0 translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
           <span className="relative z-10">View all notes</span>
-          <ArrowRight className="relative z-10 size-4" />
+          <ArrowRight aria-hidden="true" className="relative z-10 size-4" />
         </Link>
       </ScrollReveal>
       <div>
         {articles.length === 0 ? (
-          <p className="text-foreground/45 py-section-content text-sm">
+          <p className="text-foreground/55 py-section-content text-sm">
             New notes are in progress. Check back soon.
           </p>
         ) : (
@@ -47,7 +47,7 @@ export default function HomeNotesSection({
                   >
                     {article.title}
                   </Title>
-                  <span className="text-foreground/40 mt-2 block text-xs">
+                  <span className="text-foreground/55 mt-2 block text-sm">
                     {getFormattedDate(article.date)}
                   </span>
                 </span>

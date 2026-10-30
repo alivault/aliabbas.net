@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Braces, Cloud, Database, Layers3 } from 'lucide-react'
 import Main from '~/components/Main'
-import MonoLabel from '~/components/MonoLabel'
 import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
 import Title from '~/components/Title'
@@ -87,9 +86,8 @@ function SkillsPage() {
 
           <ScrollReveal className="mt-section-content grid gap-10 lg:grid-cols-2 lg:gap-16">
             <div className="lg:py-2">
-              <MonoLabel tone="brand">Production architecture</MonoLabel>
-              <Title as="h2" variant="subsection" className="mt-4 max-w-sm">
-                This portfolio is a live full-stack system
+              <Title as="h2" variant="subsection" className="max-w-sm">
+                This site is a production system
               </Title>
               <p className="text-foreground/45 mt-4 max-w-md text-sm leading-6">
                 Not a static mockup: server rendering, managed content,
@@ -109,7 +107,7 @@ function SkillsPage() {
                   />
                   <div>
                     <p className="text-sm font-bold">{label}</p>
-                    <p className="text-foreground/45 mt-1.5 text-xs">{value}</p>
+                    <p className="text-foreground/55 mt-1.5 text-sm">{value}</p>
                   </div>
                 </li>
               ))}

@@ -1,20 +1,27 @@
 import { expect, isDesktop, test, open } from './fixtures'
 import type { Page } from '@playwright/test'
 
-/** Visible text under 14px, or in capitals by CSS. */
+/**
+ * Visible text under 14px, or in capitals by CSS, in the whole page: the
+ * header, the content and the footer.
+ */
 function smallText(page: Page) {
   return page.evaluate(() => {
     const found = new Set<string>()
-    const main = document.querySelector('main')
-    if (!main) return []
-    const walker = document.createTreeWalker(main, NodeFilter.SHOW_TEXT)
+    const walker = document.createTreeWalker(
+      document.body,
+      NodeFilter.SHOW_TEXT,
+    )
     for (let node = walker.nextNode(); node; node = walker.nextNode()) {
       const text = node.textContent?.trim()
       const element = node.parentElement
       if (
         !text ||
         !element ||
-        element.closest('.sr-only, [aria-hidden="true"]')
+        // Skip hidden text, and the TanStack devtools of the dev server.
+        element.closest(
+          '.sr-only, [aria-hidden="true"], script, style, [class*="tsqd"], [class*="tanstack"]',
+        )
       )
         continue
       const style = getComputedStyle(element)
@@ -36,11 +43,15 @@ function smallText(page: Page) {
   })
 }
 
-/** Pages that still have small labels. Remove a page when it is cleaned. */
-const SMALL_TEXT_TODO = new Set(['/', '/performance'])
-
+// /play is not here: it uses the display type of the game, in capitals.
 for (const path of [
   '/',
+  '/work',
+  '/skills',
+  '/experience',
+  '/notes',
+  '/contact',
+  '/privacy',
   '/lab',
   '/chat',
   '/check',
@@ -51,7 +62,6 @@ for (const path of [
   test(`${path} has no text under 14px and no CSS capitals`, async ({
     page,
   }) => {
-    test.fixme(SMALL_TEXT_TODO.has(path), 'This page still has small labels.')
     await open(page, path)
     await expect(page.locator('main')).toBeVisible()
     expect(await smallText(page)).toEqual([])

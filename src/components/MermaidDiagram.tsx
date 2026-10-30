@@ -1,5 +1,4 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react'
-import MonoLabel from './MonoLabel'
 
 type MermaidDiagramValue = {
   code?: string
@@ -46,14 +45,7 @@ function getPrefersDarkMode() {
   )
 }
 
-export function MermaidDiagram({
-  value,
-  captionStyle = 'label',
-}: {
-  value: MermaidDiagramValue
-  /** `label`: small mono caption, as in notes. `text`: a normal sentence. */
-  captionStyle?: 'label' | 'text'
-}) {
+export function MermaidDiagram({ value }: { value: MermaidDiagramValue }) {
   const renderId = `mermaid-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`
   const [state, setState] = useState<RenderState>({ status: 'loading' })
   const [prefersDarkMode, setPrefersDarkMode] = useState(getPrefersDarkMode)
@@ -138,16 +130,11 @@ export function MermaidDiagram({
           aria-hidden="true"
         />
       )}
-      {value.caption &&
-        (captionStyle === 'text' ? (
-          <figcaption className="text-foreground/55 mx-auto mt-5 max-w-2xl text-center text-sm leading-6">
-            {value.caption}
-          </figcaption>
-        ) : (
-          <MonoLabel as="figcaption" className="mt-5 text-center">
-            {value.caption}
-          </MonoLabel>
-        ))}
+      {value.caption && (
+        <figcaption className="text-foreground/55 mx-auto mt-5 max-w-2xl text-center text-sm leading-6">
+          {value.caption}
+        </figcaption>
+      )}
     </figure>
   )
 }

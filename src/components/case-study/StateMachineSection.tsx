@@ -38,7 +38,6 @@ export default function StateMachineSection({
         </div>
 
         <MermaidDiagram
-          captionStyle="text"
           value={{
             code: toMermaid(machine),
             caption: `${machine.title}: state diagram. The tables below list the same states and transitions.`,

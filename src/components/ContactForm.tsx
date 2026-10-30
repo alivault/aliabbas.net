@@ -4,7 +4,6 @@ import { ArrowUpRight, CircleCheck, Loader2 } from 'lucide-react'
 import { motion } from 'motion/react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { monoLabelStyles } from './MonoLabel'
 import PageHeading from './PageHeading'
 import ScrollReveal from './ScrollReveal'
 import { Button } from './ui/button'
@@ -12,6 +11,8 @@ import { Field, FieldError, FieldGroup, FieldLabel } from './ui/field'
 import { Input } from './ui/input'
 import { Textarea } from './ui/textarea'
 import { sendContactEmail } from '~/lib/email'
+
+const fieldLabelStyles = 'text-foreground text-sm font-medium'
 
 const formSchema = z.object({
   name: z.string().trim().min(1, 'A name is required'),
@@ -121,16 +122,16 @@ export default function ContactForm() {
           interfaces, where design quality matters as much as technical
           execution. If that sounds like your team, I’d like to hear from you.
         </p>
-        <div className="border-foreground/20 mt-12 grid grid-cols-2 gap-5 border-t pt-6 text-xs lg:mt-auto">
+        <div className="border-foreground/20 mt-12 grid grid-cols-2 gap-5 border-t pt-6 text-sm leading-6 lg:mt-auto">
           <div>
-            <span className="text-foreground/35 block">Best fit</span>
-            <span className="mt-2 block font-bold">
+            <span className="text-foreground/55 block">Best fit</span>
+            <span className="mt-1 block font-semibold">
               Senior frontend · Interactive UI
             </span>
           </div>
           <div>
-            <span className="text-foreground/35 block">Response time</span>
-            <span className="mt-2 block font-bold">Usually 1–2 days</span>
+            <span className="text-foreground/55 block">Response time</span>
+            <span className="mt-1 block font-semibold">Usually 1–2 days</span>
           </div>
         </div>
       </ScrollReveal>
@@ -139,7 +140,7 @@ export default function ContactForm() {
         <form onSubmit={handleSubmit(onSubmit)} noValidate>
           <FieldGroup className="gap-8">
             <Field data-invalid={Boolean(errors.name)}>
-              <FieldLabel htmlFor="contact-name" className={monoLabelStyles()}>
+              <FieldLabel htmlFor="contact-name" className={fieldLabelStyles}>
                 Name
               </FieldLabel>
               <Input
@@ -155,7 +156,7 @@ export default function ContactForm() {
             </Field>
 
             <Field data-invalid={Boolean(errors.email)}>
-              <FieldLabel htmlFor="contact-email" className={monoLabelStyles()}>
+              <FieldLabel htmlFor="contact-email" className={fieldLabelStyles}>
                 Email
               </FieldLabel>
               <Input
@@ -174,7 +175,7 @@ export default function ContactForm() {
             <Field data-invalid={Boolean(errors.message)}>
               <FieldLabel
                 htmlFor="contact-message"
-                className={monoLabelStyles()}
+                className={fieldLabelStyles}
               >
                 Tell me about the opportunity
               </FieldLabel>
@@ -193,7 +194,7 @@ export default function ContactForm() {
             <Field data-invalid={Boolean(errors.verification)}>
               <FieldLabel
                 htmlFor="contact-verification"
-                className={monoLabelStyles()}
+                className={fieldLabelStyles}
               >
                 Human check:
                 <span>

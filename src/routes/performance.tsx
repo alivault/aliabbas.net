@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import Main from '~/components/Main'
-import MonoLabel from '~/components/MonoLabel'
 import PageHeading from '~/components/PageHeading'
 import VitalsPanel from '~/components/performance/VitalsPanel'
 import ScrollReveal from '~/components/ScrollReveal'
@@ -45,13 +44,13 @@ function Section({
   children,
   description,
   id,
-  label,
+  number,
   title,
 }: {
   children?: ReactNode
   description: ReactNode
   id: string
-  label: string
+  number: number
   title: string
 }) {
   return (
@@ -60,9 +59,8 @@ function Section({
       className="border-foreground/15 pt-section-divider mt-section-content border-t"
     >
       <div>
-        <MonoLabel tone="brand">{label}</MonoLabel>
-        <Title as="h2" id={id} variant="subsection" className="mt-4 max-w-xl">
-          {title}
+        <Title as="h2" id={id} variant="subsection" className="max-w-xl">
+          <span className="text-brand tabular-nums">{number}.</span> {title}
         </Title>
         <div className="text-foreground/55 mt-4 max-w-2xl space-y-3 text-sm leading-6">
           {description}
@@ -74,7 +72,7 @@ function Section({
 }
 
 const tableClass =
-  'w-full min-w-[640px] border-collapse text-left text-sm [&_td]:border-foreground/10 [&_td]:border-t [&_td]:py-3 [&_td]:pr-4 [&_th]:text-foreground/45 [&_th]:pb-3 [&_th]:pr-4 [&_th]:text-xs [&_th]:font-semibold'
+  'w-full min-w-[640px] border-collapse text-left text-sm [&_td]:border-foreground/10 [&_td]:border-t [&_td]:py-3 [&_td]:pr-4 [&_th]:text-foreground/55 [&_th]:pb-3 [&_th]:pr-4 [&_th]:text-sm [&_th]:font-medium'
 
 function PerformancePage() {
   const summary = Route.useLoaderData()
@@ -101,8 +99,8 @@ function PerformancePage() {
 
           <Section
             id="real-visits"
-            label="Real visits"
-            title="Core Web Vitals of aliabbas.net"
+            number={1}
+            title="Core Web Vitals of aliabbas.net, from real visits"
             description={
               <>
                 <p>
@@ -119,7 +117,7 @@ function PerformancePage() {
 
           <Section
             id="lcp-fix"
-            label="What the numbers changed"
+            number={2}
             title="The page waited for JavaScript to show itself"
             description={
               <>
@@ -157,7 +155,7 @@ function PerformancePage() {
                 <tbody>
                   {lcpFix.results.map((row) => (
                     <tr key={row.path}>
-                      <td className="font-mono text-xs">{row.path}</td>
+                      <td className="font-mono text-sm">{row.path}</td>
                       <td>
                         <Value name="LCP" value={row.beforeLcpMs} />
                       </td>
@@ -180,7 +178,7 @@ function PerformancePage() {
                 </tbody>
               </table>
             </div>
-            <p className="text-foreground/40 mt-4 max-w-2xl text-xs leading-5">
+            <p className="text-foreground/55 mt-4 max-w-2xl text-sm leading-6">
               Measured {lcpFix.measuredOn}. Both production builds ran in the
               local Workers runtime, which does not compress files, so all
               numbers are slower than live. Headless Chromium with real
@@ -192,7 +190,7 @@ function PerformancePage() {
 
           <Section
             id="averno-fix"
-            label="What the numbers changed"
+            number={3}
             title="A browser game downloaded too much, every time"
             description={
               <>
@@ -250,7 +248,7 @@ function PerformancePage() {
                 </tbody>
               </table>
             </div>
-            <p className="text-foreground/40 mt-4 max-w-2xl text-xs leading-5">
+            <p className="text-foreground/55 mt-4 max-w-2xl text-sm leading-6">
               Measured {avernoFix.measuredOn}, on the live game, before and
               after the deploy. Headless Chromium, empty cache, bytes over the
               network, three runs per profile. The phone is an emulated touch
@@ -263,8 +261,8 @@ function PerformancePage() {
 
           <Section
             id="lab"
-            label="Lab"
-            title="Lighthouse on the live sites"
+            number={4}
+            title="Lighthouse lab scores on the live sites"
             description={
               <p>
                 The same test for this site and two of my projects: Lighthouse
@@ -303,7 +301,7 @@ function PerformancePage() {
                           {row.label}
                         </a>
                         {row.note && (
-                          <p className="text-foreground/45 mt-1 max-w-sm text-xs leading-5">
+                          <p className="text-foreground/55 mt-1 max-w-sm text-sm leading-6">
                             {row.note}
                           </p>
                         )}
@@ -334,7 +332,7 @@ function PerformancePage() {
 
           <Section
             id="method"
-            label="Method"
+            number={5}
             title="How I measure"
             description={
               <ul className="list-disc space-y-2 pl-4">

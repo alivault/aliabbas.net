@@ -1,4 +1,3 @@
-import MonoLabel from '~/components/MonoLabel'
 import { cn } from '~/lib/utils'
 import { METRICS, METRIC_INFO, MIN_SAMPLES, formatMetric } from '~/lib/vitals'
 import type {
@@ -53,7 +52,7 @@ function Distribution({ summary }: { summary: MetricSummary }) {
           />
         ))}
       </div>
-      <p aria-hidden="true" className="text-foreground/40 mt-2 text-xs">
+      <p aria-hidden="true" className="text-foreground/55 mt-2 text-sm">
         {text}
       </p>
     </div>
@@ -71,10 +70,10 @@ function DeviceValue({
 }) {
   return (
     <div>
-      <dt className="text-foreground/40 text-xs">{label}</dt>
+      <dt className="text-foreground/55 text-sm">{label}</dt>
       <dd className="mt-1 text-sm font-semibold tabular-nums">
         {summary.p75 === null ? (
-          <span className="text-foreground/40 font-normal">
+          <span className="text-foreground/55 font-normal">
             {summary.count} of {MIN_SAMPLES}
           </span>
         ) : (
@@ -101,11 +100,15 @@ function MetricCard({
       className="border-foreground/10 flex flex-col gap-5 rounded-xl border p-5"
     >
       <header>
-        <MonoLabel>{info.core ? 'Core Web Vital' : 'Loading'}</MonoLabel>
-        <h3 id={`metric-${name}`} className="mt-2 text-sm font-semibold">
-          {info.label} <span className="text-foreground/40">({name})</span>
+        <h3 id={`metric-${name}`} className="text-base font-semibold">
+          {info.label} <span className="text-foreground/55">({name})</span>
         </h3>
-        <p className="text-foreground/50 mt-1 text-sm leading-5">
+        <p className="text-foreground/55 mt-1 text-sm leading-6">
+          {info.core && (
+            <span className="text-foreground font-medium">
+              Core Web Vital.{' '}
+            </span>
+          )}
           {info.description}
         </p>
       </header>
@@ -127,7 +130,7 @@ function MetricCard({
               {RATING_LABEL[all.rating]}
             </span>
           </p>
-          <p className="text-foreground/40 mt-1 text-xs">
+          <p className="text-foreground/55 mt-1 text-sm leading-6">
             p75 of {plural(all.count, 'sample')} · good ≤{' '}
             {formatMetric(name, good)}, poor &gt; {formatMetric(name, poor)}
           </p>

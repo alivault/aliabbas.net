@@ -1,6 +1,6 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
 import Main from '~/components/Main'
-import MonoLabel from '~/components/MonoLabel'
+import Meta from '~/components/Meta'
 import PageHeading from '~/components/PageHeading'
 import Title from '~/components/Title'
 
@@ -28,9 +28,9 @@ function PrivacySection({
   title: string
 }) {
   return (
-    <section className="border-foreground/20 py-section-content grid gap-5 border-t lg:grid-cols-[100px_260px_1fr] lg:gap-10">
-      <MonoLabel as="span">{number}</MonoLabel>
+    <section className="border-foreground/20 py-section-content grid gap-5 border-t lg:grid-cols-[360px_1fr] lg:gap-10">
       <Title as="h2" variant="subsection">
+        <span className="text-brand tabular-nums">{Number(number)}.</span>{' '}
         {title}
       </Title>
       <div className="text-foreground/60 max-w-3xl space-y-5 text-base leading-7">
@@ -49,10 +49,10 @@ function PrivacyPage() {
             Privacy
             <em className="text-brand block">policy.</em>
           </PageHeading>
-          <MonoLabel as="div" className="mt-10 flex flex-wrap gap-x-8 gap-y-2">
+          <Meta as="div" className="mt-10 flex flex-wrap gap-x-8 gap-y-2">
             <span>Effective October 28, 2026</span>
             <span>Operator: Ali Abbas</span>
-          </MonoLabel>
+          </Meta>
         </header>
 
         <div className="pb-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">

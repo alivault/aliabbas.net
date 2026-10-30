@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { motion } from 'motion/react'
-import MonoLabel, { monoLabelStyles } from '~/components/MonoLabel'
+import { metaStyles } from '~/components/Meta'
 import ScrollReveal from '~/components/ScrollReveal'
 import Title from '~/components/Title'
 import type { WorkItem } from '~/data/work'
@@ -29,8 +29,8 @@ const visualLinkStyles =
   'group focus-visible:outline-foreground block rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-4'
 
 const cardLinkStyles = cn(
-  monoLabelStyles('brand'),
-  'hover:text-foreground focus-visible:outline-foreground inline-flex min-h-6 items-center gap-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4',
+  metaStyles('brand'),
+  'hover:text-foreground focus-visible:outline-foreground inline-flex min-h-6 font-medium items-center gap-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4',
 )
 
 function ProjectVisual({ project }: { project: WorkItem }) {
@@ -154,8 +154,8 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
           {project.description}
         </p>
         <div className="border-foreground/25 mt-7 border-l pl-4">
-          <MonoLabel>Contribution</MonoLabel>
-          <p className="text-foreground/55 mt-2 max-w-sm text-sm leading-6">
+          <p className="text-foreground/60 max-w-sm text-sm leading-6">
+            <span className="text-foreground font-semibold">Contribution.</span>{' '}
             {project.contribution}
           </p>
         </div>
@@ -167,7 +167,7 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
               className={cardLinkStyles}
             >
               Case study
-              <ArrowRight className="size-3.5" aria-hidden="true" />
+              <ArrowRight className="size-4" aria-hidden="true" />
               <span className="sr-only">: {project.title}</span>
             </Link>
           )}
@@ -178,7 +178,7 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
             className={cardLinkStyles}
           >
             Visit site
-            <ArrowUpRight className="size-3.5" aria-hidden="true" />
+            <ArrowUpRight className="size-4" aria-hidden="true" />
             <span className="sr-only">
               : {project.title} (opens in a new tab)
             </span>
@@ -188,7 +188,7 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
           {project.tools.map((tool) => (
             <span
               key={tool}
-              className="border-foreground/20 rounded-full border px-3 py-1.5 text-[10px] font-semibold"
+              className="border-foreground/20 text-foreground/70 rounded-full border px-3 py-1 text-sm"
             >
               {tool}
             </span>
