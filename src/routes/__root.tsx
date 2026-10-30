@@ -37,7 +37,7 @@ export const Route = createRootRouteWithContext<{
       },
       {
         name: 'theme-color',
-        content: '#10100f',
+        content: '#050607',
         media: '(prefers-color-scheme: dark)',
       },
       { title: 'Ali Abbas' },

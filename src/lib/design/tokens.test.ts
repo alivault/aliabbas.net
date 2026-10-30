@@ -65,6 +65,10 @@ describe('text tones', () => {
     ['fg-secondary', 75],
     ['fg-muted', 60],
     ['brand', 60],
+    ['verified', 60],
+    ['partial', 60],
+    ['contradicted', 60],
+    ['destructive', 60],
   ] as const
 
   for (const scheme of ['light', 'dark'] as const) {

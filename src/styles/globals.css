@@ -108,30 +108,32 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Off-white on a dark gray, not white on black: less glare. */
-    --background: oklch(0.185 0.006 85);
-    --foreground: oklch(0.93 0.009 94);
-    --fg-secondary: oklch(0.86 0.009 94);
+    /* #050607: near black, slightly cool. Surfaces and lines use its hue.
+       Text is a warm off-white below full white, for less glare. Each text
+       color is tuned to an APCA target on this background (see the tests). */
+    --background: oklch(0.121 0.0039 245.5);
+    --foreground: oklch(0.915 0.009 94);
+    --fg-secondary: oklch(0.85 0.009 94);
     --fg-muted: oklch(0.77 0.008 94);
-    --fg-faint: oklch(0.6 0.007 94);
+    --fg-faint: oklch(0.59 0.007 94);
     --brand: oklch(0.8 0.008 94);
-    --card: oklch(0.225 0.006 85);
-    --card-foreground: oklch(0.93 0.009 94);
-    --popover: oklch(0.225 0.006 85);
-    --popover-foreground: oklch(0.93 0.009 94);
-    --primary: oklch(0.93 0.009 94);
-    --primary-foreground: oklch(0.155 0.006 85);
-    --secondary: oklch(0.27 0.008 85);
-    --secondary-foreground: oklch(0.93 0.009 94);
-    --muted: oklch(0.27 0.008 85);
+    --card: oklch(0.165 0.004 245.5);
+    --card-foreground: var(--foreground);
+    --popover: oklch(0.165 0.004 245.5);
+    --popover-foreground: var(--foreground);
+    --primary: var(--foreground);
+    --primary-foreground: var(--background);
+    --secondary: oklch(0.21 0.005 245.5);
+    --secondary-foreground: var(--foreground);
+    --muted: oklch(0.21 0.005 245.5);
     --muted-foreground: var(--fg-muted);
-    --destructive: oklch(0.7 0.19 25);
+    --destructive: oklch(0.79 0.12 27);
     --verified: oklch(0.76 0.13 152);
     --partial: oklch(0.8 0.13 80);
-    --contradicted: oklch(0.72 0.17 25);
-    --border: oklch(0.34 0.008 85);
-    --input: oklch(0.34 0.008 85);
-    --page-base: oklch(0.06 0.004 85);
+    --contradicted: oklch(0.79 0.12 25);
+    --border: oklch(0.28 0.006 245.5);
+    --input: oklch(0.28 0.006 245.5);
+    --page-base: oklch(0.05 0.002 245.5);
   }
 }
 

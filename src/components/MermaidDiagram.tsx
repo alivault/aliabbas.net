@@ -71,8 +71,9 @@ export function MermaidDiagram({ value }: { value: MermaidDiagramValue }) {
     async function renderDiagram() {
       try {
         const mermaid = await loadMermaid()
-        const foreground = prefersDarkMode ? '#f1efe8' : '#111111'
-        const background = prefersDarkMode ? '#10100f' : '#f4f2ed'
+        // Dark values match --foreground and --card in globals.css.
+        const foreground = prefersDarkMode ? '#e5e3dc' : '#111111'
+        const background = prefersDarkMode ? '#0d0f10' : '#f4f2ed'
 
         mermaid.initialize({
           startOnLoad: false,
