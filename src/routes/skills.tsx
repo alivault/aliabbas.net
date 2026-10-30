@@ -48,7 +48,10 @@ function SkillsPage() {
     <Main>
       <section className="bg-background text-foreground">
         <div className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
-          <ScrollReveal as="header" className="grid gap-6">
+          <ScrollReveal
+            as="header"
+            className="grid justify-items-center gap-6 text-center"
+          >
             <div>
               <PageHeading>Ideas, engineered.</PageHeading>
             </div>

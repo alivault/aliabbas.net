@@ -73,7 +73,7 @@ function NotesPage() {
       <Section>
         <ScrollReveal
           as="header"
-          className="border-foreground/20 pb-section-content grid gap-6 border-b"
+          className="border-foreground/20 pb-section-content grid justify-items-center gap-6 border-b text-center"
         >
           <div>
             <PageHeading>Thinking in public.</PageHeading>

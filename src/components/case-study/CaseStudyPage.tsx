@@ -51,7 +51,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
         <ScrollReveal
           as="header"
           trigger="mount"
-          className="border-foreground/20 pb-section-divider grid gap-6 border-b"
+          className="border-foreground/20 pb-section-divider grid justify-items-center gap-6 border-b text-center"
         >
           <div>
             <PageHeading>{study.title} as state machines.</PageHeading>
@@ -60,13 +60,13 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
             <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
               {study.summary}
             </p>
-            <dl className="mt-6 grid max-w-xl grid-cols-[auto_1fr] gap-x-6 gap-y-1 text-base">
+            <dl className="mx-auto mt-6 grid w-fit grid-cols-[auto_auto] gap-x-6 gap-y-1 text-left text-base">
               <dt className="text-fg-muted">Product</dt>
               <dd>{study.category}</dd>
               <dt className="text-fg-muted">Year</dt>
               <dd>{study.year}</dd>
             </dl>
-            <div className="mt-7 flex flex-wrap gap-3">
+            <div className="mt-7 flex flex-wrap justify-center gap-3">
               <a
                 href={study.liveHref}
                 target="_blank"

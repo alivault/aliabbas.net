@@ -55,7 +55,11 @@ function DesignPage() {
     <Main>
       <section className="bg-background text-foreground">
         <div className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
-          <ScrollReveal as="header" trigger="mount" className="grid gap-6">
+          <ScrollReveal
+            as="header"
+            trigger="mount"
+            className="grid justify-items-center gap-6 text-center"
+          >
             <PageHeading>One source, read by people and agents.</PageHeading>
             <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
               The design system of this site. This page reads the tokens from
