@@ -16,7 +16,7 @@ export default function HomeExperience() {
     queryFn: () => getRecentArticles(3),
   })
   return (
-    <div className="home-page bg-background text-foreground overflow-x-hidden">
+    <div className="home-page bg-background text-foreground overflow-x-clip">
       <SiteHeader />
       <main>
         <div className="flex min-h-svh flex-col">
