@@ -50,7 +50,7 @@ describe('design rules', () => {
 
 describe('text tones', () => {
   it('the code uses only the tones on /design', () => {
-    const allowed = new Set(
+    const allowed = new Set<string>(
       TEXT_TONES.map((tone) => tone.className).filter((name) =>
         name.includes('/'),
       ),
