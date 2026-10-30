@@ -1,9 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
-import { ArrowDown, Pause, Play } from 'lucide-react'
+import { ArrowDown, MessageCircle, Pause, Play } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
 import { motion, useReducedMotion } from 'motion/react'
 import PageHeading from '~/components/PageHeading'
 import ConnectedGlobe from './ConnectedGlobe'
+import { cn } from 'cn'
 
 const productDescriptors = [
   'interactive',
@@ -38,7 +40,11 @@ function scrambleWord(word: string, revealedCharacters: number) {
 const INTRO_START = 120
 const LINE_STAGGER = 500
 const CHARACTER_STAGGER = 25
-const ARROW_DELAY = 210
+const PAUSE_DELAY = 210
+const ACTIONS_DELAY = INTRO_START + LINE_STAGGER * 2 + 300
+
+const actionStyles =
+  'enter-blur pointer-events-auto inline-flex h-11 items-center gap-2 rounded-full px-4 text-sm font-semibold sm:px-5 sm:text-base transition-colors outline-none focus-visible:ring-2 focus-visible:ring-brand/70'
 
 function enterDelay(ms: number) {
   return { '--enter-delay': `${ms}ms` } as CSSProperties
@@ -157,7 +163,7 @@ export function HomeHero() {
     <section className="site-noise bg-background text-foreground relative flex flex-1 overflow-hidden pt-[72px]">
       <ConnectedGlobe />
       <div className="pointer-events-none relative z-10 mx-auto flex w-full max-w-[1600px] flex-col px-5 pt-9 pb-7 sm:px-8 sm:pt-14 lg:px-12 lg:pt-16">
-        <div className="flex flex-1 items-center justify-center text-center sm:mt-auto sm:flex-none lg:justify-start lg:text-left">
+        <div className="flex flex-1 flex-col items-center justify-center text-center sm:mt-auto sm:flex-none lg:items-start lg:text-left">
           <PageHeading size="hero" className="w-fit max-w-full">
             <TitleLine
               text="I design and build"
@@ -205,23 +211,47 @@ export function HomeHero() {
               className="block whitespace-nowrap"
             />
           </PageHeading>
+          <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
+            <a
+              href="#work"
+              style={enterDelay(ACTIONS_DELAY)}
+              className={cn(
+                actionStyles,
+                'bg-foreground text-background hover:bg-brand hover:text-brand-foreground',
+              )}
+            >
+              See the work
+              <ArrowDown aria-hidden="true" className="size-4" />
+            </a>
+            <Link
+              to="/chat"
+              style={enterDelay(ACTIONS_DELAY + 80)}
+              className={cn(
+                actionStyles,
+                'border-foreground/25 hover:border-foreground bg-background/60 border backdrop-blur-sm',
+              )}
+            >
+              <MessageCircle aria-hidden="true" className="size-4" />
+              Ask AI about me
+            </Link>
+          </div>
         </div>
 
-        <div className="relative flex justify-center pt-5 sm:mt-auto">
+        <div className="flex pt-5 sm:mt-auto">
           {/* Hidden with CSS, not by a hook, so the server and the client
               render the same. With reduced motion, the word does not
               change by itself, so there is nothing to pause. */}
           {
             <button
               type="button"
-              style={enterDelay(ARROW_DELAY)}
+              style={enterDelay(PAUSE_DELAY)}
               onClick={() => setPaused((value) => !value)}
               aria-pressed={paused}
               aria-label="Pause the changing word"
               title={
                 paused ? 'Play the changing word' : 'Pause the changing word'
               }
-              className="enter-blur border-foreground/20 text-fg-muted hover:text-foreground focus-visible:ring-brand/70 pointer-events-auto absolute bottom-2 left-0 flex size-10 items-center justify-center rounded-full border outline-none focus-visible:ring-2 motion-reduce:hidden"
+              className="enter-blur border-foreground/20 text-fg-muted hover:text-foreground focus-visible:ring-brand/70 pointer-events-auto flex size-10 items-center justify-center rounded-full border outline-none focus-visible:ring-2 motion-reduce:hidden"
             >
               {paused ? (
                 <Play aria-hidden="true" className="size-4" />
@@ -230,14 +260,6 @@ export function HomeHero() {
               )}
             </button>
           }
-          <a
-            href="#stack-marquee"
-            style={enterDelay(ARROW_DELAY)}
-            className="enter-blur border-foreground/25 hover:bg-brand hover:text-brand-foreground pointer-events-auto mx-auto flex size-14 items-center justify-center rounded-full border transition-colors"
-            aria-label="View technology stack"
-          >
-            <ArrowDown className="size-5" />
-          </a>
         </div>
       </div>
     </section>

@@ -158,3 +158,16 @@ for (const [width, height] of [
     ).toBeInViewport({ ratio: 1 })
   })
 }
+
+test('the hero actions go to the work and to the chat', async ({ page }) => {
+  await open(page, '/')
+  await page.getByRole('link', { name: 'See the work' }).click()
+  await expect(page).toHaveURL(/#work$/)
+  await expect(
+    page.getByRole('heading', { name: 'Recent work' }),
+  ).toBeInViewport()
+
+  await page.evaluate(() => window.scrollTo({ top: 0 }))
+  await page.getByRole('link', { name: 'Ask AI about me' }).click()
+  await expect(page).toHaveURL(/\/chat$/)
+})

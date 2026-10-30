@@ -22,7 +22,7 @@ export default function HomeExperience() {
         <div className="flex min-h-svh flex-col">
           <HomeHero />
         </div>
-        <div id="stack-marquee" className="scroll-mt-[72px]">
+        <div>
           <ScrollReveal amount={0.4}>
             <StackMarquee />
           </ScrollReveal>
