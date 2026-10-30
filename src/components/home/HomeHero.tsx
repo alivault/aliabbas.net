@@ -217,7 +217,7 @@ export function HomeHero() {
               style={enterDelay(ACTIONS_DELAY)}
               className={cn(
                 actionStyles,
-                'bg-foreground text-background hover:bg-brand hover:text-brand-foreground',
+                'bg-brand text-brand-foreground hover:bg-brand/85',
               )}
             >
               See the work
