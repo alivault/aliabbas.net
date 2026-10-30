@@ -57,7 +57,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
             <PageHeading>
               {study.title}
               <br />
-              <em className="text-brand">as state machines.</em>
+              <em className="text-fg-muted">as state machines.</em>
             </PageHeading>
           </div>
           <div className="lg:justify-self-end">
@@ -188,7 +188,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
                     as="span"
                     variant="section"
                     aria-hidden="true"
-                    className="text-brand leading-none tabular-nums"
+                    className="text-fg-muted leading-none tabular-nums"
                   >
                     {index + 1}
                   </Title>

@@ -485,7 +485,7 @@ export default function PortfolioChat() {
           <div className="flex min-h-0 flex-1 items-end justify-start overflow-y-auto px-4 py-8 sm:px-6 sm:py-10 lg:items-center lg:justify-center lg:py-12">
             <div className="flex w-full max-w-3xl flex-col items-start lg:items-center">
               <PageHeading className="text-left lg:text-center">
-                Ask about <em className="text-brand">Ali.</em>
+                Ask about <em className="text-fg-muted">Ali.</em>
               </PageHeading>
               <p className="text-fg-muted mt-5 max-w-xl text-left text-base leading-7 lg:text-center">
                 An AI guide to Ali&apos;s public record. Every claim links to

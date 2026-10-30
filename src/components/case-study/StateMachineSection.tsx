@@ -29,7 +29,7 @@ export default function StateMachineSection({
             id={headingId}
             className="max-w-sm text-balance"
           >
-            <span className="text-brand tabular-nums">{index + 1}.</span>{' '}
+            <span className="text-fg-muted tabular-nums">{index + 1}.</span>{' '}
             {machine.title}
           </Title>
           <p className="text-fg-muted max-w-2xl text-base leading-7">

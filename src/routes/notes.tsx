@@ -79,7 +79,7 @@ function NotesPage() {
             <PageHeading>
               Thinking
               <br />
-              <em className="text-brand">in public.</em>
+              <em className="text-fg-muted">in public.</em>
             </PageHeading>
           </div>
           <p className="text-fg-muted max-w-xl text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">

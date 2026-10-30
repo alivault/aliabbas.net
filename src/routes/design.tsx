@@ -63,7 +63,7 @@ function DesignPage() {
             <PageHeading>
               One source,
               <br />
-              <em className="text-brand">read by people and agents.</em>
+              <em className="text-fg-muted">read by people and agents.</em>
             </PageHeading>
             <p className="text-fg-muted max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
               The design system of this site. This page reads the tokens from

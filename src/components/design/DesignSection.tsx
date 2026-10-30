@@ -27,7 +27,7 @@ export default function DesignSection({
       >
         <header className="space-y-4 lg:sticky lg:top-48 lg:self-start">
           <Title as="h2" variant="card" id={headingId} className="text-balance">
-            <span className="text-brand tabular-nums">{number}</span> {title}
+            <span className="text-fg-muted tabular-nums">{number}</span> {title}
           </Title>
           <div className="text-fg-muted space-y-3 text-base leading-7">
             {description}

@@ -2,7 +2,7 @@
 
 DM Sans is the site's text family. Heading styles are defined once in the
 `src/components/Title.tsx` component using Tailwind classes, not global CSS. Keep default letter spacing,
-upright text, and the existing foreground/brand colors.
+upright text, and the foreground colors. Titles do not use the brand color.
 
 ## Scale
 
@@ -38,7 +38,9 @@ looser than the hero. This is the only bespoke display-size exception.
   size or weight overrides.
 - Use `className` on heading components for layout and alignment, not alternate
   font sizes, weights, or line heights. Emphasized words inherit the title's
-  weight; differentiate them with `text-brand` instead.
+  weight; differentiate them with `text-fg-muted` instead. Section numbers
+  in titles use `text-fg-muted` too. The one exception is the changing word
+  in the homepage hero, which uses `text-brand`.
 - Body copy, metadata, controls, and game HUD metrics keep their existing styles.
 
 Change a variant in `Title.tsx` rather than tuning individual pages.

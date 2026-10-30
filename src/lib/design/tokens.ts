@@ -74,7 +74,7 @@ export const COLOR_ROLES: Record<string, { group: ColorGroup; use: string }> = {
   'primary-foreground': { group: 'Action', use: 'Text on a primary fill.' },
   brand: {
     group: 'Action',
-    use: 'Selection, the active citation and emphasis in headings.',
+    use: 'Selection, the active citation and the changing word of the homepage hero. Not for titles.',
   },
   'brand-foreground': { group: 'Action', use: 'Text on a brand fill.' },
   accent: { group: 'Action', use: 'Hover fill of menu items.' },

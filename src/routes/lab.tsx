@@ -52,7 +52,7 @@ function LabPage() {
               <PageHeading>
                 Every state,
                 <br />
-                <em className="text-brand">on purpose.</em>
+                <em className="text-fg-muted">on purpose.</em>
               </PageHeading>
               <p className="text-fg-muted max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
                 These are the parts behind the chat on this site, as live

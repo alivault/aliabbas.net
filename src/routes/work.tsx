@@ -31,7 +31,7 @@ function WorkPage() {
               <PageHeading>
                 Built for the
                 <br />
-                <em className="text-brand">real world.</em>
+                <em className="text-fg-muted">real world.</em>
               </PageHeading>
             </div>
             <p className="text-fg-muted max-w-xl text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
