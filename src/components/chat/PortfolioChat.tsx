@@ -40,7 +40,7 @@ import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
 const suggestedQuestions = [
   'What makes Ali a strong frontend engineer?',
   'Has Ali built streaming interfaces?',
-  'Which project best shows full-stack skills?',
+  'What has Ali built with streaming and state machines?',
   'How does his design background shape his engineering?',
 ] as const
 
