@@ -196,7 +196,7 @@ export default function SiteHeader() {
               to="/contact"
               className="bg-card border-border text-fg-secondary hover:bg-secondary hover:text-foreground hidden h-9 items-center gap-2 rounded-full border px-4 text-sm font-semibold transition-colors sm:flex"
             >
-              Let’s talk <ArrowUpRight aria-hidden="true" className="size-4" />
+              Contact <ArrowUpRight aria-hidden="true" className="size-4" />
             </Link>
             <SheetTrigger
               className="border-foreground/15 text-foreground flex size-9 items-center justify-center rounded-full border lg:hidden"
