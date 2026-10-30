@@ -60,7 +60,7 @@ function ExampleClaims({
               type="button"
               disabled={disabled}
               onClick={() => onSelect(claim)}
-              className="border-foreground/15 text-foreground/55 hover:border-brand/60 hover:text-brand focus-visible:ring-brand/70 max-w-full rounded-[21px] border px-4 py-2 text-left text-sm transition-colors outline-none focus-visible:ring-2 disabled:opacity-50"
+              className="border-foreground/15 text-fg-muted hover:border-brand/60 hover:text-brand focus-visible:ring-brand/70 max-w-full rounded-[21px] border px-4 py-2 text-left text-sm transition-colors outline-none focus-visible:ring-2 disabled:opacity-50"
             >
               {claim}
             </button>
@@ -80,7 +80,7 @@ function VerdictLegend() {
       >
         How the grades work
       </h2>
-      <p className="text-foreground/55 mt-3 max-w-xl text-sm leading-6">
+      <p className="text-fg-muted mt-3 max-w-xl text-sm leading-6">
         The checker splits a claim into parts and grades each part against the
         same sources as the chat. A grade that says the record supports or
         contradicts a part must quote the record. The server checks each quote
@@ -96,7 +96,7 @@ function VerdictLegend() {
             <dt>
               <VerdictBadge verdict={verdict} />
             </dt>
-            <dd className="text-foreground/55 text-sm leading-5">
+            <dd className="text-fg-muted text-sm leading-5">
               {VERDICT_INFO[verdict].description}
             </dd>
           </div>
@@ -122,11 +122,9 @@ function SourceExcerpt({
       id={id}
       className="border-foreground/10 bg-foreground/[0.02] mt-3 rounded-lg border p-4"
     >
-      {source.group && (
-        <p className="text-foreground/55 text-sm">{source.group}</p>
-      )}
+      {source.group && <p className="text-fg-muted text-sm">{source.group}</p>}
       <p className="text-foreground text-sm font-semibold">{source.title}</p>
-      <p className="text-foreground/55 mt-2 text-sm leading-6 [overflow-wrap:anywhere] whitespace-pre-line">
+      <p className="text-fg-muted mt-2 text-sm leading-6 [overflow-wrap:anywhere] whitespace-pre-line">
         {highlightQuote(body, quote).map((part, index) =>
           part.match ? (
             <mark
@@ -145,7 +143,7 @@ function SourceExcerpt({
           href={source.href}
           target="_blank"
           rel="noreferrer"
-          className="text-foreground/55 hover:text-brand mt-3 inline-flex items-center gap-1 text-sm transition-colors"
+          className="text-fg-muted hover:text-brand mt-3 inline-flex items-center gap-1 text-sm transition-colors"
         >
           {new URL(source.href).hostname.replace(/^www\./, '')}
           <ArrowUpRight aria-hidden="true" className="size-3" />
@@ -167,7 +165,7 @@ function Quote({
   const excerptId = useId()
   return (
     <figure className="border-foreground/15 border-l-2 pl-4">
-      <blockquote className="text-foreground/70 text-sm leading-6">
+      <blockquote className="text-fg-secondary text-sm leading-6">
         “{evidence.quote}”
       </blockquote>
       <figcaption className="mt-2">
@@ -176,7 +174,7 @@ function Quote({
           aria-expanded={open}
           aria-controls={excerptId}
           onClick={() => setOpen((value) => !value)}
-          className="text-foreground/55 hover:text-foreground focus-visible:ring-brand/70 inline-flex max-w-full items-center gap-2 rounded text-left text-sm outline-none focus-visible:ring-2"
+          className="text-fg-muted hover:text-foreground focus-visible:ring-brand/70 inline-flex max-w-full items-center gap-2 rounded text-left text-sm outline-none focus-visible:ring-2"
         >
           <span className="border-foreground/20 rounded border px-1.5 font-mono tabular-nums">
             {evidence.sourceId}
@@ -212,7 +210,7 @@ function PartStatus({ part }: { part: CheckedPart }) {
         {part.status === 'graded' && part.grade ? (
           <VerdictBadge verdict={part.grade.verdict} />
         ) : part.status === 'checking' ? (
-          <span className="border-foreground/15 text-foreground/55 inline-flex h-8 items-center gap-2 rounded-full border px-3 text-sm font-semibold">
+          <span className="border-foreground/15 text-fg-muted inline-flex h-8 items-center gap-2 rounded-full border px-3 text-sm font-semibold">
             <span
               aria-hidden="true"
               className="bg-foreground/40 size-1.5 rounded-full motion-safe:animate-pulse"
@@ -220,7 +218,7 @@ function PartStatus({ part }: { part: CheckedPart }) {
             Checking
           </span>
         ) : (
-          <span className="border-foreground/15 text-foreground/55 inline-flex h-8 items-center rounded-full border border-dashed px-3 text-sm font-semibold">
+          <span className="border-foreground/15 text-fg-muted inline-flex h-8 items-center rounded-full border border-dashed px-3 text-sm font-semibold">
             {part.status === 'stopped' ? 'Stopped' : 'Not graded'}
           </span>
         )}
@@ -254,7 +252,7 @@ function PartRow({
         <p className="flex gap-3 text-base leading-7 font-medium">
           <span
             aria-hidden="true"
-            className="border-foreground/20 text-foreground/55 flex size-7 shrink-0 items-center justify-center rounded-full border text-sm tabular-nums"
+            className="border-foreground/20 text-fg-muted flex size-7 shrink-0 items-center justify-center rounded-full border text-sm tabular-nums"
           >
             {index + 1}
           </span>
@@ -269,18 +267,18 @@ function PartRow({
       </div>
 
       {part.status === 'failed' && (
-        <p className="text-foreground/55 mt-3 pl-10 text-sm">{part.error}</p>
+        <p className="text-fg-muted mt-3 pl-10 text-sm">{part.error}</p>
       )}
 
       {grade && (
         <div className="mt-3 space-y-4 pl-10">
           {grade.reason && (
-            <p className="text-foreground/70 text-sm leading-6">
+            <p className="text-fg-secondary text-sm leading-6">
               {grade.reason}
             </p>
           )}
           {grade.downgraded && (
-            <p className="text-foreground/55 text-sm leading-6">
+            <p className="text-fg-muted text-sm leading-6">
               The model quoted words that are not in its source, twice. The
               server removed those quotes and does not show a grade.
             </p>
@@ -331,7 +329,7 @@ function Summary({
   }, [copied])
 
   const actionClass =
-    'border-foreground/15 text-foreground/70 hover:text-foreground hover:border-foreground/30 focus-visible:ring-brand/70 inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-sm font-semibold transition-colors outline-none focus-visible:ring-2'
+    'border-foreground/15 text-fg-secondary hover:text-foreground hover:border-foreground/30 focus-visible:ring-brand/70 inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-sm font-semibold transition-colors outline-none focus-visible:ring-2'
 
   const retry = (
     <button type="button" onClick={onRetry} className={actionClass}>
@@ -349,7 +347,7 @@ function Summary({
   if (state.status === 'splitting' || state.status === 'checking') {
     return (
       <div className="flex flex-col gap-3">
-        <p className="text-foreground/55 text-sm">
+        <p className="text-fg-muted text-sm">
           {state.status === 'splitting'
             ? 'Splitting the claim into parts…'
             : `Grading ${plural(total, 'part')}: ${graded} done.`}
@@ -374,7 +372,7 @@ function Summary({
             transition={reduceMotion ? { duration: 0 } : SPRING}
           />
         </div>
-        <p className="text-foreground/55 text-sm">
+        <p className="text-fg-muted text-sm">
           Press <kbd className="font-mono">Esc</kbd> to stop.
         </p>
       </div>
@@ -398,7 +396,7 @@ function Summary({
   if (state.status === 'stopped') {
     return (
       <div className="flex flex-col items-start gap-4">
-        <p className="text-foreground/70 text-sm">
+        <p className="text-fg-secondary text-sm">
           {total === 0
             ? 'Stopped before the claim was split. '
             : `Stopped. ${graded} of ${plural(total, 'part')} graded. `}
@@ -421,14 +419,14 @@ function Summary({
       transition={reduceMotion ? { duration: 0 } : SPRING}
       className={cn('bg-background rounded-2xl border p-5 sm:p-6', style.ring)}
     >
-      <h3 className="text-foreground/55 text-sm font-medium">Overall grade</h3>
+      <h3 className="text-fg-muted text-sm font-medium">Overall grade</h3>
       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2">
         <VerdictBadge size="lg" verdict={state.verdict} />
-        <p className="text-foreground/70 text-sm">
+        <p className="text-fg-secondary text-sm">
           {VERDICT_INFO[state.verdict].description}
         </p>
       </div>
-      <p className="text-foreground/55 mt-4 text-sm tabular-nums">
+      <p className="text-fg-muted mt-4 text-sm tabular-nums">
         {plural(total, 'part')} · {plural(state.sources.length, 'source')}{' '}
         quoted
         {seconds && <> · {seconds} s</>}
@@ -553,7 +551,7 @@ export default function ClaimChecker({
       <PageHeading className="lg:text-center">
         Check a claim about <em className="text-brand">Ali.</em>
       </PageHeading>
-      <p className="text-foreground/55 mt-5 max-w-xl text-base leading-7 lg:mx-auto lg:text-center">
+      <p className="text-fg-muted mt-5 max-w-xl text-base leading-7 lg:mx-auto lg:text-center">
         Paste a claim from a résumé, a profile or a recruiter note. The checker
         grades each part of it against Ali&apos;s public record and shows the
         exact words that each grade rests on.
@@ -578,7 +576,7 @@ export default function ClaimChecker({
           <h2 id="check-result-heading" className="sr-only">
             Result
           </h2>
-          <p className="text-foreground/55 text-sm font-medium">Claim</p>
+          <p className="text-fg-muted text-sm font-medium">Claim</p>
           <p className="font-display mt-2 text-xl leading-8 font-medium sm:text-2xl sm:leading-9">
             “{state.claim}”
           </p>

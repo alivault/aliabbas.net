@@ -59,7 +59,7 @@ function SkillsPage() {
                 <span className="text-brand">engineered.</span>
               </PageHeading>
             </div>
-            <p className="text-foreground/55 max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
+            <p className="text-fg-muted max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
               I bridge product design and frontend engineering, so the idea
               survives implementation—and the interface holds up in every state
               after launch.
@@ -77,7 +77,7 @@ function SkillsPage() {
                 <Title as="h2" variant="card">
                   {capability.title}
                 </Title>
-                <p className="text-foreground/55 max-w-xl text-sm leading-6 sm:justify-self-end">
+                <p className="text-fg-muted max-w-xl text-sm leading-6 sm:justify-self-end">
                   {capability.description}
                 </p>
               </ScrollReveal>
@@ -89,7 +89,7 @@ function SkillsPage() {
               <Title as="h2" variant="subsection" className="max-w-sm">
                 This site is a production system
               </Title>
-              <p className="text-foreground/55 mt-4 max-w-md text-sm leading-6">
+              <p className="text-fg-muted mt-4 max-w-md text-sm leading-6">
                 Not a static mockup: server rendering, managed content,
                 authentication, realtime comments, transactional email, and edge
                 deployment.
@@ -102,12 +102,12 @@ function SkillsPage() {
                   className="bg-background group hover:bg-foreground/[0.03] flex flex-col gap-6 p-6 transition-colors sm:gap-10 sm:p-7"
                 >
                   <Icon
-                    className="text-foreground/55 group-hover:text-foreground size-5 transition-colors"
+                    className="text-fg-muted group-hover:text-foreground size-5 transition-colors"
                     strokeWidth={1.5}
                   />
                   <div>
                     <p className="text-sm font-bold">{label}</p>
-                    <p className="text-foreground/55 mt-1.5 text-sm">{value}</p>
+                    <p className="text-fg-muted mt-1.5 text-sm">{value}</p>
                   </div>
                 </li>
               ))}

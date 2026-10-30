@@ -51,7 +51,7 @@ function NoteListItem({
             {article.title}
           </Title>
           {article.description && (
-            <span className="text-foreground/55 mt-3 block max-w-2xl text-sm leading-6">
+            <span className="text-fg-muted mt-3 block max-w-2xl text-sm leading-6">
               {article.description}
             </span>
           )}
@@ -82,7 +82,7 @@ function NotesPage() {
               <em className="text-brand">in public.</em>
             </PageHeading>
           </div>
-          <p className="text-foreground/55 max-w-xl text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
+          <p className="text-fg-muted max-w-xl text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
             Notes on software, interaction design, developer tools, and the
             small decisions that make products feel considered.
           </p>
@@ -98,7 +98,7 @@ function NotesPage() {
             ))}
           </div>
         ) : articles.length === 0 ? (
-          <p className="text-foreground/55 py-section-content text-sm">
+          <p className="text-fg-muted py-section-content text-sm">
             New notes are being written. Check back soon.
           </p>
         ) : (

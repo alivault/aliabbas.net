@@ -43,7 +43,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
       <article className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
         <Link
           to="/work"
-          className="text-foreground/55 hover:text-brand focus-visible:outline-foreground mb-section-content inline-flex items-center gap-2 text-base transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
+          className="text-fg-muted hover:text-brand focus-visible:outline-foreground mb-section-content inline-flex items-center gap-2 text-base transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
         >
           <ArrowLeft className="size-4" aria-hidden="true" /> Back to work
         </Link>
@@ -61,13 +61,13 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
             </PageHeading>
           </div>
           <div className="lg:justify-self-end">
-            <p className="text-foreground/55 max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
+            <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
               {study.summary}
             </p>
             <dl className="mt-6 grid max-w-xl grid-cols-[auto_1fr] gap-x-6 gap-y-1 text-base">
-              <dt className="text-foreground/55">Product</dt>
+              <dt className="text-fg-muted">Product</dt>
               <dd>{study.category}</dd>
-              <dt className="text-foreground/55">Year</dt>
+              <dt className="text-fg-muted">Year</dt>
               <dd>{study.year}</dd>
             </dl>
             <div className="mt-7 flex flex-wrap gap-3">
@@ -116,7 +116,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
               {study.problem.map((paragraph) => (
                 <p
                   key={paragraph}
-                  className="text-foreground/70 max-w-2xl text-base leading-7 sm:text-lg sm:leading-8"
+                  className="text-fg-secondary max-w-2xl text-base leading-7 sm:text-lg sm:leading-8"
                 >
                   {paragraph}
                 </p>
@@ -131,7 +131,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
               {study.role.map((paragraph) => (
                 <p
                   key={paragraph}
-                  className="text-foreground/55 max-w-xl text-base leading-7"
+                  className="text-fg-muted max-w-xl text-base leading-7"
                 >
                   {paragraph}
                 </p>
@@ -149,7 +149,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
             <SectionHeading id="machines-heading">
               The state machines
             </SectionHeading>
-            <p className="text-foreground/55 mt-4 max-w-2xl text-base leading-7">
+            <p className="text-fg-muted mt-4 max-w-2xl text-base leading-7">
               Each diagram comes from the same data as the tables under it. The
               tables give the same facts as text.
             </p>
@@ -196,7 +196,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
                     <Title as="h3" variant="subsection">
                       {mode.title}
                     </Title>
-                    <p className="text-foreground/55 mt-3 max-w-md text-base leading-7">
+                    <p className="text-fg-muted mt-3 max-w-md text-base leading-7">
                       {mode.risk}
                     </p>
                   </div>
@@ -209,7 +209,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
                     {mode.design.map((line) => (
                       <li
                         key={line}
-                        className="text-foreground/70 relative max-w-2xl pl-5 text-base leading-7 before:absolute before:top-[0.7em] before:left-0 before:size-1.5 before:rounded-full before:bg-current before:opacity-40"
+                        className="text-fg-secondary relative max-w-2xl pl-5 text-base leading-7 before:absolute before:top-[0.7em] before:left-0 before:size-1.5 before:rounded-full before:bg-current before:opacity-40"
                       >
                         {line}
                       </li>
@@ -233,7 +233,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
         >
           <ScrollReveal className="pb-section-divider">
             <SectionHeading id="numbers-heading">Numbers</SectionHeading>
-            <p className="text-foreground/55 mt-4 max-w-2xl text-base leading-7">
+            <p className="text-fg-muted mt-4 max-w-2xl text-base leading-7">
               Only numbers from the code or from a count. Each one says where it
               comes from.
             </p>
@@ -251,7 +251,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
                       {number.value}
                     </Title>
                   </dd>
-                  <dd className="text-foreground/55 text-sm leading-6 break-words">
+                  <dd className="text-fg-muted text-sm leading-6 break-words">
                     {number.method}
                   </dd>
                 </div>
@@ -269,7 +269,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
             <SectionHeading id="sources-heading" size="compact">
               Sources
             </SectionHeading>
-            <p className="text-foreground/55 mt-3 max-w-2xl text-base leading-7">
+            <p className="text-fg-muted mt-3 max-w-2xl text-base leading-7">
               {study.evidenceNote} Every claim on this page comes from these
               files.
             </p>
@@ -289,7 +289,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
               className="group hover:text-brand focus-visible:outline-foreground inline-flex items-center gap-4 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
             >
               <Title as="span" variant="section">
-                <span className="text-foreground/55">Next case study:</span>{' '}
+                <span className="text-fg-muted">Next case study:</span>{' '}
                 {next.title}
               </Title>
               <ArrowRight

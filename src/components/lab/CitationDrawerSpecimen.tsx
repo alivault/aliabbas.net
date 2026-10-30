@@ -84,7 +84,7 @@ export default function CitationDrawerSpecimen() {
         >
           <FileSearch aria-hidden="true" />
           Open evidence
-          <span className="text-foreground/55 tabular-nums">
+          <span className="text-fg-muted tabular-nums">
             · {sourceCount} {sourceCount === 1 ? 'source' : 'sources'}
           </span>
         </Button>

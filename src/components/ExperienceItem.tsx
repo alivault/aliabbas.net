@@ -52,7 +52,7 @@ export default function ExperienceItem({
         <Title as="h2" variant="card">
           {title}
         </Title>
-        <p className="text-foreground/55 mt-5 max-w-2xl text-sm leading-7 sm:text-base">
+        <p className="text-fg-muted mt-5 max-w-2xl text-sm leading-7 sm:text-base">
           {description}
         </p>
       </div>

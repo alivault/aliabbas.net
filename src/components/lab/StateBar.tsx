@@ -34,14 +34,14 @@ function StateTrack({ state }: { state: LabMachineState }) {
           ? name === 'failed'
             ? 'border-destructive bg-destructive text-white'
             : 'border-brand bg-brand text-brand-foreground'
-          : 'border-foreground/15 text-foreground/40',
+          : 'border-foreground/15 text-fg-faint',
       )}
     >
       {name}
     </span>
   )
   const arrow = (
-    <span aria-hidden="true" className="text-foreground/40 text-sm">
+    <span aria-hidden="true" className="text-fg-faint text-sm">
       →
     </span>
   )
@@ -125,7 +125,7 @@ function ScenarioRadioGroup({
                 'focus-visible:ring-brand/70 focus-visible:ring-offset-background rounded-full border px-3.5 py-1.5 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
                 checked
                   ? 'border-foreground bg-foreground text-background'
-                  : 'border-foreground/15 text-foreground/55 hover:border-foreground/40 hover:text-foreground',
+                  : 'border-foreground/15 text-fg-muted hover:border-foreground/40 hover:text-foreground',
               )}
             >
               {LAB_SCENARIO_LABELS[scenario]}
@@ -133,7 +133,7 @@ function ScenarioRadioGroup({
           )
         })}
       </div>
-      <p id={hintId} className="text-foreground/55 text-sm">
+      <p id={hintId} className="text-fg-muted text-sm">
         {LAB_SCENARIO_HINTS[value]}
       </p>
     </div>
@@ -192,7 +192,7 @@ export default function StateBar({
         </div>
       </div>
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-        <span className="text-foreground/55 text-sm">Machine state</span>
+        <span className="text-fg-muted text-sm">Machine state</span>
         <StateTrack state={machineState} />
         <p role="status" className="sr-only">
           {STATE_ANNOUNCEMENTS[machineState]}

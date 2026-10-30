@@ -44,16 +44,14 @@ export default function ColorTokens() {
                   <p className="text-foreground font-mono text-sm">
                     {color.tailwind}
                   </p>
-                  <p className="text-foreground/55 text-sm leading-6">
-                    {color.use}
-                  </p>
+                  <p className="text-fg-muted text-sm leading-6">{color.use}</p>
                 </div>
               </li>
             ))}
           </ul>
         </div>
       ))}
-      <p className="text-foreground/55 text-sm leading-6">
+      <p className="text-fg-muted text-sm leading-6">
         Each circle shows the light value on the left and the dark value on the
         right. The page follows the color scheme of your system.
       </p>

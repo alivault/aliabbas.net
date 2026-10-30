@@ -52,7 +52,7 @@ function Distribution({ summary }: { summary: MetricSummary }) {
           />
         ))}
       </div>
-      <p aria-hidden="true" className="text-foreground/55 mt-2 text-sm">
+      <p aria-hidden="true" className="text-fg-muted mt-2 text-sm">
         {text}
       </p>
     </div>
@@ -70,10 +70,10 @@ function DeviceValue({
 }) {
   return (
     <div>
-      <dt className="text-foreground/55 text-sm">{label}</dt>
+      <dt className="text-fg-muted text-sm">{label}</dt>
       <dd className="mt-1 text-sm font-semibold tabular-nums">
         {summary.p75 === null ? (
-          <span className="text-foreground/55 font-normal">
+          <span className="text-fg-muted font-normal">
             {summary.count} of {MIN_SAMPLES}
           </span>
         ) : (
@@ -101,9 +101,9 @@ function MetricCard({
     >
       <header>
         <h3 id={`metric-${name}`} className="text-base font-semibold">
-          {info.label} <span className="text-foreground/55">({name})</span>
+          {info.label} <span className="text-fg-muted">({name})</span>
         </h3>
-        <p className="text-foreground/55 mt-1 text-sm leading-6">
+        <p className="text-fg-muted mt-1 text-sm leading-6">
           {info.core && (
             <span className="text-foreground font-medium">
               Core Web Vital.{' '}
@@ -114,7 +114,7 @@ function MetricCard({
       </header>
 
       {all.p75 === null || all.rating === null ? (
-        <p className="text-foreground/55 text-sm leading-6">
+        <p className="text-fg-muted text-sm leading-6">
           Collecting: {all.count} of {MIN_SAMPLES} page loads. With fewer
           samples, one slow visit moves the number too much to show it.
         </p>
@@ -130,7 +130,7 @@ function MetricCard({
               {RATING_LABEL[all.rating]}
             </span>
           </p>
-          <p className="text-foreground/55 mt-1 text-sm leading-6">
+          <p className="text-fg-muted mt-1 text-sm leading-6">
             p75 of {plural(all.count, 'sample')} · good ≤{' '}
             {formatMetric(name, good)}, poor &gt; {formatMetric(name, poor)}
           </p>
@@ -159,14 +159,14 @@ export default function VitalsPanel({
 }) {
   if (!summary) {
     return (
-      <p role="alert" className="text-foreground/55 text-sm">
+      <p role="alert" className="text-fg-muted text-sm">
         The measurements could not be read right now. Please reload the page.
       </p>
     )
   }
   return (
     <div>
-      <p className="text-foreground/55 text-sm">
+      <p className="text-fg-muted text-sm">
         {plural(summary.pageLoads, 'page load')} in the last{' '}
         {summary.windowDays} days.
       </p>

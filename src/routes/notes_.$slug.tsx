@@ -191,7 +191,7 @@ function NotePage() {
         >
           <PageHeading>{note.title}</PageHeading>
           {note.description && (
-            <p className="text-foreground/55 mt-7 max-w-2xl text-base leading-7 sm:text-lg sm:leading-8">
+            <p className="text-fg-muted mt-7 max-w-2xl text-base leading-7 sm:text-lg sm:leading-8">
               {note.description}
             </p>
           )}

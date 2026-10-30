@@ -28,7 +28,7 @@ export const VERDICT_STYLE: Record<
   },
   not_supported: {
     icon: CircleMinus,
-    text: 'text-foreground/70',
+    text: 'text-fg-secondary',
     ring: 'border-foreground/25',
     fill: 'bg-foreground/[0.04]',
   },
@@ -40,7 +40,7 @@ export const VERDICT_STYLE: Record<
   },
   unknown: {
     icon: CircleQuestionMark,
-    text: 'text-foreground/55',
+    text: 'text-fg-muted',
     ring: 'border-foreground/20 border-dashed',
     fill: 'bg-transparent',
   },

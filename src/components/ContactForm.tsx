@@ -102,7 +102,7 @@ export default function ContactForm() {
           <CircleCheck className="size-9" strokeWidth={1.5} />
         </span>
         <PageHeading className="mt-8">Message received.</PageHeading>
-        <p className="text-foreground/55 mt-6 max-w-md text-base leading-7">
+        <p className="text-fg-muted mt-6 max-w-md text-base leading-7">
           Thanks for reaching out. I’ll read your note and get back to you soon.
         </p>
       </motion.section>
@@ -117,20 +117,20 @@ export default function ContactForm() {
           <span className="block">something</span>
           <span className="text-brand block">remarkable.</span>
         </PageHeading>
-        <p className="text-foreground/55 mt-9 max-w-md text-base leading-7">
+        <p className="text-fg-muted mt-9 max-w-md text-base leading-7">
           I’m interested in senior frontend roles on interactive and streaming
           interfaces, where design quality matters as much as technical
           execution. If that sounds like your team, I’d like to hear from you.
         </p>
         <div className="border-foreground/20 mt-12 grid grid-cols-2 gap-5 border-t pt-6 text-sm leading-6 lg:mt-auto">
           <div>
-            <span className="text-foreground/55 block">Best fit</span>
+            <span className="text-fg-muted block">Best fit</span>
             <span className="mt-1 block font-semibold">
               Senior frontend · Interactive UI
             </span>
           </div>
           <div>
-            <span className="text-foreground/55 block">Response time</span>
+            <span className="text-fg-muted block">Response time</span>
             <span className="mt-1 block font-semibold">Usually 1–2 days</span>
           </div>
         </div>

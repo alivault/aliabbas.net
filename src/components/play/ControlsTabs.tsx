@@ -99,7 +99,7 @@ export default function ControlsTabs() {
               className={`st-display inline-flex h-11 items-center gap-2 px-4 text-sm font-semibold uppercase transition-colors ${
                 selected
                   ? 'bg-foreground text-background'
-                  : 'bg-foreground/5 text-foreground/70 hover:bg-foreground/10 hover:text-foreground'
+                  : 'bg-foreground/5 text-fg-secondary hover:bg-foreground/10 hover:text-foreground'
               }`}
             >
               <Icon size={18} aria-hidden="true" />
@@ -122,7 +122,7 @@ export default function ControlsTabs() {
               key={action}
               className="bg-foreground/[0.04] flex min-h-12 items-center justify-between gap-3 px-4 py-2"
             >
-              <span className="text-foreground/70 text-sm">{action}</span>
+              <span className="text-fg-secondary text-sm">{action}</span>
               <span className="flex flex-wrap justify-end gap-1">
                 {keys.map((key) => (
                   <kbd

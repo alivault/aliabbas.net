@@ -32,7 +32,7 @@ export default function StateMachineSection({
             <span className="text-brand tabular-nums">{index + 1}.</span>{' '}
             {machine.title}
           </Title>
-          <p className="text-foreground/55 max-w-2xl text-base leading-7">
+          <p className="text-fg-muted max-w-2xl text-base leading-7">
             {machine.intro}
           </p>
         </div>
@@ -48,7 +48,7 @@ export default function StateMachineSection({
           <div className="min-w-0">
             <Title as="h4" variant="detail">
               States{' '}
-              <span className="text-foreground/55 tabular-nums">
+              <span className="text-fg-muted tabular-nums">
                 ({machine.states.length})
               </span>
             </Title>
@@ -59,7 +59,7 @@ export default function StateMachineSection({
                   className="border-foreground/15 grid gap-1 border-b py-4 sm:grid-cols-[9rem_1fr] sm:gap-6"
                 >
                   <dt className="text-sm font-bold">{state.label}</dt>
-                  <dd className="text-foreground/55 text-sm leading-6">
+                  <dd className="text-fg-muted text-sm leading-6">
                     {state.meaning}
                   </dd>
                 </div>
@@ -70,7 +70,7 @@ export default function StateMachineSection({
           <div className="min-w-0">
             <Title as="h4" variant="detail">
               Transitions{' '}
-              <span className="text-foreground/55 tabular-nums">
+              <span className="text-fg-muted tabular-nums">
                 ({machine.transitions.length})
               </span>
             </Title>
@@ -84,19 +84,19 @@ export default function StateMachineSection({
                   <tr className="border-foreground/15 border-y">
                     <th
                       scope="col"
-                      className="text-foreground/55 py-3 pr-4 text-sm font-semibold"
+                      className="text-fg-muted py-3 pr-4 text-sm font-semibold"
                     >
                       From
                     </th>
                     <th
                       scope="col"
-                      className="text-foreground/55 py-3 pr-4 text-sm font-semibold"
+                      className="text-fg-muted py-3 pr-4 text-sm font-semibold"
                     >
                       Event
                     </th>
                     <th
                       scope="col"
-                      className="text-foreground/55 py-3 text-sm font-semibold"
+                      className="text-fg-muted py-3 text-sm font-semibold"
                     >
                       To
                     </th>
@@ -114,7 +114,7 @@ export default function StateMachineSection({
                       >
                         {label(transition.from)}
                       </th>
-                      <td className="text-foreground/55 py-3 pr-4 leading-6">
+                      <td className="text-fg-muted py-3 pr-4 leading-6">
                         {transition.event}
                       </td>
                       <td className="py-3 font-bold sm:whitespace-nowrap">

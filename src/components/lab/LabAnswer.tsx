@@ -83,7 +83,7 @@ export default function LabAnswer({
     return (
       <div
         className={cn(
-          'border-foreground/15 text-foreground/55 flex min-h-32 items-center justify-center rounded-xl border border-dashed p-6 text-center text-sm',
+          'border-foreground/15 text-fg-muted flex min-h-32 items-center justify-center rounded-xl border border-dashed p-6 text-center text-sm',
           className,
         )}
       >
@@ -127,9 +127,9 @@ export default function LabAnswer({
                 <AnswerMarkdown
                   text={turn.answer}
                   className={cn(
-                    'text-foreground/70 text-[0.95rem] leading-7',
+                    'text-fg-secondary text-[0.95rem] leading-7',
                     (turn.status === 'stopped' || turn.status === 'failed') &&
-                      'text-foreground/55',
+                      'text-fg-muted',
                   )}
                 />
               </CitationContext>
@@ -175,21 +175,21 @@ export default function LabAnswer({
           )}
 
           {turn.status === 'stopped' && (
-            <p className="text-foreground/55 flex items-center gap-2 text-sm">
+            <p className="text-fg-muted flex items-center gap-2 text-sm">
               <Square className="size-3 fill-current" aria-hidden="true" />
               {turn.answer ? 'Stopped' : 'Stopped before the answer started'}
             </p>
           )}
 
           {turn.status === 'streaming' && (
-            <p className="text-foreground/55 flex items-center gap-2 text-sm">
+            <p className="text-fg-muted flex items-center gap-2 text-sm">
               <span className="bg-brand size-2 animate-pulse rounded-full motion-reduce:animate-none" />
               Writing. Press Esc to stop.
             </p>
           )}
 
           {metrics && (
-            <p className="text-foreground/55 text-sm tabular-nums">{metrics}</p>
+            <p className="text-fg-muted text-sm tabular-nums">{metrics}</p>
           )}
         </div>
       </div>

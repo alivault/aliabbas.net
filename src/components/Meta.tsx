@@ -3,7 +3,7 @@ import type { ComponentProps } from 'react'
 import { cn } from 'cn'
 
 const metaTones = {
-  muted: 'text-foreground/55',
+  muted: 'text-fg-muted',
   brand: 'text-brand',
 } as const
 

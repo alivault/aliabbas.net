@@ -1,12 +1,7 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
+import { apcaContrast } from './contrast'
 import { DESIGN_RULES } from './rules'
-import {
-  COLORS,
-  COLOR_ROLES,
-  CSS_COLOR_NAMES,
-  LAYOUT_TOKENS,
-  TEXT_TONES,
-} from './tokens'
+import { COLORS, COLOR_ROLES, CSS_COLOR_NAMES, LAYOUT_TOKENS } from './tokens'
 import { describe, expect, it } from 'vite-plus/test'
 
 describe('design tokens', () => {
@@ -49,12 +44,7 @@ describe('design rules', () => {
 })
 
 describe('text tones', () => {
-  it('the code uses only the tones on /design', () => {
-    const allowed = new Set<string>(
-      TEXT_TONES.map((tone) => tone.className).filter((name) =>
-        name.includes('/'),
-      ),
-    )
+  it('the code does not lower the opacity of text-foreground', () => {
     const files = readdirSync('src', {
       recursive: true,
       encoding: 'utf8',
@@ -64,11 +54,35 @@ describe('text tones', () => {
         ...readFileSync(`src/${file}`, 'utf8').matchAll(
           /\btext-foreground\/\d+\b(?!\])/g,
         ),
-      ]
-        .map((match) => match[0])
-        .filter((name) => !allowed.has(name))
-        .map((name) => `${file}: ${name}`),
+      ].map((match) => `${file}: ${match[0]}`),
     )
     expect(wrong).toEqual([])
+  })
+
+  // APCA Lc targets: body text 75, secondary text 60.
+  const TARGETS = [
+    ['foreground', 90],
+    ['fg-secondary', 75],
+    ['fg-muted', 60],
+  ] as const
+
+  for (const scheme of ['light', 'dark'] as const) {
+    for (const [name, minimum] of TARGETS) {
+      it(`${name} has APCA Lc ${minimum}+ in ${scheme} mode`, () => {
+        const color = COLORS.find((token) => token.name === name)
+        const background = COLORS.find((token) => token.name === 'background')
+        expect(
+          apcaContrast(color?.[scheme] ?? '', background?.[scheme] ?? ''),
+        ).toBeGreaterThanOrEqual(minimum)
+      })
+    }
+  }
+})
+
+describe('apcaContrast', () => {
+  it('matches the reference values for black and white', () => {
+    // APCA reference: black on white is Lc 106, white on black is Lc 108.
+    expect(apcaContrast('oklch(0 0 0)', 'oklch(1 0 0)')).toBe(106)
+    expect(apcaContrast('oklch(1 0 0)', 'oklch(0 0 0)')).toBe(108)
   })
 })

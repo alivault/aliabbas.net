@@ -221,7 +221,7 @@ export function HomeHero() {
               title={
                 paused ? 'Play the changing word' : 'Pause the changing word'
               }
-              className="enter-blur border-foreground/20 text-foreground/55 hover:text-foreground focus-visible:ring-brand/70 pointer-events-auto absolute bottom-2 left-0 flex size-10 items-center justify-center rounded-full border outline-none focus-visible:ring-2 motion-reduce:hidden"
+              className="enter-blur border-foreground/20 text-fg-muted hover:text-foreground focus-visible:ring-brand/70 pointer-events-auto absolute bottom-2 left-0 flex size-10 items-center justify-center rounded-full border outline-none focus-visible:ring-2 motion-reduce:hidden"
             >
               {paused ? (
                 <Play aria-hidden="true" className="size-4" />

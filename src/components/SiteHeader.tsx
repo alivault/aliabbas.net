@@ -175,7 +175,7 @@ export default function SiteHeader() {
             <span className="text-sm font-semibold">Ali Abbas</span>
           </Link>
 
-          <nav className="text-foreground/55 hidden items-center gap-7 justify-self-center text-sm font-medium lg:flex">
+          <nav className="text-fg-muted hidden items-center gap-7 justify-self-center text-sm font-medium lg:flex">
             {navigation.map((item) => (
               <Link
                 key={item.label}

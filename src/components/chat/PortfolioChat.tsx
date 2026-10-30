@@ -84,7 +84,7 @@ function SuggestedQuestionButtons({
           type="button"
           onClick={() => onSelect(question)}
           style={{ '--enter-delay': `${index * 80}ms` } as CSSProperties}
-          className="enter-pop border-foreground/15 text-foreground/55 hover:border-brand/60 hover:text-brand focus-visible:ring-brand/70 max-w-full rounded-[21px] border px-4 py-2 text-left text-base transition-colors outline-none focus-visible:ring-2"
+          className="enter-pop border-foreground/15 text-fg-muted hover:border-brand/60 hover:text-brand focus-visible:ring-brand/70 max-w-full rounded-[21px] border px-4 py-2 text-left text-base transition-colors outline-none focus-visible:ring-2"
         >
           {question}
         </button>
@@ -488,7 +488,7 @@ export default function PortfolioChat() {
               <PageHeading className="text-left lg:text-center">
                 Ask about <em className="text-brand">Ali.</em>
               </PageHeading>
-              <p className="text-foreground/55 mt-5 max-w-xl text-left text-base leading-7 lg:text-center">
+              <p className="text-fg-muted mt-5 max-w-xl text-left text-base leading-7 lg:text-center">
                 An AI guide to Ali&apos;s public record. Every claim links to
                 its source, so you can check the evidence beside the answer.
               </p>

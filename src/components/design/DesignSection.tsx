@@ -29,7 +29,7 @@ export default function DesignSection({
           <Title as="h2" variant="card" id={headingId} className="text-balance">
             <span className="text-brand tabular-nums">{number}</span> {title}
           </Title>
-          <div className="text-foreground/55 space-y-3 text-base leading-7">
+          <div className="text-fg-muted space-y-3 text-base leading-7">
             {description}
           </div>
         </header>
@@ -46,7 +46,7 @@ export function RepoLink({ path }: { path: string }) {
       href={`https://github.com/alivault/aliabbas.net/blob/master/${path}`}
       target="_blank"
       rel="noreferrer"
-      className="text-foreground/70 hover:text-brand font-mono text-sm break-all underline decoration-current/30 underline-offset-4 transition-colors"
+      className="text-fg-secondary hover:text-brand font-mono text-sm break-all underline decoration-current/30 underline-offset-4 transition-colors"
     >
       {path}
       <span className="sr-only"> (opens in a new tab)</span>

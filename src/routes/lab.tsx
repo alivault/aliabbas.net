@@ -54,7 +54,7 @@ function LabPage() {
                 <br />
                 <em className="text-brand">on purpose.</em>
               </PageHeading>
-              <p className="text-foreground/55 max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
+              <p className="text-fg-muted max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
                 These are the parts behind the chat on this site, as live
                 specimens. A local fake stream drives them. It makes no network
                 calls and runs the same way each time. Use the controls to force
@@ -77,7 +77,7 @@ function LabPage() {
               <TransitionSpecimen />
             </div>
 
-            <p className="text-foreground/55 mt-16 max-w-2xl text-base leading-7">
+            <p className="text-fg-muted mt-16 max-w-2xl text-base leading-7">
               The demo answer and its sources describe the code of this
               site&apos;s chat. The text is fixed, and the timings are fixed in
               src/lib/lab/fake-stream.ts. The renderer, the citation filter and

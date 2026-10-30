@@ -55,7 +55,7 @@ export default function ModeSwitch({
               'focus-visible:ring-brand/70 relative inline-flex h-8 items-center gap-2 rounded-full px-3.5 text-sm font-semibold transition-colors duration-300 outline-none focus-visible:ring-2',
               active
                 ? 'text-background'
-                : 'text-foreground/55 hover:text-foreground',
+                : 'text-fg-muted hover:text-foreground',
             )}
           >
             {active && (

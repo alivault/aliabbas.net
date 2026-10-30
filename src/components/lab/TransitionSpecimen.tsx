@@ -61,7 +61,7 @@ function PlacementGroup({
             'focus-visible:ring-brand/70 rounded-full px-3.5 py-1.5 text-sm transition-colors outline-none focus-visible:ring-2',
             value === placement
               ? 'bg-foreground text-background'
-              : 'text-foreground/55 hover:text-foreground',
+              : 'text-fg-muted hover:text-foreground',
           )}
         >
           {PLACEMENT_LABELS[placement]}
@@ -116,7 +116,7 @@ function SavedAnswerCard({
         className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1"
       >
         <h3 className="text-base font-semibold">Saved answer</h3>
-        <span className="text-foreground/55 text-sm tabular-nums">
+        <span className="text-fg-muted text-sm tabular-nums">
           Mounted {mounts} {mounts === 1 ? 'time' : 'times'}, scrolled{' '}
           {Math.round(scrollTop)} px
         </span>
@@ -148,7 +148,7 @@ function SavedAnswerCard({
         className={cn('grid gap-4', !docked && 'sm:grid-cols-2')}
       >
         <fieldset className="min-w-0">
-          <legend className="text-foreground/70 text-sm font-medium">
+          <legend className="text-fg-secondary text-sm font-medium">
             Pin a source
           </legend>
           <div className="mt-2 flex flex-wrap gap-1.5">
@@ -167,23 +167,21 @@ function SavedAnswerCard({
                     'focus-visible:ring-brand/70 rounded-full border px-3 py-1 text-sm transition-colors outline-none focus-visible:ring-2',
                     pinned === source.id
                       ? 'border-brand bg-brand text-brand-foreground'
-                      : 'border-foreground/15 text-foreground/55 hover:text-foreground',
+                      : 'border-foreground/15 text-fg-muted hover:text-foreground',
                   )}
                 >
                   {index + 1}. {source.title}
                 </button>
               ))
             ) : (
-              <span className="text-foreground/55 text-sm">
-                No sources yet.
-              </span>
+              <span className="text-fg-muted text-sm">No sources yet.</span>
             )}
           </div>
         </fieldset>
         <div className="min-w-0">
           <label
             htmlFor={noteId}
-            className="text-foreground/70 text-sm font-medium"
+            className="text-fg-secondary text-sm font-medium"
           >
             Your note
           </label>
@@ -214,7 +212,7 @@ function Placeholder({
       transition={SPRING}
       aria-hidden="true"
       className={cn(
-        'border-foreground/10 text-foreground/55 flex min-h-20 items-center rounded-xl border border-dashed px-4 text-sm',
+        'border-foreground/10 text-fg-muted flex min-h-20 items-center rounded-xl border border-dashed px-4 text-sm',
         className,
       )}
     >

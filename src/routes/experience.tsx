@@ -42,7 +42,7 @@ function ExperiencePage() {
               <em className="text-brand">shaped me.</em>
             </PageHeading>
           </div>
-          <p className="text-foreground/55 max-w-xl text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
+          <p className="text-fg-muted max-w-xl text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
             A path through product teams, creative development, frontend
             systems, and the problems that taught me how to ship better work.
           </p>
@@ -58,7 +58,7 @@ function ExperiencePage() {
             ))}
           </div>
         ) : experiences.length === 0 ? (
-          <p className="text-foreground/55 py-section-content text-sm">
+          <p className="text-fg-muted py-section-content text-sm">
             No experience yet.
           </p>
         ) : (

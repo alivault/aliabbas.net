@@ -28,7 +28,7 @@ function Group({
   return (
     <div>
       <h3 className="text-foreground text-base font-semibold">{title}</h3>
-      <p className="text-foreground/55 mt-1 text-sm leading-6">{note}</p>
+      <p className="text-fg-muted mt-1 text-sm leading-6">{note}</p>
       <div className="border-foreground/15 bg-foreground/[0.015] mt-4 rounded-xl border p-4 sm:p-6">
         {children}
       </div>
@@ -40,7 +40,7 @@ function State({ children, label }: { children: ReactNode; label: string }) {
   return (
     <div className="flex flex-col items-start gap-2">
       {children}
-      <span className="text-foreground/55 text-sm">{label}</span>
+      <span className="text-fg-muted text-sm">{label}</span>
     </div>
   )
 }
@@ -61,7 +61,7 @@ export default function ComponentStates() {
             >
               <div>
                 <p className="text-foreground font-mono text-sm">{variant}</p>
-                <p className="text-foreground/55 text-sm leading-6">{use}</p>
+                <p className="text-fg-muted text-sm leading-6">{use}</p>
               </div>
               <div className="flex flex-wrap gap-6">
                 <State label="Rest">
@@ -101,7 +101,7 @@ export default function ComponentStates() {
           {VERDICTS.map((verdict) => (
             <li key={verdict} className="space-y-2">
               <VerdictBadge verdict={verdict} />
-              <p className="text-foreground/55 text-sm leading-6">
+              <p className="text-fg-muted text-sm leading-6">
                 {VERDICT_INFO[verdict].description}
               </p>
             </li>

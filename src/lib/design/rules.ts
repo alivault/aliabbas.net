@@ -14,7 +14,7 @@ export type DesignRule = {
 export const DESIGN_RULES: Array<DesignRule> = [
   {
     id: 'tokens-only',
-    rule: 'Use the color tokens (bg-background, text-foreground/55, border-border, text-brand). Do not write a color value in a component.',
+    rule: 'Use the color tokens (bg-background, text-fg-muted, border-border, text-brand). Do not write a color value in a component.',
     why: 'Light and dark mode then change together, and one edit changes the site.',
   },
   {
@@ -40,8 +40,8 @@ export const DESIGN_RULES: Array<DesignRule> = [
   },
   {
     id: 'text-tones',
-    rule: 'Show less important text with the foreground at lower opacity: /70, /55 or /40. Do not use /40 for text that people must read.',
-    why: 'The tones follow the background in both color schemes. /55 keeps about 4.9:1 contrast; /40 is about 3:1, too low for text.',
+    rule: 'Show less important text with text-fg-secondary or text-fg-muted. Do not lower the opacity of text-foreground. Use text-fg-faint only for decoration and disabled text.',
+    why: 'One opacity looks much dimmer on a dark background. Each tone has its own light and dark value, tested for APCA contrast in both schemes.',
     checkedBy: 'src/lib/design/tokens.test.ts',
   },
   {
