@@ -50,11 +50,7 @@ function SkillsPage() {
         <div className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
           <ScrollReveal as="header" className="grid gap-6">
             <div>
-              <PageHeading>
-                Ideas,
-                <br />
-                engineered.
-              </PageHeading>
+              <PageHeading>Ideas, engineered.</PageHeading>
             </div>
             <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
               I bridge product design and frontend engineering, so the idea

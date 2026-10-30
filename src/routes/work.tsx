@@ -28,11 +28,7 @@ function WorkPage() {
             className="border-foreground/20 mb-section-divider pb-section-divider grid gap-6 border-b"
           >
             <div>
-              <PageHeading>
-                Built for the
-                <br />
-                real world.
-              </PageHeading>
+              <PageHeading>Built for the real world.</PageHeading>
             </div>
             <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
               Product experiences where visual ambition and engineering rigor

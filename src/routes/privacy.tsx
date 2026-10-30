@@ -44,10 +44,7 @@ function PrivacyPage() {
     <Main>
       <article className="bg-background">
         <header className="pt-section pb-section-content mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
-          <PageHeading>
-            Privacy
-            <span className="block">policy.</span>
-          </PageHeading>
+          <PageHeading>Privacy policy.</PageHeading>
           <Meta as="div" className="mt-10 flex flex-wrap gap-x-8 gap-y-2">
             <span>Effective October 28, 2026</span>
             <span>Operator: Ali Abbas</span>

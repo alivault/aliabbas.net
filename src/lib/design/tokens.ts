@@ -169,8 +169,8 @@ export const TYPE_SCALE = [
   {
     variant: 'page',
     role: 'Page title (h1)',
-    size: '44–88px',
-    lineHeight: 1.02,
+    size: '36–48px',
+    lineHeight: 1,
   },
   {
     variant: 'section',

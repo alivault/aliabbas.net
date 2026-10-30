@@ -56,11 +56,7 @@ function DesignPage() {
       <section className="bg-background text-foreground">
         <div className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
           <ScrollReveal as="header" trigger="mount" className="grid gap-6">
-            <PageHeading>
-              One source,
-              <br />
-              read by people and agents.
-            </PageHeading>
+            <PageHeading>One source, read by people and agents.</PageHeading>
             <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
               The design system of this site. This page reads the tokens from
               the CSS and the code, so it cannot show a value that the site does
@@ -157,9 +153,10 @@ function DesignPage() {
               description={
                 <>
                   <p>
-                    {FONTS.sans.family} for all text, at weight 400 for titles.{' '}
-                    {FONTS.mono.family} for code, paths and ids only. Title
-                    sizes are fluid and scale with the reader’s font settings.
+                    {FONTS.sans.family} for all text, at weight 300 for page
+                    titles and 400 for the other titles. {FONTS.mono.family} for
+                    code, paths and ids only. The other title sizes are fluid
+                    and scale with the reader’s font settings.
                   </p>
                   <p>
                     <RepoLink path="src/components/Title.tsx" />

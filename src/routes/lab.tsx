@@ -45,11 +45,7 @@ function LabPage() {
         <section className="bg-background text-foreground">
           <div className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
             <ScrollReveal as="header" trigger="mount" className="grid gap-6">
-              <PageHeading>
-                Every state,
-                <br />
-                on purpose.
-              </PageHeading>
+              <PageHeading>Every state, on purpose.</PageHeading>
               <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
                 These are the parts behind the chat on this site, as live
                 specimens. A local fake stream drives them. It makes no network

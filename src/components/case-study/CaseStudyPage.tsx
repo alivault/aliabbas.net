@@ -54,11 +54,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
           className="border-foreground/20 pb-section-divider grid gap-6 border-b"
         >
           <div>
-            <PageHeading>
-              {study.title}
-              <br />
-              as state machines.
-            </PageHeading>
+            <PageHeading>{study.title} as state machines.</PageHeading>
           </div>
           <div>
             <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">

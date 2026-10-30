@@ -36,11 +36,7 @@ function ExperiencePage() {
           className="border-foreground/20 pb-section-content grid gap-6 border-b"
         >
           <div>
-            <PageHeading>
-              Work that
-              <br />
-              shaped me.
-            </PageHeading>
+            <PageHeading>Work that shaped me.</PageHeading>
           </div>
           <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
             A path through product teams, creative development, frontend

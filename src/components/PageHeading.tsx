@@ -22,7 +22,11 @@ export default function PageHeading({
       as="h1"
       variant={pageVariants[size]}
       data-slot="page-heading"
-      className={cn('max-w-5xl text-balance', className)}
+      className={cn(
+        'max-w-5xl',
+        size !== 'default' && 'text-balance',
+        className,
+      )}
       {...props}
     />
   )

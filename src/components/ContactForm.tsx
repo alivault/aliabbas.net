@@ -112,11 +112,7 @@ export default function ContactForm() {
   return (
     <section className="gap-y-section-content py-section mx-auto grid max-w-[1440px] gap-x-14 px-5 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-x-24 lg:px-12">
       <ScrollReveal className="flex min-w-0 flex-col">
-        <PageHeading>
-          Let’s build
-          <span className="block">something</span>
-          <span className="block">remarkable.</span>
-        </PageHeading>
+        <PageHeading>Let’s build something remarkable.</PageHeading>
         <p className="text-fg-muted mt-9 max-w-md text-base leading-7">
           I’m interested in senior frontend roles on interactive and streaming
           interfaces, where design quality matters as much as technical
