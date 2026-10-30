@@ -467,7 +467,6 @@ export default function PortfolioChat() {
           <ChatComposer
             id="portfolio-question"
             textareaRef={composerRef}
-            showHints
             {...composerProps}
           />
         </div>
@@ -495,7 +494,6 @@ export default function PortfolioChat() {
               <ChatComposer
                 id="portfolio-question-initial"
                 className="mt-10 hidden w-full lg:block"
-                showHints
                 {...composerProps}
               />
               <div className="mt-8 w-full">
