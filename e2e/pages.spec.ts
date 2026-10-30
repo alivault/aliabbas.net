@@ -135,35 +135,26 @@ for (const [path, types] of [
   })
 }
 
-// A wide, short screen makes the footer content taller than the screen,
-// because the wordmark grows with the width. Then the footer is a normal
-// block, so its bottom can be reached.
-for (const [width, height, mode] of [
-  [1440, 900, 'fixed'],
-  [1440, 700, 'static'],
-  [390, 1000, 'fixed'],
-  [390, 600, 'static'],
+// The footer is in the page flow, so all of it can be reached, also on a
+// wide, short screen where the wordmark makes it taller than the screen.
+for (const [width, height] of [
+  [1440, 700],
+  [390, 600],
 ] as const) {
-  test(`the whole footer can be reached at ${width}x${height} (${mode})`, async ({
+  test(`the whole footer can be reached at ${width}x${height}`, async ({
     page,
   }) => {
     test.skip(!isDesktop(page), 'The test sets its own viewport.')
     await page.setViewportSize({ width, height })
     await open(page, '/work/pico')
     const footer = page.locator('footer.site-footer')
-    if (mode === 'static') {
-      await expect(footer).toHaveAttribute('data-static', '')
-    } else {
-      await expect(footer).not.toHaveAttribute('data-static')
-    }
+    await footer.getByRole('heading', { level: 2 }).scrollIntoViewIfNeeded()
+    await expect(footer.getByRole('heading', { level: 2 })).toBeInViewport()
     await page.evaluate(() =>
       window.scrollTo({ top: document.documentElement.scrollHeight }),
     )
-    const top = footer.getByRole('heading', { level: 2 })
-    const bottom = footer.getByText('Designed and engineered with intent.')
-    await expect(bottom).toBeInViewport({ ratio: 1 })
-    // At the end of the page, the top of the footer is in view, or it is
-    // above the screen because the footer is a normal block.
-    if (mode === 'fixed') await expect(top).toBeInViewport({ ratio: 1 })
+    await expect(
+      footer.getByText('Designed and engineered with intent.'),
+    ).toBeInViewport({ ratio: 1 })
   })
 }

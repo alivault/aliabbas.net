@@ -1,5 +1,3 @@
-import { useEffect, useRef, useState } from 'react'
-import type { CSSProperties } from 'react'
 import { Link } from '@tanstack/react-router'
 import { ArrowUp, ArrowUpRight } from 'lucide-react'
 
@@ -24,128 +22,81 @@ function scrollToTop() {
   window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
 }
 
-/**
- * The page lifts away to reveal the footer. The footer box stays in the
- * flow and clips its content (clip-path); the content is fixed to the
- * bottom of the viewport, so it shows only through that box. See
- * .site-footer in globals.css.
- *
- * The fixed box grows to fit its content, and the footer box takes the
- * same height. A fixed box cannot scroll, so when the content is taller
- * than the screen (a short screen that is wide, because the wordmark grows
- * with the width), the footer becomes a normal block.
- */
 export default function Footer() {
-  const innerRef = useRef<HTMLDivElement>(null)
-  const screenRef = useRef<HTMLDivElement>(null)
-  // The height of the fixed box in px, 'static' for a normal block, or
-  // null before the first measure (the CSS minimum height applies).
-  const [height, setHeight] = useState<number | 'static' | null>(null)
-
-  useEffect(() => {
-    const inner = innerRef.current
-    const screen = screenRef.current
-    if (!inner || !screen) return
-    // Fixed, the box is the larger of its content and its minimum height.
-    // As a normal block, it is its content. Either way, it is taller than
-    // the screen only when the content does not fit.
-    const measure = () => {
-      const box = inner.offsetHeight
-      setHeight(box <= screen.offsetHeight + 1 ? box : 'static')
-    }
-    const observer = new ResizeObserver(measure)
-    observer.observe(inner)
-    observer.observe(screen)
-    return () => observer.disconnect()
-  }, [])
-
   return (
-    <footer
-      className="site-footer bg-foreground text-background"
-      data-static={height === 'static' ? '' : undefined}
-      style={
-        typeof height === 'number'
-          ? ({ '--footer-box': `${height}px` } as CSSProperties)
-          : undefined
-      }
-    >
-      <div ref={screenRef} aria-hidden="true" className="site-footer-screen" />
-      <div ref={innerRef} className="site-footer-inner bg-foreground">
-        <div className="site-footer-content mx-auto flex w-full max-w-[1600px] flex-1 flex-col px-5 pt-24 pb-5 sm:px-8 sm:pt-28 sm:pb-6 lg:px-12 lg:pt-24">
-          <div className="grid gap-10 xl:grid-cols-[1fr_auto] xl:items-end">
-            <h2 className="text-[clamp(2.25rem,1.5rem+3.5vw,5rem)] leading-[1.05] font-normal text-balance">
-              <span className="text-background/45 block text-balance">
-                Hard problem, high bar?
-              </span>{' '}
-              <span className="block text-balance">
-                That’s my favorite kind.
-              </span>
-            </h2>
-            <Link
-              to="/contact"
-              className="group bg-background text-foreground focus-visible:outline-background inline-flex items-center gap-3 justify-self-start rounded-full py-3 pr-3 pl-6 text-lg font-medium transition-transform duration-300 hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-4 xl:self-auto xl:justify-self-auto"
-            >
-              Start a conversation
-              <span className="bg-foreground text-background flex size-11 items-center justify-center rounded-full transition-transform duration-500 group-hover:rotate-45">
-                <ArrowUpRight className="size-5" aria-hidden="true" />
-              </span>
-            </Link>
-          </div>
+    <footer className="site-footer bg-foreground text-background relative">
+      <div className="mx-auto flex max-w-[1600px] flex-col px-5 pt-24 pb-5 sm:px-8 sm:pt-28 sm:pb-6 lg:px-12 lg:pt-24">
+        <div className="grid gap-10 xl:grid-cols-[1fr_auto] xl:items-end">
+          <h2 className="text-[clamp(2.25rem,1.5rem+3.5vw,5rem)] leading-[1.05] font-normal text-balance">
+            <span className="text-background/45 block text-balance">
+              Hard problem, high bar?
+            </span>{' '}
+            <span className="block text-balance">That’s my favorite kind.</span>
+          </h2>
+          <Link
+            to="/contact"
+            className="group bg-background text-foreground focus-visible:outline-background inline-flex items-center gap-3 justify-self-start rounded-full py-3 pr-3 pl-6 text-lg font-medium transition-transform duration-300 hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-4 xl:self-auto xl:justify-self-auto"
+          >
+            Start a conversation
+            <span className="bg-foreground text-background flex size-11 items-center justify-center rounded-full transition-transform duration-500 group-hover:rotate-45">
+              <ArrowUpRight className="size-5" aria-hidden="true" />
+            </span>
+          </Link>
+        </div>
 
-          <div className="mt-auto flex flex-col gap-8 pt-12 lg:flex-row lg:items-start lg:justify-between">
-            <nav aria-label="Footer">
-              <ul className="grid grid-flow-col grid-rows-5 gap-x-10 gap-y-1 text-[clamp(1.25rem,1rem+0.8vw,1.75rem)] leading-tight sm:grid-rows-3 sm:gap-x-14">
-                {links.map((item) => (
-                  <li key={item.to}>
-                    <Link to={item.to} className={bigLink}>
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
-                <li>
-                  <a
-                    href="https://github.com/alivault"
-                    target="_blank"
-                    rel="noreferrer"
-                    className={bigLink}
-                  >
-                    GitHub
-                    <ArrowUpRight
-                      className="size-[0.8em] opacity-60"
-                      aria-hidden="true"
-                    />
-                    <span className="sr-only">(opens in a new tab)</span>
-                  </a>
+        <div className="flex flex-col gap-8 pt-12 lg:flex-row lg:items-start lg:justify-between">
+          <nav aria-label="Footer">
+            <ul className="grid grid-flow-col grid-rows-5 gap-x-10 gap-y-1 text-[clamp(1.25rem,1rem+0.8vw,1.75rem)] leading-tight sm:grid-rows-3 sm:gap-x-14">
+              {links.map((item) => (
+                <li key={item.to}>
+                  <Link to={item.to} className={bigLink}>
+                    {item.label}
+                  </Link>
                 </li>
-              </ul>
-            </nav>
-            <button
-              type="button"
-              onClick={scrollToTop}
-              className="group border-background/25 hover:border-background focus-visible:outline-background inline-flex shrink-0 items-center gap-3 self-start rounded-full border px-5 py-2.5 text-base whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
-            >
-              Back to top
-              <ArrowUp
-                className="size-4 transition-transform group-hover:-translate-y-0.5"
-                aria-hidden="true"
-              />
-            </button>
-          </div>
+              ))}
+              <li>
+                <a
+                  href="https://github.com/alivault"
+                  target="_blank"
+                  rel="noreferrer"
+                  className={bigLink}
+                >
+                  GitHub
+                  <ArrowUpRight
+                    className="size-[0.8em] opacity-60"
+                    aria-hidden="true"
+                  />
+                  <span className="sr-only">(opens in a new tab)</span>
+                </a>
+              </li>
+            </ul>
+          </nav>
+          <button
+            type="button"
+            onClick={scrollToTop}
+            className="group border-background/25 hover:border-background focus-visible:outline-background inline-flex shrink-0 items-center gap-3 self-start rounded-full border px-5 py-2.5 text-base whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
+          >
+            Back to top
+            <ArrowUp
+              className="size-4 transition-transform group-hover:-translate-y-0.5"
+              aria-hidden="true"
+            />
+          </button>
+        </div>
 
-          <div className="site-footer-wordmark-box mt-8 sm:mt-10">
-            <Link
-              to="/"
-              aria-label="Ali Abbas — home"
-              className="site-footer-wordmark focus-visible:outline-background block w-fit focus-visible:outline-2 focus-visible:outline-offset-4"
-            >
-              <span aria-hidden="true">Ali Abbas</span>
-            </Link>
-          </div>
+        <div className="site-footer-wordmark-box mt-8 sm:mt-10">
+          <Link
+            to="/"
+            aria-label="Ali Abbas — home"
+            className="site-footer-wordmark focus-visible:outline-background block w-fit focus-visible:outline-2 focus-visible:outline-offset-4"
+          >
+            <span aria-hidden="true">Ali Abbas</span>
+          </Link>
+        </div>
 
-          <div className="text-background/55 border-background/15 mt-4 flex flex-col gap-1 border-t pt-4 text-sm sm:flex-row sm:justify-between">
-            <span>© {new Date().getFullYear()} Ali Abbas</span>
-            <span>Designed and engineered with intent.</span>
-          </div>
+        <div className="text-background/55 border-background/15 mt-4 flex flex-col gap-1 border-t pt-4 text-sm sm:flex-row sm:justify-between">
+          <span>© {new Date().getFullYear()} Ali Abbas</span>
+          <span>Designed and engineered with intent.</span>
         </div>
       </div>
     </footer>
