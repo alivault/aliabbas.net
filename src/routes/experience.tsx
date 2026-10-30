@@ -5,7 +5,7 @@ import Main from '~/components/Main'
 import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
 import Section from '~/components/Section'
-import { getExperiences } from '~/lib/sanity'
+import { experiencesQuery } from '~/lib/sanity'
 
 export const Route = createFileRoute('/experience')({
   head: () => ({
@@ -18,14 +18,15 @@ export const Route = createFileRoute('/experience')({
       },
     ],
   }),
+  loader: ({ context }) =>
+    context.queryClient
+      .ensureQueryData(experiencesQuery)
+      .catch(() => undefined),
   component: ExperiencePage,
 })
 
 function ExperiencePage() {
-  const { data: experiences = [], isLoading } = useQuery({
-    queryKey: ['experiences'],
-    queryFn: getExperiences,
-  })
+  const { data: experiences = [], isLoading } = useQuery(experiencesQuery)
 
   return (
     <Main>

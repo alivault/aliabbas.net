@@ -1,4 +1,6 @@
 import { createClient } from '@sanity/client'
+import { queryOptions } from '@tanstack/react-query'
+import type { PortableTextBlock } from '@portabletext/react'
 
 export const sanityClient = createClient({
   projectId: 'a5xqifrz',
@@ -96,3 +98,25 @@ export async function getRecentExperiences(
     { limit },
   )
 }
+
+export type SanityNote = SanityArticle & { content: Array<PortableTextBlock> }
+
+/**
+ * Queries shared by route loaders and components. A loader fills the cache
+ * on the server, so the HTML has the content and the head has its title.
+ */
+export const articlesQuery = queryOptions({
+  queryKey: ['articles'],
+  queryFn: getArticles,
+})
+
+export const articleQuery = (slug: string) =>
+  queryOptions({
+    queryKey: ['article', slug],
+    queryFn: () => getArticleBySlug(slug) as Promise<SanityNote | null>,
+  })
+
+export const experiencesQuery = queryOptions({
+  queryKey: ['experiences'],
+  queryFn: getExperiences,
+})

@@ -1,8 +1,5 @@
 import { PortableText } from '@portabletext/react'
-import type {
-  PortableTextBlock,
-  PortableTextComponents,
-} from '@portabletext/react'
+import type { PortableTextComponents } from '@portabletext/react'
 import { createImageUrlBuilder } from '@sanity/image-url'
 import { useQuery } from '@tanstack/react-query'
 import { Link, createFileRoute } from '@tanstack/react-router'
@@ -17,7 +14,13 @@ import ScrollReveal from '~/components/ScrollReveal'
 import Title from '~/components/Title'
 import getFormattedDate from '~/lib/getFormattedDate'
 import { cn } from 'cn'
-import { getArticleBySlug, sanityClient } from '~/lib/sanity'
+import { articleQuery, sanityClient } from '~/lib/sanity'
+import {
+  article,
+  breadcrumbs,
+  jsonLdScript,
+  pageHead,
+} from '~/lib/structured-data'
 
 const builder = createImageUrlBuilder(sanityClient)
 
@@ -89,24 +92,59 @@ const portableTextComponents: PortableTextComponents = {
 }
 
 export const Route = createFileRoute('/notes_/$slug')({
+  loader: async ({ context, params }) => {
+    const note = await context.queryClient
+      .ensureQueryData(articleQuery(params.slug))
+      .catch(() => undefined)
+    // undefined: the fetch failed, and the component tries again.
+    if (note === undefined) return { slug: params.slug, found: undefined }
+    return {
+      slug: params.slug,
+      found: note
+        ? { title: note.title, description: note.description, date: note.date }
+        : null,
+    }
+  },
+  head: ({ loaderData }) => {
+    const note = loaderData?.found
+    if (note === null) {
+      return {
+        meta: [
+          { title: 'Note not found — Ali Abbas' },
+          { name: 'robots', content: 'noindex' },
+        ],
+      }
+    }
+    if (!note || !loaderData) return {}
+    const path = `/notes/${loaderData.slug}`
+    return {
+      ...pageHead({
+        title: `${note.title} — Ali Abbas`,
+        description: note.description,
+        path,
+      }),
+      scripts: [
+        jsonLdScript(
+          article({
+            title: note.title,
+            description: note.description,
+            path,
+            datePublished: note.date,
+          }),
+          breadcrumbs([
+            { name: 'Notes', path: '/notes' },
+            { name: note.title, path },
+          ]),
+        ),
+      ],
+    }
+  },
   component: NotePage,
 })
 
-type NoteData = {
-  _id: string
-  title: string
-  slug: { current: string }
-  date: string
-  description: string
-  content: Array<PortableTextBlock>
-}
-
 function NotePage() {
   const { slug } = Route.useParams()
-  const { data: note, isLoading } = useQuery({
-    queryKey: ['article', slug],
-    queryFn: () => getArticleBySlug(slug) as Promise<NoteData | null>,
-  })
+  const { data: note, isLoading } = useQuery(articleQuery(slug))
 
   if (isLoading) {
     return (

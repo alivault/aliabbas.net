@@ -101,3 +101,26 @@ test('/design/tokens.json lists the tokens and the rules', async ({
   expect(tokens.motion.springs.layout).toMatchObject({ type: 'spring' })
   expect(tokens.rules.length).toBeGreaterThan(10)
 })
+
+for (const [path, types] of [
+  ['/', ['Person', 'WebSite']],
+  ['/work/pico', ['TechArticle', 'BreadcrumbList']],
+] as const) {
+  test(`${path} has JSON-LD: ${types.join(', ')}`, async ({ page }) => {
+    await page.goto(path)
+    const blocks = await page
+      .locator('script[type="application/ld+json"]')
+      .allTextContents()
+    const nodes = blocks.flatMap((block) => {
+      const data = JSON.parse(block) as {
+        '@graph'?: Array<{ '@type': string }>
+      }
+      return data['@graph'] ?? [data as { '@type': string }]
+    })
+    expect(nodes.map((node) => node['@type'])).toEqual(types)
+    await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
+      'href',
+      new RegExp(`^https://aliabbas\\.net${path === '/' ? '' : path}$`),
+    )
+  })
+}

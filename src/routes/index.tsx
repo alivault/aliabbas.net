@@ -1,5 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import HomeExperience from '~/components/HomeExperience'
+import { SITE_URL, jsonLdScript, person, website } from '~/lib/structured-data'
 
 export const Route = createFileRoute('/')({
   head: () => ({
@@ -56,6 +57,8 @@ export const Route = createFileRoute('/')({
           'Ali Abbas, Senior Frontend Engineer: streaming interfaces, state machines, motion and accessibility.',
       },
     ],
+    links: [{ rel: 'canonical', href: SITE_URL }],
+    scripts: [jsonLdScript(person, website)],
   }),
   component: Home,
 })

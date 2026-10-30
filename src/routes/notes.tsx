@@ -8,7 +8,7 @@ import ScrollReveal from '~/components/ScrollReveal'
 import Section from '~/components/Section'
 import Title from '~/components/Title'
 import getFormattedDate from '~/lib/getFormattedDate'
-import { getArticles } from '~/lib/sanity'
+import { articlesQuery } from '~/lib/sanity'
 import type { SanityArticle } from '~/lib/sanity'
 
 export const Route = createFileRoute('/notes')({
@@ -22,6 +22,9 @@ export const Route = createFileRoute('/notes')({
       },
     ],
   }),
+  // A failed fetch must not break the page: the component fetches again.
+  loader: ({ context }) =>
+    context.queryClient.ensureQueryData(articlesQuery).catch(() => undefined),
   component: NotesPage,
 })
 
@@ -63,10 +66,7 @@ function NoteListItem({
 }
 
 function NotesPage() {
-  const { data: articles = [], isLoading } = useQuery({
-    queryKey: ['articles'],
-    queryFn: getArticles,
-  })
+  const { data: articles = [], isLoading } = useQuery(articlesQuery)
 
   return (
     <Main>
