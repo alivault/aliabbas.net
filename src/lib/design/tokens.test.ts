@@ -64,6 +64,7 @@ describe('text tones', () => {
     ['foreground', 90],
     ['fg-secondary', 75],
     ['fg-muted', 60],
+    ['brand', 60],
   ] as const
 
   for (const scheme of ['light', 'dark'] as const) {
@@ -76,6 +77,15 @@ describe('text tones', () => {
         ).toBeGreaterThanOrEqual(minimum)
       })
     }
+
+    it(`text on a brand fill has APCA Lc 60+ in ${scheme} mode`, () => {
+      const background = COLORS.find((token) => token.name === 'background')
+      const brand = COLORS.find((token) => token.name === 'brand')
+      // brand-foreground is the page background.
+      expect(
+        apcaContrast(background?.[scheme] ?? '', brand?.[scheme] ?? ''),
+      ).toBeGreaterThanOrEqual(60)
+    })
   }
 })
 

@@ -84,7 +84,9 @@
   --border: oklch(0.82 0.012 94);
   --input: oklch(0.82 0.012 94);
   --ring: color-mix(in oklab, var(--foreground) 50%, transparent);
-  --brand: color-mix(in oklab, var(--foreground) 65%, transparent);
+  /* A solid color, not the foreground with transparency: it can then have
+     its own dark value. APCA Lc 60+ as text and under brand-foreground. */
+  --brand: oklch(0.44 0.008 85);
   --brand-foreground: var(--background);
   /* Surface behind the page cards during page transitions. */
   --page-base: oklch(0.8 0.014 94);
@@ -112,6 +114,7 @@
     --fg-secondary: oklch(0.86 0.009 94);
     --fg-muted: oklch(0.77 0.008 94);
     --fg-faint: oklch(0.6 0.007 94);
+    --brand: oklch(0.8 0.008 94);
     --card: oklch(0.225 0.006 85);
     --card-foreground: oklch(0.93 0.009 94);
     --popover: oklch(0.225 0.006 85);
