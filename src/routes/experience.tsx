@@ -33,7 +33,7 @@ function ExperiencePage() {
       <Section>
         <ScrollReveal
           as="header"
-          className="border-foreground/20 pb-section-content grid gap-8 border-b lg:grid-cols-[1.2fr_0.8fr] lg:items-end"
+          className="border-foreground/20 pb-section-content grid gap-6 border-b"
         >
           <div>
             <PageHeading>
@@ -42,7 +42,7 @@ function ExperiencePage() {
               shaped me.
             </PageHeading>
           </div>
-          <p className="text-fg-muted max-w-xl text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
+          <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
             A path through product teams, creative development, frontend
             systems, and the problems that taught me how to ship better work.
           </p>

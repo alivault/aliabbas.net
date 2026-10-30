@@ -55,17 +55,13 @@ function DesignPage() {
     <Main>
       <section className="bg-background text-foreground">
         <div className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
-          <ScrollReveal
-            as="header"
-            trigger="mount"
-            className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end"
-          >
+          <ScrollReveal as="header" trigger="mount" className="grid gap-6">
             <PageHeading>
               One source,
               <br />
               read by people and agents.
             </PageHeading>
-            <p className="text-fg-muted max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
+            <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
               The design system of this site. This page reads the tokens from
               the CSS and the code, so it cannot show a value that the site does
               not use. Coding agents read the same tokens and rules as{' '}

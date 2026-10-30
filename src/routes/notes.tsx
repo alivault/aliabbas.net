@@ -73,7 +73,7 @@ function NotesPage() {
       <Section>
         <ScrollReveal
           as="header"
-          className="border-foreground/20 pb-section-content grid gap-8 border-b lg:grid-cols-[1fr_0.65fr] lg:items-end"
+          className="border-foreground/20 pb-section-content grid gap-6 border-b"
         >
           <div>
             <PageHeading>
@@ -82,7 +82,7 @@ function NotesPage() {
               in public.
             </PageHeading>
           </div>
-          <p className="text-fg-muted max-w-xl text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
+          <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
             Notes on software, interaction design, developer tools, and the
             small decisions that make products feel considered.
           </p>

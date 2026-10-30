@@ -51,7 +51,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
         <ScrollReveal
           as="header"
           trigger="mount"
-          className="border-foreground/20 pb-section-divider grid gap-8 border-b lg:grid-cols-[1.1fr_0.9fr] lg:items-end"
+          className="border-foreground/20 pb-section-divider grid gap-6 border-b"
         >
           <div>
             <PageHeading>
@@ -60,7 +60,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
               as state machines.
             </PageHeading>
           </div>
-          <div className="lg:justify-self-end">
+          <div>
             <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
               {study.summary}
             </p>

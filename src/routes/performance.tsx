@@ -81,16 +81,13 @@ function PerformancePage() {
     <Main>
       <section className="bg-background text-foreground">
         <div className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
-          <ScrollReveal
-            as="header"
-            className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end"
-          >
+          <ScrollReveal as="header" className="grid gap-6">
             <PageHeading>
               Measured,
               <br />
               not claimed.
             </PageHeading>
-            <p className="text-fg-muted max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
+            <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
               Fast is a number. This page shows the Core Web Vitals of this site
               from real visits, lab numbers for my projects, and the fixes the
               numbers led to.

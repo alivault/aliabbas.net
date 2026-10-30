@@ -48,10 +48,7 @@ function SkillsPage() {
     <Main>
       <section className="bg-background text-foreground">
         <div className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
-          <ScrollReveal
-            as="header"
-            className="grid gap-8 lg:grid-cols-[1.2fr_0.8fr] lg:items-end"
-          >
+          <ScrollReveal as="header" className="grid gap-6">
             <div>
               <PageHeading>
                 Ideas,
@@ -59,7 +56,7 @@ function SkillsPage() {
                 engineered.
               </PageHeading>
             </div>
-            <p className="text-fg-muted max-w-lg text-base leading-7 lg:justify-self-end lg:text-lg lg:leading-8">
+            <p className="text-fg-muted max-w-xl text-base leading-7 lg:text-lg lg:leading-8">
               I bridge product design and frontend engineering, so the idea
               survives implementation—and the interface holds up in every state
               after launch.
