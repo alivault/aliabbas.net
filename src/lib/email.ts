@@ -19,21 +19,60 @@ const contactInput = z.object({
 
 export type ContactInput = z.infer<typeof contactInput>
 
-/** Asks Cloudflare if the Turnstile token is valid. */
+/** The action of the contact form widget (see src/lib/turnstile.ts). */
+const TURNSTILE_ACTION = 'contact'
+
+type SiteverifyResult = {
+  success?: boolean
+  action?: string
+  hostname?: string
+  metadata?: { result_with_testing_key?: boolean }
+}
+
+/**
+ * Asks Cloudflare if the Turnstile token is valid, for this form and this
+ * site. TURNSTILE_HOSTNAMES lists the hostnames of this deployment.
+ */
 async function verifyTurnstile(token: string) {
   const secret = env.TURNSTILE_SECRET_KEY
-  if (!secret) throw new Error('TURNSTILE_SECRET_KEY is not set')
-  const body = new FormData()
-  body.append('secret', secret)
-  body.append('response', token)
-  const ip = getRequestHeader('cf-connecting-ip')
-  if (ip) body.append('remoteip', ip)
-  const response = await fetch(
-    'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-    { method: 'POST', body },
+  const hostnames = new Set(
+    (env.TURNSTILE_HOSTNAMES ?? '')
+      .split(',')
+      .map((hostname) => hostname.trim())
+      .filter(Boolean),
   )
-  const result = (await response.json()) as { success?: boolean }
-  return result.success === true
+  if (!secret || hostnames.size === 0) return false
+
+  let result: SiteverifyResult
+  try {
+    const response = await fetch(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        signal: AbortSignal.timeout(10_000),
+        body: new URLSearchParams({
+          secret,
+          response: token,
+          remoteip: getRequestHeader('cf-connecting-ip') ?? '',
+        }),
+      },
+    )
+    if (!response.ok) return false
+    result = await response.json()
+  } catch {
+    return false
+  }
+
+  // The test secret of local development returns no action.
+  const actionMatches =
+    result.action === TURNSTILE_ACTION ||
+    result.metadata?.result_with_testing_key === true
+  return (
+    result.success === true &&
+    actionMatches &&
+    hostnames.has(result.hostname ?? '')
+  )
 }
 
 const escapeHtml = (text: string) =>

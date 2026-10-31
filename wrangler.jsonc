@@ -58,5 +58,7 @@
   "vars": {
     "VITE_CONVEX_URL": "https://valiant-penguin-216.convex.cloud",
     "VITE_CONVEX_SITE_URL": "https://valiant-penguin-216.convex.site",
+    // The frontend hostnames that the Turnstile check accepts.
+    "TURNSTILE_HOSTNAMES": "aliabbas.net,www.aliabbas.net",
   },
 }

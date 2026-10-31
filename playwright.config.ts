@@ -3,12 +3,13 @@ import { defineConfig, devices } from '@playwright/test'
 
 /**
  * The public Convex URLs from .env.production. A clean checkout (CI) has no
- * .env.local, and dev mode does not read .env.production.
+ * .env.local, and dev mode does not read .env.production. Not the Turnstile
+ * site key: the tests use the test key from .env.development, which passes.
  */
 const publicEnv = Object.fromEntries(
   readFileSync('.env.production', 'utf8')
     .split('\n')
-    .map((line) => line.match(/^(VITE_[A-Z_]+)=(.*)$/))
+    .map((line) => line.match(/^(VITE_CONVEX_[A-Z_]+)=(.*)$/))
     .filter((match) => match !== null)
     .map(([, key, value]) => [key, process.env[key] ?? value]),
 )

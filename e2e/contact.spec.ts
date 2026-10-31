@@ -45,6 +45,14 @@ test('a failed send keeps the message and gives the email address', async ({
   await form.getByLabel('Name').fill('Ada Lovelace')
   await form.getByLabel('Email').fill('ada@example.com')
   await form.getByLabel('Message').fill('A role on the engine team.')
+  // Send when Turnstile has its token, so the aborted request is the error.
+  await page.waitForFunction(
+    () =>
+      document.querySelector<HTMLInputElement>('[name=cf-turnstile-response]')
+        ?.value,
+    null,
+    { timeout: 20_000 },
+  )
   await form.getByRole('button', { name: 'Send message' }).click()
 
   await expect(form.getByRole('alert')).toContainText(

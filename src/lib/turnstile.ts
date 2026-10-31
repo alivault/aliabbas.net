@@ -14,6 +14,7 @@ type TurnstileApi = {
     element: HTMLElement,
     options: {
       sitekey: string
+      action?: string
       appearance?: 'always' | 'execute' | 'interaction-only'
       theme?: 'auto' | 'light' | 'dark'
       size?: 'normal' | 'flexible' | 'compact'
@@ -90,6 +91,7 @@ export function useTurnstile(siteKey: string | undefined) {
         apiRef.current = api
         widgetRef.current = api.render(container, {
           sitekey: siteKey,
+          action: 'contact',
           appearance: 'interaction-only',
           theme: 'auto',
           size: 'flexible',
