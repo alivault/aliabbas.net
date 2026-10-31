@@ -300,23 +300,29 @@ test('the work stage shows the project in the middle of the screen', async ({
   }
 })
 
-test('a secondary button shows a turning chrome border on hover', async ({
+test('primary and secondary buttons show a chrome ring on hover', async ({
   page,
 }) => {
   test.skip(!isDesktop(page), 'Hover needs a pointer.')
-  await open(page, '/work')
-  const button = page.locator('header').getByRole('link', { name: 'Contact' })
-  const ring = () =>
-    button.evaluate((element) => {
-      const style = getComputedStyle(element, '::before')
-      return { opacity: style.opacity, animation: style.animationName }
-    })
+  await open(page, '/')
+  const buttons = [
+    page.locator('main .chrome-ring', { hasText: 'See the work' }),
+    page.locator('header').getByRole('link', { name: 'Contact' }),
+  ]
+  // "on": the shader draws the ring. "static": no WebGL, so CSS draws it.
+  const state = (button: (typeof buttons)[number]) =>
+    button.evaluate((element) => element.dataset.chrome ?? 'off')
 
-  await expect.poll(ring).toEqual({ opacity: '0', animation: 'none' })
-  await button.hover()
-  await expect.poll(ring).toEqual({ opacity: '1', animation: 'chrome-turn' })
+  for (const button of buttons) {
+    await expect.poll(() => state(button)).toBe('off')
+    await button.hover()
+    await expect.poll(() => state(button)).toMatch(/^(on|static)$/)
+    await page.mouse.move(4, 400)
+    await expect.poll(() => state(button)).toBe('off')
+  }
 
-  // With reduced motion, the ring shows but does not turn.
+  // With reduced motion, the ring still shows, as a still frame.
   await page.emulateMedia({ reducedMotion: 'reduce' })
-  await expect.poll(ring).toEqual({ opacity: '1', animation: 'none' })
+  await buttons[1].hover()
+  await expect.poll(() => state(buttons[1])).toMatch(/^(on|static)$/)
 })

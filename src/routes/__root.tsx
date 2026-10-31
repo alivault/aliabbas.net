@@ -10,6 +10,7 @@ import type { AuthClient } from '@convex-dev/better-auth/react'
 import type { ConvexQueryClient } from '@convex-dev/react-query'
 import type { QueryClient } from '@tanstack/react-query'
 import type { ConvexReactClient } from 'convex/react'
+import ChromeHover from '~/components/ChromeHover'
 import Devtools from '~/components/Devtools'
 import VitalsReporter from '~/components/VitalsReporter'
 import { sessionQueryOptions } from '~/lib/auth'
@@ -86,6 +87,7 @@ function RootComponent() {
             <Outlet />
           </MotionConfig>
           <VitalsReporter />
+          <ChromeHover />
           <Devtools />
         </ConvexBetterAuthProvider>
         <Scripts />
