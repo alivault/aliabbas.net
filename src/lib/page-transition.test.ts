@@ -26,7 +26,7 @@ describe('pageTransitionTypes', () => {
     expect(go('/work', '/notes')).toEqual([PAGE_TRANSITION_TYPE])
   })
 
-  test('the way to the contact page also fades out the call to action', () => {
+  test('the way to the contact page also hides the call to action', () => {
     setReducedMotion(false)
     expect(go('/work', '/contact')).toEqual([
       PAGE_TRANSITION_TYPE,

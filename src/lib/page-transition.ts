@@ -6,7 +6,7 @@ export const PAGE_TRANSITION_TYPE = 'page'
 /**
  * Added for a navigation to the contact page. The closing call to action
  * above the footer leads there, and the contact page does not show it, so
- * it fades out at once, before the rest of the page moves away.
+ * it is hidden in the capture of the old page.
  */
 export const TO_CONTACT_TRANSITION_TYPE = 'to-contact'
 

@@ -394,24 +394,16 @@ html:active-view-transition-type(page) {
 }
 
 /*
- * To the contact page: the closing call to action gets its own snapshot,
- * which fades out at once (DURATIONS.exit, EASE_IN). The contact page does
- * not show it, so it must not leave with the old page.
+ * To the contact page: the contact page does not show the closing call to
+ * action, so it is not in the capture of the old page. The rule applies
+ * when the old page is captured. The section keeps its space, so the old
+ * page does not move, and the space shows the page background.
+ * Not visibility: the buttons have transition-all, so they stay visible for
+ * their transition and get into the capture. Opacity is not inherited, and
+ * the section has no transition.
  */
-html:active-view-transition-type(to-contact) {
-  & .site-closing {
-    view-transition-name: site-closing;
-  }
-
-  &::view-transition-old(site-closing) {
-    animation: closing-out 200ms cubic-bezier(0.64, 0, 0.78, 0) both;
-  }
-}
-
-@keyframes closing-out {
-  to {
-    opacity: 0;
-  }
+html:active-view-transition-type(to-contact) .site-closing {
+  opacity: 0;
 }
 
 /* Current page: move up, shrink, and fade into the base surface. */
