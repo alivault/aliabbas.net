@@ -39,7 +39,7 @@ export default function ModeSwitch({
     <nav
       aria-label="Assistant mode"
       className={cn(
-        'border-foreground/15 isolate inline-flex rounded-full border p-1',
+        'border-border bg-card isolate inline-flex rounded-full border p-1',
         className,
       )}
     >
@@ -53,16 +53,14 @@ export default function ModeSwitch({
             aria-current={active ? 'page' : undefined}
             className={cn(
               'focus-visible:ring-brand/70 relative inline-flex h-8 items-center gap-2 rounded-full px-3.5 text-sm font-semibold transition-colors duration-300 outline-none focus-visible:ring-2',
-              active
-                ? 'text-background'
-                : 'text-fg-muted hover:text-foreground',
+              active ? 'text-brand' : 'text-fg-muted hover:text-foreground',
             )}
           >
             {active && (
               <motion.span
                 layoutId="assistant-mode-pill"
                 aria-hidden="true"
-                className="bg-foreground absolute inset-0 -z-10 rounded-full"
+                className="border-brand/25 bg-brand/10 absolute inset-0 -z-10 rounded-full border"
                 transition={SPRINGS.settle}
               />
             )}
