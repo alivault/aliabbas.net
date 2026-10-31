@@ -475,7 +475,7 @@ export default function PortfolioChat() {
   )
 
   return (
-    <div className="flex h-[calc(100svh-72px-var(--assistant-bar,0px))] min-h-0 min-w-0 overflow-hidden">
+    <div className="flex h-[calc(100svh-var(--header-height)-var(--assistant-bar,0px))] min-h-0 min-w-0 overflow-hidden">
       <p role="status" aria-live="polite" className="sr-only">
         {announcementFor(lastTurn)}
       </p>

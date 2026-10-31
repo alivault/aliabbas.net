@@ -162,10 +162,10 @@ export default function SiteHeader() {
       */}
       <motion.div
         aria-hidden="true"
-        className="site-header-chrome border-foreground/10 bg-background/80 pointer-events-none fixed inset-x-0 top-0 z-[100] h-[72px] border-b backdrop-blur-[12px] backdrop-saturate-[1.8]"
+        className="site-header-chrome border-foreground/10 bg-background/80 h-header pointer-events-none fixed inset-x-0 top-0 z-[100] border-b backdrop-blur-[12px] backdrop-saturate-[1.8]"
         style={{ opacity: headerChromeOpacity }}
       />
-      <header className="site-header text-foreground fixed inset-x-0 top-0 z-[100] h-[72px]">
+      <header className="site-header text-foreground h-header fixed inset-x-0 top-0 z-[100]">
         <div className="relative mx-auto grid h-full max-w-[1600px] grid-cols-[1fr_auto] items-center px-5 sm:px-8 lg:grid-cols-[1fr_auto_1fr] lg:px-12">
           <Link
             to="/"
@@ -220,8 +220,8 @@ export default function SiteHeader() {
       <SheetContent
         side="top"
         showCloseButton={false}
-        overlayClassName="top-[72px] lg:hidden"
-        viewportClassName="fixed inset-x-0 top-[72px] bottom-0 z-[90] overflow-hidden [transform:translateZ(0)] lg:hidden"
+        overlayClassName="top-header lg:hidden"
+        viewportClassName="fixed inset-x-0 top-header bottom-0 z-[90] overflow-hidden [transform:translateZ(0)] lg:hidden"
         className="bg-background/80 text-foreground z-[90] h-full max-h-none gap-0 overflow-y-auto overscroll-contain border-0 px-5 shadow-none backdrop-blur-[12px] backdrop-saturate-[1.8] duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] data-ending-style:delay-300 data-[side=top]:h-full data-[side=top]:border-b-0 data-[side=top]:data-ending-style:translate-y-[-100%] data-[side=top]:data-starting-style:translate-y-[-100%] lg:hidden"
       >
         <SheetTitle className="sr-only">Site navigation</SheetTitle>

@@ -10,15 +10,22 @@ export type SectionNavItem = {
   number?: string
 }
 
-/** The fixed site header is 72px high. */
-const HEADER_HEIGHT = 72
+/** The height of the fixed site header, from --header-height in the CSS. */
+function headerHeight() {
+  return parseFloat(
+    getComputedStyle(document.documentElement).getPropertyValue(
+      '--header-height',
+    ),
+  )
+}
 
 /**
  * A row of links to the sections of a page. On wide screens it sticks
  * under the site header and fills the link of the section in view. On
  * phones it stays in the flow, because a wrapped sticky row would take a
- * quarter of the screen. Sections need `lg:scroll-mt-40`, so a jump does
- * not hide their heading under the row.
+ * quarter of the screen. Sections need `lg:scroll-mt-37`, so a jump does
+ * not hide their heading under the row. (Those offsets include the header
+ * height.)
  */
 export default function SectionNav({
   className,
@@ -45,15 +52,16 @@ export default function SectionNav({
     let frame = 0
     const measure = () => {
       frame = 0
+      const header = headerHeight()
       const bar = barRef.current?.getBoundingClientRect()
       setStuck(
         window.innerWidth >= 1024 &&
           bar != null &&
-          Math.round(bar.top) <= HEADER_HEIGHT &&
+          Math.round(bar.top) <= header &&
           window.scrollY > 0,
       )
       const barBottom = bar?.bottom ?? 0
-      const line = Math.max(barBottom, HEADER_HEIGHT) + 80
+      const line = Math.max(barBottom, header) + 80
       let current: string | null = null
       for (const item of items) {
         const element = document.getElementById(item.id)
@@ -98,7 +106,7 @@ export default function SectionNav({
         ref={barRef}
         data-stuck={stuck || undefined}
         className={cn(
-          'group/bar relative z-40 -mx-5 px-5 py-3 sm:-mx-8 sm:px-8 lg:sticky lg:top-[72px] lg:-mx-12 lg:px-12',
+          'group/bar relative z-40 -mx-5 px-5 py-3 sm:-mx-8 sm:px-8 lg:sticky lg:top-header lg:-mx-12 lg:px-12',
           className,
         )}
       >

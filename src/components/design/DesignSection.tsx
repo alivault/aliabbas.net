@@ -23,9 +23,9 @@ export default function DesignSection({
       <section
         id={id}
         aria-labelledby={headingId}
-        className="grid scroll-mt-24 gap-8 lg:scroll-mt-48 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,2fr)] lg:gap-x-12"
+        className="grid scroll-mt-21 gap-8 lg:scroll-mt-45 lg:grid-cols-[minmax(0,0.75fr)_minmax(0,2fr)] lg:gap-x-12"
       >
-        <header className="space-y-4 lg:sticky lg:top-48 lg:self-start">
+        <header className="space-y-4 lg:sticky lg:top-45 lg:self-start">
           <Title as="h2" variant="card" id={headingId} className="text-balance">
             <span className="tabular-nums">{number}</span> {title}
           </Title>

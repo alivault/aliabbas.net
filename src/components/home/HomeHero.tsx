@@ -157,7 +157,7 @@ export function HomeHero() {
   const currentDescriptor = productDescriptors[descriptorIndex]
 
   return (
-    <section className="site-noise bg-background text-foreground relative flex flex-1 overflow-hidden pt-[72px]">
+    <section className="site-noise bg-background text-foreground pt-header relative flex flex-1 overflow-hidden">
       <ConnectedGlobe />
       <div className="pointer-events-none relative z-10 mx-auto flex w-full max-w-[1600px] flex-col px-5 pt-9 pb-7 sm:px-8 sm:pt-14 lg:px-12 lg:pt-16">
         <div className="flex flex-1 flex-col items-center justify-center text-center sm:mt-auto sm:flex-none lg:items-start lg:text-left">

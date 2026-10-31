@@ -16,7 +16,7 @@ export default function Main({
     <div className="bg-background text-foreground min-h-svh overflow-x-clip">
       <SiteHeader />
       <PageAnimation>
-        <main className="min-h-[70svh] [&>:first-child]:border-t-[72px] [&>:first-child]:border-t-transparent">
+        <main className="min-h-[70svh] [&>:first-child]:border-t-[length:var(--header-height)] [&>:first-child]:border-t-transparent">
           {children}
         </main>
       </PageAnimation>

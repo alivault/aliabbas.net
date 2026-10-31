@@ -108,11 +108,11 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
           className="mt-6"
         />
 
-        <ScrollReveal className="mt-section-content grid scroll-mt-24 gap-10 lg:scroll-mt-40 lg:grid-cols-2 lg:gap-16">
+        <ScrollReveal className="mt-section-content grid scroll-mt-21 gap-10 lg:scroll-mt-37 lg:grid-cols-2 lg:gap-16">
           <section
             id="problem"
             aria-labelledby="problem-heading"
-            className="scroll-mt-24 lg:scroll-mt-40"
+            className="scroll-mt-21 lg:scroll-mt-37"
           >
             <Title as="h2" variant="card" id="problem-heading">
               The problem
@@ -148,7 +148,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
         <section
           id="machines"
           aria-labelledby="machines-heading"
-          className="mt-section scroll-mt-24 lg:scroll-mt-40"
+          className="mt-section scroll-mt-21 lg:scroll-mt-37"
         >
           <ScrollReveal className="pb-section-divider">
             <SectionHeading id="machines-heading">
@@ -174,7 +174,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
         <section
           id="failure-modes"
           aria-labelledby="failure-heading"
-          className="mt-section scroll-mt-24 lg:scroll-mt-40"
+          className="mt-section scroll-mt-21 lg:scroll-mt-37"
         >
           <ScrollReveal className="pb-section-divider">
             <SectionHeading id="failure-heading">
@@ -234,7 +234,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
         <section
           id="numbers"
           aria-labelledby="numbers-heading"
-          className="mt-section scroll-mt-24 lg:scroll-mt-40"
+          className="mt-section scroll-mt-21 lg:scroll-mt-37"
         >
           <ScrollReveal className="pb-section-divider">
             <SectionHeading id="numbers-heading">Numbers</SectionHeading>
@@ -268,7 +268,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
         <section
           id="sources"
           aria-labelledby="sources-heading"
-          className="mt-section scroll-mt-24 lg:scroll-mt-40"
+          className="mt-section scroll-mt-21 lg:scroll-mt-37"
         >
           <ScrollReveal>
             <SectionHeading id="sources-heading" size="compact">

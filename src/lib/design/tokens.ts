@@ -102,7 +102,12 @@ export type ColorToken = {
   tailwind: string
 }
 
-const LAYOUT = new Set(['radius', 'section-padding', 'section-content-gap'])
+const LAYOUT = new Set([
+  'radius',
+  'section-padding',
+  'section-content-gap',
+  'header-height',
+])
 
 /** Every color custom property in `:root`, in CSS order. */
 export const CSS_COLOR_NAMES = Object.keys(light).filter(
@@ -226,6 +231,13 @@ export const FONTS = {
 } as const
 
 export const LAYOUT_TOKENS = [
+  {
+    name: 'header-height',
+    use: 'The fixed site header. Offsets under it use it (h-header, top-header).',
+    base: light['header-height'],
+    sm: light['header-height'],
+    lg: light['header-height'],
+  },
   {
     name: 'section-padding',
     use: 'Space above and below a page section.',

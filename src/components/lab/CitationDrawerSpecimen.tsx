@@ -114,7 +114,7 @@ export default function CitationDrawerSpecimen() {
       >
         <DrawerContent
           // The side drawer starts below the fixed site header.
-          className={isDesktop ? 'top-[72px]!' : undefined}
+          className={isDesktop ? 'top-header!' : undefined}
           initialFocus={() =>
             (activeSourceId &&
               document.getElementById(
