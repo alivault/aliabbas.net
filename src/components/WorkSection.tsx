@@ -16,7 +16,7 @@ export default function WorkSection({ header }: { header?: ReactNode }) {
         </ScrollReveal>
       )}
 
-      <div className="grid gap-10 md:grid-cols-2 lg:grid-cols-3">
+      <div className="flex flex-col">
         {recentWork.map((project) => (
           <FeaturedProject key={project.title} project={project} />
         ))}

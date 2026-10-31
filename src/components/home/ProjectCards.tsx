@@ -1,7 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { motion } from 'motion/react'
-import { metaStyles } from '~/components/Meta'
+import Meta, { metaStyles } from '~/components/Meta'
 import ScrollReveal from '~/components/ScrollReveal'
 import Title from '~/components/Title'
 import type { WorkItem } from '~/data/work'
@@ -37,7 +37,7 @@ function ProjectVisual({ project }: { project: WorkItem }) {
   return (
     <div
       className={cn(
-        'site-noise relative aspect-[4/3] overflow-hidden rounded-[2px]',
+        'site-noise relative aspect-[4/3] overflow-hidden rounded-[2px] lg:aspect-[16/10]',
         visualStyles[project.visual],
       )}
     >
@@ -49,7 +49,7 @@ function ProjectVisual({ project }: { project: WorkItem }) {
           <img
             src={project.image}
             alt=""
-            className="absolute top-1/2 left-1/2 w-[29%] -translate-x-1/2 -translate-y-1/2 rounded-[18%] shadow-[0_30px_60px_rgba(0,0,0,0.25)] transition-transform duration-500 group-hover:scale-[1.08] group-hover:-rotate-3"
+            className="absolute top-1/2 left-1/2 h-[34%] w-auto -translate-x-1/2 -translate-y-1/2 rounded-[18%] shadow-[0_30px_60px_rgba(0,0,0,0.25)] transition-transform duration-500 group-hover:scale-[1.08] group-hover:-rotate-3"
           />
         </>
       )}
@@ -59,19 +59,19 @@ function ProjectVisual({ project }: { project: WorkItem }) {
           <motion.div
             animate={{ scale: [1, 1.12, 1], opacity: [0.45, 0.7, 0.45] }}
             transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-1/2 left-[38%] size-[48%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff2f75]/45 blur-[55px]"
+            className="absolute top-1/2 left-[40%] aspect-square h-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff2f75]/45 blur-[55px]"
           />
           <motion.div
             animate={{ scale: [1.1, 0.96, 1.1], opacity: [0.5, 0.75, 0.5] }}
             transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-1/2 left-[62%] size-[48%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#006dff]/55 blur-[55px]"
+            className="absolute top-1/2 left-[60%] aspect-square h-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#006dff]/55 blur-[55px]"
           />
-          <div className="absolute top-1/2 left-1/2 size-[58%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10" />
-          <div className="absolute top-1/2 left-1/2 size-[44%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10" />
+          <div className="absolute top-1/2 left-1/2 aspect-square h-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10" />
+          <div className="absolute top-1/2 left-1/2 aspect-square h-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10" />
           <img
             src={project.image}
             alt=""
-            className="enter-zoom absolute top-1/2 left-1/2 z-10 w-[34%] -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_24px_40px_rgba(50,60,255,0.38)] transition-transform duration-500 group-hover:scale-[1.06]"
+            className="enter-zoom absolute top-1/2 left-1/2 z-10 h-[45%] w-auto -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_24px_40px_rgba(50,60,255,0.38)] transition-transform duration-500 group-hover:scale-[1.06]"
           />
         </>
       )}
@@ -79,7 +79,7 @@ function ProjectVisual({ project }: { project: WorkItem }) {
       {project.visual === 'chromagine' && (
         <div
           aria-hidden="true"
-          className="absolute top-1/2 left-1/2 size-[58%] -translate-x-1/2 -translate-y-1/2"
+          className="absolute top-1/2 left-1/2 aspect-square h-[66%] -translate-x-1/2 -translate-y-1/2"
         >
           {chromaginePetals.map((color, petalIndex) => (
             <span
@@ -123,42 +123,52 @@ function ProjectVisual({ project }: { project: WorkItem }) {
   )
 }
 
+/** One work item on its own row: the visual on one side, the details on the other. */
 export function FeaturedProject({ project }: { project: WorkItem }) {
   return (
-    <ScrollReveal as="article" className="flex flex-col gap-7">
-      {project.caseStudy ? (
-        <Link
-          to="/work/$slug"
-          params={{ slug: project.caseStudy }}
-          className={visualLinkStyles}
-          aria-label={`Read the ${project.title} case study`}
-        >
-          <ProjectVisual project={project} />
-        </Link>
-      ) : (
-        <a
-          href={project.href}
-          target="_blank"
-          rel="noreferrer"
-          className={visualLinkStyles}
-          aria-label={`Open ${project.title}`}
-        >
-          <ProjectVisual project={project} />
-        </a>
-      )}
-      <div className="flex flex-1 flex-col">
-        <Title as="h3" variant="card">
-          {project.title}
-        </Title>
-        <p className="text-fg-muted mt-7 max-w-md text-base leading-7">
+    <ScrollReveal
+      as="article"
+      className="border-foreground/15 grid gap-8 border-t py-10 first:border-t-0 first:pt-0 last:pb-0 lg:grid-cols-12 lg:items-center lg:gap-12 lg:py-16"
+    >
+      <div className="lg:col-span-7">
+        {project.caseStudy ? (
+          <Link
+            to="/work/$slug"
+            params={{ slug: project.caseStudy }}
+            className={visualLinkStyles}
+            aria-label={`Read the ${project.title} case study`}
+          >
+            <ProjectVisual project={project} />
+          </Link>
+        ) : (
+          <a
+            href={project.href}
+            target="_blank"
+            rel="noreferrer"
+            className={visualLinkStyles}
+            aria-label={`Open ${project.title}`}
+          >
+            <ProjectVisual project={project} />
+          </a>
+        )}
+      </div>
+      <div className="flex flex-col lg:col-span-5">
+        <div className="flex items-baseline justify-between gap-4">
+          <Title as="h3" variant="card">
+            {project.title}
+          </Title>
+          <Meta as="span">{project.year}</Meta>
+        </div>
+        <Meta className="mt-1">{project.category}</Meta>
+        <p className="text-fg-secondary mt-5 max-w-lg text-base leading-7 text-pretty lg:text-lg lg:leading-8">
           {project.description}
         </p>
-        <div className="border-foreground/25 mt-7 border-l pl-4">
-          <p className="text-fg-muted max-w-sm text-sm leading-6">
-            <span className="text-foreground font-semibold">Contribution.</span>{' '}
-            {project.contribution}
-          </p>
-        </div>
+        <dl className="border-foreground/15 mt-6 grid max-w-lg gap-x-6 gap-y-3 border-t pt-6 text-sm leading-6 sm:grid-cols-[auto_1fr]">
+          <dt className="text-foreground font-medium">Contribution</dt>
+          <dd className="text-fg-muted">{project.contribution}</dd>
+          <dt className="text-foreground font-medium">Stack</dt>
+          <dd className="text-fg-muted">{project.tools.join(', ')}</dd>
+        </dl>
         <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2">
           {project.caseStudy && (
             <Link
@@ -183,16 +193,6 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
               : {project.title} (opens in a new tab)
             </span>
           </a>
-        </div>
-        <div className="mt-6 flex flex-wrap gap-2">
-          {project.tools.map((tool) => (
-            <span
-              key={tool}
-              className="border-foreground/20 text-fg-secondary rounded-full border px-3 py-1 text-sm"
-            >
-              {tool}
-            </span>
-          ))}
         </div>
       </div>
     </ScrollReveal>
