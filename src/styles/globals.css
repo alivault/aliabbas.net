@@ -347,10 +347,10 @@
 }
 
 /*
- * Chrome border: a metal ring on the border of a secondary button, on hover.
- * Light and dark bands go around the button, as light on polished metal.
- * The bands are mixes of the foreground and background tokens, so the ring
- * follows the color scheme. The angle is a registered property, so CSS can
+ * Chrome border: a metal ring on the border of a primary or secondary
+ * button, on hover.
+ * Bands of chrome with prism fringes go around the button, as light on
+ * polished metal. The angle is a registered property, so CSS can
  * animate it. With reduced motion, the ring shows but does not turn.
  */
 @property --chrome-angle {
@@ -374,18 +374,27 @@
     pointer-events: none;
     content: '';
     opacity: 0;
+    /* Chrome with prism fringes: dark gaps, and two white highlights with
+       warm fringes on one side and cool fringes on the other. These are the
+       colors of a material, not roles, so they are not tokens. */
     background: conic-gradient(
       from var(--chrome-angle),
-      color-mix(in oklab, var(--foreground) 20%, var(--background)),
-      var(--foreground) 9%,
-      var(--background) 17%,
-      color-mix(in oklab, var(--foreground) 55%, var(--background)) 30%,
-      var(--background) 42%,
-      color-mix(in oklab, var(--foreground) 85%, var(--background)) 55%,
-      color-mix(in oklab, var(--foreground) 10%, var(--background)) 66%,
-      color-mix(in oklab, var(--foreground) 65%, var(--background)) 80%,
-      var(--background) 90%,
-      color-mix(in oklab, var(--foreground) 20%, var(--background))
+      oklch(0.12 0.005 260),
+      oklch(0.45 0.25 265) 8%,
+      oklch(0.78 0.15 225) 13%,
+      oklch(0.98 0.01 230) 18%,
+      oklch(0.82 0.15 70) 23%,
+      oklch(0.66 0.22 15) 28%,
+      oklch(0.55 0.26 295) 34%,
+      oklch(0.12 0.005 260) 42%,
+      oklch(0.12 0.005 260) 55%,
+      oklch(0.55 0.21 265) 62%,
+      oklch(0.9 0.1 205) 67%,
+      oklch(1 0 0) 71%,
+      oklch(0.88 0.12 80) 75%,
+      oklch(0.7 0.19 40) 80%,
+      oklch(0.6 0.27 310) 86%,
+      oklch(0.12 0.005 260) 93%
     );
     mask:
       linear-gradient(black 0 0) content-box exclude,
