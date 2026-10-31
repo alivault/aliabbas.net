@@ -23,7 +23,7 @@ function headerHeight() {
  * A row of links to the sections of a page. On wide screens it sticks
  * under the site header and fills the link of the section in view. On
  * phones it stays in the flow, because a wrapped sticky row would take a
- * quarter of the screen. Sections need `lg:scroll-mt-37`, so a jump does
+ * quarter of the screen. Sections need `lg:scroll-mt-36`, so a jump does
  * not hide their heading under the row. (Those offsets include the header
  * height.)
  */
@@ -128,9 +128,9 @@ export default function SectionNav({
                       onClick={scrollToSection}
                       aria-current={active ? 'location' : undefined}
                       className={cn(
-                        // The border takes 1px of the padding, so the pill
-                        // keeps its size.
-                        'focus-visible:ring-brand/70 inline-flex rounded-full border px-[15px] py-[7px] text-sm font-medium transition-colors outline-none focus-visible:ring-2',
+                        // 32px, as the pill buttons. The border takes 1px of
+                        // the side padding.
+                        'focus-visible:ring-brand/70 inline-flex h-8 items-center rounded-full border px-[13px] text-sm font-medium transition-colors outline-none focus-visible:ring-2',
                         active
                           ? 'border-brand/25 bg-brand/10 text-brand'
                           : 'border-border bg-card text-fg-secondary hover:text-foreground',

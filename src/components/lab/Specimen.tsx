@@ -45,7 +45,7 @@ export default function Specimen({
         id={id}
         aria-labelledby={headingId}
         className={cn(
-          'grid scroll-mt-21 gap-8 lg:scroll-mt-45 lg:gap-x-12',
+          'grid scroll-mt-21 gap-8 lg:scroll-mt-44 lg:gap-x-12',
           wide
             ? 'lg:grid-cols-[minmax(0,0.75fr)_minmax(0,2fr)]'
             : 'lg:grid-cols-[minmax(0,0.75fr)_minmax(0,2fr)] lg:grid-rows-[auto_1fr]',
