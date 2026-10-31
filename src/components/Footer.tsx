@@ -43,8 +43,8 @@ const linkStyles =
 export default function Footer() {
   // The rendered matches, not the location: the location changes when the
   // navigation starts, before the page transition captures the old page.
-  // The call to action must keep its space in that capture, hidden, so
-  // the old page does not move.
+  // The call to action must be in that capture, so it leaves with the old
+  // page, and the old page does not jump when it goes.
   const onContact = useMatches({
     select: (matches) => matches.some((match) => match.routeId === '/contact'),
   })
@@ -54,8 +54,7 @@ export default function Footer() {
       {!onContact && (
         <section
           aria-labelledby="closing-title"
-          // site-closing: hidden in the capture of the transition to /contact.
-          className="site-closing pb-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12"
+          className="pb-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12"
         >
           <div className="border-border pt-section flex flex-col items-center border-t text-center">
             <Title

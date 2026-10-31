@@ -4,13 +4,6 @@
 export const PAGE_TRANSITION_TYPE = 'page'
 
 /**
- * Added for a navigation to the contact page. The closing call to action
- * above the footer leads there, and the contact page does not show it, so
- * it is hidden in the capture of the old page.
- */
-export const TO_CONTACT_TRANSITION_TYPE = 'to-contact'
-
-/**
  * Returns the view transition types for a navigation.
  * Returns `false` to skip the transition (same page or reduced motion).
  */
@@ -36,9 +29,7 @@ export function pageTransitionTypes({
   if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
     return false
   }
-  return toLocation.pathname === '/contact'
-    ? [PAGE_TRANSITION_TYPE, TO_CONTACT_TRANSITION_TYPE]
-    : [PAGE_TRANSITION_TYPE]
+  return [PAGE_TRANSITION_TYPE]
 }
 
 function isAssistantPath(pathname: string) {
