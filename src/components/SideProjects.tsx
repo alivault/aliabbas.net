@@ -1,14 +1,8 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowRight } from 'lucide-react'
-import { metaStyles } from '~/components/Meta'
 import ScrollReveal from '~/components/ScrollReveal'
 import Title from '~/components/Title'
-import { cn } from 'cn'
-
-const linkStyles = cn(
-  metaStyles('brand'),
-  'hover:text-foreground focus-visible:outline-foreground inline-flex min-h-6 items-center font-medium gap-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4',
-)
+import { ButtonLink } from '~/components/ui/button'
 
 /** Smaller entries below the main work: projects made for fun, not for clients. */
 export default function SideProjects() {
@@ -43,21 +37,22 @@ export default function SideProjects() {
               Three.js and React, light baked in a web worker, and one input
               model for keyboard, gamepad and touch.
             </p>
-            <div className="mt-4 flex flex-wrap gap-x-6 gap-y-2">
-              <Link to="/play" className={linkStyles}>
-                Play the game{' '}
-                <ArrowRight aria-hidden="true" className="size-4" />
-              </Link>
-              <Link
+            {/* As in the work rows: the first action is the primary one. */}
+            <div className="mt-6 flex flex-wrap gap-3">
+              <ButtonLink to="/play">
+                Play the game
+                <ArrowRight aria-hidden="true" />
+              </ButtonLink>
+              <ButtonLink
                 to="/notes/$slug"
                 params={{
                   slug: 'averno-engineering-a-3d-shooter-for-the-browser',
                 }}
-                className={linkStyles}
+                variant="secondary"
               >
-                How it’s built{' '}
-                <ArrowRight aria-hidden="true" className="size-4" />
-              </Link>
+                How it’s built
+                <ArrowRight aria-hidden="true" />
+              </ButtonLink>
             </div>
           </div>
         </div>
