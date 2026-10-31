@@ -128,9 +128,9 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
   return (
     <ScrollReveal
       as="article"
-      className="border-foreground/15 grid gap-8 border-t py-10 first:border-t-0 first:pt-0 last:pb-0 lg:grid-cols-12 lg:items-center lg:gap-12 lg:py-16"
+      className="border-foreground/15 grid gap-8 border-t py-10 first:border-t-0 first:pt-0 last:pb-0 lg:grid-cols-2 lg:items-center lg:gap-12 lg:py-16"
     >
-      <div className="lg:col-span-7">
+      <div>
         {project.caseStudy ? (
           <Link
             to="/work/$slug"
@@ -152,7 +152,7 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
           </a>
         )}
       </div>
-      <div className="flex flex-col lg:col-span-5">
+      <div className="flex max-w-xl flex-col">
         <div className="flex items-baseline justify-between gap-4">
           <Title as="h3" variant="card">
             {project.title}
@@ -160,10 +160,10 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
           <Meta as="span">{project.year}</Meta>
         </div>
         <Meta className="mt-1">{project.category}</Meta>
-        <p className="text-fg-secondary mt-5 max-w-lg text-base leading-7 text-pretty lg:text-lg lg:leading-8">
+        <p className="text-fg-secondary mt-5 text-base leading-7 text-pretty lg:text-lg lg:leading-8">
           {project.description}
         </p>
-        <dl className="border-foreground/15 mt-6 grid max-w-lg gap-x-6 gap-y-3 border-t pt-6 text-sm leading-6 sm:grid-cols-[auto_1fr]">
+        <dl className="border-foreground/15 mt-6 grid gap-x-6 gap-y-3 border-t pt-6 text-sm leading-6 sm:grid-cols-[auto_1fr]">
           <dt className="text-foreground font-medium">Contribution</dt>
           <dd className="text-fg-muted">{project.contribution}</dd>
           <dt className="text-foreground font-medium">Stack</dt>
