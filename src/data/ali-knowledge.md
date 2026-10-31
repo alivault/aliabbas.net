@@ -321,6 +321,15 @@ JavaScript off and a strict content security policy. Remote images load only
 after approval, and the app fetches them itself, only from public HTTPS
 addresses.
 
+### Chromagine — side project, creative color tool (2025)
+
+Live project: https://chromagine.aliabbas.net/
+
+Chromagine is a side project listed at https://aliabbas.net/work. It is a
+playful utility for creating harmonious color palettes using perceptual color
+models rather than guesswork. Ali handled product design, color systems, React
+development, and deployment.
+
 ## Writing and technical interests
 
 Ali publishes field notes at https://aliabbas.net/notes. The notes demonstrate

@@ -365,3 +365,27 @@ test('each case study shows the icon of its app', async ({ page }) => {
       .toBeGreaterThan(0)
   }
 })
+
+test('the side projects are in two columns on wide screens', async ({
+  page,
+}) => {
+  await open(page, '/work')
+  const section = page.getByRole('region', { name: 'Side projects' })
+  const averno = section.getByRole('heading', { name: 'Averno' })
+  const chromagine = section.getByRole('heading', { name: 'Chromagine' })
+  await expect(averno).toBeVisible()
+  await expect(
+    section.getByRole('link', { name: /Visit site : Chromagine/ }),
+  ).toHaveAttribute('href', 'https://chromagine.aliabbas.net/')
+  const a = await averno.boundingBox()
+  const c = await chromagine.boundingBox()
+  if (!a || !c) throw new Error('No box for a side project title')
+  if (isDesktop(page)) {
+    // Side by side: one row, two columns.
+    expect(Math.abs(a.y - c.y)).toBeLessThan(2)
+    expect(c.x).toBeGreaterThan(a.x + a.width)
+  } else {
+    // One column: Chromagine is under Averno.
+    expect(c.y).toBeGreaterThan(a.y + a.height)
+  }
+})
