@@ -10,10 +10,10 @@ import { cn } from 'cn'
  * /design shows.
  */
 const variantClasses = {
-  // chrome-border: a turning metal ring on the border on hover (globals.css).
-  primary: 'chrome-border bg-brand text-brand-foreground hover:bg-brand/85',
+  // chrome-ring: caustics on a 2px border on hover (chrome-shader.ts).
+  primary: 'chrome-ring bg-brand text-brand-foreground hover:bg-brand/85',
   secondary:
-    'chrome-border border-border bg-card text-fg-secondary hover:bg-secondary hover:text-foreground aria-expanded:bg-secondary aria-expanded:text-foreground',
+    'chrome-ring border-border bg-card text-fg-secondary hover:bg-secondary hover:text-foreground aria-expanded:bg-secondary aria-expanded:text-foreground',
   ghost:
     'hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground aria-pressed:bg-muted aria-pressed:text-foreground dark:hover:bg-muted/50',
   destructive:
@@ -34,9 +34,9 @@ export type ButtonSize = keyof typeof sizeClasses
 /** When to use each variant. /design shows these. */
 export const BUTTON_VARIANT_ROLES: Record<ButtonVariant, string> = {
   primary:
-    'The main action of a view, in the brand color. At most one in each view or group. On hover, a chrome ring turns on its border.',
+    'The main action of a view, in the brand color. At most one in each view or group. On hover, flowing caustics light a 2px border.',
   secondary:
-    'The action next to the main one, and other bordered actions, such as Stop and Retry. On hover, a chrome ring turns on its border.',
+    'The action next to the main one, and other bordered actions, such as Stop and Retry. On hover, flowing caustics light a 2px border.',
   ghost:
     'Actions in toolbars and lists, and most buttons that show only an icon.',
   destructive: 'Actions that delete.',
