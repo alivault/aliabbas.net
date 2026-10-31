@@ -359,12 +359,7 @@ export function Comments({ articleSlug }: CommentsProps) {
                 </div>
               )}
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleSignOut}
-              className="text-neutral-500 hover:text-neutral-700 dark:hover:text-neutral-300"
-            >
+            <Button variant="ghost" size="sm" onClick={handleSignOut}>
               <LogOut className="mr-1.5 size-4" />
               Sign out
             </Button>
@@ -424,7 +419,7 @@ export function Comments({ articleSlug }: CommentsProps) {
                 <Button
                   onClick={handleVerifyOtp}
                   disabled={otp.length !== 6 || isVerifyingOtp}
-                  className="w-full bg-neutral-900 text-white hover:bg-neutral-800 disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
+                  className="w-full"
                 >
                   {isVerifyingOtp ? (
                     <>
@@ -452,7 +447,6 @@ export function Comments({ articleSlug }: CommentsProps) {
                   onClick={handleSendVerificationOtp}
                   disabled={isSendingOtp}
                   size="sm"
-                  className="bg-amber-600 text-white hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-600"
                 >
                   {isSendingOtp ? (
                     <>
@@ -481,7 +475,6 @@ export function Comments({ articleSlug }: CommentsProps) {
                 <Button
                   type="submit"
                   disabled={!content.trim() || isSubmitting}
-                  className="bg-neutral-900 text-white hover:bg-neutral-800 disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
                 >
                   {isSubmitting ? 'Posting...' : 'Post comment'}
                 </Button>
@@ -506,7 +499,6 @@ export function Comments({ articleSlug }: CommentsProps) {
                     })
                   }}
                   disabled={isGithubLoading}
-                  className="bg-neutral-900 text-white hover:bg-neutral-800 disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
                 >
                   {isGithubLoading ? (
                     <Loader2 className="mr-2 size-4 animate-spin" />
@@ -574,7 +566,7 @@ export function Comments({ articleSlug }: CommentsProps) {
               <Button
                 onClick={handleVerifyOtp}
                 disabled={otp.length !== 6 || isVerifyingOtp}
-                className="w-full bg-neutral-900 text-white hover:bg-neutral-800 disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
+                className="w-full"
               >
                 {isVerifyingOtp ? (
                   <>
@@ -628,7 +620,7 @@ export function Comments({ articleSlug }: CommentsProps) {
                 <Button
                   type="submit"
                   disabled={isResetLoading || !email.trim()}
-                  className="w-full bg-neutral-900 text-white hover:bg-neutral-800 disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
+                  className="w-full"
                 >
                   {isResetLoading ? (
                     <>
@@ -725,7 +717,7 @@ export function Comments({ articleSlug }: CommentsProps) {
                 <Button
                   type="submit"
                   disabled={isAuthLoading}
-                  className="w-full bg-neutral-900 text-white hover:bg-neutral-800 disabled:opacity-50 dark:bg-neutral-100 dark:text-neutral-900 dark:hover:bg-neutral-200"
+                  className="w-full"
                 >
                   {isAuthLoading
                     ? 'Loading...'

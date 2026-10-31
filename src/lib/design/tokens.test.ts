@@ -1,7 +1,13 @@
 import { existsSync, readFileSync, readdirSync } from 'node:fs'
 import { apcaContrast } from './contrast'
 import { DESIGN_RULES } from './rules'
-import { COLORS, COLOR_ROLES, CSS_COLOR_NAMES, LAYOUT_TOKENS } from './tokens'
+import {
+  COLORS,
+  COLOR_ROLES,
+  CSS_COLOR_NAMES,
+  LAYOUT_TOKENS,
+  SCHEME_SCOPES,
+} from './tokens'
 import { describe, expect, it } from 'vite-plus/test'
 
 describe('design tokens', () => {
@@ -15,6 +21,13 @@ describe('design tokens', () => {
 
   it('describes every color in the CSS, and only those', () => {
     expect(Object.keys(COLOR_ROLES).sort()).toEqual([...CSS_COLOR_NAMES].sort())
+  })
+
+  it('gives the color scopes the values of the other scheme', () => {
+    const dark = Object.fromEntries(COLORS.map((c) => [c.name, c.dark]))
+    const light = Object.fromEntries(COLORS.map((c) => [c.name, c.light]))
+    expect(SCHEME_SCOPES.dark).toEqual(dark)
+    expect(SCHEME_SCOPES.invertedInDark).toEqual(light)
   })
 
   it('reads the responsive layout values', () => {

@@ -138,11 +138,7 @@ function ResetPasswordPage() {
 
           {error && <p className="text-sm text-red-500">{error}</p>}
 
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full disabled:opacity-50"
-          >
+          <Button type="submit" disabled={isLoading} className="w-full">
             {isLoading ? (
               <>
                 <Loader2 className="mr-2 size-4 animate-spin" />

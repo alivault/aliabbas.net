@@ -217,9 +217,9 @@ export default function ContactForm() {
 
             <Button
               type="submit"
-              size="lg"
+              size="pill-lg"
               disabled={isSubmitting || !challenge.ready}
-              className="group bg-foreground text-background hover:bg-brand hover:text-brand-foreground mt-2 h-14 w-full rounded-full px-6"
+              className="group mt-2 w-full"
             >
               {isSubmitting ? (
                 <>

@@ -138,6 +138,78 @@
   }
 }
 
+/*
+  Color scopes. .scheme-dark gives an element and its children the dark
+  tokens. .scheme-inverted gives them the tokens of the other scheme: the
+  footer uses it. Both redeclare every color, also the ones that only point
+  to another token, so those resolve inside the scope. A unit test keeps
+  these values equal to the :root values above.
+*/
+.scheme-dark,
+.scheme-inverted {
+  color-scheme: dark;
+  --background: oklch(0.121 0.0039 245.5);
+  --foreground: oklch(0.915 0.009 94);
+  --fg-secondary: oklch(0.85 0.009 94);
+  --fg-muted: oklch(0.77 0.008 94);
+  --fg-faint: oklch(0.59 0.007 94);
+  --card: oklch(0.165 0.004 245.5);
+  --card-foreground: var(--foreground);
+  --popover: oklch(0.165 0.004 245.5);
+  --popover-foreground: var(--foreground);
+  --primary: var(--foreground);
+  --primary-foreground: var(--background);
+  --secondary: oklch(0.21 0.005 245.5);
+  --secondary-foreground: var(--foreground);
+  --muted: oklch(0.21 0.005 245.5);
+  --muted-foreground: var(--fg-muted);
+  --accent: color-mix(in oklab, var(--foreground) 10%, transparent);
+  --accent-foreground: var(--foreground);
+  --destructive: oklch(0.79 0.12 27);
+  --verified: oklch(0.76 0.13 152);
+  --partial: oklch(0.8 0.13 80);
+  --contradicted: oklch(0.79 0.12 25);
+  --border: oklch(0.28 0.006 245.5);
+  --input: oklch(0.28 0.006 245.5);
+  --ring: color-mix(in oklab, var(--foreground) 50%, transparent);
+  --brand: oklch(0.806 0.139 216.4);
+  --brand-foreground: var(--background);
+  --page-base: oklch(0.05 0.002 245.5);
+}
+
+@media (prefers-color-scheme: dark) {
+  .scheme-inverted {
+    color-scheme: light;
+    --background: oklch(0.955 0.009 94);
+    --foreground: oklch(0.155 0.006 85);
+    --fg-secondary: oklch(0.36 0.008 85);
+    --fg-muted: oklch(0.46 0.008 85);
+    --fg-faint: oklch(0.62 0.008 85);
+    --card: oklch(0.98 0.005 94);
+    --card-foreground: oklch(0.155 0.006 85);
+    --popover: oklch(0.98 0.005 94);
+    --popover-foreground: oklch(0.155 0.006 85);
+    --primary: oklch(0.155 0.006 85);
+    --primary-foreground: oklch(0.97 0.01 94);
+    --secondary: oklch(0.91 0.012 94);
+    --secondary-foreground: oklch(0.155 0.006 85);
+    --muted: oklch(0.91 0.012 94);
+    --muted-foreground: var(--fg-muted);
+    --accent: color-mix(in oklab, var(--foreground) 10%, transparent);
+    --accent-foreground: var(--foreground);
+    --destructive: oklch(0.58 0.22 27);
+    --verified: oklch(0.52 0.12 152);
+    --partial: oklch(0.58 0.13 70);
+    --contradicted: oklch(0.55 0.2 27);
+    --border: oklch(0.82 0.012 94);
+    --input: oklch(0.82 0.012 94);
+    --ring: color-mix(in oklab, var(--foreground) 50%, transparent);
+    --brand: oklch(0.48 0.085 216.4);
+    --brand-foreground: var(--background);
+    --page-base: oklch(0.8 0.014 94);
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

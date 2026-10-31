@@ -5,6 +5,7 @@ import ChatComposer from '~/components/chat/ChatComposer'
 import type { ComposerLabels } from '~/components/chat/ChatComposer'
 import { usePanelActive } from '~/components/assistant/panel-active'
 import PageHeading from '~/components/PageHeading'
+import { buttonVariants } from '~/components/ui/button'
 import type { ChatSource } from '~/lib/chat/protocol'
 import { isChecking } from '~/lib/check/check-machine'
 import type { CheckState, CheckedPart } from '~/lib/check/check-machine'
@@ -328,8 +329,7 @@ function Summary({
     return () => window.clearTimeout(timer)
   }, [copied])
 
-  const actionClass =
-    'border-foreground/15 text-fg-secondary hover:text-foreground hover:border-foreground/30 focus-visible:ring-brand/70 inline-flex h-9 items-center gap-2 rounded-full border px-3.5 text-sm font-semibold transition-colors outline-none focus-visible:ring-2'
+  const actionClass = buttonVariants({ variant: 'secondary', size: 'pill' })
 
   const retry = (
     <button type="button" onClick={onRetry} className={actionClass}>

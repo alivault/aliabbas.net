@@ -17,7 +17,7 @@ import remarkGfm from 'remark-gfm'
 import GitHubIcon from '~/components/GitHubIcon'
 import PageHeading from '~/components/PageHeading'
 import Title from '~/components/Title'
-import { Button } from '~/components/ui/button'
+import { Button, buttonVariants } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import {
   Tooltip,
@@ -179,7 +179,7 @@ function SignInPanel({
   }
 
   return (
-    <div className="flex min-h-svh items-center justify-center bg-[#10100f] px-5 py-16 text-[#f1efe8]">
+    <div className="bg-background text-foreground flex min-h-svh items-center justify-center px-5 py-16 scheme-dark">
       <div className="w-full max-w-md border border-white/15 bg-white/[0.04] p-6 sm:p-8">
         <Link
           to="/"
@@ -210,8 +210,9 @@ function SignInPanel({
             <Button
               type="button"
               variant="outline"
+              size="pill-lg"
               onClick={() => void signOut()}
-              className="mt-5 w-full border-white/15 bg-transparent text-white hover:bg-white/10"
+              className="mt-5 w-full"
             >
               <LogOut /> Sign out
             </Button>
@@ -240,8 +241,9 @@ function SignInPanel({
               {error && <p className="text-sm text-[#ff8b75]">{error}</p>}
               <Button
                 type="submit"
+                size="pill-lg"
                 disabled={isSubmitting}
-                className="h-12 w-full rounded-full bg-[#d9ff43] text-[#10100f] hover:bg-white"
+                className="w-full"
               >
                 {isSubmitting && <LoaderCircle className="animate-spin" />}
                 Sign in
@@ -260,7 +262,8 @@ function SignInPanel({
                   callbackURL: window.location.href,
                 })
               }
-              className="h-12 w-full border-white/15 bg-transparent text-white hover:bg-white/10"
+              size="pill-lg"
+              className="w-full"
             >
               <GitHubIcon className="size-4" /> Continue with GitHub
             </Button>
@@ -424,12 +427,15 @@ export default function ConversationAdmin() {
   }
 
   return (
-    <div className="flex min-h-svh flex-col bg-[#10100f] text-[#f1efe8]">
+    <div className="bg-background text-foreground flex min-h-svh flex-col scheme-dark">
       <header className="flex h-16 shrink-0 items-center justify-between border-b border-white/15 px-4 sm:px-6">
         <div className="flex items-center gap-4">
           <Link
             to="/"
-            className="flex size-8 items-center justify-center rounded-full border border-white/15 text-white/50 hover:text-white"
+            className={buttonVariants({
+              variant: 'outline',
+              size: 'icon-pill',
+            })}
             aria-label="Back to portfolio"
           >
             <ArrowLeft className="size-4" />
@@ -452,7 +458,6 @@ export default function ConversationAdmin() {
                     size="icon-sm"
                     disabled={isLoading}
                     onClick={() => void loadConversations()}
-                    className="text-white/45 hover:bg-white/10 hover:text-white"
                     aria-label="Refresh conversations"
                   >
                     <RefreshCw className={cn(isLoading && 'animate-spin')} />
@@ -471,7 +476,6 @@ export default function ConversationAdmin() {
                     variant="ghost"
                     size="icon-sm"
                     onClick={() => void signOut()}
-                    className="text-white/45 hover:bg-white/10 hover:text-white"
                     aria-label="Sign out"
                   >
                     <LogOut />
@@ -571,11 +575,10 @@ export default function ConversationAdmin() {
                   </div>
                   <Button
                     type="button"
-                    variant="ghost"
+                    variant="destructive"
                     size="sm"
                     disabled={isDeleting}
                     onClick={() => void deleteSelectedConversation()}
-                    className="text-white/45 hover:bg-[#ff8b75]/10 hover:text-[#ff8b75]"
                   >
                     {isDeleting ? (
                       <LoaderCircle className="animate-spin" />

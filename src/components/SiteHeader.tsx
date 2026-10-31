@@ -204,7 +204,11 @@ export default function SiteHeader() {
               Contact <ArrowUpRight aria-hidden="true" className="size-4" />
             </Link>
             <SheetTrigger
-              className="border-foreground/15 text-foreground flex size-9 items-center justify-center rounded-full border lg:hidden"
+              className={buttonVariants({
+                variant: 'ghost',
+                size: 'icon-pill',
+                className: 'lg:hidden',
+              })}
               aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
             >
               <SpinMenuIcon open={menuOpen} />
@@ -255,9 +259,13 @@ export default function SiteHeader() {
               <Link
                 to="/contact"
                 onClick={() => setMenuOpen(false)}
-                className="bg-brand text-brand-foreground flex items-center justify-between rounded-full px-6 py-4 text-sm font-bold"
+                className={buttonVariants({
+                  size: 'pill-lg',
+                  className: 'w-full justify-between',
+                })}
               >
-                Start a conversation <ArrowUpRight className="size-4" />
+                Start a conversation{' '}
+                <ArrowUpRight aria-hidden="true" className="size-4" />
               </Link>
             </motion.div>
           </div>

@@ -3,7 +3,6 @@ import { ArrowUp, Square } from 'lucide-react'
 import { Button } from '~/components/ui/button'
 import { Kbd } from '~/components/ui/kbd'
 import { Textarea } from '~/components/ui/textarea'
-import { cn } from 'cn'
 
 export type ComposerLabels = {
   field: string
@@ -98,7 +97,8 @@ export default function ChatComposer({
         />
         <Button
           type={showStop ? 'button' : 'submit'}
-          size="icon-lg"
+          variant={showStop ? 'secondary' : 'default'}
+          size="icon-pill"
           onClick={showStop ? onStop : undefined}
           disabled={!showStop && !hasDraft}
           aria-label={
@@ -108,12 +108,6 @@ export default function ChatComposer({
                 ? labels.stopAndSubmit
                 : labels.submit
           }
-          className={cn(
-            'rounded-full transition-colors',
-            showStop
-              ? 'bg-foreground/10 text-foreground hover:bg-foreground/15'
-              : 'bg-foreground text-background hover:bg-foreground hover:text-background',
-          )}
         >
           {showStop ? (
             <Square className="size-3.5 fill-current" />

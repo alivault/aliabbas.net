@@ -249,7 +249,12 @@ export function HomeHero() {
               title={
                 paused ? 'Play the changing word' : 'Pause the changing word'
               }
-              className="enter-blur border-foreground/20 text-fg-muted hover:text-foreground focus-visible:ring-brand/70 pointer-events-auto flex size-10 items-center justify-center rounded-full border outline-none focus-visible:ring-2 motion-reduce:hidden"
+              className={buttonVariants({
+                variant: 'outline',
+                size: 'icon-pill',
+                className:
+                  'enter-blur pointer-events-auto motion-reduce:hidden',
+              })}
             >
               {paused ? (
                 <Play aria-hidden="true" className="size-4" />

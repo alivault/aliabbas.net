@@ -36,6 +36,7 @@ const buttonStyles = cva(
         'icon-lg': 'size-9',
         // The round buttons and links of the site pages.
         pill: 'h-9 gap-2 rounded-full px-4 text-sm font-semibold',
+        'icon-pill': 'size-9 rounded-full',
         'pill-lg':
           'h-11 gap-2 rounded-full px-4 text-sm font-semibold sm:px-5 sm:text-base',
       },

@@ -1,5 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowUp, ArrowUpRight } from 'lucide-react'
+import { buttonVariants } from './ui/button'
 
 const links = [
   { label: 'Work', to: '/work' },
@@ -15,7 +16,7 @@ const links = [
 ] as const
 
 const bigLink =
-  'footer-link focus-visible:outline-background inline-flex items-center gap-2 py-0.5 focus-visible:outline-2 focus-visible:outline-offset-4'
+  'footer-link focus-visible:outline-foreground inline-flex items-center gap-2 py-0.5 focus-visible:outline-2 focus-visible:outline-offset-4'
 
 function scrollToTop() {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -24,7 +25,7 @@ function scrollToTop() {
 
 export default function Footer() {
   return (
-    <footer className="site-footer bg-foreground text-background relative">
+    <footer className="site-footer scheme-inverted bg-background text-foreground relative">
       <div className="mx-auto flex max-w-[1600px] flex-col px-5 pt-24 pb-5 sm:px-8 sm:pt-28 sm:pb-6 lg:px-12 lg:pt-24">
         <div className="grid gap-10 xl:grid-cols-[1fr_auto] xl:items-end">
           <h2 className="text-[clamp(2.25rem,1.5rem+3.5vw,5rem)] leading-[1.05] font-normal text-balance">
@@ -33,12 +34,13 @@ export default function Footer() {
           </h2>
           <Link
             to="/contact"
-            className="group bg-background text-foreground focus-visible:outline-background inline-flex items-center gap-3 justify-self-start rounded-full py-3 pr-3 pl-6 text-lg font-medium transition-transform duration-300 hover:scale-[1.03] focus-visible:outline-2 focus-visible:outline-offset-4 xl:self-auto xl:justify-self-auto"
+            className={buttonVariants({
+              size: 'pill-lg',
+              className: 'justify-self-start xl:justify-self-auto',
+            })}
           >
             Start a conversation
-            <span className="bg-foreground text-background flex size-11 items-center justify-center rounded-full transition-transform duration-500 group-hover:rotate-45">
-              <ArrowUpRight className="size-5" aria-hidden="true" />
-            </span>
+            <ArrowUpRight aria-hidden="true" />
           </Link>
         </div>
 
@@ -72,13 +74,14 @@ export default function Footer() {
           <button
             type="button"
             onClick={scrollToTop}
-            className="group border-background/25 hover:border-background focus-visible:outline-background inline-flex shrink-0 items-center gap-3 self-start rounded-full border px-5 py-2.5 text-base whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:outline-offset-4"
+            className={buttonVariants({
+              variant: 'secondary',
+              size: 'pill',
+              className: 'self-start',
+            })}
           >
             Back to top
-            <ArrowUp
-              className="size-4 transition-transform group-hover:-translate-y-0.5"
-              aria-hidden="true"
-            />
+            <ArrowUp aria-hidden="true" />
           </button>
         </div>
 
@@ -86,13 +89,13 @@ export default function Footer() {
           <Link
             to="/"
             aria-label="Ali Abbas — home"
-            className="site-footer-wordmark focus-visible:outline-background block w-fit focus-visible:outline-2 focus-visible:outline-offset-4"
+            className="site-footer-wordmark focus-visible:outline-foreground block w-fit focus-visible:outline-2 focus-visible:outline-offset-4"
           >
             <span aria-hidden="true">Ali Abbas</span>
           </Link>
         </div>
 
-        <div className="text-background/55 border-background/15 mt-4 flex flex-col gap-1 border-t pt-4 text-sm sm:flex-row sm:justify-between">
+        <div className="text-fg-muted border-border mt-4 flex flex-col gap-1 border-t pt-4 text-sm sm:flex-row sm:justify-between">
           <span>© {new Date().getFullYear()} Ali Abbas</span>
           <span>Designed and engineered with intent.</span>
         </div>
