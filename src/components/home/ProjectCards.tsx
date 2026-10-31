@@ -10,9 +10,10 @@ import {
   useTransform,
 } from 'motion/react'
 import type { MotionValue } from 'motion/react'
-import Meta, { metaStyles } from '~/components/Meta'
+import Meta from '~/components/Meta'
 import ScrollReveal from '~/components/ScrollReveal'
 import Title from '~/components/Title'
+import { buttonVariants } from '~/components/ui/button'
 import type { WorkItem } from '~/data/work'
 import { cn } from 'cn'
 import { SPRINGS } from '~/lib/design/motion'
@@ -57,11 +58,6 @@ function wipe(progress: number) {
   const bottom = `calc(100% - ${travel})`
   return `polygon(${top} 0, 100% 0, 100% 100%, ${bottom} 100%)`
 }
-
-const cardLinkStyles = cn(
-  metaStyles('brand'),
-  'hover:text-foreground focus-visible:outline-foreground inline-flex min-h-6 font-medium items-center gap-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4',
-)
 
 /** The mark of a project. Its sizes are a part of the block height. */
 function ProjectMark({ project }: { project: WorkItem }) {
@@ -266,15 +262,15 @@ export function FeaturedProject({
           <p className="text-fg-secondary mt-4 text-base leading-7 text-pretty lg:text-lg lg:leading-8">
             {project.description}
           </p>
-          <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2">
+          <div className="mt-7 flex flex-wrap gap-3">
             {project.caseStudy && (
               <Link
                 to="/work/$slug"
                 params={{ slug: project.caseStudy }}
-                className={cardLinkStyles}
+                className={buttonVariants({ size: 'pill' })}
               >
                 Case study
-                <ArrowRight className="size-4" aria-hidden="true" />
+                <ArrowRight aria-hidden="true" />
                 <span className="sr-only">: {project.title}</span>
               </Link>
             )}
@@ -282,10 +278,15 @@ export function FeaturedProject({
               href={project.href}
               target="_blank"
               rel="noreferrer"
-              className={cardLinkStyles}
+              // The first action is the primary one: the case study if there
+              // is one, else the site.
+              className={buttonVariants({
+                variant: project.caseStudy ? 'secondary' : 'default',
+                size: 'pill',
+              })}
             >
               Visit site
-              <ArrowUpRight className="size-4" aria-hidden="true" />
+              <ArrowUpRight aria-hidden="true" />
               <span className="sr-only">
                 : {project.title} (opens in a new tab)
               </span>
