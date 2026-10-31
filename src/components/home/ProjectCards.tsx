@@ -16,25 +16,13 @@ import Title from '~/components/Title'
 import { ButtonAnchor, ButtonLink } from '~/components/ui/button'
 import type { WorkItem } from '~/data/work'
 import { cn } from 'cn'
-import { SPRINGS } from '~/lib/design/motion'
 
 /** Background of each project block. */
 const blockStyles = {
   whimcall: 'bg-[#080b12]',
   pico: 'bg-black',
-  chromagine: 'bg-[#335cff]',
+  postmaster: 'bg-[#101114]',
 } satisfies Record<WorkItem['visual'], string>
-
-const chromaginePetals = [
-  '#ff375f',
-  '#ff9f0a',
-  '#ffd60a',
-  '#30d158',
-  '#64d2ff',
-  '#0a84ff',
-  '#bf5af2',
-  '#ff2d95',
-] as const
 
 // @container-size: the wipe of ProjectBlock measures its angle in cqh.
 const blockLinkStyles =
@@ -94,26 +82,26 @@ function ProjectMark({ project }: { project: WorkItem }) {
       </>
     )
 
+  // Postmaster: the app icon over a slow glow in the colors of the sunset
+  // photo on its letter.
   return (
-    <div
-      aria-hidden="true"
-      className="absolute top-1/2 left-1/2 aspect-square h-[62%] -translate-x-1/2 -translate-y-1/2"
-    >
-      {chromaginePetals.map((color, petalIndex) => (
-        <span
-          key={color}
-          className="pointer-events-none absolute inset-0"
-          style={{ transform: `rotate(${petalIndex * 45}deg)` }}
-        >
-          <motion.span
-            whileHover={{ scale: 1.14, y: -8, opacity: 1 }}
-            transition={SPRINGS.hover}
-            className="pointer-events-auto absolute top-[2%] left-1/2 h-[43%] w-[29%] origin-bottom -translate-x-1/2 cursor-pointer rounded-[999px] border border-white/35 opacity-90 mix-blend-screen"
-            style={{ backgroundColor: color }}
-          />
-        </span>
-      ))}
-    </div>
+    <>
+      <motion.div
+        animate={{ scale: [1, 1.1, 1], opacity: [0.4, 0.6, 0.4] }}
+        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-[46%] left-1/2 aspect-[3/2] h-[56%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff7a45]/40 blur-3xl"
+      />
+      <motion.div
+        animate={{ scale: [1.08, 0.95, 1.08], opacity: [0.35, 0.55, 0.35] }}
+        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-[58%] left-1/2 aspect-[3/2] h-[50%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#7b5cff]/35 blur-3xl"
+      />
+      <img
+        src={project.image}
+        alt=""
+        className="absolute top-1/2 left-1/2 z-10 aspect-square h-[52%] w-auto -translate-x-1/2 -translate-y-1/2"
+      />
+    </>
   )
 }
 

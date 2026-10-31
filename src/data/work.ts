@@ -9,7 +9,7 @@ export type WorkItem = {
   year: string
   /** Shown on the case study page. */
   tools: Array<string>
-  visual: 'whimcall' | 'pico' | 'chromagine'
+  visual: 'whimcall' | 'pico' | 'postmaster'
   /** Slug of the case study at /work/$slug, if there is one. */
   caseStudy?: CaseStudySlug
 }
@@ -40,13 +40,15 @@ export const recentWork = [
     caseStudy: 'whimcall',
   },
   {
-    title: 'Chromagine',
-    category: 'Creative tool · Color',
+    title: 'Postmaster',
+    category: 'Mac app · Email',
     description:
-      'A joyful utility for creating harmonious palettes with perceptual color models instead of guesswork.',
-    href: 'https://chromagine.aliabbas.net/',
-    year: '2025',
-    tools: ['React', 'Color science', 'Design'],
-    visual: 'chromagine',
+      'A fast, private, keyboard-first Mac email client for Gmail, Outlook, and any IMAP or JMAP account. No server: mail and credentials stay on the Mac.',
+    href: 'https://postmaster.aliabbas.net/',
+    image: '/postmaster.webp',
+    year: '2026',
+    tools: ['Swift', 'AppKit', 'IMAP and JMAP'],
+    visual: 'postmaster',
+    caseStudy: 'postmaster',
   },
 ] as const satisfies ReadonlyArray<WorkItem>

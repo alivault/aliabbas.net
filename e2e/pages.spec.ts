@@ -56,6 +56,7 @@ for (const path of [
   '/chat',
   '/check',
   '/work/pico',
+  '/work/postmaster',
   '/performance',
   '/design',
 ]) {
@@ -286,10 +287,10 @@ test('the work stage shows the project in the middle of the screen', async ({
         row.top + row.height / 2 - (stage.top + stage.height / 2),
       )
     }, title)
-  const titles = ['Pico', 'Whimcall', 'Chromagine']
+  const titles = ['Pico', 'Whimcall', 'Postmaster']
   await expect(stage).toHaveAttribute('data-work-stage', 'Pico')
   // The block of a project is fully open when its text is level with it.
-  for (const title of ['Whimcall', 'Chromagine', 'Pico']) {
+  for (const title of ['Whimcall', 'Postmaster', 'Pico']) {
     await expect
       .poll(async () => {
         await alignWithStage(title)

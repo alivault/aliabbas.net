@@ -43,7 +43,7 @@ export type CaseStudyNumber = {
 }
 
 export type CaseStudy = {
-  slug: 'pico' | 'whimcall'
+  slug: 'pico' | 'whimcall' | 'postmaster'
   title: string
   category: string
   year: string
@@ -63,6 +63,9 @@ export type CaseStudy = {
 
 const PICO_COMMIT = 'abae556'
 const WHIMCALL_COMMIT = 'acb7798'
+const POSTMASTER_COMMIT = '22e0c83'
+/** The Swift sources of Postmaster, for evidence paths. */
+const PM = 'apps/macos/Sources/PostmasterNative/'
 const MEASURED_ON = '27 October 2026'
 
 const pico: CaseStudy = {
@@ -594,9 +597,285 @@ const whimcall: CaseStudy = {
   ],
 }
 
+const postmaster: CaseStudy = {
+  slug: 'postmaster',
+  title: 'Postmaster',
+  category: 'Mac app · Email',
+  year: '2026',
+  summary:
+    'A native Mac mail client for Gmail, Outlook, and any IMAP or JMAP account. Each action shows at once and reaches the server later. A send survives a crash without a second copy, and the HTML of a message cannot run code or load anything without consent.',
+  liveHref: 'https://postmaster.aliabbas.net/',
+  liveLabel: 'postmaster.aliabbas.net',
+  evidenceNote: `Postmaster is a private repository. Paths are at commit ${POSTMASTER_COMMIT}.`,
+  problem: [
+    'A good mail client feels instant: a message leaves the inbox when you press a key. But the server confirms the change later, over IMAP, JMAP, or the Gmail API. Between the two, the app can quit, the network can drop, the server can refuse, and a refresh can arrive with the old state.',
+    'Sending has a harder rule: a message must go out one time. Not zero times when the app crashes, and not two times when it starts again. And each message that arrives is HTML from a stranger, which must show as its sender made it, but must not run code or tell the sender that it was opened.',
+  ],
+  role: [
+    'Ali made Postmaster: the product concept, the interface design, the native macOS app in Swift and AppKit, and the website.',
+    'The app speaks IMAP, SMTP, JMAP, and the Gmail API with its own clients. It has no server and no helper process: one Swift actor in the app owns the connections, the local store, and the background work. Its only package dependency is Sparkle, for updates.',
+  ],
+  machines: [
+    {
+      id: 'postmaster-outbox',
+      title: 'One message in the outbox',
+      intro:
+        'With Undo Send or Send Later, a message goes into the outbox in the local profile, and a timer sends it. The profile is written atomically before each step. The message gets its Message-ID when it is queued, and keeps it for each attempt.',
+      source: [
+        `${PM}SwiftMailEngine+Compose.swift`,
+        `${PM}SwiftMailEngine.swift`,
+        `${PM}MailStore+Actions.swift`,
+      ],
+      states: [
+        {
+          id: 'Queued',
+          label: 'Queued',
+          meaning:
+            'The message and its send time are in the profile. A timer waits for the send time.',
+        },
+        {
+          id: 'Sending',
+          label: 'Sending',
+          meaning:
+            'The status “sending” is in the profile before the provider call starts.',
+        },
+        {
+          id: 'Checking',
+          label: 'Checking',
+          meaning:
+            'At launch, a message is still “sending”: the app stopped during the send. The app looks for its Message-ID in the Sent folder.',
+        },
+        {
+          id: 'Failed',
+          label: 'Failed',
+          meaning:
+            'The send failed. The outbox shows the error and the time of the next try.',
+        },
+        {
+          id: 'Sent',
+          label: 'Sent',
+          meaning: 'The message leaves the outbox, and its draft is deleted.',
+        },
+        {
+          id: 'Withdrawn',
+          label: 'Withdrawn',
+          meaning:
+            'Undo, Cancel, or Edit removed the message. Edit opens it in a composer again.',
+        },
+      ],
+      transitions: [
+        {
+          from: 'start',
+          to: 'Queued',
+          event: 'send with Undo Send or Send Later',
+        },
+        {
+          from: 'Queued',
+          to: 'Sending',
+          event: 'send time comes, or Send Now',
+        },
+        { from: 'Queued', to: 'Withdrawn', event: 'Undo, Cancel, or Edit' },
+        { from: 'Sending', to: 'Sent', event: 'provider accepts it' },
+        { from: 'Sending', to: 'Failed', event: 'send fails' },
+        { from: 'Sending', to: 'Checking', event: 'app stops' },
+        { from: 'Checking', to: 'Sent', event: 'found in Sent' },
+        {
+          from: 'Checking',
+          to: 'Sending',
+          event: 'not in Sent',
+        },
+        { from: 'Checking', to: 'Failed', event: 'check fails' },
+        {
+          from: 'Failed',
+          to: 'Sending',
+          event: 'retry time comes (2 min, doubling to 60 min)',
+        },
+        { from: 'Failed', to: 'Queued', event: 'new send time' },
+        { from: 'Failed', to: 'Withdrawn', event: 'Cancel or Edit' },
+      ],
+    },
+    {
+      id: 'postmaster-action',
+      title: 'One action on a message',
+      intro:
+        'The app keeps two layers of message state: what the server confirmed, and a projection with the pending changes on top. The list shows the projection. Jobs go to the server in lanes, one lane for each conversation.',
+      source: [
+        `${PM}OptimisticMail.swift`,
+        `${PM}MailActionQueue.swift`,
+        `${PM}MailStore+Actions.swift`,
+        `${PM}SwiftMailEngine+Mutations.swift`,
+      ],
+      states: [
+        {
+          id: 'Shown',
+          label: 'Shown',
+          meaning:
+            'The change is in the projection, so the list shows it at once. The confirmed state stays under it.',
+        },
+        {
+          id: 'Waiting',
+          label: 'Waiting',
+          meaning:
+            'The job waits for its conversation lane. At most 4 jobs run at a time, and undo jobs go first.',
+        },
+        {
+          id: 'Applying',
+          label: 'Applying',
+          meaning:
+            'The provider call runs. A change to more than one message first stores an intent in the profile.',
+        },
+        {
+          id: 'Confirmed',
+          label: 'Confirmed',
+          meaning:
+            'The change becomes part of the confirmed state, and leaves the projection.',
+        },
+        {
+          id: 'Dropped',
+          label: 'Dropped',
+          meaning:
+            'The server refused. The change leaves the projection, so the confirmed state shows again, and the rows come back.',
+        },
+      ],
+      transitions: [
+        {
+          from: 'start',
+          to: 'Shown',
+          event: 'archive, star, move, snooze, or delete',
+        },
+        { from: 'Shown', to: 'Shown', event: 'a refresh arrives' },
+        { from: 'Shown', to: 'Waiting', event: 'job queued' },
+        { from: 'Waiting', to: 'Applying', event: 'lane free' },
+        { from: 'Applying', to: 'Confirmed', event: 'server applies it' },
+        { from: 'Applying', to: 'Dropped', event: 'server refuses it' },
+        {
+          from: 'Confirmed',
+          to: 'Shown',
+          event: 'Undo: a new, inverse change',
+        },
+      ],
+    },
+  ],
+  failureModes: [
+    {
+      title: 'The app stops in the middle of a send',
+      risk: 'The app crashes or quits after the server took the message, but before the outbox recorded it. A blind retry sends a second copy.',
+      design: [
+        'The message gets its Message-ID when it is queued, and keeps it for every attempt.',
+        'The outbox writes the status “sending” to the profile before the provider call. The profile is written atomically, so it is never half-written.',
+        'At launch, the app sets a timer again for each message in the outbox. A message that is still “sending” is marked as interrupted.',
+        'Before it sends an interrupted message again, the app looks for its Message-ID in the Sent folder, over IMAP, JMAP, or the Gmail API. If it is there, the message leaves the outbox and is not sent again.',
+      ],
+      evidence: [
+        `${PM}SwiftMailEngine+Compose.swift`,
+        `${PM}SwiftMailEngine.swift`,
+      ],
+    },
+    {
+      title: 'A send fails',
+      risk: 'The network is down, the server refuses, or the token expired. The person thinks that the message went out.',
+      design: [
+        'A failed send stays in the outbox with the message “Delivery failed. Postmaster will retry automatically.” and the time of the next try.',
+        'The next try comes after 2 minutes, then 4, 8, and so on, up to 60 minutes.',
+        'The person can give a failed message a new send time, cancel it, or edit it. A message that is sending at that moment cannot change.',
+        'The outbox holds at most 1,000 messages of at most 32 MiB each, so it cannot grow without a limit.',
+      ],
+      evidence: [`${PM}SwiftMailEngine+Compose.swift`],
+    },
+    {
+      title: 'A refresh brings back the old state',
+      risk: 'You archive a message, and a sync that started a second earlier arrives with the message still in the inbox. Without care, the message comes back.',
+      design: [
+        'In the interface, a server snapshot does not replace a message that has a pending change. The change stays on top of the confirmed state until the server answers.',
+        'In the engine, each local change gets a number from a clock. A sync that started before the change does not overwrite the flags of that message, and does not remove it from the cache.',
+        'A batch change stores an intent in the profile before the first server call. Until the intent is cleared, sync protects every message in it. After a crash, Recover Messages shows the intent, and the person can apply it again.',
+      ],
+      evidence: [
+        `${PM}OptimisticMail.swift`,
+        `${PM}SwiftMailEngine+Mutations.swift`,
+        `${PM}SwiftMailEngine+Sync.swift`,
+        `${PM}RecoveryWindowController.swift`,
+      ],
+    },
+    {
+      title: 'The server refuses an action, or an undo comes late',
+      risk: 'The archive of 4 messages fails for one of them. Or you undo an archive after you also starred the message, and the undo removes the star.',
+      design: [
+        'A refused change leaves the projection, so the confirmed state shows again without a manual rollback. The rows come back in the list, and the selection is restored.',
+        'The error says how much worked, for example “Archive: 3 completed; 1 failed.”',
+        'An undo is a new change. It restores only the fields that still have the value that the first change gave them, so a later change stays.',
+        'If an undo fails, the failed part stays on the undo stack.',
+        'Over IMAP, a move can be undone only when the server returned the new UID of the message. Without it, the app does not offer an undo that could move the wrong message.',
+      ],
+      evidence: [
+        `${PM}OptimisticMail.swift`,
+        `${PM}MailStore+Actions.swift`,
+        `${PM}SwiftMailEngine+Mutations.swift`,
+      ],
+    },
+    {
+      title: 'New mail is late, or a folder changes on the server',
+      risk: 'A push connection dies without an error, a sleeping laptop wakes up, or the server rebuilds a folder and gives its messages new UIDs.',
+      design: [
+        'For each account, one connection waits in IMAP IDLE on the inbox, or on the JMAP push stream. The IDLE command is renewed every 285 s, before routers drop a quiet connection.',
+        'When the connection drops, it opens again after 1 s, doubling to 300 s, with random jitter. A connection that lived longer than 60 s starts the delay at 1 s again.',
+        'Push events that come close together cause one refresh, 300 ms after the first.',
+        'A sync loop also runs every 60 s while the app is in front or notifications are on, and every 300 s when not.',
+        'IMAP sync uses QRESYNC or CONDSTORE when the server has them, so it fetches only the changed flags and the removed messages. When nothing changed, it stops after SELECT.',
+        'When UIDVALIDITY changes, the old UIDs mean nothing, so the app clears its cache for that folder and loads it again.',
+      ],
+      evidence: [
+        `${PM}SwiftMailEngine+Push.swift`,
+        `${PM}SwiftMailEngine+Sync.swift`,
+        `${PM}SimpleMailProtocols.swift`,
+      ],
+    },
+    {
+      title: 'A message tries to run code or to track',
+      risk: 'Message HTML is written by a stranger. It can carry scripts, forms, and remote images that tell the sender when and where the message was opened, or that point at a server on the local network.',
+      design: [
+        'The reader turns off JavaScript, sets a content security policy with default-src none, cancels every navigation, and uses a data store that is not kept. Sender styles stay, so a message looks as its sender made it.',
+        'Scripts, frames, and embedded objects are removed. Form tags are removed but their content stays, and the policy refuses every form action. Fonts and style sheets from the network are never fetched.',
+        'Remote images are blocked until the person approves them. Then the app fetches them itself, not the web view, and gives them to the page as data.',
+        'An approved image must use HTTPS and resolve to a public address: the app checks the DNS answer and each redirect, and refuses localhost and private ranges.',
+        'Each image can be at most 8 MiB, and all images of a message together at most 20 MiB. An image shows only after ImageIO decodes it, so its bytes decide that it is an image, not its content type.',
+      ],
+      evidence: [
+        `${PM}SafeMessageWebView.swift`,
+        `${PM}ReaderImageSchemeHandler.swift`,
+        `${PM}SwiftMailEngine+Reading.swift`,
+        `${PM}SimpleMailProtocols.swift`,
+      ],
+    },
+  ],
+  numbers: [
+    {
+      value: '30 s',
+      label: 'longest Undo Send',
+      method: `undoDelay in send, in ${PM}SwiftMailEngine+Compose.swift.`,
+    },
+    {
+      value: '2 → 60 min',
+      label: 'between tries of a failed send',
+      method: `retryDelay in deliverScheduled, in ${PM}SwiftMailEngine+Compose.swift.`,
+    },
+    {
+      value: '285 s',
+      label: 'between renewals of IMAP IDLE',
+      method: `renewAfter in SimpleIMAP.watch, in ${PM}SimpleMailProtocols.swift.`,
+    },
+    {
+      value: '8 · 20 MiB',
+      label: 'for one remote image, and for all of a message',
+      method: `readerImage and resolvedImages in ${PM}SwiftMailEngine+Reading.swift.`,
+    },
+  ],
+}
+
 export const caseStudies = [
   pico,
   whimcall,
+  postmaster,
 ] as const satisfies ReadonlyArray<CaseStudy>
 
 export type CaseStudySlug = CaseStudy['slug']

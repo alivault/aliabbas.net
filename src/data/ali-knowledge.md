@@ -280,23 +280,46 @@ interfaces:
 - The lab at https://aliabbas.net/lab shows the interface primitives (a
   streamed answer, a citation drawer, a resizer, and a transition that keeps
   state) with controls that force each state, and a reduced-motion switch.
-- Case studies at https://aliabbas.net/work/pico and
-  https://aliabbas.net/work/whimcall describe Pico and Whimcall as state
-  machines, with the failure modes each one handles.
+- Case studies at https://aliabbas.net/work/pico,
+  https://aliabbas.net/work/whimcall, and
+  https://aliabbas.net/work/postmaster describe Pico, Whimcall, and Postmaster
+  as state machines, with the failure modes each one handles.
 - https://aliabbas.net/performance shows Core Web Vitals from real visits and
   lab measurements. Measuring them showed that the page entrance animations
   kept content hidden until JavaScript loaded. Ali moved the entrances to CSS,
   and the Largest Contentful Paint of the chat page went from 4.4 s to 3.5 s
   in Lighthouse's mobile test.
 
-### Chromagine — creative color tool (2025)
+### Postmaster — native Mac email client (2026)
 
-Live project: https://chromagine.aliabbas.net/
+Live project: https://postmaster.aliabbas.net/
+Case study: https://aliabbas.net/work/postmaster
 
-Chromagine is a playful utility for creating harmonious color palettes using
-perceptual color models rather than guesswork. Ali handled product design,
-color systems, React development, and deployment. The public project summary
-highlights React, color science, and design.
+Postmaster is a free, fast, private, keyboard-first Mac email client for Gmail,
+Outlook, and any IMAP or JMAP account. Ali made the product concept, the
+interface design, the native macOS app in Swift and AppKit, and the website.
+The source code is private.
+
+The app speaks IMAP, SMTP, JMAP, and the Gmail API with its own clients. It has
+no server, no helper process, and no telemetry: one Swift actor in the app owns
+the mail connections, the local message store, and background work.
+Credentials stay in the macOS Keychain. Google and Microsoft sign-in use OAuth
+with PKCE in the default browser. Its only package dependency is Sparkle, for
+updates.
+
+Features include a unified inbox, conversations, Undo Send (up to 30 seconds),
+Send Later, snooze, incoming rules, saved searches, a command palette,
+keyboard presets, calendar invitation replies, and notifications.
+
+Each action, such as archive or star, shows at once and reaches the server
+later. The app keeps the confirmed server state and a projection with the
+pending changes on top, so a refresh cannot bring back an archived message,
+and a refused change drops off by itself. Queued sends survive a crash: each
+message keeps one Message-ID, and after a crash the app looks for it in the
+Sent folder before it sends again. The reader shows sender HTML with
+JavaScript off and a strict content security policy. Remote images load only
+after approval, and the app fetches them itself, only from public HTTPS
+addresses.
 
 ## Writing and technical interests
 
