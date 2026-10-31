@@ -8,10 +8,11 @@ import type { WorkItem } from '~/data/work'
 import { cn } from 'cn'
 import { SPRINGS } from '~/lib/design/motion'
 
-const visualStyles = {
-  whimcall: 'bg-[#080b12] text-white',
-  pico: 'bg-[#d8d5cd] text-[#10100f]',
-  chromagine: 'bg-[#335cff] text-white',
+/** Background of each app icon. */
+const iconStyles = {
+  whimcall: 'bg-[#080b12]',
+  pico: 'bg-black',
+  chromagine: 'bg-[#335cff]',
 } satisfies Record<WorkItem['visual'], string>
 
 const chromaginePetals = [
@@ -26,32 +27,28 @@ const chromaginePetals = [
 ] as const
 
 const visualLinkStyles =
-  'group focus-visible:outline-foreground block rounded-[2px] focus-visible:outline-2 focus-visible:outline-offset-4'
+  'group focus-visible:outline-foreground block rounded-[22.5%] focus-visible:outline-2 focus-visible:outline-offset-4'
 
 const cardLinkStyles = cn(
   metaStyles('brand'),
   'hover:text-foreground focus-visible:outline-foreground inline-flex min-h-6 font-medium items-center gap-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4',
 )
 
+/** The project as an app icon: a rounded square with its mark inside. */
 function ProjectVisual({ project }: { project: WorkItem }) {
   return (
     <div
       className={cn(
-        'site-noise relative aspect-[4/3] overflow-hidden rounded-[2px] lg:aspect-[16/10]',
-        visualStyles[project.visual],
+        'site-noise ring-foreground/10 relative isolate size-28 overflow-hidden rounded-[22.5%] shadow-2xl ring-1 transition-transform duration-500 group-hover:-translate-y-1 group-hover:scale-[1.03] sm:size-40 lg:size-64',
+        iconStyles[project.visual],
       )}
     >
-      <div className="project-lines absolute inset-0 opacity-40" />
       {project.visual === 'pico' && (
-        <>
-          <div className="absolute inset-[12%] border border-black/20" />
-          <div className="absolute top-[12%] bottom-[12%] left-1/2 w-px bg-black/20" />
-          <img
-            src={project.image}
-            alt=""
-            className="absolute top-1/2 left-1/2 h-[34%] w-auto -translate-x-1/2 -translate-y-1/2 rounded-[18%] shadow-[0_30px_60px_rgba(0,0,0,0.25)] transition-transform duration-500 group-hover:scale-[1.08] group-hover:-rotate-3"
-          />
-        </>
+        <img
+          src={project.image}
+          alt=""
+          className="absolute inset-[14%] size-[72%]"
+        />
       )}
 
       {project.visual === 'whimcall' && (
@@ -59,19 +56,17 @@ function ProjectVisual({ project }: { project: WorkItem }) {
           <motion.div
             animate={{ scale: [1, 1.12, 1], opacity: [0.45, 0.7, 0.45] }}
             transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-1/2 left-[40%] aspect-square h-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff2f75]/45 blur-[55px]"
+            className="absolute top-1/2 left-[38%] size-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff2f75]/45 blur-xl lg:blur-3xl"
           />
           <motion.div
             animate={{ scale: [1.1, 0.96, 1.1], opacity: [0.5, 0.75, 0.5] }}
             transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-1/2 left-[60%] aspect-square h-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#006dff]/55 blur-[55px]"
+            className="absolute top-1/2 left-[62%] size-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#006dff]/55 blur-xl lg:blur-3xl"
           />
-          <div className="absolute top-1/2 left-1/2 aspect-square h-[78%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10" />
-          <div className="absolute top-1/2 left-1/2 aspect-square h-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10" />
           <img
             src={project.image}
             alt=""
-            className="enter-zoom absolute top-1/2 left-1/2 z-10 h-[45%] w-auto -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_24px_40px_rgba(50,60,255,0.38)] transition-transform duration-500 group-hover:scale-[1.06]"
+            className="absolute top-1/2 left-1/2 z-10 size-[62%] -translate-x-1/2 -translate-y-1/2"
           />
         </>
       )}
@@ -79,7 +74,7 @@ function ProjectVisual({ project }: { project: WorkItem }) {
       {project.visual === 'chromagine' && (
         <div
           aria-hidden="true"
-          className="absolute top-1/2 left-1/2 aspect-square h-[66%] -translate-x-1/2 -translate-y-1/2"
+          className="absolute top-1/2 left-1/2 size-[74%] -translate-x-1/2 -translate-y-1/2"
         >
           {chromaginePetals.map((color, petalIndex) => (
             <span
@@ -98,9 +93,9 @@ function ProjectVisual({ project }: { project: WorkItem }) {
                 className="pointer-events-none absolute inset-0"
               >
                 <motion.span
-                  whileHover={{ scale: 1.14, y: -10, opacity: 1 }}
+                  whileHover={{ scale: 1.14, y: -6, opacity: 1 }}
                   transition={SPRINGS.hover}
-                  className="pointer-events-auto absolute top-[2%] left-1/2 h-[43%] w-[29%] origin-bottom -translate-x-1/2 cursor-pointer rounded-[999px] border border-white/35 opacity-90 mix-blend-screen shadow-[0_12px_30px_rgba(16,16,15,0.14)] backdrop-blur-[2px]"
+                  className="pointer-events-auto absolute top-[2%] left-1/2 h-[43%] w-[29%] origin-bottom -translate-x-1/2 cursor-pointer rounded-[999px] border border-white/35 opacity-90 mix-blend-screen"
                   style={{ backgroundColor: color }}
                 />
               </motion.span>
@@ -108,17 +103,6 @@ function ProjectVisual({ project }: { project: WorkItem }) {
           ))}
         </div>
       )}
-
-      <span
-        aria-hidden="true"
-        className="absolute right-5 bottom-5 z-30 flex size-12 items-center justify-center rounded-full bg-[#10100f] text-white transition-transform group-hover:scale-105 group-hover:rotate-6 sm:right-7 sm:bottom-7 sm:size-14"
-      >
-        {project.caseStudy ? (
-          <ArrowRight className="size-5" />
-        ) : (
-          <ArrowUpRight className="size-5" />
-        )}
-      </span>
     </div>
   )
 }
@@ -130,7 +114,7 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
       as="article"
       className="border-foreground/15 grid gap-8 border-t py-10 first:border-t-0 first:pt-0 last:pb-0 lg:grid-cols-2 lg:items-center lg:gap-12 lg:py-16"
     >
-      <div>
+      <div className="flex lg:justify-center">
         {project.caseStudy ? (
           <Link
             to="/work/$slug"

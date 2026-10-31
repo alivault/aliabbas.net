@@ -335,13 +335,6 @@
   }
 }
 
-.project-lines {
-  background-image:
-    linear-gradient(rgb(255 255 255 / 10%) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(255 255 255 / 10%) 1px, transparent 1px);
-  background-size: 48px 48px;
-}
-
 .marquee-track {
   will-change: transform;
   animation: marquee var(--marquee-duration, 28s) linear infinite;
