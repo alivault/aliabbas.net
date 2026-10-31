@@ -1,4 +1,4 @@
-import { Link, useLocation } from '@tanstack/react-router'
+import { Link, useMatches } from '@tanstack/react-router'
 import { ArrowUpRight, MessageCircle } from 'lucide-react'
 import Title from './Title'
 import { buttonVariants } from './ui/button'
@@ -41,8 +41,11 @@ const linkStyles =
  * colors of the page. The contact page does not repeat the call to action.
  */
 export default function Footer() {
-  const onContact = useLocation({
-    select: (location) => location.pathname === '/contact',
+  // The rendered matches, not the location: the location changes when the
+  // navigation starts, before the page transition captures the old page.
+  // The call to action must be in that capture, so it can fade out there.
+  const onContact = useMatches({
+    select: (matches) => matches.some((match) => match.routeId === '/contact'),
   })
 
   return (
@@ -50,7 +53,8 @@ export default function Footer() {
       {!onContact && (
         <section
           aria-labelledby="closing-title"
-          className="pb-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12"
+          // site-closing: the transition to /contact fades it out first.
+          className="site-closing pb-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12"
         >
           <div className="border-border pt-section flex flex-col items-center border-t text-center">
             <Title

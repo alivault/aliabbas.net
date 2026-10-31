@@ -393,6 +393,27 @@ html:active-view-transition-type(page) {
   }
 }
 
+/*
+ * To the contact page: the closing call to action gets its own snapshot,
+ * which fades out at once (DURATIONS.exit, EASE_IN). The contact page does
+ * not show it, so it must not leave with the old page.
+ */
+html:active-view-transition-type(to-contact) {
+  & .site-closing {
+    view-transition-name: site-closing;
+  }
+
+  &::view-transition-old(site-closing) {
+    animation: closing-out 200ms cubic-bezier(0.64, 0, 0.78, 0) both;
+  }
+}
+
+@keyframes closing-out {
+  to {
+    opacity: 0;
+  }
+}
+
 /* Current page: move up, shrink, and fade into the base surface. */
 @keyframes page-card-out {
   to {
