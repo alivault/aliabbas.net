@@ -1,7 +1,15 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import { useEffect, useRef } from 'react'
-import { motion, useInView } from 'motion/react'
+import type { RefObject } from 'react'
+import {
+  motion,
+  useInView,
+  useReducedMotion,
+  useScroll,
+  useTransform,
+} from 'motion/react'
+import type { MotionValue } from 'motion/react'
 import Meta, { metaStyles } from '~/components/Meta'
 import ScrollReveal from '~/components/ScrollReveal'
 import Title from '~/components/Title'
@@ -9,8 +17,8 @@ import type { WorkItem } from '~/data/work'
 import { cn } from 'cn'
 import { SPRINGS } from '~/lib/design/motion'
 
-/** Background of each app icon. */
-const iconStyles = {
+/** Background of each project block. */
+const blockStyles = {
   whimcall: 'bg-[#080b12]',
   pico: 'bg-black',
   chromagine: 'bg-[#335cff]',
@@ -27,131 +35,137 @@ const chromaginePetals = [
   '#ff2d95',
 ] as const
 
-const visualLinkStyles =
-  'group focus-visible:outline-foreground block rounded-[22.5%] focus-visible:outline-2 focus-visible:outline-offset-4'
+const blockLinkStyles =
+  'focus-visible:outline-foreground block focus-visible:outline-2 focus-visible:outline-offset-4'
 
 const cardLinkStyles = cn(
   metaStyles('brand'),
   'hover:text-foreground focus-visible:outline-foreground inline-flex min-h-6 font-medium items-center gap-1.5 transition-colors focus-visible:outline-2 focus-visible:outline-offset-4',
 )
 
-/** The project as an app icon: a rounded square with its mark inside. */
-export function ProjectVisual({
-  project,
-  size = 'small',
-}: {
-  project: WorkItem
-  /** `large` is the icon of the sticky stage on wide screens. */
-  size?: 'small' | 'large'
-}) {
-  const glow = size === 'large' ? 'blur-3xl' : 'blur-lg'
-  return (
-    <div
-      className={cn(
-        'site-noise ring-foreground/10 relative isolate overflow-hidden rounded-[22.5%] ring-1 transition-transform duration-500 group-hover:-translate-y-1 group-hover:scale-[1.03]',
-        size === 'large'
-          ? 'size-64 shadow-2xl xl:size-80'
-          : 'size-24 shadow-lg sm:size-28',
-        iconStyles[project.visual],
-      )}
-    >
-      {project.visual === 'pico' && (
+/** The mark of a project. Its sizes are a part of the block height. */
+function ProjectMark({ project }: { project: WorkItem }) {
+  if (project.visual === 'pico')
+    return (
+      <img
+        src={project.image}
+        alt=""
+        className="absolute top-1/2 left-1/2 aspect-square h-[34%] w-auto -translate-x-1/2 -translate-y-1/2"
+      />
+    )
+
+  if (project.visual === 'whimcall')
+    return (
+      <>
+        <motion.div
+          animate={{ scale: [1, 1.12, 1], opacity: [0.45, 0.7, 0.45] }}
+          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute top-1/2 left-[42%] aspect-square h-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff2f75]/45 blur-3xl"
+        />
+        <motion.div
+          animate={{ scale: [1.1, 0.96, 1.1], opacity: [0.5, 0.75, 0.5] }}
+          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+          className="absolute top-1/2 left-[58%] aspect-square h-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#006dff]/55 blur-3xl"
+        />
         <img
           src={project.image}
           alt=""
-          className="absolute inset-[14%] size-[72%]"
+          className="absolute top-1/2 left-1/2 z-10 aspect-square h-[42%] w-auto -translate-x-1/2 -translate-y-1/2"
         />
-      )}
+      </>
+    )
 
-      {project.visual === 'whimcall' && (
-        <>
-          <motion.div
-            animate={{ scale: [1, 1.12, 1], opacity: [0.45, 0.7, 0.45] }}
-            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-            className={cn(
-              'absolute top-1/2 left-[38%] size-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff2f75]/45',
-              glow,
-            )}
-          />
-          <motion.div
-            animate={{ scale: [1.1, 0.96, 1.1], opacity: [0.5, 0.75, 0.5] }}
-            transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-            className={cn(
-              'absolute top-1/2 left-[62%] size-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#006dff]/55',
-              glow,
-            )}
-          />
-          <img
-            src={project.image}
-            alt=""
-            className="absolute top-1/2 left-1/2 z-10 size-[62%] -translate-x-1/2 -translate-y-1/2"
-          />
-        </>
-      )}
-
-      {project.visual === 'chromagine' && (
-        <div
-          aria-hidden="true"
-          className="absolute top-1/2 left-1/2 size-[74%] -translate-x-1/2 -translate-y-1/2"
+  return (
+    <div
+      aria-hidden="true"
+      className="absolute top-1/2 left-1/2 aspect-square h-[62%] -translate-x-1/2 -translate-y-1/2"
+    >
+      {chromaginePetals.map((color, petalIndex) => (
+        <span
+          key={color}
+          className="pointer-events-none absolute inset-0"
+          style={{ transform: `rotate(${petalIndex * 45}deg)` }}
         >
-          {chromaginePetals.map((color, petalIndex) => (
-            <span
-              key={color}
-              className="pointer-events-none absolute inset-0"
-              style={{ transform: `rotate(${petalIndex * 45}deg)` }}
-            >
-              <motion.span
-                initial={{ scale: 0.65, opacity: 0 }}
-                whileInView={{ scale: 1, opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{
-                  delay: petalIndex * 0.05,
-                  ...SPRINGS.bloom,
-                }}
-                className="pointer-events-none absolute inset-0"
-              >
-                <motion.span
-                  whileHover={{ scale: 1.14, y: -3, opacity: 1 }}
-                  transition={SPRINGS.hover}
-                  className="pointer-events-auto absolute top-[2%] left-1/2 h-[43%] w-[29%] origin-bottom -translate-x-1/2 cursor-pointer rounded-[999px] border border-white/35 opacity-90 mix-blend-screen"
-                  style={{ backgroundColor: color }}
-                />
-              </motion.span>
-            </span>
-          ))}
-        </div>
-      )}
+          <motion.span
+            whileHover={{ scale: 1.14, y: -8, opacity: 1 }}
+            transition={SPRINGS.hover}
+            className="pointer-events-auto absolute top-[2%] left-1/2 h-[43%] w-[29%] origin-bottom -translate-x-1/2 cursor-pointer rounded-[999px] border border-white/35 opacity-90 mix-blend-screen"
+            style={{ backgroundColor: color }}
+          />
+        </span>
+      ))}
     </div>
   )
 }
 
 /**
- * The app icon as a link: to the case study if there is one, else to the
- * live site. `hidden` takes it out of the tab order and the accessibility
- * tree, for a copy of a link that is already on the page.
+ * The project as a block with sharp corners. It fills its parent, which sets
+ * the size. `reveal` is a scroll progress from 0 to 1: the block opens from
+ * its center, and the mark settles from a larger size.
  */
-export function ProjectVisualLink({
+function ProjectBlock({
   project,
-  size,
+  reveal,
+}: {
+  project: WorkItem
+  reveal: MotionValue<number>
+}) {
+  const reduceMotion = useReducedMotion()
+  const clipPath = useTransform(
+    reveal,
+    [0, 1],
+    ['inset(50% 50% 50% 50%)', 'inset(0% 0% 0% 0%)'],
+  )
+  const scale = useTransform(reveal, [0, 1], [reduceMotion ? 1 : 1.4, 1])
+  return (
+    <motion.div
+      style={{ clipPath }}
+      className={cn(
+        'ring-foreground/10 absolute inset-0 overflow-hidden ring-1 ring-inset',
+        blockStyles[project.visual],
+      )}
+    >
+      {/* site-noise sets position: relative, so it is not on the
+          absolute layers. */}
+      <div className="site-noise size-full">
+        <motion.div style={{ scale }} className="absolute inset-0">
+          <ProjectMark project={project} />
+        </motion.div>
+      </div>
+    </motion.div>
+  )
+}
+
+/**
+ * The project block as a link: to the case study if there is one, else to
+ * the live site. It fills its parent. `hidden` takes it out of the tab
+ * order and the accessibility tree, for a copy of a link that is already on
+ * the page.
+ */
+export function ProjectBlockLink({
+  project,
+  reveal,
   hidden = false,
 }: {
   project: WorkItem
-  size?: 'small' | 'large'
+  reveal: MotionValue<number>
   hidden?: boolean
 }) {
   const a11y = hidden
     ? ({ tabIndex: -1, 'aria-hidden': true } as const)
     : undefined
+  const className = cn(blockLinkStyles, 'absolute inset-0')
+  const block = <ProjectBlock project={project} reveal={reveal} />
   if (project.caseStudy)
     return (
       <Link
         to="/work/$slug"
         params={{ slug: project.caseStudy }}
-        className={visualLinkStyles}
+        className={className}
         aria-label={`Read the ${project.title} case study`}
         {...a11y}
       >
-        <ProjectVisual project={project} size={size} />
+        {block}
       </Link>
     )
   return (
@@ -159,28 +173,48 @@ export function ProjectVisualLink({
       href={project.href}
       target="_blank"
       rel="noreferrer"
-      className={visualLinkStyles}
+      className={className}
       aria-label={`Open ${project.title}`}
       {...a11y}
     >
-      <ProjectVisual project={project} size={size} />
+      {block}
     </a>
   )
 }
 
 /**
- * One work item on its own row. On wide screens the row is one screen high,
- * and its icon is in the sticky stage of WorkSection: `onActive` runs when
- * the row reaches the middle of the screen.
+ * The block of a project on small screens, above its text. It opens from
+ * its center as its top scrolls from the bottom to the middle of the screen.
+ */
+function InlineBlock({ project }: { project: WorkItem }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ['start end', 'start center'],
+  })
+  return (
+    <div ref={ref} className="relative aspect-[4/3] w-full lg:hidden">
+      <ProjectBlockLink project={project} reveal={scrollYProgress} />
+    </div>
+  )
+}
+
+/**
+ * One work item on its own row. On wide screens its block is in the sticky
+ * stage of WorkSection, which follows `rowRef` as it scrolls. `onActive`
+ * runs when the row reaches the middle of the screen.
  */
 export function FeaturedProject({
   project,
+  rowRef,
   onActive,
 }: {
   project: WorkItem
+  rowRef?: RefObject<HTMLDivElement | null>
   onActive?: () => void
 }) {
-  const ref = useRef<HTMLDivElement>(null)
+  const ownRef = useRef<HTMLDivElement>(null)
+  const ref = rowRef ?? ownRef
   const inMiddle = useInView(ref, { margin: '-50% 0px -50% 0px' })
   useEffect(() => {
     if (inMiddle) onActive?.()
@@ -196,9 +230,7 @@ export function FeaturedProject({
         data-work-item={project.title}
         className="flex flex-col items-start gap-6 lg:min-h-[60svh] lg:justify-center"
       >
-        <div className="lg:hidden">
-          <ProjectVisualLink project={project} />
-        </div>
+        <InlineBlock project={project} />
         <div className="flex w-full max-w-2xl flex-col">
           <Title as="h3" variant="card">
             {project.title}

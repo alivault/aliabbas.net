@@ -1,29 +1,59 @@
-import { useMemo, useState } from 'react'
-import type { ReactNode } from 'react'
-import { AnimatePresence, motion } from 'motion/react'
+import { createRef, useMemo, useState } from 'react'
+import type { ReactNode, RefObject } from 'react'
+import { useScroll } from 'motion/react'
 import {
   FeaturedProject,
-  ProjectVisualLink,
+  ProjectBlockLink,
 } from '~/components/home/ProjectCards'
 import ScrollReveal from '~/components/ScrollReveal'
 import SectionHeading from '~/components/SectionHeading'
 import { recentWork } from '~/data/work'
-import { DURATIONS, EASE_IN, SPRINGS } from '~/lib/design/motion'
+import type { WorkItem } from '~/data/work'
 
 /**
- * The work list. On wide screens the icon of the project in the middle of
- * the screen stays in a sticky stage on the left, and changes as the
- * projects scroll past. On small screens each project shows its own icon.
+ * One block in the stage. It opens from its center while its row scrolls
+ * up the screen, so the blocks follow the scroll position, in both
+ * directions. The first block opens as the list comes into view; each
+ * next one opens between the moment the row above it is in the middle and
+ * the moment its own row is.
+ */
+function StageBlock({
+  project,
+  rowRef,
+  first,
+}: {
+  project: WorkItem
+  rowRef: RefObject<HTMLDivElement | null>
+  first: boolean
+}) {
+  const { scrollYProgress } = useScroll({
+    target: rowRef,
+    offset: first ? ['start end', 'start center'] : ['start 0.8', 'start 0.2'],
+  })
+  return (
+    // The text column has the same link.
+    <ProjectBlockLink project={project} reveal={scrollYProgress} hidden />
+  )
+}
+
+/**
+ * The work list. On wide screens the blocks of the projects are in a sticky
+ * stage on the left: as each project scrolls into the middle, its block
+ * opens from the center on top of the one before. On small screens each
+ * project shows its own block.
  */
 export default function WorkSection({ header }: { header?: ReactNode }) {
   const [active, setActive] = useState(0)
-  // One stable callback for each project, so that the effects in
-  // FeaturedProject do not run again on each render.
-  const activators = useMemo(
-    () => recentWork.map((_, index) => () => setActive(index)),
+  const rows = useMemo(
+    () =>
+      recentWork.map((_, index) => ({
+        ref: createRef<HTMLDivElement>(),
+        // One stable callback for each project, so that the effects in
+        // FeaturedProject do not run again on each render.
+        activate: () => setActive(index),
+      })),
     [],
   )
-  const project = recentWork[active]
 
   return (
     <section
@@ -39,27 +69,18 @@ export default function WorkSection({ header }: { header?: ReactNode }) {
       <div className="lg:grid lg:grid-cols-2 lg:gap-12">
         <div className="hidden lg:block">
           <div
-            data-work-stage={project.title}
-            className="sticky top-[calc((40svh+var(--header-height))/2)] flex h-[60svh] flex-col items-center justify-center gap-8"
+            data-work-stage={recentWork[active].title}
+            className="sticky top-[calc((40svh+var(--header-height))/2)] flex h-[60svh] flex-col gap-4"
           >
-            <div className="relative grid place-items-center">
-              <AnimatePresence initial={false} mode="popLayout">
-                <motion.div
+            <div className="relative flex-1">
+              {recentWork.map((project, index) => (
+                <StageBlock
                   key={project.title}
-                  initial={{ opacity: 0, y: 40, scale: 0.9 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{
-                    opacity: 0,
-                    y: -40,
-                    scale: 0.95,
-                    transition: { duration: DURATIONS.exit, ease: EASE_IN },
-                  }}
-                  transition={SPRINGS.layout}
-                >
-                  {/* The text column has the same link. */}
-                  <ProjectVisualLink project={project} size="large" hidden />
-                </motion.div>
-              </AnimatePresence>
+                  project={project}
+                  rowRef={rows[index].ref}
+                  first={index === 0}
+                />
+              ))}
             </div>
             <p
               aria-hidden="true"
@@ -71,11 +92,12 @@ export default function WorkSection({ header }: { header?: ReactNode }) {
         </div>
 
         <div className="flex flex-col">
-          {recentWork.map((item, index) => (
+          {recentWork.map((project, index) => (
             <FeaturedProject
-              key={item.title}
-              project={item}
-              onActive={activators[index]}
+              key={project.title}
+              project={project}
+              rowRef={rows[index].ref}
+              onActive={rows[index].activate}
             />
           ))}
         </div>

@@ -252,18 +252,30 @@ test('the work stage shows the project in the middle of the screen', async ({
   await open(page, '/work')
   const stage = page.locator('[data-work-stage]')
   if (!isDesktop(page)) {
-    // Small screens have no stage: each project shows its own icon.
+    // Small screens have no stage: each project shows its own block.
     await expect(stage).toBeHidden()
     await expect(
       page.getByRole('link', { name: 'Read the Whimcall case study' }),
     ).toBeVisible()
     return
   }
+  // The blocks follow the scroll: the block of the project in the middle is
+  // open, and the block after it is still closed at its center.
+  const clip = (index: number) =>
+    stage
+      .locator('a > div')
+      .nth(index)
+      .evaluate((block) => getComputedStyle(block).clipPath)
+  const titles = ['Pico', 'Whimcall', 'Chromagine']
   await expect(stage).toHaveAttribute('data-work-stage', 'Pico')
   for (const title of ['Whimcall', 'Chromagine', 'Pico']) {
     await page
       .locator(`[data-work-item="${title}"]`)
       .evaluate((item) => item.scrollIntoView({ block: 'center' }))
     await expect(stage).toHaveAttribute('data-work-stage', title)
+    const index = titles.indexOf(title)
+    await expect.poll(() => clip(index)).toBe('inset(0%)')
+    if (index + 1 < titles.length)
+      await expect.poll(() => clip(index + 1)).toBe('inset(50%)')
   }
 })
