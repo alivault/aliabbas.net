@@ -101,6 +101,14 @@ describe('text tones', () => {
         apcaContrast(background?.[scheme] ?? '', brand?.[scheme] ?? ''),
       ).toBeGreaterThanOrEqual(60)
     })
+
+    it(`the label on the chrome has APCA Lc 90+ in ${scheme} mode`, () => {
+      const chrome = COLORS.find((token) => token.name === 'chrome')
+      const label = COLORS.find((token) => token.name === 'chrome-foreground')
+      expect(
+        apcaContrast(label?.[scheme] ?? '', chrome?.[scheme] ?? ''),
+      ).toBeGreaterThanOrEqual(90)
+    })
   }
 })
 

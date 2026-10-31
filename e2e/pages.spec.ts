@@ -300,43 +300,48 @@ test('the work stage shows the project in the middle of the screen', async ({
   }
 })
 
-test('primary and secondary buttons show a turning chrome border on hover', async ({
+test('a secondary button shows a turning chrome border on hover', async ({
   page,
 }) => {
   test.skip(!isDesktop(page), 'Hover needs a pointer.')
   await open(page, '/')
-  const buttons = [
-    page.locator('main .chrome-border', { hasText: 'See the work' }),
-    page.locator('header').getByRole('link', { name: 'Contact' }),
-  ]
-  const ring = (button: (typeof buttons)[number]) =>
+  const button = page.locator('header').getByRole('link', { name: 'Contact' })
+  const ring = () =>
     button.evaluate((element) => {
       const style = getComputedStyle(element, '::before')
       return { opacity: style.opacity, animation: style.animationName }
     })
 
-  for (const button of buttons) {
-    await expect
-      .poll(() => ring(button))
-      .toEqual({
-        opacity: '0',
-        animation: 'none',
-      })
-    await button.hover()
-    await expect
-      .poll(() => ring(button))
-      .toEqual({
-        opacity: '1',
-        animation: 'chrome-turn',
-      })
-  }
+  await expect.poll(ring).toEqual({ opacity: '0', animation: 'none' })
+  await button.hover()
+  await expect.poll(ring).toEqual({ opacity: '1', animation: 'chrome-turn' })
 
   // With reduced motion, the ring shows but does not turn.
   await page.emulateMedia({ reducedMotion: 'reduce' })
-  await expect
-    .poll(() => ring(buttons[1]))
-    .toEqual({
-      opacity: '1',
-      animation: 'none',
-    })
+  await expect.poll(ring).toEqual({ opacity: '1', animation: 'none' })
+})
+
+test('a primary button fills with liquid metal on hover', async ({ page }) => {
+  test.skip(!isDesktop(page), 'Hover needs a pointer.')
+  await open(page, '/')
+  const button = page.locator('main .liquid-metal', { hasText: 'See the work' })
+  // "on": the shader draws it. "static": no WebGL, so CSS draws it.
+  const state = () =>
+    button.evaluate((element) => element.dataset.liquidMetal ?? 'off')
+  const label = () =>
+    button.evaluate((element) => getComputedStyle(element).color)
+
+  await expect.poll(state).toBe('off')
+  const before = await label()
+  await button.hover()
+  await expect.poll(state).toMatch(/^(on|static)$/)
+  // The label turns light on the dark metal.
+  await expect.poll(label).not.toBe(before)
+  await page.mouse.move(4, 400)
+  await expect.poll(state).toBe('off')
+
+  // With reduced motion, the metal still shows, as a still frame.
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await button.hover()
+  await expect.poll(state).toMatch(/^(on|static)$/)
 })

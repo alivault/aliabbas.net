@@ -11,6 +11,7 @@ import type { ConvexQueryClient } from '@convex-dev/react-query'
 import type { QueryClient } from '@tanstack/react-query'
 import type { ConvexReactClient } from 'convex/react'
 import Devtools from '~/components/Devtools'
+import LiquidMetalHover from '~/components/LiquidMetalHover'
 import VitalsReporter from '~/components/VitalsReporter'
 import { sessionQueryOptions } from '~/lib/auth'
 import { authClient } from '~/lib/auth-client'
@@ -86,6 +87,7 @@ function RootComponent() {
             <Outlet />
           </MotionConfig>
           <VitalsReporter />
+          <LiquidMetalHover />
           <Devtools />
         </ConvexBetterAuthProvider>
         <Scripts />

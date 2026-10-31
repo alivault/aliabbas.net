@@ -80,6 +80,14 @@ export const COLOR_ROLES: Record<string, { group: ColorGroup; use: string }> = {
     use: 'Selection, the active citation and the changing word of the homepage hero. Not for titles.',
   },
   'brand-foreground': { group: 'Action', use: 'Text on a brand fill.' },
+  chrome: {
+    group: 'Action',
+    use: 'The dark base of the liquid metal on a primary button on hover.',
+  },
+  'chrome-foreground': {
+    group: 'Action',
+    use: 'The label on the liquid metal. APCA Lc 90 or more on chrome.',
+  },
   accent: { group: 'Action', use: 'Hover fill of menu items.' },
   'accent-foreground': { group: 'Action', use: 'Text on an accent fill.' },
   ring: { group: 'Action', use: 'The focus ring. Every control shows it.' },

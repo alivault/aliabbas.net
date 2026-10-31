@@ -10,8 +10,9 @@ import { cn } from 'cn'
  * /design shows.
  */
 const variantClasses = {
+  // liquid-metal: a liquid metal fill on hover (liquid-metal.ts).
+  primary: 'liquid-metal bg-brand text-brand-foreground hover:bg-brand/85',
   // chrome-border: a turning metal ring on the border on hover (globals.css).
-  primary: 'chrome-border bg-brand text-brand-foreground hover:bg-brand/85',
   secondary:
     'chrome-border border-border bg-card text-fg-secondary hover:bg-secondary hover:text-foreground aria-expanded:bg-secondary aria-expanded:text-foreground',
   ghost:
@@ -34,7 +35,7 @@ export type ButtonSize = keyof typeof sizeClasses
 /** When to use each variant. /design shows these. */
 export const BUTTON_VARIANT_ROLES: Record<ButtonVariant, string> = {
   primary:
-    'The main action of a view, in the brand color. At most one in each view or group. On hover, a chrome ring turns on its border.',
+    'The main action of a view, in the brand color. At most one in each view or group. On hover, it fills with liquid metal.',
   secondary:
     'The action next to the main one, and other bordered actions, such as Stop and Retry. On hover, a chrome ring turns on its border.',
   ghost:
