@@ -27,7 +27,7 @@ export default function HomeNotesSection({
           <ArrowRight aria-hidden="true" />
         </ButtonLink>
       </ScrollReveal>
-      <div className="group/notes divide-y">
+      <div className="divide-y">
         {articles.length === 0 ? (
           <p className="text-fg-muted py-section-content text-sm">
             New notes are in progress. Check back soon.
@@ -38,7 +38,7 @@ export default function HomeNotesSection({
               <Link
                 to="/notes/$slug"
                 params={{ slug: article.slug.current }}
-                className="group focus-visible:ring-ring/50 focus-visible:ring-offset-background group-has-[a:hover]/notes:text-fg-muted group-has-[a:focus-visible]/notes:text-fg-muted hover:text-foreground! focus-visible:text-foreground! grid gap-4 rounded-sm py-7 transition-colors duration-300 outline-none focus-visible:ring-3 focus-visible:ring-offset-4 sm:grid-cols-[1fr_auto] sm:items-center sm:py-9"
+                className="group focus-visible:ring-ring/50 focus-visible:ring-offset-background hover:text-brand focus-visible:text-brand grid gap-4 rounded-sm py-7 transition-colors duration-300 outline-none focus-visible:ring-3 focus-visible:ring-offset-4 sm:grid-cols-[1fr_auto] sm:items-center sm:py-9"
               >
                 <span>
                   <Title as="span" variant="card" className="block">

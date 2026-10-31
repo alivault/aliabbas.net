@@ -38,7 +38,7 @@ function NoteListItem({
       <Link
         to="/notes/$slug"
         params={{ slug: article.slug.current }}
-        className="group focus-visible:ring-ring/50 focus-visible:ring-offset-background group-has-[a:hover]/notes:text-fg-muted group-has-[a:focus-visible]/notes:text-fg-muted hover:text-foreground! focus-visible:text-foreground! grid gap-4 rounded-sm py-7 transition-colors duration-300 outline-none focus-visible:ring-3 focus-visible:ring-offset-4 sm:grid-cols-[1fr_130px_auto] sm:items-center sm:py-10"
+        className="group focus-visible:ring-ring/50 focus-visible:ring-offset-background hover:text-brand focus-visible:text-brand grid gap-4 rounded-sm py-7 transition-colors duration-300 outline-none focus-visible:ring-3 focus-visible:ring-offset-4 sm:grid-cols-[1fr_130px_auto] sm:items-center sm:py-10"
       >
         <span>
           <Title as="span" variant="card" className="block">
@@ -95,7 +95,7 @@ function NotesPage() {
             New notes are being written. Check back soon.
           </p>
         ) : (
-          <ul className="group/notes divide-y">
+          <ul className="divide-y">
             {articles.map((article, index) => (
               <NoteListItem key={article._id} article={article} index={index} />
             ))}
