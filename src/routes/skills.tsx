@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { pageHead } from '~/lib/structured-data'
 import { Braces, Cloud, Database, Layers3 } from 'lucide-react'
 import Main from '~/components/Main'
 import PageHeading from '~/components/PageHeading'
@@ -30,16 +31,13 @@ const architecture = [
 ] as const
 
 export const Route = createFileRoute('/skills')({
-  head: () => ({
-    meta: [
-      { title: 'Skills — Ali Abbas' },
-      {
-        name: 'description',
-        content:
-          'Streaming state, motion and interaction, design systems, and performance and accessibility.',
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: 'Skills — Ali Abbas',
+      description:
+        'Streaming state, motion and interaction, design systems, and performance and accessibility.',
+      path: '/skills',
+    }),
   component: SkillsPage,
 })
 

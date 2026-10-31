@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { pageHead } from '~/lib/structured-data'
 import { MAX_CLAIM_LENGTH } from '~/lib/check/protocol'
 
 export type CheckSearch = { claim?: string }
@@ -10,15 +11,12 @@ export const Route = createFileRoute('/_assistant/check')({
     typeof search.claim === 'string' && search.claim.trim()
       ? { claim: search.claim.slice(0, MAX_CLAIM_LENGTH) }
       : {},
-  head: () => ({
-    meta: [
-      { title: 'Check a Claim About Ali — Portfolio AI' },
-      {
-        name: 'description',
-        content:
-          'Paste a claim about Ali Abbas. The checker grades each part against his public record — verified, partly verified, not supported, contradicted or unknown — and quotes the evidence.',
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: 'Check a Claim About Ali — Portfolio AI',
+      description:
+        'Paste a claim about Ali Abbas. The checker grades each part against his public record — verified, partly verified, not supported, contradicted or unknown — and quotes the evidence.',
+      path: '/check',
+    }),
   component: () => null,
 })

@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { pageHead } from '~/lib/structured-data'
 import ExperienceList from '~/components/ExperienceList'
 import Main from '~/components/Main'
 import PageHeading from '~/components/PageHeading'
@@ -8,16 +9,13 @@ import Section from '~/components/Section'
 import { experiencesQuery } from '~/lib/sanity'
 
 export const Route = createFileRoute('/experience')({
-  head: () => ({
-    meta: [
-      { title: 'Experience — Ali Abbas' },
-      {
-        name: 'description',
-        content:
-          'Senior frontend engineering and design experience across interactive, streaming and realtime products.',
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: 'Experience — Ali Abbas',
+      description:
+        'Senior frontend engineering and design experience across interactive, streaming and realtime products.',
+      path: '/experience',
+    }),
   loader: ({ context }) =>
     context.queryClient
       .ensureQueryData(experiencesQuery)

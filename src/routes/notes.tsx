@@ -1,4 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
+import { pageHead } from '~/lib/structured-data'
 import { Link, createFileRoute } from '@tanstack/react-router'
 import { ArrowUpRight } from 'lucide-react'
 import Main from '~/components/Main'
@@ -12,16 +13,13 @@ import { articlesQuery } from '~/lib/sanity'
 import type { SanityArticle } from '~/lib/sanity'
 
 export const Route = createFileRoute('/notes')({
-  head: () => ({
-    meta: [
-      { title: 'Field Notes — Ali Abbas' },
-      {
-        name: 'description',
-        content:
-          'Notes on product engineering, frontend craft, tools, and interaction design.',
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: 'Field Notes — Ali Abbas',
+      description:
+        'Notes on product engineering, frontend craft, tools, and interaction design.',
+      path: '/notes',
+    }),
   // A failed fetch must not break the page: the component fetches again.
   loader: ({ context }) =>
     context.queryClient.ensureQueryData(articlesQuery).catch(() => undefined),

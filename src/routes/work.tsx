@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { pageHead } from '~/lib/structured-data'
 import Main from '~/components/Main'
 import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
@@ -6,15 +7,12 @@ import SideProjects from '~/components/SideProjects'
 import WorkSection from '~/components/WorkSection'
 
 export const Route = createFileRoute('/work')({
-  head: () => ({
-    meta: [
-      { title: 'Selected Work — Ali Abbas' },
-      {
-        name: 'description',
-        content: 'Selected products designed and engineered by Ali Abbas.',
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: 'Selected Work — Ali Abbas',
+      description: 'Selected products designed and engineered by Ali Abbas.',
+      path: '/work',
+    }),
   component: WorkPage,
 })
 

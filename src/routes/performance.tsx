@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { pageHead } from '~/lib/structured-data'
 import { createFileRoute } from '@tanstack/react-router'
 import Main from '~/components/Main'
 import PageHeading from '~/components/PageHeading'
@@ -12,16 +13,13 @@ import { getVitalsSummary } from '~/lib/vitals-server'
 import { cn } from '~/lib/utils'
 
 export const Route = createFileRoute('/performance')({
-  head: () => ({
-    meta: [
-      { title: 'Performance — Ali Abbas' },
-      {
-        name: 'description',
-        content:
-          'Core Web Vitals of aliabbas.net from real visits, lab numbers for Ali’s projects, and how he measured them.',
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: 'Performance — Ali Abbas',
+      description:
+        'Core Web Vitals of aliabbas.net from real visits, lab numbers for Ali’s projects, and how he measured them.',
+      path: '/performance',
+    }),
   loader: () => getVitalsSummary(),
   component: PerformancePage,
 })

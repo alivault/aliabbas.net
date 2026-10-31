@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { pageHead } from '~/lib/structured-data'
 import CitationDrawerSpecimen from '~/components/lab/CitationDrawerSpecimen'
 import {
   LabMotionProvider,
@@ -13,16 +14,13 @@ import ScrollReveal from '~/components/ScrollReveal'
 import SectionNav from '~/components/SectionNav'
 
 export const Route = createFileRoute('/lab')({
-  head: () => ({
-    meta: [
-      { title: 'Lab — Interface Primitives — Ali Abbas' },
-      {
-        name: 'description',
-        content:
-          'Live specimens of the interface primitives behind this site: a streamed answer with citations, a citation drawer, a fluid resizer and a move that keeps state.',
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: 'Lab — Interface Primitives — Ali Abbas',
+      description:
+        'Live specimens of the interface primitives behind this site: a streamed answer with citations, a citation drawer, a fluid resizer and a move that keeps state.',
+      path: '/lab',
+    }),
   component: LabPage,
 })
 

@@ -14,6 +14,7 @@ import Devtools from '~/components/Devtools'
 import VitalsReporter from '~/components/VitalsReporter'
 import { sessionQueryOptions } from '~/lib/auth'
 import { authClient } from '~/lib/auth-client'
+import { siteSocialMeta } from '~/lib/structured-data'
 import '../styles/globals.css'
 import { MotionConfig } from 'motion/react'
 
@@ -46,6 +47,7 @@ export const Route = createRootRouteWithContext<{
         content:
           'Senior frontend engineer for interactive and streaming interfaces: state machines, motion, design systems, performance and accessibility.',
       },
+      ...siteSocialMeta,
     ],
     links: [{ rel: 'icon', href: '/icon.png' }],
   }),

@@ -68,6 +68,55 @@ for (const path of [
   })
 }
 
+// The server HTML, as a link preview reads it: no JavaScript runs.
+for (const path of [
+  '/',
+  '/work',
+  '/work/pico',
+  '/skills',
+  '/experience',
+  '/lab',
+  '/notes',
+  '/notes/building-pico-a-local-first-workspace-for-coding-agents',
+  '/chat',
+  '/check',
+  '/contact',
+  '/design',
+  '/performance',
+  '/privacy',
+]) {
+  test(`${path} has Open Graph tags and the share image`, async ({
+    request,
+  }) => {
+    const html = await (await request.get(path)).text()
+    const tag = (key: string) =>
+      [
+        ...html.matchAll(
+          new RegExp(`<meta (?:property|name)="${key}" content="([^"]*)"`, 'g'),
+        ),
+      ].map((match) => match[1])
+
+    const url =
+      path === '/' ? 'https://aliabbas.net' : `https://aliabbas.net${path}`
+    expect(tag('og:url')).toEqual([url])
+    expect(html).toContain(`<link rel="canonical" href="${url}"/>`)
+    for (const key of [
+      'og:title',
+      'og:description',
+      'og:type',
+      'og:site_name',
+      'og:image:alt',
+      'twitter:card',
+      'twitter:title',
+      'twitter:description',
+    ]) {
+      expect(tag(key), key).toHaveLength(1)
+    }
+    expect(tag('og:image')).toEqual(['https://aliabbas.net/og-image.png?v=3'])
+    expect(tag('twitter:image')).toEqual(tag('og:image'))
+  })
+}
+
 for (const [path, name, target] of [
   ['/lab', 'Specimens', 'fluid-resizer'],
   ['/work/pico', 'On this page', 'failure-modes'],

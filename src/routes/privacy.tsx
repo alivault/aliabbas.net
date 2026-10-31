@@ -1,20 +1,18 @@
 import { Link, createFileRoute } from '@tanstack/react-router'
+import { pageHead } from '~/lib/structured-data'
 import Main from '~/components/Main'
 import Meta from '~/components/Meta'
 import PageHeading from '~/components/PageHeading'
 import Title from '~/components/Title'
 
 export const Route = createFileRoute('/privacy')({
-  head: () => ({
-    meta: [
-      { title: 'Privacy | Ali Abbas' },
-      {
-        name: 'description',
-        content:
-          'How aliabbas.net collects, uses, stores, and protects personal information.',
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: 'Privacy — Ali Abbas',
+      description:
+        'How aliabbas.net collects, uses, stores, and protects personal information.',
+      path: '/privacy',
+    }),
   component: PrivacyPage,
 })
 

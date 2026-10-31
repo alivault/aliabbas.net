@@ -122,6 +122,7 @@ export const Route = createFileRoute('/notes_/$slug')({
         title: `${note.title} — Ali Abbas`,
         description: note.description,
         path,
+        type: 'article',
       }),
       scripts: [
         jsonLdScript(

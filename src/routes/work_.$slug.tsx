@@ -20,7 +20,12 @@ export const Route = createFileRoute('/work_/$slug')({
     const path = `/work/${study.slug}`
     const title = `${study.title} case study — Ali Abbas`
     return {
-      ...pageHead({ title, description: study.summary, path }),
+      ...pageHead({
+        title,
+        description: study.summary,
+        path,
+        type: 'article',
+      }),
       scripts: [
         jsonLdScript(
           article({

@@ -1,4 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router'
+import { pageHead } from '~/lib/structured-data'
 import ColorTokens from '~/components/design/ColorTokens'
 import ComponentStates from '~/components/design/ComponentStates'
 import DesignSection, { RepoLink } from '~/components/design/DesignSection'
@@ -19,16 +20,13 @@ import {
 import { cn } from 'cn'
 
 export const Route = createFileRoute('/design')({
-  head: () => ({
-    meta: [
-      { title: 'Design System — Ali Abbas' },
-      {
-        name: 'description',
-        content:
-          'The design system of this site: rules that tests check, color, type, space and motion tokens, and components in each state. Coding agents read the same tokens as JSON.',
-      },
-    ],
-  }),
+  head: () =>
+    pageHead({
+      title: 'Design System — Ali Abbas',
+      description:
+        'The design system of this site: rules that tests check, color, type, space and motion tokens, and components in each state. Coding agents read the same tokens as JSON.',
+      path: '/design',
+    }),
   component: DesignPage,
 })
 

@@ -7,6 +7,7 @@
 export const SITE_URL = 'https://aliabbas.net'
 const PERSON_ID = `${SITE_URL}/#person`
 const WEBSITE_ID = `${SITE_URL}/#website`
+const OG_IMAGE_URL = `${SITE_URL}/og-image.png?v=3`
 
 type JsonLd = Record<string, unknown>
 
@@ -15,7 +16,7 @@ export const person: JsonLd = {
   '@id': PERSON_ID,
   name: 'Ali Abbas',
   url: SITE_URL,
-  image: `${SITE_URL}/og-image.png`,
+  image: OG_IMAGE_URL,
   jobTitle: 'Senior Frontend Engineer',
   description:
     'Senior frontend engineer for streaming interfaces, state machines, motion and accessibility.',
@@ -74,7 +75,7 @@ export function article({
     author: { '@id': PERSON_ID },
     publisher: { '@id': PERSON_ID },
     isPartOf: { '@id': WEBSITE_ID },
-    image: `${SITE_URL}/og-image.png`,
+    image: OG_IMAGE_URL,
   }
 }
 
@@ -107,38 +108,64 @@ export function jsonLdScript(...nodes: Array<JsonLd>) {
   }
 }
 
+/** The share image of the site, rendered by scripts/og-image.ts. */
+export const OG_IMAGE = {
+  url: OG_IMAGE_URL,
+  width: '1200',
+  height: '630',
+  type: 'image/png',
+  alt: 'Ali Abbas, Senior Frontend Engineer: streaming interfaces, state machines, motion and accessibility.',
+}
+
 /**
- * Title, description, canonical link and Open Graph tags for a page that
- * shares the site image.
+ * Open Graph and Twitter tags that every page shares. The root route sets
+ * them, so a page without pageHead still has the share image. A page tag
+ * with the same name replaces the root tag.
+ */
+export const siteSocialMeta = [
+  { property: 'og:site_name', content: 'Ali Abbas' },
+  { property: 'og:locale', content: 'en_US' },
+  { property: 'og:type', content: 'website' },
+  { property: 'og:image', content: OG_IMAGE.url },
+  { property: 'og:image:width', content: OG_IMAGE.width },
+  { property: 'og:image:height', content: OG_IMAGE.height },
+  { property: 'og:image:type', content: OG_IMAGE.type },
+  { property: 'og:image:alt', content: OG_IMAGE.alt },
+  { name: 'twitter:card', content: 'summary_large_image' },
+  { name: 'twitter:image', content: OG_IMAGE.url },
+  { name: 'twitter:image:alt', content: OG_IMAGE.alt },
+]
+
+/**
+ * Title, description, canonical link and Open Graph tags for a page. The
+ * share image comes from siteSocialMeta in the root route.
+ * `socialTitle` replaces the title in link previews, where the site name
+ * shows next to it.
  */
 export function pageHead({
   description,
   path,
   title,
-  type = 'article',
+  socialTitle = title,
+  type = 'website',
 }: {
   description: string
   path: string
   title: string
+  socialTitle?: string
   type?: 'article' | 'website'
 }) {
-  const url = `${SITE_URL}${path}`
-  const image = `${SITE_URL}/og-image.png?v=2`
+  const url = path === '/' ? SITE_URL : `${SITE_URL}${path}`
   return {
     meta: [
       { title },
       { name: 'description', content: description },
-      { property: 'og:title', content: title },
+      { property: 'og:title', content: socialTitle },
       { property: 'og:description', content: description },
       { property: 'og:url', content: url },
       { property: 'og:type', content: type },
-      { property: 'og:image', content: image },
-      { property: 'og:image:width', content: '1200' },
-      { property: 'og:image:height', content: '630' },
-      { name: 'twitter:card', content: 'summary_large_image' },
-      { name: 'twitter:title', content: title },
+      { name: 'twitter:title', content: socialTitle },
       { name: 'twitter:description', content: description },
-      { name: 'twitter:image', content: image },
     ],
     links: [{ rel: 'canonical', href: url }],
   }
