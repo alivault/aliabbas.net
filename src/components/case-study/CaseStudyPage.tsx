@@ -33,13 +33,14 @@ function allEvidence(study: CaseStudy) {
   return [...paths].sort()
 }
 
-function stackOf(study: CaseStudy) {
+function workItemOf(study: CaseStudy) {
   const items: ReadonlyArray<WorkItem> = recentWork
-  return items.find((item) => item.caseStudy === study.slug)?.tools ?? []
+  return items.find((item) => item.caseStudy === study.slug)
 }
 
 export default function CaseStudyPage({ study }: { study: CaseStudy }) {
-  const stack = stackOf(study)
+  const work = workItemOf(study)
+  const stack = work?.tools ?? []
   const next =
     caseStudies[
       (caseStudies.findIndex((item) => item.slug === study.slug) + 1) %
@@ -54,7 +55,19 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
           trigger="mount"
           className="border-foreground/20 pb-section-divider grid justify-items-center gap-6 border-b text-center"
         >
-          <div>
+          <div className="grid justify-items-center gap-6">
+            {/* The app icon. The heading names the app, so it has no alt
+                text. */}
+            {work?.image && (
+              <img
+                src={work.image}
+                alt=""
+                width={80}
+                height={80}
+                className="size-20"
+                data-app-icon
+              />
+            )}
             <PageHeading>{study.title} as state machines.</PageHeading>
           </div>
           <div>

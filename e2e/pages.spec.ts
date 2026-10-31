@@ -346,3 +346,22 @@ test('a primary button fills with liquid metal on hover', async ({ page }) => {
   await button.hover()
   await expect.poll(state).toMatch(/^(on|static)$/)
 })
+
+test('each case study shows the icon of its app', async ({ page }) => {
+  for (const [slug, image] of [
+    ['pico', '/pico.svg'],
+    ['whimcall', '/whimcall.png'],
+    ['postmaster', '/postmaster.webp'],
+  ]) {
+    await open(page, `/work/${slug}`)
+    const icon = page.locator('header [data-app-icon]')
+    await expect(icon).toHaveAttribute('src', image)
+    // The heading names the app, so the icon is decorative.
+    await expect(icon).toHaveAttribute('alt', '')
+    await expect
+      .poll(() =>
+        icon.evaluate((element: HTMLImageElement) => element.naturalWidth),
+      )
+      .toBeGreaterThan(0)
+  }
+})
