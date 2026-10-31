@@ -395,7 +395,7 @@
 
   .chrome-border:hover::before {
     opacity: 1;
-    animation: chrome-turn 2.4s linear infinite;
+    animation: chrome-turn 6s linear infinite;
   }
 }
 
