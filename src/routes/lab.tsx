@@ -56,12 +56,11 @@ function LabPage() {
               </p>
             </ScrollReveal>
 
-            <div className="border-foreground/15 mt-12 border-t" />
             <SectionNav
               label="Specimens"
               items={specimenLinks}
               trailing={<ReducedMotionSwitch />}
-              className="mt-2"
+              className="mt-12"
             />
 
             <div className="mt-10 flex flex-col gap-20 lg:gap-32">

@@ -7,7 +7,7 @@ interface ExperienceListProps {
 
 export default function ExperienceList({ experiences }: ExperienceListProps) {
   return (
-    <ul>
+    <ul className="divide-y">
       {experiences.map((item, index) => (
         <ExperienceItem
           key={item._id}

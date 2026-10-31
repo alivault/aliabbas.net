@@ -135,7 +135,7 @@ export default function SideProjects() {
       aria-labelledby="side-projects"
       className="pb-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12"
     >
-      <div className="border-foreground/15 border-t pt-10">
+      <div>
         <ScrollReveal as="header" className="pb-section-content">
           <SectionHeading size="compact" id="side-projects">
             Side projects

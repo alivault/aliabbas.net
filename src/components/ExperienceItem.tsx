@@ -31,7 +31,7 @@ export default function ExperienceItem({
     <ScrollReveal
       as="li"
       delay={index * 0.05}
-      className="border-foreground/20 grid gap-5 border-b py-10 sm:grid-cols-[180px_1fr] sm:py-14 lg:grid-cols-[240px_1fr]"
+      className="grid gap-5 py-10 sm:grid-cols-[180px_1fr] sm:py-14 lg:grid-cols-[240px_1fr]"
     >
       <div>
         <Meta as="span">{formatDateRange(startDate, endDate)}</Meta>

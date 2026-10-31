@@ -53,7 +53,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
         <ScrollReveal
           as="header"
           trigger="mount"
-          className="border-foreground/20 pb-section-divider grid justify-items-center gap-6 border-b text-center"
+          className="pb-section-content grid justify-items-center gap-6 text-center"
         >
           <div className="grid justify-items-center gap-6">
             {/* The app icon. The heading names the app, so it has no alt
@@ -196,12 +196,12 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
               What can go wrong
             </SectionHeading>
           </ScrollReveal>
-          <ol className="border-foreground/15 border-t">
+          <ol className="divide-y">
             {study.failureModes.map((mode, index) => (
               <ScrollReveal
                 as="li"
                 key={mode.title}
-                className="border-foreground/15 grid gap-6 border-b py-9 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16 lg:py-12"
+                className="grid gap-6 py-9 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16 lg:py-12"
               >
                 <div className="grid min-w-0 grid-cols-[auto_1fr] gap-x-5">
                   <Title
@@ -302,7 +302,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
         </section>
 
         {next && next.slug !== study.slug && (
-          <ScrollReveal className="border-foreground/20 mt-section border-t pt-10">
+          <ScrollReveal className="mt-section">
             <Link
               to="/work/$slug"
               params={{ slug: next.slug }}

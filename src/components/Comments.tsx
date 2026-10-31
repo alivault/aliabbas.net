@@ -282,7 +282,7 @@ export function Comments({ articleSlug }: CommentsProps) {
   }
 
   return (
-    <section className="border-foreground/20 border-t pt-10">
+    <section>
       <div className="mb-8 flex items-center gap-3">
         <MessageCircle className="text-brand size-5" />
         <SectionHeading size="compact">Comments</SectionHeading>

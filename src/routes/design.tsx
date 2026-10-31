@@ -73,8 +73,7 @@ function DesignPage() {
             </p>
           </ScrollReveal>
 
-          <div className="border-foreground/15 mt-12 border-t" />
-          <SectionNav label="Sections" items={sectionLinks} className="mt-2" />
+          <SectionNav label="Sections" items={sectionLinks} className="mt-12" />
 
           <div className="mt-10 flex flex-col gap-20 lg:gap-32">
             <DesignSection
@@ -94,11 +93,11 @@ function DesignPage() {
                 </>
               }
             >
-              <ol className="border-foreground/10 border-t">
+              <ol className="divide-y">
                 {DESIGN_RULES.map((rule, index) => (
                   <li
                     key={rule.id}
-                    className="border-foreground/10 grid gap-2 border-b py-5 sm:grid-cols-[2.5rem_minmax(0,1fr)]"
+                    className="grid gap-2 py-5 sm:grid-cols-[2.5rem_minmax(0,1fr)]"
                   >
                     <span
                       aria-hidden="true"
@@ -167,11 +166,11 @@ function DesignPage() {
               }
             >
               <div className="space-y-12">
-                <ul className="border-foreground/10 border-t">
+                <ul className="divide-y">
                   {TYPE_SCALE.map((step) => (
                     <li
                       key={step.variant}
-                      className="border-foreground/10 grid gap-3 border-b py-6 sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-6"
+                      className="grid gap-3 py-6 sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-6"
                     >
                       <div>
                         <p className="text-foreground font-mono text-sm">
@@ -192,11 +191,11 @@ function DesignPage() {
                   <h3 className="text-foreground text-base font-semibold">
                     Body
                   </h3>
-                  <ul className="border-foreground/10 mt-4 border-t">
+                  <ul className="mt-4 divide-y">
                     {BODY_SCALE.map((step) => (
                       <li
                         key={step.className}
-                        className="border-foreground/10 grid gap-3 border-b py-5 sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-6"
+                        className="grid gap-3 py-5 sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-6"
                       >
                         <div>
                           <p className="text-foreground font-mono text-sm">
@@ -219,11 +218,11 @@ function DesignPage() {
                   <h3 className="text-foreground text-base font-semibold">
                     Tones
                   </h3>
-                  <ul className="border-foreground/10 mt-4 border-t">
+                  <ul className="mt-4 divide-y">
                     {TEXT_TONES.map((tone) => (
                       <li
                         key={tone.name}
-                        className="border-foreground/10 grid gap-3 border-b py-5 sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-6"
+                        className="grid gap-3 py-5 sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-baseline sm:gap-6"
                       >
                         <p className="text-foreground font-mono text-sm">
                           {tone.className}
@@ -252,10 +251,10 @@ function DesignPage() {
                 </p>
               }
             >
-              <div className="border-foreground/10 overflow-x-auto border-t">
+              <div className="overflow-x-auto">
                 <table className="w-full min-w-[32rem] text-left text-sm">
                   <thead>
-                    <tr className="text-fg-muted border-foreground/10 border-b">
+                    <tr className="text-fg-muted border-b">
                       <th scope="col" className="py-3 pr-4 font-normal">
                         Token
                       </th>
@@ -274,7 +273,7 @@ function DesignPage() {
                     {LAYOUT_TOKENS.map((token) => (
                       <tr
                         key={token.name}
-                        className="border-foreground/10 border-b align-top"
+                        className="border-b align-top last:border-b-0"
                       >
                         <th scope="row" className="py-4 pr-4 font-normal">
                           <span className="text-foreground block font-mono">
@@ -352,7 +351,7 @@ function DesignPage() {
                 </p>
               }
             >
-              <ol className="border-foreground/10 border-t">
+              <ol className="divide-y">
                 {[
                   {
                     title: 'Tokens and rules as JSON',
@@ -379,7 +378,7 @@ function DesignPage() {
                 ].map((item, index) => (
                   <li
                     key={item.title}
-                    className="border-foreground/10 grid gap-2 border-b py-5 sm:grid-cols-[2.5rem_minmax(0,1fr)]"
+                    className="grid gap-2 py-5 sm:grid-cols-[2.5rem_minmax(0,1fr)]"
                   >
                     <span
                       aria-hidden="true"

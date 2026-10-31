@@ -89,6 +89,11 @@ export const DESIGN_RULES: Array<DesignRule> = [
     checkedBy: 'src/components/ui/button.test.ts',
   },
   {
+    id: 'dividers',
+    rule: 'Separate sections, and a heading from its content, with space (py-section, mb-section, pb-section-content), not with a line. Use a line only between the rows of a list or a table: put divide-y on the list, so there is no line above the first row or below the last. Lines use the default border color.',
+    why: 'A line at every edge makes every edge equal, so the page reads as a stack of boxes. Space groups content, and a line then means "more of the same".',
+  },
+  {
     id: 'components',
     rule: 'Build on the shadcn/ui base-nova components in src/components/ui, on Base UI. Merge classes with cn from the cn package. Use Lucide icons.',
     why: 'The primitives handle focus, keyboard and ARIA. Do not rebuild them.',

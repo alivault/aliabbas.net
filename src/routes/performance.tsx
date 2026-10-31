@@ -52,10 +52,7 @@ function Section({
   title: string
 }) {
   return (
-    <ScrollReveal
-      as="section"
-      className="border-foreground/15 pt-section-divider mt-section-content border-t"
-    >
+    <ScrollReveal as="section" className="mt-section">
       <div>
         <Title as="h2" id={id} variant="subsection" className="max-w-xl">
           <span className="tabular-nums">{number}.</span> {title}

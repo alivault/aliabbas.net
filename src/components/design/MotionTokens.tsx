@@ -41,13 +41,13 @@ export default function MotionTokens() {
           Play all
         </Button>
       </div>
-      <ul className="border-foreground/10 -mt-6 border-t">
+      <ul className="-mt-6 divide-y">
         {names.map((name) => {
           const spring = SPRINGS[name]
           return (
             <li
               key={name}
-              className="border-foreground/10 grid gap-3 border-b py-5 sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-center sm:gap-6"
+              className="grid gap-3 py-5 sm:grid-cols-[12rem_minmax(0,1fr)] sm:items-center sm:gap-6"
             >
               <button
                 type="button"
@@ -91,7 +91,7 @@ export default function MotionTokens() {
         <h3 className="text-foreground text-base font-semibold">
           Eases and durations
         </h3>
-        <dl className="border-foreground/10 mt-4 grid gap-x-6 border-t sm:grid-cols-2">
+        <dl className="mt-4 grid gap-x-6 sm:grid-cols-2">
           {[
             [
               'EASE_OUT',
@@ -109,7 +109,7 @@ export default function MotionTokens() {
               DURATION_USE[name as keyof typeof DURATIONS],
             ]),
           ].map(([name, value, use]) => (
-            <div key={name} className="border-foreground/10 border-b py-4">
+            <div key={name} className="py-4">
               <dt className="text-foreground font-mono text-sm">{name}</dt>
               <dd className="text-fg-muted text-sm leading-6 tabular-nums">
                 {value} · {use}

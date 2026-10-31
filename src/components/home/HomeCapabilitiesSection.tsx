@@ -10,7 +10,7 @@ export default function HomeCapabilitiesSection() {
       <div className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
         <ScrollReveal
           as="header"
-          className="pb-section-content grid gap-6 lg:grid-cols-2 lg:items-end lg:gap-16"
+          className="mb-section grid gap-6 lg:grid-cols-2 lg:items-end lg:gap-16"
         >
           <SectionHeading>Skills</SectionHeading>
           <div className="flex flex-col items-start gap-6">

@@ -31,7 +31,7 @@ function ExperiencePage() {
       <Section>
         <ScrollReveal
           as="header"
-          className="border-foreground/20 pb-section-content grid justify-items-center gap-6 border-b text-center"
+          className="pb-section-content grid justify-items-center gap-6 text-center"
         >
           <div>
             <PageHeading>Work that shaped me.</PageHeading>
@@ -43,7 +43,7 @@ function ExperiencePage() {
         </ScrollReveal>
 
         {isLoading ? (
-          <div className="divide-foreground/15 divide-y">
+          <div className="divide-y">
             {[0, 1].map((item) => (
               <div
                 key={item}

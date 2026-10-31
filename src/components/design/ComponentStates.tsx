@@ -57,7 +57,7 @@ export default function ComponentStates() {
         title="Button"
         note="Base UI button. Four variants, four sizes, all round. A link that looks like a button is a ButtonLink (a page of the site) or a ButtonAnchor (another site), not a Button. The focus state is the ring that keyboard focus shows. Disabled buttons that a stream turns off stay focusable, so focus is not lost."
       >
-        <div className="divide-foreground/10 divide-y">
+        <div className="divide-y">
           {BUTTON_VARIANTS.map(([variant, use]) => (
             <div
               key={variant}
@@ -95,7 +95,7 @@ export default function ComponentStates() {
             </div>
           ))}
         </div>
-        <div className="divide-foreground/10 border-foreground/10 mt-4 divide-y border-t pt-4">
+        <div className="mt-8 divide-y">
           {BUTTON_SIZES.map(([size, use]) => (
             <div
               key={size}

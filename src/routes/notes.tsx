@@ -38,7 +38,7 @@ function NoteListItem({
       <Link
         to="/notes/$slug"
         params={{ slug: article.slug.current }}
-        className="group border-foreground/20 grid gap-4 border-b py-7 sm:grid-cols-[1fr_130px_auto] sm:items-center sm:py-10"
+        className="group grid gap-4 py-7 sm:grid-cols-[1fr_130px_auto] sm:items-center sm:py-10"
       >
         <span>
           <Title
@@ -71,7 +71,7 @@ function NotesPage() {
       <Section>
         <ScrollReveal
           as="header"
-          className="border-foreground/20 pb-section-content grid justify-items-center gap-6 border-b text-center"
+          className="pb-section-content grid justify-items-center gap-6 text-center"
         >
           <div>
             <PageHeading>Thinking in public.</PageHeading>
@@ -83,7 +83,7 @@ function NotesPage() {
         </ScrollReveal>
 
         {isLoading ? (
-          <div className="divide-foreground/15 divide-y">
+          <div className="divide-y">
             {[0, 1, 2].map((item) => (
               <div
                 key={item}
@@ -96,7 +96,7 @@ function NotesPage() {
             New notes are being written. Check back soon.
           </p>
         ) : (
-          <ul>
+          <ul className="divide-y">
             {articles.map((article, index) => (
               <NoteListItem key={article._id} article={article} index={index} />
             ))}

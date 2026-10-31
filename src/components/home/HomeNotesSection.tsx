@@ -14,7 +14,7 @@ export default function HomeNotesSection({
 }) {
   return (
     <section className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
-      <ScrollReveal className="border-foreground/20 pb-section-content flex items-end justify-between gap-6 border-b">
+      <ScrollReveal className="pb-section-content flex items-end justify-between gap-6">
         <div>
           <SectionHeading>Notes</SectionHeading>
         </div>
@@ -27,7 +27,7 @@ export default function HomeNotesSection({
           <ArrowRight aria-hidden="true" />
         </ButtonLink>
       </ScrollReveal>
-      <div>
+      <div className="divide-y">
         {articles.length === 0 ? (
           <p className="text-fg-muted py-section-content text-sm">
             New notes are in progress. Check back soon.
@@ -38,7 +38,7 @@ export default function HomeNotesSection({
               <Link
                 to="/notes/$slug"
                 params={{ slug: article.slug.current }}
-                className="group border-foreground/20 grid gap-4 border-b py-7 sm:grid-cols-[1fr_auto] sm:items-center sm:py-9"
+                className="group grid gap-4 py-7 sm:grid-cols-[1fr_auto] sm:items-center sm:py-9"
               >
                 <span>
                   <Title

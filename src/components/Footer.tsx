@@ -56,7 +56,7 @@ export default function Footer() {
           aria-labelledby="closing-title"
           className="pb-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12"
         >
-          <div className="border-border pt-section flex flex-col items-center border-t text-center">
+          <div className="pt-section flex flex-col items-center text-center">
             <Title
               as="h2"
               variant="page"
@@ -138,7 +138,7 @@ export default function Footer() {
         </div>
 
         <div className="mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
-          <div className="border-border text-fg-muted flex flex-col gap-1 border-t py-6 text-sm leading-6 sm:flex-row sm:justify-between">
+          <div className="text-fg-muted flex flex-col gap-1 pt-6 pb-10 text-sm leading-6 sm:flex-row sm:justify-between">
             <span>© {new Date().getFullYear()} Ali Abbas</span>
             <span>Designed and engineered with intent.</span>
           </div>

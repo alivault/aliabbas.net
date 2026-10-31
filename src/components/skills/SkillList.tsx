@@ -16,13 +16,13 @@ export default function SkillList({
   headingLevel: 'h2' | 'h3'
 }) {
   return (
-    <div className="border-foreground/15 border-t">
+    <div className="grid gap-16 lg:gap-24">
       {capabilities.map((capability, index) => (
         <ScrollReveal
           key={capability.id}
           as="article"
           delay={index * 0.04}
-          className="border-foreground/15 grid gap-8 border-b py-10 lg:grid-cols-2 lg:items-center lg:gap-16 lg:py-14"
+          className="grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-16"
         >
           <div>
             <Title

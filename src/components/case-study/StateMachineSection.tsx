@@ -20,7 +20,7 @@ export default function StateMachineSection({
   const headingId = `${machine.id}-heading`
 
   return (
-    <ScrollReveal className="border-foreground/15 border-t pt-10 sm:pt-12">
+    <ScrollReveal>
       <section aria-labelledby={headingId}>
         <div className="grid gap-6 lg:grid-cols-[0.8fr_1.2fr] lg:gap-16">
           <Title
@@ -49,11 +49,11 @@ export default function StateMachineSection({
               States{' '}
               <span className="tabular-nums">({machine.states.length})</span>
             </Title>
-            <dl className="border-foreground/15 mt-4 border-t">
+            <dl className="mt-4 divide-y">
               {machine.states.map((state) => (
                 <div
                   key={state.id}
-                  className="border-foreground/15 grid gap-1 border-b py-4 sm:grid-cols-[9rem_1fr] sm:gap-6"
+                  className="grid gap-1 py-4 sm:grid-cols-[9rem_1fr] sm:gap-6"
                 >
                   <dt className="text-sm font-bold">{state.label}</dt>
                   <dd className="text-fg-muted text-sm leading-6">
@@ -78,7 +78,7 @@ export default function StateMachineSection({
                   before, the event, and the state after.
                 </caption>
                 <thead>
-                  <tr className="border-foreground/15 border-y">
+                  <tr className="border-b">
                     <th
                       scope="col"
                       className="text-fg-muted py-3 pr-4 text-sm font-semibold"
@@ -103,7 +103,7 @@ export default function StateMachineSection({
                   {machine.transitions.map((transition) => (
                     <tr
                       key={`${transition.from}-${transition.to}-${transition.event}`}
-                      className="border-foreground/15 border-b align-top"
+                      className="border-b align-top last:border-b-0"
                     >
                       <th
                         scope="row"

@@ -216,7 +216,7 @@ function PlayPage() {
           </figure>
         </ScrollReveal>
 
-        <ScrollReveal className="border-foreground/15 mt-20 grid gap-10 border-t pt-10 sm:grid-cols-2 lg:grid-cols-4">
+        <ScrollReveal className="mt-24 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
           {features.map(({ icon: Icon, title, text }) => (
             <div key={title}>
               <Icon size={28} strokeWidth={1.5} aria-hidden="true" />
@@ -360,7 +360,7 @@ function PlayPage() {
           </figure>
         </ScrollReveal>
 
-        <ScrollReveal className="border-foreground/15 mt-28 border-t pt-12">
+        <ScrollReveal className="mt-32">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="st-display text-4xl leading-none font-bold uppercase italic sm:text-5xl">

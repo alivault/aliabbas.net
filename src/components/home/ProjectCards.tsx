@@ -230,10 +230,7 @@ export function FeaturedProject({
   }, [inMiddle, onActive])
 
   return (
-    <ScrollReveal
-      as="article"
-      className="border-foreground/15 border-t py-10 first:border-t-0 first:pt-0 last:pb-0 lg:border-t-0 lg:py-0"
-    >
+    <ScrollReveal as="article" className="py-10 first:pt-0 last:pb-0 lg:py-0">
       <div
         ref={ref}
         data-work-item={project.title}

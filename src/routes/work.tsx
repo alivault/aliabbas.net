@@ -23,7 +23,7 @@ function WorkPage() {
         header={
           <ScrollReveal
             as="header"
-            className="border-foreground/20 mb-section-divider pb-section-divider grid justify-items-center gap-6 border-b text-center"
+            className="pb-section-content grid justify-items-center gap-6 text-center"
           >
             <div>
               <PageHeading>Built for the real world.</PageHeading>

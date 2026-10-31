@@ -188,7 +188,7 @@ function NotePage() {
         </Link>
         <ScrollReveal
           as="header"
-          className="border-foreground/20 pb-section-divider mx-auto max-w-3xl border-b"
+          className="pb-section-content mx-auto max-w-3xl"
         >
           <PageHeading>{note.title}</PageHeading>
           {note.description && (

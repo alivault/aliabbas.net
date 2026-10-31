@@ -248,7 +248,7 @@ function PartRow({
         reduceMotion ? { duration: 0 } : { ...SPRING, delay: index * 0.06 }
       }
       aria-busy={part.status === 'checking'}
-      className="border-foreground/10 border-b py-6 last:border-b-0"
+      className="border-b py-6 last:border-b-0"
     >
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-6">
         <p className="flex gap-3 text-base leading-7 font-medium">

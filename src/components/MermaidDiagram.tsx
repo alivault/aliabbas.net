@@ -112,7 +112,7 @@ export function MermaidDiagram({ value }: { value: MermaidDiagramValue }) {
   if (!value.code) return null
 
   return (
-    <figure className="not-prose border-foreground/15 my-10 border-y py-8 sm:py-10">
+    <figure className="not-prose my-12 sm:my-16">
       {state.status === 'rendered' ? (
         <div
           ref={svgContainerRef}

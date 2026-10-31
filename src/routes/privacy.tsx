@@ -26,7 +26,7 @@ function PrivacySection({
   title: string
 }) {
   return (
-    <section className="border-foreground/20 py-section-content grid gap-5 border-t lg:grid-cols-[360px_1fr] lg:gap-10">
+    <section className="py-section-content grid gap-5 lg:grid-cols-[360px_1fr] lg:gap-10">
       <Title as="h2" variant="subsection">
         <span className="tabular-nums">{Number(number)}.</span> {title}
       </Title>
