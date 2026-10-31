@@ -10,6 +10,8 @@ import Title from '~/components/Title'
 import { buttonVariants } from '~/components/ui/button'
 import { caseStudies } from '~/data/case-studies'
 import type { CaseStudy } from '~/data/case-studies'
+import { recentWork } from '~/data/work'
+import type { WorkItem } from '~/data/work'
 import EvidenceList from './EvidenceList'
 import StateMachineSection from './StateMachineSection'
 import { cn } from 'cn'
@@ -33,7 +35,13 @@ function allEvidence(study: CaseStudy) {
   return [...paths].sort()
 }
 
+function stackOf(study: CaseStudy) {
+  const items: ReadonlyArray<WorkItem> = recentWork
+  return items.find((item) => item.caseStudy === study.slug)?.tools ?? []
+}
+
 export default function CaseStudyPage({ study }: { study: CaseStudy }) {
+  const stack = stackOf(study)
   const next =
     caseStudies[
       (caseStudies.findIndex((item) => item.slug === study.slug) + 1) %
@@ -142,6 +150,12 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
                 </p>
               ))}
             </div>
+            {stack.length > 0 && (
+              <dl className="mt-6 grid max-w-xl gap-x-6 gap-y-1 text-sm leading-6 sm:grid-cols-[auto_1fr]">
+                <dt className="text-foreground font-medium">Stack</dt>
+                <dd className="text-fg-muted">{stack.join(', ')}</dd>
+              </dl>
+            )}
           </section>
         </ScrollReveal>
 

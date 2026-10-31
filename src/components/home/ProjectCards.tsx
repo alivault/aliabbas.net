@@ -147,12 +147,6 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
         <p className="text-fg-secondary mt-5 text-base leading-7 text-pretty lg:text-lg lg:leading-8">
           {project.description}
         </p>
-        <dl className="border-foreground/15 mt-6 grid gap-x-6 gap-y-3 border-t pt-6 text-sm leading-6 sm:grid-cols-[auto_1fr]">
-          <dt className="text-foreground font-medium">Contribution</dt>
-          <dd className="text-fg-muted">{project.contribution}</dd>
-          <dt className="text-foreground font-medium">Stack</dt>
-          <dd className="text-fg-muted">{project.tools.join(', ')}</dd>
-        </dl>
         <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2">
           {project.caseStudy && (
             <Link
