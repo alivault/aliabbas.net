@@ -14,9 +14,9 @@ import type { WorkItem } from '~/data/work'
  * One block in the stage. It opens from its center while its row scrolls
  * up the screen, so the blocks follow the scroll position, in both
  * directions. The first block opens as the list comes into view. Each next
- * block waits while the row above it moves from the middle of the screen
- * up by 30% of the screen height, then opens until its own row is in the
- * middle.
+ * block waits while the row above it leaves the middle, then opens. It is
+ * fully open when the top of its row is at 30% of the screen, a little
+ * before the row is in the middle (at about 23%: 20% plus half the header).
  */
 function StageBlock({
   project,
@@ -29,7 +29,7 @@ function StageBlock({
 }) {
   const { scrollYProgress } = useScroll({
     target: rowRef,
-    offset: first ? ['start end', 'start center'] : ['start 0.5', 'start 0.2'],
+    offset: first ? ['start end', 'start center'] : ['start 0.6', 'start 0.3'],
   })
   return (
     // The text column has the same link.

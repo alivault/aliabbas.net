@@ -260,22 +260,42 @@ test('the work stage shows the project in the middle of the screen', async ({
     return
   }
   // The blocks follow the scroll. A clip path also clips hit testing, so
-  // the link at the middle of the stage is the block that is open on top.
+  // the link at a point of the stage is the block that is open on top
+  // there. The wipe goes from right to left, and its edge leans to the
+  // right at the top, so the top-left corner opens last.
   const blockOnTop = () =>
     stage.evaluate((element) => {
       const box = element.getBoundingClientRect()
       const hit = document
-        .elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)
+        .elementFromPoint(box.left + 4, box.top + 4)
         ?.closest('a')
       return [...element.querySelectorAll('a')].indexOf(hit!)
     })
+  // Scroll until the middle of the row is level with the middle of the
+  // stage. The stage is sticky only after the first scroll, so repeat.
+  const alignWithStage = (title: string) =>
+    page.evaluate((title) => {
+      const row = document
+        .querySelector(`[data-work-item="${title}"]`)!
+        .getBoundingClientRect()
+      const stage = document
+        .querySelector('[data-work-stage] > div')!
+        .getBoundingClientRect()
+      window.scrollBy(
+        0,
+        row.top + row.height / 2 - (stage.top + stage.height / 2),
+      )
+    }, title)
   const titles = ['Pico', 'Whimcall', 'Chromagine']
   await expect(stage).toHaveAttribute('data-work-stage', 'Pico')
+  // The block of a project is fully open when its text is level with it.
   for (const title of ['Whimcall', 'Chromagine', 'Pico']) {
-    await page
-      .locator(`[data-work-item="${title}"]`)
-      .evaluate((item) => item.scrollIntoView({ block: 'center' }))
+    await expect
+      .poll(async () => {
+        await alignWithStage(title)
+        return blockOnTop()
+      })
+      .toBe(titles.indexOf(title))
     await expect(stage).toHaveAttribute('data-work-stage', title)
-    await expect.poll(blockOnTop).toBe(titles.indexOf(title))
   }
 })
