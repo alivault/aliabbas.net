@@ -896,7 +896,6 @@ export default function ConnectedGlobe() {
         ? (connections.find((item) => item.hitLine === hit.object) ?? null)
         : null
       hoveredConnection = connection
-      canvas.style.cursor = 'grab'
     }
 
     const handlePointerDown = (event: PointerEvent) => {
@@ -906,7 +905,6 @@ export default function ConnectedGlobe() {
       lastPointerY = event.clientY
       rotationVelocityX = 0
       rotationVelocityY = 0
-      canvas.style.cursor = 'grabbing'
       canvas.setPointerCapture(event.pointerId)
     }
 
@@ -933,7 +931,6 @@ export default function ConnectedGlobe() {
 
     const handlePointerUp = (event: PointerEvent) => {
       isDragging = false
-      canvas.style.cursor = 'grab'
       if (canvas.hasPointerCapture(event.pointerId)) {
         canvas.releasePointerCapture(event.pointerId)
       }
@@ -943,7 +940,6 @@ export default function ConnectedGlobe() {
     const handlePointerLeave = () => {
       if (isDragging) return
       hoveredConnection = null
-      canvas.style.cursor = 'grab'
     }
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -1099,7 +1095,7 @@ export default function ConnectedGlobe() {
       {/* The entrance is CSS (.enter-soft), so server and client render the same. */}
       <canvas
         ref={canvasRef}
-        className="enter-soft block size-full cursor-grab touch-pan-y outline-none"
+        className="enter-soft block size-full touch-pan-y outline-none"
         aria-label="Interactive globe with animated connections. Drag or use arrow keys to rotate."
         role="img"
         tabIndex={0}
