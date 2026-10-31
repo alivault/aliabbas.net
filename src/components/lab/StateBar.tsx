@@ -24,7 +24,7 @@ const MACHINE_STATES: ReadonlyArray<LabMachineState> = [
  * The machine as a strip of states. The current state is filled. The
  * three end states share one column, because a turn reaches only one.
  */
-function StateTrack({ state }: { state: LabMachineState }) {
+export function StateTrack({ state }: { state: LabMachineState }) {
   const node = (name: LabMachineState) => (
     <span
       key={name}

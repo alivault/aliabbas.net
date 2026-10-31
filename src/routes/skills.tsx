@@ -4,8 +4,8 @@ import { Braces, Cloud, Database, Layers3 } from 'lucide-react'
 import Main from '~/components/Main'
 import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
+import SkillList from '~/components/skills/SkillList'
 import Title from '~/components/Title'
-import { capabilities } from '~/data/capabilities'
 
 const architecture = [
   {
@@ -60,22 +60,8 @@ function SkillsPage() {
             </p>
           </ScrollReveal>
 
-          <div className="border-foreground/15 mt-section-content border-t">
-            {capabilities.map((capability, index) => (
-              <ScrollReveal
-                key={capability.number}
-                as="article"
-                delay={index * 0.04}
-                className="group border-foreground/15 hover:text-brand grid gap-4 border-b py-7 transition-colors sm:grid-cols-2 sm:items-center sm:py-9"
-              >
-                <Title as="h2" variant="card">
-                  {capability.title}
-                </Title>
-                <p className="text-fg-muted max-w-xl text-sm leading-6 sm:justify-self-end">
-                  {capability.description}
-                </p>
-              </ScrollReveal>
-            ))}
+          <div className="mt-section-content">
+            <SkillList headingLevel="h2" />
           </div>
 
           <ScrollReveal className="mt-section-content grid gap-10 lg:grid-cols-2 lg:gap-16">
