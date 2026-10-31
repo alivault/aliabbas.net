@@ -13,9 +13,10 @@ import type { WorkItem } from '~/data/work'
 /**
  * One block in the stage. It opens from its center while its row scrolls
  * up the screen, so the blocks follow the scroll position, in both
- * directions. The first block opens as the list comes into view; each
- * next one opens between the moment the row above it is in the middle and
- * the moment its own row is.
+ * directions. The first block opens as the list comes into view. Each next
+ * block waits while the row above it moves from the middle of the screen
+ * up by 30% of the screen height, then opens until its own row is in the
+ * middle.
  */
 function StageBlock({
   project,
@@ -28,7 +29,7 @@ function StageBlock({
 }) {
   const { scrollYProgress } = useScroll({
     target: rowRef,
-    offset: first ? ['start end', 'start center'] : ['start 0.8', 'start 0.2'],
+    offset: first ? ['start end', 'start center'] : ['start 0.5', 'start 0.2'],
   })
   return (
     // The text column has the same link.
@@ -39,7 +40,7 @@ function StageBlock({
 /**
  * The work list. On wide screens the blocks of the projects are in a sticky
  * stage on the left: as each project scrolls into the middle, its block
- * opens from the center on top of the one before. On small screens each
+ * wipes in on top of the one before. On small screens each
  * project shows its own block.
  */
 export default function WorkSection({ header }: { header?: ReactNode }) {
