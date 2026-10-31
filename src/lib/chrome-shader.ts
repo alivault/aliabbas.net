@@ -3,8 +3,8 @@
  *
  * Nothing is colored directly: the shader shades a surface. The 2px band at
  * the edge of the button is a polished metal tube, so across the band its
- * normal turns from the inner edge to the outer edge. Folds flow along the
- * band and bend that normal. The view reflects off the normal into a silver
+ * normal turns from the inner edge to the outer edge. Folds go around the
+ * band, counter-clockwise, and bend that normal. The view reflects off the normal into a silver
  * sky (a ramp from black to white), and a highlight from a light that goes
  * around, a fresnel rim, a small chromatic split and grain finish it.
  * Nothing shows outside the button.
@@ -20,9 +20,12 @@ import { DURATIONS, EASE_IN, EASE_OUT } from '~/lib/design/motion'
 const BORDER = 1
 /** The width of the band, in CSS pixels. */
 const BAND = 2
-/** Phase speeds, per second: the folds flow, and the light goes around. */
-const FLOW_SPEED = 0.6
-const SWEEP_SPEED = 0.7
+/** Seconds for the chrome to go once around the border, counter-clockwise. */
+const TURN_SECONDS = 12
+/** Phase speeds, per second: the liquid waves, and the light, which also
+ *  goes around counter-clockwise. */
+const FLOW_SPEED = 0.3
+const SWEEP_SPEED = (2 * Math.PI) / 10
 /** The most device pixels the canvas gets, so a deep zoom stays cheap. */
 const MAX_PIXELS = 2_000_000
 
@@ -40,7 +43,8 @@ precision highp float;
 varying vec2 vUv;
 uniform vec2 uSize;        // button size with its border, CSS pixels
 uniform float uPixel;      // one device pixel, in CSS pixels
-uniform float uFlow;       // phase of the folds
+uniform float uFlow;       // phase of the liquid waves
+uniform float uTurn;       // turns of the folds around the border
 uniform float uSweep;      // phase of the light
 uniform float uSeed;       // changes each frame, for the grain
 
@@ -98,13 +102,38 @@ float fold(float f) {
   return sin(f + 0.75 * sin(f));
 }
 
-// The height of the flowing folds. Slow noise bends them, so they are not
-// straight stripes, and the phase moves them along the border.
-float height(vec2 p) {
-  vec2 q = p / 48.0;
-  float bend = noise(q * 0.9 + vec2(uFlow * 0.15, 0.0)) * 3.0
-    + noise(q * 2.1 - vec2(0.0, uFlow * 0.1)) * 1.2;
-  return fold(q.x * 2.4 + q.y * 1.3 + bend * 2.6 - uFlow);
+// Where p is along the border, from 0 to 1, counter-clockwise from the
+// middle of the right end. It is the arc length, so the folds move at the
+// same speed on the straight parts and on the round ends.
+float along(vec2 p, vec2 halfSize) {
+  float radius = min(halfSize.x, halfSize.y);
+  float straight = max(halfSize.x - radius, 0.0);
+  float quarter = radius * 1.5707963;
+  float perimeter = 4.0 * straight + 4.0 * quarter;
+  float s;
+  if (p.x > straight) {
+    float a = atan(p.y, p.x - straight);
+    s = a >= 0.0 ? radius * a : perimeter + radius * a;
+  } else if (p.x < -straight) {
+    float a = atan(p.y, p.x + straight);
+    if (a < 0.0) a += 6.2831853;
+    s = quarter + 2.0 * straight + radius * (a - 1.5707963);
+  } else if (p.y > 0.0) {
+    s = quarter + (straight - p.x);
+  } else {
+    s = 3.0 * quarter + 2.0 * straight + (p.x + straight);
+  }
+  return s / perimeter;
+}
+
+// The height of the folds. They go around the border, and the turn moves
+// them counter-clockwise. Slow waves of a whole number of periods bend
+// them, so they look liquid and still join without a seam.
+float height(vec2 p, vec2 halfSize, float folds) {
+  float u = along(p, halfSize);
+  float bend = 0.55 * sin(6.2831853 * u * 3.0 + uFlow * 0.35)
+    + 0.35 * sin(6.2831853 * u * 5.0 - uFlow * 0.25);
+  return fold(6.2831853 * folds * (u - uTurn) + bend * 2.0);
 }
 
 void main() {
@@ -133,9 +162,14 @@ void main() {
   vec3 n = vec3(outward * s, sqrt(1.0 - s * s));
 
   // The folds bend the normal: slope of the height, by finite differences.
+  float perimeter = 4.0 * max(halfSize.x - radius, 0.0) + 6.2831853 * radius;
+  float folds = max(floor(perimeter / 40.0 + 0.5), 3.0);
   float e = uPixel;
-  float h = height(p);
-  vec2 slope = vec2(height(p + vec2(e, 0.0)) - h, height(p + vec2(0.0, e)) - h) / e;
+  float h = height(p, halfSize, folds);
+  vec2 slope = vec2(
+    height(p + vec2(e, 0.0), halfSize, folds) - h,
+    height(p + vec2(0.0, e), halfSize, folds) - h
+  ) / e;
   n = normalize(n + vec3(-slope * 9.0, 0.0));
 
   // Reflect the view into the sky. Each channel reads it at a slightly
@@ -168,7 +202,7 @@ type Renderer = {
   canvas: HTMLCanvasElement
   gl: WebGLRenderingContext
   uniforms: Record<
-    'size' | 'pixel' | 'flow' | 'sweep' | 'seed',
+    'size' | 'pixel' | 'flow' | 'turn' | 'sweep' | 'seed',
     WebGLUniformLocation | null
   >
 }
@@ -179,7 +213,7 @@ let active: HTMLElement | null = null
 let frame = 0
 let removeTimer = 0
 /** Each motion adds its own speed times the frame time, so it never jumps. */
-const phase = { flow: 0, sweep: 0, last: 0 }
+const phase = { flow: 0, turn: 0, sweep: 0, last: 0 }
 
 const transition = (duration: number, ease: ReadonlyArray<number>) =>
   `opacity ${duration * 1000}ms cubic-bezier(${ease.join(', ')})`
@@ -236,6 +270,7 @@ function makeRenderer(): Renderer | null {
     size: uniform('uSize'),
     pixel: uniform('uPixel'),
     flow: uniform('uFlow'),
+    turn: uniform('uTurn'),
     sweep: uniform('uSweep'),
     seed: uniform('uSeed'),
   }
@@ -291,10 +326,12 @@ function draw(now: number) {
   if (!reducedMotion()) {
     const seconds = phase.last ? Math.min((now - phase.last) / 1000, 0.05) : 0
     phase.flow += seconds * FLOW_SPEED
+    phase.turn = (phase.turn + seconds / TURN_SECONDS) % 1
     phase.sweep += seconds * SWEEP_SPEED
   }
   phase.last = now
   gl.uniform1f(uniforms.flow, phase.flow)
+  gl.uniform1f(uniforms.turn, phase.turn)
   gl.uniform1f(uniforms.sweep, phase.sweep)
   gl.uniform1f(uniforms.seed, (now % 1000) / 7.3)
   gl.drawArrays(gl.TRIANGLES, 0, 3)
