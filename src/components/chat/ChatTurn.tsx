@@ -238,7 +238,7 @@ function ChatTurn({
                   aria-pressed={evidenceVisible}
                   aria-label={`${turn.sources.length} ${turn.sources.length === 1 ? 'source' : 'sources'}: ${evidenceVisible ? 'hide' : 'show'} evidence`}
                   onClick={() => onToggleEvidence(turn.id)}
-                  className="text-fg-muted hover:text-foreground aria-pressed:bg-foreground/[0.07] aria-pressed:text-foreground"
+                  className="text-fg-muted hover:text-foreground"
                 >
                   <FileSearch aria-hidden="true" />
                   <span className="tabular-nums">{turn.sources.length}</span>

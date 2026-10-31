@@ -96,3 +96,38 @@ test('the checker has the footer, and the chat does not', async ({ page }) => {
   await expect(page).toHaveURL(/\/chat/)
   await expect(page.locator('footer.site-footer')).toHaveCount(0)
 })
+
+test('the sources button looks pressed while the evidence shows', async ({
+  page,
+}) => {
+  test.skip(
+    !isDesktop(page),
+    'On mobile the evidence opens in a dialog, not beside the answer.',
+  )
+  await mockAi(page, { '/api/chat': chatAnswer() })
+  await open(page, '/chat')
+  await composer(page).fill('Has Ali built streaming interfaces?')
+  await page.keyboard.press('Enter')
+  await expect(page.getByText(/done in/)).toBeVisible()
+
+  const toggle = page.getByRole('button', { name: /2 sources: .* evidence/ })
+  const fill = () =>
+    toggle.evaluate((element) => getComputedStyle(element).backgroundColor)
+
+  const transparent = 'rgba(0, 0, 0, 0)'
+  // Wait for the fill transition to end after each change.
+  const expectFill = async (pressed: boolean) => {
+    await expect(toggle).toHaveAttribute('aria-pressed', String(pressed))
+    // Move the pointer away, so the hover fill does not hide the difference.
+    await page.mouse.move(0, 0)
+    if (pressed) await expect.poll(fill).not.toBe(transparent)
+    else await expect.poll(fill).toBe(transparent)
+  }
+
+  const pressed = (await toggle.getAttribute('aria-pressed')) === 'true'
+  await expectFill(pressed)
+  await toggle.click()
+  await expectFill(!pressed)
+  await toggle.click()
+  await expectFill(pressed)
+})
