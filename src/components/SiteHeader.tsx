@@ -13,7 +13,7 @@ import { cn } from '~/lib/utils'
 import Logo from './Logo'
 import Meta from './Meta'
 import Title from './Title'
-import { buttonVariants } from './ui/button'
+import { ButtonLink, buttonVariants } from './ui/button'
 import { DURATIONS, EASE_IN, EASE_OUT } from '~/lib/design/motion'
 
 const navigation = [
@@ -193,20 +193,17 @@ export default function SiteHeader() {
           </nav>
 
           <div className="flex items-center gap-3 justify-self-end">
-            <Link
+            <ButtonLink
               to="/contact"
-              className={buttonVariants({
-                variant: 'secondary',
-                size: 'pill',
-                className: 'hidden sm:inline-flex',
-              })}
+              variant="secondary"
+              className="hidden sm:inline-flex"
             >
               Contact <ArrowUpRight aria-hidden="true" className="size-4" />
-            </Link>
+            </ButtonLink>
             <SheetTrigger
               className={buttonVariants({
                 variant: 'ghost',
-                size: 'icon-pill',
+                size: 'icon',
                 className: 'lg:hidden',
               })}
               aria-label={menuOpen ? 'Close navigation' : 'Open navigation'}
@@ -256,17 +253,15 @@ export default function SiteHeader() {
           </nav>
           <div className="mt-auto shrink-0 overflow-hidden py-8">
             <motion.div variants={mobileContactVariants}>
-              <Link
+              <ButtonLink
                 to="/contact"
+                size="lg"
                 onClick={() => setMenuOpen(false)}
-                className={buttonVariants({
-                  size: 'pill-lg',
-                  className: 'w-full justify-between',
-                })}
+                className="w-full justify-between"
               >
                 Start a conversation{' '}
                 <ArrowUpRight aria-hidden="true" className="size-4" />
-              </Link>
+              </ButtonLink>
             </motion.div>
           </div>
         </motion.div>

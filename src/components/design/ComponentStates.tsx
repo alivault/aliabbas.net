@@ -3,24 +3,22 @@ import { Link } from '@tanstack/react-router'
 import { ArrowRight, Square } from 'lucide-react'
 import { citationChipClass } from '~/components/chat/AnswerMarkdown'
 import VerdictBadge from '~/components/check/VerdictBadge'
-import { Button } from '~/components/ui/button'
+import {
+  BUTTON_SIZE_ROLES,
+  BUTTON_VARIANT_ROLES,
+  Button,
+} from '~/components/ui/button'
+import type { ButtonSize, ButtonVariant } from '~/components/ui/button'
 import { VERDICTS, VERDICT_INFO } from '~/lib/check/verdicts'
 import { cn } from 'cn'
 
-const BUTTON_VARIANTS = [
-  [
-    'default',
-    'The main action of a view, in the brand color. One for each view.',
-  ],
-  ['outline', 'Other actions, such as Stop and Replay.'],
-  [
-    'secondary',
-    'A quiet action next to the main one, such as Contact in the header.',
-  ],
-  ['ghost', 'Actions in toolbars and lists.'],
-  ['destructive', 'Actions that delete or stop for good.'],
-  ['link', 'Actions inside text.'],
-] as const
+const BUTTON_VARIANTS = Object.entries(BUTTON_VARIANT_ROLES) as Array<
+  [ButtonVariant, string]
+>
+
+const BUTTON_SIZES = Object.entries(BUTTON_SIZE_ROLES) as Array<
+  [ButtonSize, string]
+>
 
 function Group({
   children,
@@ -57,7 +55,7 @@ export default function ComponentStates() {
     <div className="space-y-12">
       <Group
         title="Button"
-        note="Base UI button with the shadcn/ui base-nova styles. The focus state is the ring that keyboard focus shows. Disabled buttons that a stream turns off stay focusable, so focus is not lost."
+        note="Base UI button. Four variants, four sizes, all round. A link that looks like a button is a ButtonLink (a page of the site) or a ButtonAnchor (another site), not a Button. The focus state is the ring that keyboard focus shows. Disabled buttons that a stream turns off stay focusable, so focus is not lost."
       >
         <div className="divide-foreground/10 divide-y">
           {BUTTON_VARIANTS.map(([variant, use]) => (
@@ -93,6 +91,41 @@ export default function ComponentStates() {
                     Stop
                   </Button>
                 </State>
+              </div>
+            </div>
+          ))}
+        </div>
+        <div className="divide-foreground/10 border-foreground/10 mt-4 divide-y border-t pt-4">
+          {BUTTON_SIZES.map(([size, use]) => (
+            <div
+              key={size}
+              className="grid gap-4 py-4 first:pt-0 last:pb-0 sm:grid-cols-[10rem_minmax(0,1fr)] sm:items-center"
+            >
+              <div>
+                <p className="text-foreground font-mono text-sm">{size}</p>
+                <p className="text-fg-muted text-sm leading-6">{use}</p>
+              </div>
+              <div className="flex flex-wrap items-center gap-6">
+                {size === 'icon' || size === 'icon-lg' ? (
+                  <>
+                    <Button size={size} aria-label="Next">
+                      <ArrowRight aria-hidden="true" />
+                    </Button>
+                    <Button size={size} variant="secondary" aria-label="Next">
+                      <ArrowRight aria-hidden="true" />
+                    </Button>
+                    <Button size={size} variant="ghost" aria-label="Next">
+                      <ArrowRight aria-hidden="true" />
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button size={size}>Continue</Button>
+                    <Button size={size} variant="secondary">
+                      Continue
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           ))}

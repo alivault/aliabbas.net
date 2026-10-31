@@ -83,6 +83,12 @@ export const DESIGN_RULES: Array<DesignRule> = [
     why: 'WCAG 2.5.8. Small targets are hard to hit on a phone.',
   },
   {
+    id: 'buttons',
+    rule: 'Buttons have four variants (primary, secondary, ghost, destructive) and four sizes (md, lg, icon, icon-lg), all round. Use at most one primary button in a view or group, with secondary next to it. Use destructive only to delete. A link that looks like a button is a ButtonLink or a ButtonAnchor, never a Button with a link in render.',
+    why: 'Few buttons that look the same everywhere make the site read as one product. Button with a link in render gives the link role="button".',
+    checkedBy: 'src/components/ui/button.test.ts',
+  },
+  {
     id: 'components',
     rule: 'Build on the shadcn/ui base-nova components in src/components/ui, on Base UI. Merge classes with cn from the cn package. Use Lucide icons.',
     why: 'The primitives handle focus, keyboard and ARIA. Do not rebuild them.',

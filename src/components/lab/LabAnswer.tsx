@@ -154,8 +154,7 @@ export default function LabAnswer({
                 {turn.error}
               </p>
               <Button
-                variant="outline"
-                size="default"
+                variant="secondary"
                 onClick={(event) => {
                   // The Retry button goes away. Focus moves to Stop, so Esc
                   // and Tab still work from the specimen.

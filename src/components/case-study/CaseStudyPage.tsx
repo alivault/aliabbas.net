@@ -7,7 +7,7 @@ import ScrollReveal from '~/components/ScrollReveal'
 import SectionHeading from '~/components/SectionHeading'
 import SectionNav from '~/components/SectionNav'
 import Title from '~/components/Title'
-import { buttonVariants } from '~/components/ui/button'
+import { ButtonAnchor } from '~/components/ui/button'
 import { caseStudies } from '~/data/case-studies'
 import type { CaseStudy } from '~/data/case-studies'
 import { recentWork } from '~/data/work'
@@ -15,8 +15,6 @@ import type { WorkItem } from '~/data/work'
 import EvidenceList from './EvidenceList'
 import StateMachineSection from './StateMachineSection'
 import { cn } from 'cn'
-
-const pillLink = buttonVariants({ variant: 'secondary', size: 'pill' })
 
 const sectionLinks = [
   { id: 'problem', label: 'Problem and role' },
@@ -84,27 +82,17 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
               </div>
             </dl>
             <div className="mt-6 flex flex-wrap justify-center gap-3">
-              <a
-                href={study.liveHref}
-                target="_blank"
-                rel="noreferrer"
-                className={pillLink}
-              >
+              <ButtonAnchor href={study.liveHref} variant="secondary">
                 Visit {study.liveLabel}
-                <ArrowUpRight className="size-3.5" aria-hidden="true" />
+                <ArrowUpRight aria-hidden="true" />
                 <span className="sr-only">(opens in a new tab)</span>
-              </a>
+              </ButtonAnchor>
               {study.sourceHref && (
-                <a
-                  href={study.sourceHref}
-                  target="_blank"
-                  rel="noreferrer"
-                  className={pillLink}
-                >
+                <ButtonAnchor href={study.sourceHref} variant="secondary">
                   Source on GitHub
-                  <ArrowUpRight className="size-3.5" aria-hidden="true" />
+                  <ArrowUpRight aria-hidden="true" />
                   <span className="sr-only">(opens in a new tab)</span>
-                </a>
+                </ButtonAnchor>
               )}
             </div>
           </div>

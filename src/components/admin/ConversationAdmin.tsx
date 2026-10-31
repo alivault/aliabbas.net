@@ -17,7 +17,7 @@ import remarkGfm from 'remark-gfm'
 import GitHubIcon from '~/components/GitHubIcon'
 import PageHeading from '~/components/PageHeading'
 import Title from '~/components/Title'
-import { Button, buttonVariants } from '~/components/ui/button'
+import { Button, ButtonLink } from '~/components/ui/button'
 import { Input } from '~/components/ui/input'
 import {
   Tooltip,
@@ -209,8 +209,8 @@ function SignInPanel({
             </p>
             <Button
               type="button"
-              variant="outline"
-              size="pill-lg"
+              variant="secondary"
+              size="lg"
               onClick={() => void signOut()}
               className="mt-5 w-full"
             >
@@ -241,7 +241,7 @@ function SignInPanel({
               {error && <p className="text-sm text-[#ff8b75]">{error}</p>}
               <Button
                 type="submit"
-                size="pill-lg"
+                size="lg"
                 disabled={isSubmitting}
                 className="w-full"
               >
@@ -255,14 +255,14 @@ function SignInPanel({
             </div>
             <Button
               type="button"
-              variant="outline"
+              variant="secondary"
               onClick={() =>
                 void authClient.signIn.social({
                   provider: 'github',
                   callbackURL: window.location.href,
                 })
               }
-              size="pill-lg"
+              size="lg"
               className="w-full"
             >
               <GitHubIcon className="size-4" /> Continue with GitHub
@@ -430,16 +430,14 @@ export default function ConversationAdmin() {
     <div className="bg-background text-foreground flex min-h-svh flex-col scheme-dark">
       <header className="flex h-16 shrink-0 items-center justify-between border-b border-white/15 px-4 sm:px-6">
         <div className="flex items-center gap-4">
-          <Link
+          <ButtonLink
             to="/"
-            className={buttonVariants({
-              variant: 'outline',
-              size: 'icon-pill',
-            })}
+            variant="secondary"
+            size="icon"
             aria-label="Back to portfolio"
           >
             <ArrowLeft className="size-4" />
-          </Link>
+          </ButtonLink>
           <div>
             <p className="text-sm font-semibold">Chat conversations</p>
             <p className="font-mono text-[8px] text-white/30 uppercase">
@@ -455,7 +453,7 @@ export default function ConversationAdmin() {
                   <Button
                     type="button"
                     variant="ghost"
-                    size="icon-sm"
+                    size="icon"
                     disabled={isLoading}
                     onClick={() => void loadConversations()}
                     aria-label="Refresh conversations"
@@ -474,7 +472,7 @@ export default function ConversationAdmin() {
                   <Button
                     type="button"
                     variant="ghost"
-                    size="icon-sm"
+                    size="icon"
                     onClick={() => void signOut()}
                     aria-label="Sign out"
                   >
@@ -576,7 +574,6 @@ export default function ConversationAdmin() {
                   <Button
                     type="button"
                     variant="destructive"
-                    size="sm"
                     disabled={isDeleting}
                     onClick={() => void deleteSelectedConversation()}
                   >

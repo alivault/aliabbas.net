@@ -76,7 +76,7 @@ function ResetPasswordPage() {
           <p className="text-fg-muted mb-5 text-sm">
             This password reset link is invalid or has expired.
           </p>
-          <Button onClick={() => navigate({ to: '/' })} variant="outline">
+          <Button onClick={() => navigate({ to: '/' })} variant="secondary">
             Go to homepage
           </Button>
         </div>

@@ -47,7 +47,6 @@ function CopyButton({ text }: { text: string }) {
   return (
     <Button
       variant="ghost"
-      size="default"
       onClick={() => {
         void navigator.clipboard
           .writeText(text)
@@ -234,7 +233,6 @@ function ChatTurn({
               {turn.sources.length > 0 && (
                 <Button
                   variant="ghost"
-                  size="default"
                   aria-pressed={evidenceVisible}
                   aria-label={`${turn.sources.length} ${turn.sources.length === 1 ? 'source' : 'sources'}: ${evidenceVisible ? 'hide' : 'show'} evidence`}
                   onClick={() => onToggleEvidence(turn.id)}
@@ -249,7 +247,6 @@ function ChatTurn({
               {isLast && !active && (
                 <Button
                   variant="ghost"
-                  size="default"
                   onClick={() => onRetry(turn.id)}
                   className="text-fg-muted hover:text-foreground"
                 >
@@ -261,7 +258,6 @@ function ChatTurn({
                 (turn.status === 'failed' || turn.status === 'stopped') && (
                   <Button
                     variant="ghost"
-                    size="default"
                     onClick={() => onEdit(turn)}
                     className="text-fg-muted hover:text-foreground"
                   >

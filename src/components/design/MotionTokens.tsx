@@ -36,7 +36,7 @@ export default function MotionTokens() {
     <div className="space-y-10">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <h3 className="text-foreground text-base font-semibold">Springs</h3>
-        <Button variant="outline" onClick={playAll}>
+        <Button variant="secondary" onClick={playAll}>
           <Play aria-hidden="true" />
           Play all
         </Button>

@@ -169,8 +169,7 @@ export default function StateBar({
         />
         <div className="flex shrink-0 items-center gap-1.5">
           <Button
-            variant="outline"
-            size="default"
+            variant="secondary"
             onClick={stop}
             disabled={!isActive}
             // Focus stays on Stop when the stream ends, so it is not lost.
@@ -181,11 +180,7 @@ export default function StateBar({
             <Square className="fill-current" aria-hidden="true" />
             Stop
           </Button>
-          <Button
-            variant="outline"
-            size="default"
-            onClick={() => run(scenario)}
-          >
+          <Button variant="secondary" onClick={() => run(scenario)}>
             <RotateCcw aria-hidden="true" />
             Replay
           </Button>

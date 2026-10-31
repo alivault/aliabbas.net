@@ -359,7 +359,7 @@ export function Comments({ articleSlug }: CommentsProps) {
                 </div>
               )}
             </div>
-            <Button variant="ghost" size="sm" onClick={handleSignOut}>
+            <Button variant="ghost" onClick={handleSignOut}>
               <LogOut className="mr-1.5 size-4" />
               Sign out
             </Button>
@@ -446,7 +446,6 @@ export function Comments({ articleSlug }: CommentsProps) {
                 <Button
                   onClick={handleSendVerificationOtp}
                   disabled={isSendingOtp}
-                  size="sm"
                 >
                   {isSendingOtp ? (
                     <>
@@ -507,7 +506,10 @@ export function Comments({ articleSlug }: CommentsProps) {
                   )}
                   {isGithubLoading ? 'Redirecting...' : 'Sign in with GitHub'}
                 </Button>
-                <Button onClick={() => setAuthMode('email')} variant="outline">
+                <Button
+                  onClick={() => setAuthMode('email')}
+                  variant="secondary"
+                >
                   <Mail className="mr-2 size-4" />
                   Sign in with Email
                 </Button>

@@ -14,7 +14,7 @@ import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import PageHeading from './PageHeading'
 import ScrollReveal from './ScrollReveal'
-import { Button, buttonVariants } from './ui/button'
+import { Button, ButtonLink } from './ui/button'
 import { chipStyles } from './ui/chip'
 import { Field, FieldError, FieldLabel } from './ui/field'
 import { Input } from './ui/input'
@@ -46,7 +46,7 @@ type ContactFormValues = z.infer<typeof formSchema>
 const labelStyles = 'text-foreground text-sm font-medium'
 
 // Rounded fields on the page fill, so the form matches the buttons and
-// the chips. 44px high, as the pill-lg button.
+// the chips. 44px high, as the lg button.
 const fieldStyles =
   'border-border bg-background placeholder:text-fg-muted focus-visible:border-brand focus-visible:ring-brand/20 rounded-xl px-3.5 text-base! shadow-none dark:bg-background'
 
@@ -111,16 +111,9 @@ export default function ContactForm() {
           Thanks for reaching out. I read every message and usually reply in 1–2
           days, from {EMAIL}.
         </p>
-        <Link
-          to="/work"
-          className={buttonVariants({
-            variant: 'secondary',
-            size: 'pill-lg',
-            className: 'mt-8',
-          })}
-        >
+        <ButtonLink to="/work" variant="secondary" size="lg" className="mt-8">
           See the work
-        </Link>
+        </ButtonLink>
       </motion.section>
     )
   }
@@ -245,7 +238,7 @@ export default function ContactForm() {
               </p>
               <Button
                 type="submit"
-                size="pill-lg"
+                size="lg"
                 disabled={isSubmitting}
                 className="w-full sm:w-auto"
               >
@@ -294,18 +287,10 @@ function OtherWays() {
         <a href={`mailto:${EMAIL}`} className={cn(quietLink, 'font-medium')}>
           {EMAIL}
         </a>
-        <button
-          type="button"
-          onClick={() => void copy()}
-          className={buttonVariants({
-            variant: 'ghost',
-            size: 'sm',
-            className: 'text-sm',
-          })}
-        >
+        <Button variant="ghost" onClick={() => void copy()}>
           {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
           {copied ? 'Copied' : 'Copy'}
-        </button>
+        </Button>
       </p>
       <p role="status" className="sr-only">
         {copied ? 'Email address copied.' : ''}

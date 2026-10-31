@@ -5,7 +5,7 @@ import ChatComposer from '~/components/chat/ChatComposer'
 import type { ComposerLabels } from '~/components/chat/ChatComposer'
 import { usePanelActive } from '~/components/assistant/panel-active'
 import PageHeading from '~/components/PageHeading'
-import { buttonVariants } from '~/components/ui/button'
+import { Button } from '~/components/ui/button'
 import { chipStyles } from '~/components/ui/chip'
 import type { ChatSource } from '~/lib/chat/protocol'
 import { isChecking } from '~/lib/check/check-machine'
@@ -330,19 +330,17 @@ function Summary({
     return () => window.clearTimeout(timer)
   }, [copied])
 
-  const actionClass = buttonVariants({ variant: 'secondary', size: 'pill' })
-
   const retry = (
-    <button type="button" onClick={onRetry} className={actionClass}>
+    <Button variant="secondary" onClick={onRetry}>
       <RotateCcw aria-hidden="true" className="size-4" />
       Check again
-    </button>
+    </Button>
   )
   const edit = (
-    <button type="button" onClick={onEdit} className={actionClass}>
+    <Button variant="secondary" onClick={onEdit}>
       <Pencil aria-hidden="true" className="size-4" />
       Edit claim
-    </button>
+    </Button>
   )
 
   if (state.status === 'splitting' || state.status === 'checking') {
@@ -433,13 +431,12 @@ function Summary({
         {seconds && <> · {seconds} s</>}
       </p>
       <div className="mt-5 flex flex-wrap gap-2">
-        <button
-          type="button"
+        <Button
+          variant="secondary"
           onClick={() => {
             onCopyLink()
             setCopied(true)
           }}
-          className={actionClass}
         >
           {copied ? (
             <Check aria-hidden="true" className="size-4" />
@@ -447,7 +444,7 @@ function Summary({
             <Link2 aria-hidden="true" className="size-4" />
           )}
           {copied ? 'Link copied' : 'Copy link'}
-        </button>
+        </Button>
         {edit}
       </div>
     </motion.div>

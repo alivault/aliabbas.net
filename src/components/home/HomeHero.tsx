@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 import { ArrowDown, MessageCircle, Pause, Play } from 'lucide-react'
-import { Link } from '@tanstack/react-router'
 import { motion, useReducedMotion } from 'motion/react'
 import PageHeading from '~/components/PageHeading'
-import { buttonVariants } from '~/components/ui/button'
+import { Button, ButtonAnchor, ButtonLink } from '~/components/ui/button'
 import ConnectedGlobe from './ConnectedGlobe'
 
 const productDescriptors = [
@@ -209,29 +208,25 @@ export function HomeHero() {
             />
           </PageHeading>
           <div className="mt-8 flex flex-wrap justify-center gap-3 lg:justify-start">
-            <a
+            <ButtonAnchor
               href="#work"
+              size="lg"
               style={enterDelay(ACTIONS_DELAY)}
-              className={buttonVariants({
-                size: 'pill-lg',
-                className: 'enter-blur pointer-events-auto',
-              })}
+              className="enter-blur pointer-events-auto"
             >
               See the work
               <ArrowDown aria-hidden="true" className="size-4" />
-            </a>
-            <Link
+            </ButtonAnchor>
+            <ButtonLink
               to="/chat"
+              variant="secondary"
+              size="lg"
               style={enterDelay(ACTIONS_DELAY + 80)}
-              className={buttonVariants({
-                variant: 'secondary',
-                size: 'pill-lg',
-                className: 'enter-blur pointer-events-auto',
-              })}
+              className="enter-blur pointer-events-auto"
             >
               <MessageCircle aria-hidden="true" className="size-4" />
               Ask AI about me
-            </Link>
+            </ButtonLink>
           </div>
         </div>
 
@@ -240,8 +235,9 @@ export function HomeHero() {
               render the same. With reduced motion, the word does not
               change by itself, so there is nothing to pause. */}
           {
-            <button
-              type="button"
+            <Button
+              variant="secondary"
+              size="icon"
               style={enterDelay(PAUSE_DELAY)}
               onClick={() => setPaused((value) => !value)}
               aria-pressed={paused}
@@ -249,19 +245,14 @@ export function HomeHero() {
               title={
                 paused ? 'Play the changing word' : 'Pause the changing word'
               }
-              className={buttonVariants({
-                variant: 'outline',
-                size: 'icon-pill',
-                className:
-                  'enter-blur pointer-events-auto motion-reduce:hidden',
-              })}
+              className="enter-blur pointer-events-auto motion-reduce:hidden"
             >
               {paused ? (
                 <Play aria-hidden="true" className="size-4" />
               ) : (
                 <Pause aria-hidden="true" className="size-4" />
               )}
-            </button>
+            </Button>
           }
         </div>
       </div>

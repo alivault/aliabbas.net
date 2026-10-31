@@ -76,7 +76,7 @@ export default function CitationDrawerSpecimen() {
           hideQuestion
         />
         <Button
-          variant="outline"
+          variant="secondary"
           aria-haspopup="dialog"
           aria-expanded={open}
           disabled={!turn}

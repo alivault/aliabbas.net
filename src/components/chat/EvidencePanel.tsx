@@ -13,7 +13,7 @@ import { cn } from 'cn'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import PathText from '~/components/PathText'
-import { buttonVariants } from '~/components/ui/button'
+import { Button } from '~/components/ui/button'
 import { SPRINGS } from '~/lib/design/motion'
 
 export function evidenceSourceElementId(prefix: string, sourceId: string) {
@@ -270,19 +270,16 @@ export default function EvidencePanel({
             Evidence
           </h2>
           {onCollapse && (
-            <button
-              type="button"
+            <Button
+              variant="ghost"
+              size="icon"
               onClick={onCollapse}
               aria-label="Hide evidence"
               aria-expanded="true"
-              className={buttonVariants({
-                variant: 'ghost',
-                size: 'icon',
-                className: '-mr-1.5',
-              })}
+              className="-mr-1.5"
             >
               <PanelRightClose className="size-4" aria-hidden="true" />
-            </button>
+            </Button>
           )}
         </div>
         {turn ? (

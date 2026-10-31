@@ -13,7 +13,7 @@ import type { MotionValue } from 'motion/react'
 import Meta from '~/components/Meta'
 import ScrollReveal from '~/components/ScrollReveal'
 import Title from '~/components/Title'
-import { buttonVariants } from '~/components/ui/button'
+import { ButtonAnchor, ButtonLink } from '~/components/ui/button'
 import type { WorkItem } from '~/data/work'
 import { cn } from 'cn'
 import { SPRINGS } from '~/lib/design/motion'
@@ -264,33 +264,24 @@ export function FeaturedProject({
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             {project.caseStudy && (
-              <Link
-                to="/work/$slug"
-                params={{ slug: project.caseStudy }}
-                className={buttonVariants({ size: 'pill' })}
-              >
+              <ButtonLink to="/work/$slug" params={{ slug: project.caseStudy }}>
                 Case study
                 <ArrowRight aria-hidden="true" />
                 <span className="sr-only">: {project.title}</span>
-              </Link>
+              </ButtonLink>
             )}
-            <a
+            <ButtonAnchor
               href={project.href}
-              target="_blank"
-              rel="noreferrer"
               // The first action is the primary one: the case study if there
               // is one, else the site.
-              className={buttonVariants({
-                variant: project.caseStudy ? 'secondary' : 'default',
-                size: 'pill',
-              })}
+              variant={project.caseStudy ? 'secondary' : 'primary'}
             >
               Visit site
               <ArrowUpRight aria-hidden="true" />
               <span className="sr-only">
                 : {project.title} (opens in a new tab)
               </span>
-            </a>
+            </ButtonAnchor>
           </div>
         </div>
       </div>

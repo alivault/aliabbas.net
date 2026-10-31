@@ -103,8 +103,8 @@ export default function ChatComposer({
         <div className="flex h-10 shrink-0 items-center pr-1">
           <Button
             type={showStop ? 'button' : 'submit'}
-            variant={showStop ? 'secondary' : 'default'}
-            size="icon-pill"
+            variant={showStop ? 'secondary' : 'primary'}
+            size="icon"
             onClick={showStop ? onStop : undefined}
             disabled={!showStop && !hasDraft}
             aria-label={

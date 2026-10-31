@@ -1,7 +1,7 @@
 import { Link, useMatches } from '@tanstack/react-router'
 import { ArrowUpRight, MessageCircle } from 'lucide-react'
 import Title from './Title'
-import { buttonVariants } from './ui/button'
+import { ButtonLink } from './ui/button'
 
 const linkGroups = [
   {
@@ -66,23 +66,14 @@ export default function Footer() {
               Hard problem, high bar? That’s my favorite kind.
             </Title>
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <Link
-                to="/contact"
-                className={buttonVariants({ size: 'pill-lg' })}
-              >
+              <ButtonLink to="/contact" size="lg">
                 Contact
                 <ArrowUpRight aria-hidden="true" />
-              </Link>
-              <Link
-                to="/chat"
-                className={buttonVariants({
-                  variant: 'secondary',
-                  size: 'pill-lg',
-                })}
-              >
+              </ButtonLink>
+              <ButtonLink to="/chat" variant="secondary" size="lg">
                 <MessageCircle aria-hidden="true" />
                 Ask AI about me
-              </Link>
+              </ButtonLink>
             </div>
           </div>
         </section>
