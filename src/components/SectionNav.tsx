@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { scrollToSection } from '~/lib/scroll-to-section'
+import { chipStyles } from '~/components/ui/chip'
 import { cn } from 'cn'
 
 export type SectionNavItem = {
@@ -127,14 +128,7 @@ export default function SectionNav({
                       href={`#${item.id}`}
                       onClick={scrollToSection}
                       aria-current={active ? 'location' : undefined}
-                      className={cn(
-                        // 32px, as the pill buttons. The border takes 1px of
-                        // the side padding.
-                        'focus-visible:ring-brand/70 inline-flex h-8 items-center rounded-full border px-[13px] text-sm font-medium transition-colors outline-none focus-visible:ring-2',
-                        active
-                          ? 'border-brand/25 bg-brand/10 text-brand'
-                          : 'border-border bg-card text-fg-secondary hover:text-foreground',
-                      )}
+                      className={chipStyles({ active })}
                     >
                       {item.number && (
                         <span

@@ -6,6 +6,7 @@ import type { ComposerLabels } from '~/components/chat/ChatComposer'
 import { usePanelActive } from '~/components/assistant/panel-active'
 import PageHeading from '~/components/PageHeading'
 import { buttonVariants } from '~/components/ui/button'
+import { chipStyles } from '~/components/ui/chip'
 import type { ChatSource } from '~/lib/chat/protocol'
 import { isChecking } from '~/lib/check/check-machine'
 import type { CheckState, CheckedPart } from '~/lib/check/check-machine'
@@ -61,7 +62,7 @@ function ExampleClaims({
               type="button"
               disabled={disabled}
               onClick={() => onSelect(claim)}
-              className="border-foreground/15 text-fg-muted hover:border-brand/60 hover:text-brand focus-visible:ring-brand/70 max-w-full rounded-[21px] border px-4 py-2 text-left text-sm transition-colors outline-none focus-visible:ring-2 disabled:opacity-50"
+              className={chipStyles()}
             >
               {claim}
             </button>

@@ -27,6 +27,7 @@ import {
 import type { Turn } from '~/lib/chat/chat-machine'
 import { answerToPlainText } from '~/lib/chat/streaming-markdown'
 import ChatComposer from './ChatComposer'
+import { chipStyles } from '~/components/ui/chip'
 import ChatTurn from './ChatTurn'
 import EvidenceLayout, { PANEL_SPRING_MS } from './EvidenceLayout'
 import EvidencePanel, {
@@ -84,7 +85,7 @@ function SuggestedQuestionButtons({
           type="button"
           onClick={() => onSelect(question)}
           style={{ '--enter-delay': `${index * 80}ms` } as CSSProperties}
-          className="enter-pop border-foreground/15 text-fg-muted hover:border-brand/60 hover:text-brand focus-visible:ring-brand/70 max-w-full rounded-[21px] border px-4 py-2 text-left text-base transition-colors outline-none focus-visible:ring-2"
+          className={chipStyles({ className: 'enter-pop' })}
         >
           {question}
         </button>
