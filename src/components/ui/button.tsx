@@ -11,8 +11,9 @@ import { cn } from 'cn'
  */
 const variantClasses = {
   primary: 'bg-brand text-brand-foreground hover:bg-brand/85',
+  // chrome-border: a turning metal ring on the border on hover (globals.css).
   secondary:
-    'border-border bg-card text-fg-secondary hover:bg-secondary hover:text-foreground aria-expanded:bg-secondary aria-expanded:text-foreground',
+    'chrome-border border-border bg-card text-fg-secondary hover:bg-secondary hover:text-foreground aria-expanded:bg-secondary aria-expanded:text-foreground',
   ghost:
     'hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground aria-pressed:bg-muted aria-pressed:text-foreground dark:hover:bg-muted/50',
   destructive:
@@ -35,7 +36,7 @@ export const BUTTON_VARIANT_ROLES: Record<ButtonVariant, string> = {
   primary:
     'The main action of a view, in the brand color. At most one in each view or group.',
   secondary:
-    'The action next to the main one, and other bordered actions, such as Stop and Retry.',
+    'The action next to the main one, and other bordered actions, such as Stop and Retry. On hover, a chrome ring turns on its border.',
   ghost:
     'Actions in toolbars and lists, and most buttons that show only an icon.',
   destructive: 'Actions that delete.',

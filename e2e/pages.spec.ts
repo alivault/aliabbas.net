@@ -299,3 +299,24 @@ test('the work stage shows the project in the middle of the screen', async ({
     await expect(stage).toHaveAttribute('data-work-stage', title)
   }
 })
+
+test('a secondary button shows a turning chrome border on hover', async ({
+  page,
+}) => {
+  test.skip(!isDesktop(page), 'Hover needs a pointer.')
+  await open(page, '/work')
+  const button = page.locator('header').getByRole('link', { name: 'Contact' })
+  const ring = () =>
+    button.evaluate((element) => {
+      const style = getComputedStyle(element, '::before')
+      return { opacity: style.opacity, animation: style.animationName }
+    })
+
+  await expect.poll(ring).toEqual({ opacity: '0', animation: 'none' })
+  await button.hover()
+  await expect.poll(ring).toEqual({ opacity: '1', animation: 'chrome-turn' })
+
+  // With reduced motion, the ring shows but does not turn.
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await expect.poll(ring).toEqual({ opacity: '1', animation: 'none' })
+})
