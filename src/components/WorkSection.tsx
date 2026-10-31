@@ -71,7 +71,7 @@ export default function WorkSection({ header }: { header?: ReactNode }) {
         <div className="hidden lg:block">
           <div
             data-work-stage={recentWork[active].title}
-            className="sticky top-[calc((40svh+var(--header-height))/2)] flex h-[60svh] flex-col gap-4"
+            className="sticky top-[calc((40svh+var(--header-height))/2)] flex h-[60svh] flex-col"
           >
             <div className="relative flex-1">
               {recentWork.map((project, index) => (
@@ -83,12 +83,6 @@ export default function WorkSection({ header }: { header?: ReactNode }) {
                 />
               ))}
             </div>
-            <p
-              aria-hidden="true"
-              className="text-fg-muted text-sm leading-6 tabular-nums"
-            >
-              {active + 1} / {recentWork.length}
-            </p>
           </div>
         </div>
 
