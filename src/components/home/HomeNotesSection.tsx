@@ -1,5 +1,5 @@
 import { Link } from '@tanstack/react-router'
-import { ArrowRight, ArrowUpRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import ScrollReveal from '~/components/ScrollReveal'
 import SectionHeading from '~/components/SectionHeading'
 import Title from '~/components/Title'
@@ -27,7 +27,7 @@ export default function HomeNotesSection({
           <ArrowRight aria-hidden="true" />
         </ButtonLink>
       </ScrollReveal>
-      <div className="divide-y">
+      <div className="group/notes divide-y">
         {articles.length === 0 ? (
           <p className="text-fg-muted py-section-content text-sm">
             New notes are in progress. Check back soon.
@@ -38,21 +38,20 @@ export default function HomeNotesSection({
               <Link
                 to="/notes/$slug"
                 params={{ slug: article.slug.current }}
-                className="group grid gap-4 py-7 sm:grid-cols-[1fr_auto] sm:items-center sm:py-9"
+                className="group focus-visible:ring-ring/50 focus-visible:ring-offset-background group-has-[a:hover]/notes:text-fg-muted group-has-[a:focus-visible]/notes:text-fg-muted hover:text-foreground! focus-visible:text-foreground! grid gap-4 rounded-sm py-7 transition-colors duration-300 outline-none focus-visible:ring-3 focus-visible:ring-offset-4 sm:grid-cols-[1fr_auto] sm:items-center sm:py-9"
               >
                 <span>
-                  <Title
-                    as="span"
-                    variant="card"
-                    className="block transition-transform duration-500 group-hover:translate-x-2"
-                  >
+                  <Title as="span" variant="card" className="block">
                     {article.title}
                   </Title>
                   <span className="text-fg-muted mt-2 block text-sm">
                     {getFormattedDate(article.date)}
                   </span>
                 </span>
-                <ArrowUpRight className="hidden size-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 sm:block" />
+                <ArrowRight
+                  aria-hidden="true"
+                  className="hidden size-5 transition-transform duration-300 group-hover:translate-x-1 group-focus-visible:translate-x-1 sm:block"
+                />
               </Link>
             </ScrollReveal>
           ))

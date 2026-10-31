@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { pageHead } from '~/lib/structured-data'
 import { Link, createFileRoute } from '@tanstack/react-router'
-import { ArrowUpRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import Main from '~/components/Main'
 import Meta from '~/components/Meta'
 import PageHeading from '~/components/PageHeading'
@@ -38,14 +38,10 @@ function NoteListItem({
       <Link
         to="/notes/$slug"
         params={{ slug: article.slug.current }}
-        className="group grid gap-4 py-7 sm:grid-cols-[1fr_130px_auto] sm:items-center sm:py-10"
+        className="group focus-visible:ring-ring/50 focus-visible:ring-offset-background group-has-[a:hover]/notes:text-fg-muted group-has-[a:focus-visible]/notes:text-fg-muted hover:text-foreground! focus-visible:text-foreground! grid gap-4 rounded-sm py-7 transition-colors duration-300 outline-none focus-visible:ring-3 focus-visible:ring-offset-4 sm:grid-cols-[1fr_130px_auto] sm:items-center sm:py-10"
       >
         <span>
-          <Title
-            as="span"
-            variant="card"
-            className="block transition-transform duration-500 group-hover:translate-x-2"
-          >
+          <Title as="span" variant="card" className="block">
             {article.title}
           </Title>
           {article.description && (
@@ -57,7 +53,10 @@ function NoteListItem({
         <Meta as="time" dateTime={article.date}>
           {getFormattedDate(article.date)}
         </Meta>
-        <ArrowUpRight className="hidden size-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1 sm:block" />
+        <ArrowRight
+          aria-hidden="true"
+          className="hidden size-5 transition-transform duration-300 group-hover:translate-x-1 group-focus-visible:translate-x-1 sm:block"
+        />
       </Link>
     </ScrollReveal>
   )
@@ -96,7 +95,7 @@ function NotesPage() {
             New notes are being written. Check back soon.
           </p>
         ) : (
-          <ul className="divide-y">
+          <ul className="group/notes divide-y">
             {articles.map((article, index) => (
               <NoteListItem key={article._id} article={article} index={index} />
             ))}
