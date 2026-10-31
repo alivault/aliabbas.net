@@ -39,7 +39,7 @@ function ProjectVisual({ project }: { project: WorkItem }) {
   return (
     <div
       className={cn(
-        'site-noise ring-foreground/10 relative isolate size-28 overflow-hidden rounded-[22.5%] shadow-2xl ring-1 transition-transform duration-500 group-hover:-translate-y-1 group-hover:scale-[1.03] sm:size-40 lg:size-64',
+        'site-noise ring-foreground/10 relative isolate size-24 overflow-hidden rounded-[22.5%] shadow-lg ring-1 transition-transform duration-500 group-hover:-translate-y-1 group-hover:scale-[1.03] sm:size-28',
         iconStyles[project.visual],
       )}
     >
@@ -56,12 +56,12 @@ function ProjectVisual({ project }: { project: WorkItem }) {
           <motion.div
             animate={{ scale: [1, 1.12, 1], opacity: [0.45, 0.7, 0.45] }}
             transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-1/2 left-[38%] size-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff2f75]/45 blur-xl lg:blur-3xl"
+            className="absolute top-1/2 left-[38%] size-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff2f75]/45 blur-lg"
           />
           <motion.div
             animate={{ scale: [1.1, 0.96, 1.1], opacity: [0.5, 0.75, 0.5] }}
             transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-1/2 left-[62%] size-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#006dff]/55 blur-xl lg:blur-3xl"
+            className="absolute top-1/2 left-[62%] size-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#006dff]/55 blur-lg"
           />
           <img
             src={project.image}
@@ -93,7 +93,7 @@ function ProjectVisual({ project }: { project: WorkItem }) {
                 className="pointer-events-none absolute inset-0"
               >
                 <motion.span
-                  whileHover={{ scale: 1.14, y: -6, opacity: 1 }}
+                  whileHover={{ scale: 1.14, y: -3, opacity: 1 }}
                   transition={SPRINGS.hover}
                   className="pointer-events-auto absolute top-[2%] left-1/2 h-[43%] w-[29%] origin-bottom -translate-x-1/2 cursor-pointer rounded-[999px] border border-white/35 opacity-90 mix-blend-screen"
                   style={{ backgroundColor: color }}
@@ -112,9 +112,9 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
   return (
     <ScrollReveal
       as="article"
-      className="border-foreground/15 grid gap-8 border-t py-10 first:border-t-0 first:pt-0 last:pb-0 lg:grid-cols-2 lg:items-center lg:gap-12 lg:py-16"
+      className="border-foreground/15 flex flex-col items-start gap-6 border-t py-10 first:border-t-0 first:pt-0 last:pb-0 lg:py-14"
     >
-      <div className="flex lg:justify-center">
+      <div>
         {project.caseStudy ? (
           <Link
             to="/work/$slug"
@@ -136,15 +136,14 @@ export function FeaturedProject({ project }: { project: WorkItem }) {
           </a>
         )}
       </div>
-      <div className="flex max-w-xl flex-col">
-        <div className="flex items-baseline justify-between gap-4">
-          <Title as="h3" variant="card">
-            {project.title}
-          </Title>
-          <Meta as="span">{project.year}</Meta>
-        </div>
-        <Meta className="mt-1">{project.category}</Meta>
-        <p className="text-fg-secondary mt-5 text-base leading-7 text-pretty lg:text-lg lg:leading-8">
+      <div className="flex w-full max-w-2xl flex-col">
+        <Title as="h3" variant="card">
+          {project.title}
+        </Title>
+        <Meta className="mt-1">
+          {project.category} · {project.year}
+        </Meta>
+        <p className="text-fg-secondary mt-4 text-base leading-7 text-pretty lg:text-lg lg:leading-8">
           {project.description}
         </p>
         <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2">
