@@ -139,14 +139,13 @@
 }
 
 /*
-  Color scopes. .scheme-dark gives an element and its children the dark
-  tokens. .scheme-inverted gives them the tokens of the other scheme: the
-  footer uses it. Both redeclare every color, also the ones that only point
-  to another token, so those resolve inside the scope. A unit test keeps
-  these values equal to the :root values above.
+  Color scope. .scheme-dark gives an element and its children the dark
+  tokens, in both schemes: the admin page uses it. It redeclares every
+  color, also the ones that only point to another token, so those resolve
+  inside the scope. A unit test keeps these values equal to the dark :root
+  values above.
 */
-.scheme-dark,
-.scheme-inverted {
+.scheme-dark {
   color-scheme: dark;
   --background: oklch(0.121 0.0039 245.5);
   --foreground: oklch(0.915 0.009 94);
@@ -175,39 +174,6 @@
   --brand: oklch(0.806 0.139 216.4);
   --brand-foreground: var(--background);
   --page-base: oklch(0.05 0.002 245.5);
-}
-
-@media (prefers-color-scheme: dark) {
-  .scheme-inverted {
-    color-scheme: light;
-    --background: oklch(0.955 0.009 94);
-    --foreground: oklch(0.155 0.006 85);
-    --fg-secondary: oklch(0.36 0.008 85);
-    --fg-muted: oklch(0.46 0.008 85);
-    --fg-faint: oklch(0.62 0.008 85);
-    --card: oklch(0.98 0.005 94);
-    --card-foreground: oklch(0.155 0.006 85);
-    --popover: oklch(0.98 0.005 94);
-    --popover-foreground: oklch(0.155 0.006 85);
-    --primary: oklch(0.155 0.006 85);
-    --primary-foreground: oklch(0.97 0.01 94);
-    --secondary: oklch(0.91 0.012 94);
-    --secondary-foreground: oklch(0.155 0.006 85);
-    --muted: oklch(0.91 0.012 94);
-    --muted-foreground: var(--fg-muted);
-    --accent: color-mix(in oklab, var(--foreground) 10%, transparent);
-    --accent-foreground: var(--foreground);
-    --destructive: oklch(0.58 0.22 27);
-    --verified: oklch(0.52 0.12 152);
-    --partial: oklch(0.58 0.13 70);
-    --contradicted: oklch(0.55 0.2 27);
-    --border: oklch(0.82 0.012 94);
-    --input: oklch(0.82 0.012 94);
-    --ring: color-mix(in oklab, var(--foreground) 50%, transparent);
-    --brand: oklch(0.48 0.085 216.4);
-    --brand-foreground: var(--background);
-    --page-base: oklch(0.8 0.014 94);
-  }
 }
 
 @layer base {
@@ -588,39 +554,6 @@ textarea {
   .enter-soft {
     animation: none;
   }
-}
-
-/* The giant wordmark fills the width of its box: "Ali Abbas" is about
-   3.95em wide at this letter spacing. */
-.site-footer-wordmark-box {
-  container-type: inline-size;
-}
-
-.site-footer-wordmark {
-  font-size: 25.3cqi;
-  font-weight: 500;
-  letter-spacing: -0.055em;
-  line-height: 0.78;
-  white-space: nowrap;
-  margin-inline-start: -0.04em;
-}
-
-/* The text box is taller than the 0.78 line, so it reaches over the links
-   above. Only the link box, which matches the visible letters, takes
-   clicks. */
-.site-footer-wordmark > span {
-  pointer-events: none;
-}
-
-.footer-link {
-  background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px
-    no-repeat;
-  transition: background-size 350ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.footer-link:hover,
-.footer-link:focus-visible {
-  background-size: 100% 1px;
 }
 
 /*

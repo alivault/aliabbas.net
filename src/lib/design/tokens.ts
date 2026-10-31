@@ -37,14 +37,8 @@ const dark = declarationsIn(
 const small = declarationsIn(css, /@media \(width >= 40rem\)\s*\{\s*:root\s*\{/)
 const large = declarationsIn(css, /@media \(width >= 64rem\)\s*\{\s*:root\s*\{/)
 
-/** The color scopes (.scheme-dark, .scheme-inverted), for the unit test. */
-export const SCHEME_SCOPES = {
-  dark: declarationsIn(css, /^\.scheme-dark,\s*\.scheme-inverted\s*\{/m),
-  invertedInDark: declarationsIn(
-    css,
-    /@media \(prefers-color-scheme: dark\)\s*\{\s*\.scheme-inverted\s*\{/,
-  ),
-}
+/** The .scheme-dark color scope, for the unit test. */
+export const SCHEME_DARK = declarationsIn(css, /^\.scheme-dark\s*\{/m)
 
 export type ColorGroup = 'Surface' | 'Text' | 'Action' | 'Line' | 'Status'
 

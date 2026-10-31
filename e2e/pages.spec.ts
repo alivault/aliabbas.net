@@ -136,7 +136,7 @@ for (const [path, types] of [
 }
 
 // The footer is in the page flow, so all of it can be reached, also on a
-// wide, short screen where the wordmark makes it taller than the screen.
+// short screen.
 for (const [width, height] of [
   [1440, 700],
   [390, 600],
@@ -148,8 +148,9 @@ for (const [width, height] of [
     await page.setViewportSize({ width, height })
     await open(page, '/work/pico')
     const footer = page.locator('footer.site-footer')
-    await footer.getByRole('heading', { level: 2 }).scrollIntoViewIfNeeded()
-    await expect(footer.getByRole('heading', { level: 2 })).toBeInViewport()
+    const top = footer.getByRole('heading', { name: 'Portfolio' })
+    await top.scrollIntoViewIfNeeded()
+    await expect(top).toBeInViewport()
     await page.evaluate(() =>
       window.scrollTo({ top: document.documentElement.scrollHeight }),
     )
@@ -161,13 +162,37 @@ for (const [width, height] of [
 
 test('the hero actions go to the work and to the chat', async ({ page }) => {
   await open(page, '/')
-  await page.getByRole('link', { name: 'See the work' }).click()
+  // The closing section repeats the links, so look in the hero only.
+  const hero = page.locator('section').filter({ has: page.locator('h1') })
+  await hero.getByRole('link', { name: 'See the work' }).click()
   await expect(page).toHaveURL(/#work$/)
   await expect(
     page.getByRole('heading', { name: 'Recent work' }),
   ).toBeInViewport()
 
   await page.evaluate(() => window.scrollTo({ top: 0 }))
-  await page.getByRole('link', { name: 'Ask AI about me' }).click()
+  await hero.getByRole('link', { name: 'Ask AI about me' }).click()
   await expect(page).toHaveURL(/\/chat$/)
+})
+
+test('each page ends with the closing call to action, except Contact', async ({
+  page,
+}) => {
+  await open(page, '/work')
+  const closing = page.getByRole('heading', {
+    name: 'Hard problem, high bar? That’s my favorite kind.',
+  })
+  await expect(closing).toBeAttached()
+  const actions = closing.locator('..')
+  await expect(actions.getByRole('link', { name: 'Contact' })).toHaveAttribute(
+    'href',
+    '/contact',
+  )
+  await expect(
+    actions.getByRole('link', { name: 'Ask AI about me' }),
+  ).toHaveAttribute('href', '/chat')
+
+  await open(page, '/contact')
+  await expect(page.locator('footer.site-footer')).toBeAttached()
+  await expect(closing).toHaveCount(0)
 })

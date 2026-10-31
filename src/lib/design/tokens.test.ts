@@ -6,7 +6,7 @@ import {
   COLOR_ROLES,
   CSS_COLOR_NAMES,
   LAYOUT_TOKENS,
-  SCHEME_SCOPES,
+  SCHEME_DARK,
 } from './tokens'
 import { describe, expect, it } from 'vite-plus/test'
 
@@ -23,11 +23,9 @@ describe('design tokens', () => {
     expect(Object.keys(COLOR_ROLES).sort()).toEqual([...CSS_COLOR_NAMES].sort())
   })
 
-  it('gives the color scopes the values of the other scheme', () => {
+  it('gives the .scheme-dark scope the dark values', () => {
     const dark = Object.fromEntries(COLORS.map((c) => [c.name, c.dark]))
-    const light = Object.fromEntries(COLORS.map((c) => [c.name, c.light]))
-    expect(SCHEME_SCOPES.dark).toEqual(dark)
-    expect(SCHEME_SCOPES.invertedInDark).toEqual(light)
+    expect(SCHEME_DARK).toEqual(dark)
   })
 
   it('reads the responsive layout values', () => {

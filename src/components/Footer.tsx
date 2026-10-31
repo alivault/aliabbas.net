@@ -1,105 +1,154 @@
-import { Link } from '@tanstack/react-router'
-import { ArrowUp, ArrowUpRight } from 'lucide-react'
+import { Link, useLocation } from '@tanstack/react-router'
+import { ArrowUpRight, MessageCircle } from 'lucide-react'
+import Title from './Title'
 import { buttonVariants } from './ui/button'
 
-const links = [
-  { label: 'Work', to: '/work' },
-  { label: 'Lab', to: '/lab' },
-  { label: 'Design', to: '/design' },
-  { label: 'Notes', to: '/notes' },
-  { label: 'Ask AI', to: '/chat' },
-  { label: 'Skills', to: '/skills' },
-  { label: 'Experience', to: '/experience' },
-  { label: 'Play', to: '/play' },
-  { label: 'Performance', to: '/performance' },
-  { label: 'Privacy', to: '/privacy' },
+const linkGroups = [
+  {
+    label: 'Portfolio',
+    links: [
+      { label: 'Work', to: '/work' },
+      { label: 'Skills', to: '/skills' },
+      { label: 'Experience', to: '/experience' },
+      { label: 'Notes', to: '/notes' },
+    ],
+  },
+  {
+    label: 'This site',
+    links: [
+      { label: 'Lab', to: '/lab' },
+      { label: 'Design', to: '/design' },
+      { label: 'Performance', to: '/performance' },
+      { label: 'Play', to: '/play' },
+      { label: 'Privacy', to: '/privacy' },
+    ],
+  },
+  {
+    label: 'Reach me',
+    links: [
+      { label: 'Contact', to: '/contact' },
+      { label: 'Ask AI', to: '/chat' },
+    ],
+  },
 ] as const
 
-const bigLink =
-  'footer-link focus-visible:outline-foreground inline-flex items-center gap-2 py-0.5 focus-visible:outline-2 focus-visible:outline-offset-4'
+const linkStyles =
+  'text-fg-secondary hover:text-foreground focus-visible:outline-foreground inline-flex items-center gap-1 rounded-sm text-sm leading-6 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
 
-function scrollToTop() {
-  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' })
-}
-
+/**
+ * The end of each page: a closing call to action in the page title style,
+ * with the two actions of the homepage hero, then a quiet footer in the
+ * colors of the page. The contact page does not repeat the call to action.
+ */
 export default function Footer() {
+  const onContact = useLocation({
+    select: (location) => location.pathname === '/contact',
+  })
+
   return (
-    <footer className="site-footer scheme-inverted bg-background text-foreground relative">
-      <div className="mx-auto flex max-w-[1600px] flex-col px-5 pt-24 pb-5 sm:px-8 sm:pt-28 sm:pb-6 lg:px-12 lg:pt-24">
-        <div className="grid gap-10 xl:grid-cols-[1fr_auto] xl:items-end">
-          <h2 className="text-[clamp(2.25rem,1.5rem+3.5vw,5rem)] leading-[1.05] font-normal text-balance">
-            <span className="block text-balance">Hard problem, high bar?</span>{' '}
-            <span className="block text-balance">That’s my favorite kind.</span>
-          </h2>
-          <Link
-            to="/contact"
-            className={buttonVariants({
-              size: 'pill-lg',
-              className: 'justify-self-start xl:justify-self-auto',
-            })}
-          >
-            Start a conversation
-            <ArrowUpRight aria-hidden="true" />
-          </Link>
-        </div>
+    <>
+      {!onContact && (
+        <section
+          aria-labelledby="closing-title"
+          className="pb-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12"
+        >
+          <div className="border-border pt-section flex flex-col items-center border-t text-center">
+            <Title
+              as="h2"
+              variant="page"
+              id="closing-title"
+              className="max-w-3xl"
+            >
+              Hard problem, high bar? That’s my favorite kind.
+            </Title>
+            <div className="mt-8 flex flex-wrap justify-center gap-3">
+              <Link
+                to="/contact"
+                className={buttonVariants({ size: 'pill-lg' })}
+              >
+                Contact
+                <ArrowUpRight aria-hidden="true" />
+              </Link>
+              <Link
+                to="/chat"
+                className={buttonVariants({
+                  variant: 'secondary',
+                  size: 'pill-lg',
+                })}
+              >
+                <MessageCircle aria-hidden="true" />
+                Ask AI about me
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
-        <div className="flex flex-col gap-8 pt-12 lg:flex-row lg:items-start lg:justify-between">
-          <nav aria-label="Footer">
-            <ul className="grid grid-flow-col grid-rows-5 gap-x-10 gap-y-1 text-[clamp(1.25rem,1rem+0.8vw,1.75rem)] leading-tight sm:grid-rows-3 sm:gap-x-14">
-              {links.map((item) => (
-                <li key={item.to}>
-                  <Link to={item.to} className={bigLink}>
-                    {item.label}
-                  </Link>
-                </li>
-              ))}
-              <li>
-                <a
-                  href="https://github.com/alivault"
-                  target="_blank"
-                  rel="noreferrer"
-                  className={bigLink}
-                >
-                  GitHub
-                  <ArrowUpRight
-                    className="size-[0.8em] opacity-60"
-                    aria-hidden="true"
-                  />
-                  <span className="sr-only">(opens in a new tab)</span>
-                </a>
-              </li>
-            </ul>
+      <footer className="site-footer border-border border-t">
+        <div className="mx-auto grid max-w-[1600px] gap-10 px-5 py-12 sm:px-8 lg:grid-cols-[1fr_auto] lg:gap-16 lg:px-12">
+          <div className="max-w-sm">
+            <Link
+              to="/"
+              className="text-foreground focus-visible:outline-foreground rounded-sm text-base font-semibold focus-visible:outline-2 focus-visible:outline-offset-2"
+            >
+              Ali Abbas
+            </Link>
+            <p className="text-fg-muted mt-2 text-sm leading-6">
+              Senior frontend engineer for interactive and streaming interfaces.
+            </p>
+            <p className="text-fg-secondary mt-4 flex items-center gap-2 text-sm leading-6">
+              <span
+                aria-hidden="true"
+                className="bg-verified size-2 shrink-0 rounded-full"
+              />
+              Open to senior frontend roles · US / Remote
+            </p>
+          </div>
+
+          <nav
+            aria-label="Footer"
+            className="grid grid-cols-2 gap-x-12 gap-y-8 sm:grid-cols-3"
+          >
+            {linkGroups.map((group) => (
+              <div key={group.label}>
+                <h2 className="text-foreground text-sm leading-6 font-semibold">
+                  {group.label}
+                </h2>
+                <ul className="mt-2 space-y-1">
+                  {group.links.map((item) => (
+                    <li key={item.to}>
+                      <Link to={item.to} className={linkStyles}>
+                        {item.label}
+                      </Link>
+                    </li>
+                  ))}
+                  {group.label === 'Reach me' && (
+                    <li>
+                      <a
+                        href="https://github.com/alivault"
+                        target="_blank"
+                        rel="noreferrer"
+                        className={linkStyles}
+                      >
+                        GitHub
+                        <ArrowUpRight aria-hidden="true" className="size-3.5" />
+                        <span className="sr-only">(opens in a new tab)</span>
+                      </a>
+                    </li>
+                  )}
+                </ul>
+              </div>
+            ))}
           </nav>
-          <button
-            type="button"
-            onClick={scrollToTop}
-            className={buttonVariants({
-              variant: 'secondary',
-              size: 'pill',
-              className: 'self-start',
-            })}
-          >
-            Back to top
-            <ArrowUp aria-hidden="true" />
-          </button>
         </div>
 
-        <div className="site-footer-wordmark-box mt-8 sm:mt-10">
-          <Link
-            to="/"
-            aria-label="Ali Abbas — home"
-            className="site-footer-wordmark focus-visible:outline-foreground block w-fit focus-visible:outline-2 focus-visible:outline-offset-4"
-          >
-            <span aria-hidden="true">Ali Abbas</span>
-          </Link>
+        <div className="mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
+          <div className="border-border text-fg-muted flex flex-col gap-1 border-t py-6 text-sm leading-6 sm:flex-row sm:justify-between">
+            <span>© {new Date().getFullYear()} Ali Abbas</span>
+            <span>Designed and engineered with intent.</span>
+          </div>
         </div>
-
-        <div className="text-fg-muted border-border mt-4 flex flex-col gap-1 border-t pt-4 text-sm sm:flex-row sm:justify-between">
-          <span>© {new Date().getFullYear()} Ali Abbas</span>
-          <span>Designed and engineered with intent.</span>
-        </div>
-      </div>
-    </footer>
+      </footer>
+    </>
   )
 }

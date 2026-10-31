@@ -34,7 +34,8 @@ page title. It keeps its three set lines, with the changing word in the middle.
 - Project names, note titles, capability names, and experience entries use
   `<Title variant="card">`. Use its `as` prop to keep the `h2`, `h3`, or `span`
   appropriate to the document hierarchy.
-- Footer calls to action use `SectionHeading`, not a separate display scale.
+- The closing call to action above the footer is an `h2` with the `page`
+  variant, so the page ends in the voice of its title.
 - Portable Text and Markdown heading renderers use `Title` components as well.
   Prose spacing stays with the typography plugin; there are no global heading
   size or weight overrides.
