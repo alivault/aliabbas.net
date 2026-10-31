@@ -82,23 +82,6 @@ export async function getExperiences(): Promise<Array<SanityExperience>> {
   )
 }
 
-export async function getRecentExperiences(
-  limit = 1,
-): Promise<Array<SanityExperience>> {
-  return sanityClient.fetch(
-    `*[_type == "experience"] | order(startDate desc) [0...$limit] {
-      _id,
-      title,
-      company,
-      url,
-      startDate,
-      endDate,
-      description
-    }`,
-    { limit },
-  )
-}
-
 export type SanityNote = SanityArticle & { content: Array<PortableTextBlock> }
 
 /**
