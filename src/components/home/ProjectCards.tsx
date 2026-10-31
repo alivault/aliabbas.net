@@ -1,6 +1,7 @@
 import { Link } from '@tanstack/react-router'
 import { ArrowRight, ArrowUpRight } from 'lucide-react'
-import { motion } from 'motion/react'
+import { useEffect, useRef } from 'react'
+import { motion, useInView } from 'motion/react'
 import Meta, { metaStyles } from '~/components/Meta'
 import ScrollReveal from '~/components/ScrollReveal'
 import Title from '~/components/Title'
@@ -35,11 +36,22 @@ const cardLinkStyles = cn(
 )
 
 /** The project as an app icon: a rounded square with its mark inside. */
-function ProjectVisual({ project }: { project: WorkItem }) {
+export function ProjectVisual({
+  project,
+  size = 'small',
+}: {
+  project: WorkItem
+  /** `large` is the icon of the sticky stage on wide screens. */
+  size?: 'small' | 'large'
+}) {
+  const glow = size === 'large' ? 'blur-3xl' : 'blur-lg'
   return (
     <div
       className={cn(
-        'site-noise ring-foreground/10 relative isolate size-24 overflow-hidden rounded-[22.5%] shadow-lg ring-1 transition-transform duration-500 group-hover:-translate-y-1 group-hover:scale-[1.03] sm:size-28',
+        'site-noise ring-foreground/10 relative isolate overflow-hidden rounded-[22.5%] ring-1 transition-transform duration-500 group-hover:-translate-y-1 group-hover:scale-[1.03]',
+        size === 'large'
+          ? 'size-64 shadow-2xl xl:size-80'
+          : 'size-24 shadow-lg sm:size-28',
         iconStyles[project.visual],
       )}
     >
@@ -56,12 +68,18 @@ function ProjectVisual({ project }: { project: WorkItem }) {
           <motion.div
             animate={{ scale: [1, 1.12, 1], opacity: [0.45, 0.7, 0.45] }}
             transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-1/2 left-[38%] size-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff2f75]/45 blur-lg"
+            className={cn(
+              'absolute top-1/2 left-[38%] size-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#ff2f75]/45',
+              glow,
+            )}
           />
           <motion.div
             animate={{ scale: [1.1, 0.96, 1.1], opacity: [0.5, 0.75, 0.5] }}
             transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-            className="absolute top-1/2 left-[62%] size-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#006dff]/55 blur-lg"
+            className={cn(
+              'absolute top-1/2 left-[62%] size-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#006dff]/55',
+              glow,
+            )}
           />
           <img
             src={project.image}
@@ -107,69 +125,115 @@ function ProjectVisual({ project }: { project: WorkItem }) {
   )
 }
 
-/** One work item on its own row: the visual on one side, the details on the other. */
-export function FeaturedProject({ project }: { project: WorkItem }) {
+/**
+ * The app icon as a link: to the case study if there is one, else to the
+ * live site. `hidden` takes it out of the tab order and the accessibility
+ * tree, for a copy of a link that is already on the page.
+ */
+export function ProjectVisualLink({
+  project,
+  size,
+  hidden = false,
+}: {
+  project: WorkItem
+  size?: 'small' | 'large'
+  hidden?: boolean
+}) {
+  const a11y = hidden
+    ? ({ tabIndex: -1, 'aria-hidden': true } as const)
+    : undefined
+  if (project.caseStudy)
+    return (
+      <Link
+        to="/work/$slug"
+        params={{ slug: project.caseStudy }}
+        className={visualLinkStyles}
+        aria-label={`Read the ${project.title} case study`}
+        {...a11y}
+      >
+        <ProjectVisual project={project} size={size} />
+      </Link>
+    )
+  return (
+    <a
+      href={project.href}
+      target="_blank"
+      rel="noreferrer"
+      className={visualLinkStyles}
+      aria-label={`Open ${project.title}`}
+      {...a11y}
+    >
+      <ProjectVisual project={project} size={size} />
+    </a>
+  )
+}
+
+/**
+ * One work item on its own row. On wide screens the row is one screen high,
+ * and its icon is in the sticky stage of WorkSection: `onActive` runs when
+ * the row reaches the middle of the screen.
+ */
+export function FeaturedProject({
+  project,
+  onActive,
+}: {
+  project: WorkItem
+  onActive?: () => void
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  const inMiddle = useInView(ref, { margin: '-50% 0px -50% 0px' })
+  useEffect(() => {
+    if (inMiddle) onActive?.()
+  }, [inMiddle, onActive])
+
   return (
     <ScrollReveal
       as="article"
-      className="border-foreground/15 flex flex-col items-start gap-6 border-t py-10 first:border-t-0 first:pt-0 last:pb-0 lg:py-14"
+      className="border-foreground/15 border-t py-10 first:border-t-0 first:pt-0 last:pb-0 lg:border-t-0 lg:py-0"
     >
-      <div>
-        {project.caseStudy ? (
-          <Link
-            to="/work/$slug"
-            params={{ slug: project.caseStudy }}
-            className={visualLinkStyles}
-            aria-label={`Read the ${project.title} case study`}
-          >
-            <ProjectVisual project={project} />
-          </Link>
-        ) : (
-          <a
-            href={project.href}
-            target="_blank"
-            rel="noreferrer"
-            className={visualLinkStyles}
-            aria-label={`Open ${project.title}`}
-          >
-            <ProjectVisual project={project} />
-          </a>
-        )}
-      </div>
-      <div className="flex w-full max-w-2xl flex-col">
-        <Title as="h3" variant="card">
-          {project.title}
-        </Title>
-        <Meta className="mt-1">
-          {project.category} · {project.year}
-        </Meta>
-        <p className="text-fg-secondary mt-4 text-base leading-7 text-pretty lg:text-lg lg:leading-8">
-          {project.description}
-        </p>
-        <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2">
-          {project.caseStudy && (
-            <Link
-              to="/work/$slug"
-              params={{ slug: project.caseStudy }}
+      <div
+        ref={ref}
+        data-work-item={project.title}
+        className="flex flex-col items-start gap-6 lg:min-h-[60svh] lg:justify-center"
+      >
+        <div className="lg:hidden">
+          <ProjectVisualLink project={project} />
+        </div>
+        <div className="flex w-full max-w-2xl flex-col">
+          <Title as="h3" variant="card">
+            {project.title}
+          </Title>
+          <Meta className="mt-1">
+            {project.category} · {project.year}
+          </Meta>
+          <p className="text-fg-secondary mt-4 text-base leading-7 text-pretty lg:text-lg lg:leading-8">
+            {project.description}
+          </p>
+          <div className="mt-7 flex flex-wrap gap-x-6 gap-y-2">
+            {project.caseStudy && (
+              <Link
+                to="/work/$slug"
+                params={{ slug: project.caseStudy }}
+                className={cardLinkStyles}
+              >
+                Case study
+                <ArrowRight className="size-4" aria-hidden="true" />
+                <span className="sr-only">: {project.title}</span>
+              </Link>
+            )}
+            <a
+              href={project.href}
+              target="_blank"
+              rel="noreferrer"
               className={cardLinkStyles}
             >
-              Case study
-              <ArrowRight className="size-4" aria-hidden="true" />
-              <span className="sr-only">: {project.title}</span>
-            </Link>
-          )}
-          <a
-            href={project.href}
-            target="_blank"
-            rel="noreferrer"
-            className={cardLinkStyles}
-          >
-            Visit site
-            <ArrowUpRight className="size-4" aria-hidden="true" />
-            <span className="sr-only">
-              : {project.title} (opens in a new tab)
-            </span>
-          </a>
+              Visit site
+              <ArrowUpRight className="size-4" aria-hidden="true" />
+              <span className="sr-only">
+                : {project.title} (opens in a new tab)
+              </span>
+            </a>
+          </div>
         </div>
       </div>
     </ScrollReveal>

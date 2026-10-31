@@ -245,3 +245,25 @@ test('each page ends with the closing call to action, except Contact', async ({
   await expect(page.locator('footer.site-footer')).toBeAttached()
   await expect(closing).toHaveCount(0)
 })
+
+test('the work stage shows the project in the middle of the screen', async ({
+  page,
+}) => {
+  await open(page, '/work')
+  const stage = page.locator('[data-work-stage]')
+  if (!isDesktop(page)) {
+    // Small screens have no stage: each project shows its own icon.
+    await expect(stage).toBeHidden()
+    await expect(
+      page.getByRole('link', { name: 'Read the Whimcall case study' }),
+    ).toBeVisible()
+    return
+  }
+  await expect(stage).toHaveAttribute('data-work-stage', 'Pico')
+  for (const title of ['Whimcall', 'Chromagine', 'Pico']) {
+    await page
+      .locator(`[data-work-item="${title}"]`)
+      .evaluate((item) => item.scrollIntoView({ block: 'center' }))
+    await expect(stage).toHaveAttribute('data-work-stage', title)
+  }
+})
