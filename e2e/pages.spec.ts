@@ -259,13 +259,16 @@ test('the work stage shows the project in the middle of the screen', async ({
     ).toBeVisible()
     return
   }
-  // The blocks follow the scroll: the block of the project in the middle is
-  // open, and the block after it is still closed at its center.
-  const clip = (index: number) =>
-    stage
-      .locator('a > div')
-      .nth(index)
-      .evaluate((block) => getComputedStyle(block).clipPath)
+  // The blocks follow the scroll. A clip path also clips hit testing, so
+  // the link at the middle of the stage is the block that is open on top.
+  const blockOnTop = () =>
+    stage.evaluate((element) => {
+      const box = element.getBoundingClientRect()
+      const hit = document
+        .elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)
+        ?.closest('a')
+      return [...element.querySelectorAll('a')].indexOf(hit!)
+    })
   const titles = ['Pico', 'Whimcall', 'Chromagine']
   await expect(stage).toHaveAttribute('data-work-stage', 'Pico')
   for (const title of ['Whimcall', 'Chromagine', 'Pico']) {
@@ -273,9 +276,6 @@ test('the work stage shows the project in the middle of the screen', async ({
       .locator(`[data-work-item="${title}"]`)
       .evaluate((item) => item.scrollIntoView({ block: 'center' }))
     await expect(stage).toHaveAttribute('data-work-stage', title)
-    const index = titles.indexOf(title)
-    await expect.poll(() => clip(index)).toBe('inset(0%)')
-    if (index + 1 < titles.length)
-      await expect.poll(() => clip(index + 1)).toBe('inset(50%)')
+    await expect.poll(blockOnTop).toBe(titles.indexOf(title))
   }
 })

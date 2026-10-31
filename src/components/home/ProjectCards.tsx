@@ -35,8 +35,28 @@ const chromaginePetals = [
   '#ff2d95',
 ] as const
 
+// @container-size: the wipe of ProjectBlock measures its angle in cqh.
 const blockLinkStyles =
-  'focus-visible:outline-foreground block focus-visible:outline-2 focus-visible:outline-offset-4'
+  'focus-visible:outline-foreground @container-size block focus-visible:outline-2 focus-visible:outline-offset-4'
+
+/**
+ * The horizontal run of the wipe edge over the full block height, for an
+ * edge at 60 degrees to the horizontal: 100cqh / tan(60deg). It is in cqh,
+ * not %, so the angle stays at 60 degrees for every block shape.
+ */
+const WIPE_RUN = '57.735cqh'
+
+/**
+ * A clip path that shows the part of the block right of a 60 degree edge,
+ * so the block opens from right to left. At 0 the edge is just right of the
+ * block, at 1 just left of it.
+ */
+function wipe(progress: number) {
+  const travel = `${progress} * (100% + ${WIPE_RUN})`
+  const top = `calc(100% + ${WIPE_RUN} - ${travel})`
+  const bottom = `calc(100% - ${travel})`
+  return `polygon(${top} 0, 100% 0, 100% 100%, ${bottom} 100%)`
+}
 
 const cardLinkStyles = cn(
   metaStyles('brand'),
@@ -45,13 +65,16 @@ const cardLinkStyles = cn(
 
 /** The mark of a project. Its sizes are a part of the block height. */
 function ProjectMark({ project }: { project: WorkItem }) {
+  // Only the P of /pico.svg: the file has a rounded square around it.
   if (project.visual === 'pico')
     return (
-      <img
-        src={project.image}
-        alt=""
-        className="absolute top-1/2 left-1/2 aspect-square h-[34%] w-auto -translate-x-1/2 -translate-y-1/2"
-      />
+      <svg
+        viewBox="0 0 102 136"
+        aria-hidden="true"
+        className="absolute top-1/2 left-1/2 h-[30%] w-auto -translate-x-1/2 -translate-y-1/2 fill-white"
+      >
+        <path d="M0 34h34v102H0zM34 0h68v34H34zM34 68h34v34H34zM68 34h34v34H68z" />
+      </svg>
     )
 
   if (project.visual === 'whimcall')
@@ -100,8 +123,9 @@ function ProjectMark({ project }: { project: WorkItem }) {
 
 /**
  * The project as a block with sharp corners. It fills its parent, which sets
- * the size. `reveal` is a scroll progress from 0 to 1: the block opens from
- * its center, and the mark settles from a larger size.
+ * the size. `reveal` is a scroll progress from 0 to 1: a wipe with a
+ * 60 degree edge opens the block from right to left, and the mark settles
+ * from a larger size.
  */
 function ProjectBlock({
   project,
@@ -111,17 +135,13 @@ function ProjectBlock({
   reveal: MotionValue<number>
 }) {
   const reduceMotion = useReducedMotion()
-  const clipPath = useTransform(
-    reveal,
-    [0, 1],
-    ['inset(50% 50% 50% 50%)', 'inset(0% 0% 0% 0%)'],
-  )
-  const scale = useTransform(reveal, [0, 1], [reduceMotion ? 1 : 1.4, 1])
+  const clipPath = useTransform(reveal, wipe)
+  const scale = useTransform(reveal, [0, 1], [reduceMotion ? 1 : 1.25, 1])
   return (
     <motion.div
       style={{ clipPath }}
       className={cn(
-        'ring-foreground/10 absolute inset-0 overflow-hidden ring-1 ring-inset',
+        'ring-foreground/10 pointer-events-auto absolute inset-0 overflow-hidden ring-1 ring-inset',
         blockStyles[project.visual],
       )}
     >
@@ -154,7 +174,12 @@ export function ProjectBlockLink({
   const a11y = hidden
     ? ({ tabIndex: -1, 'aria-hidden': true } as const)
     : undefined
-  const className = cn(blockLinkStyles, 'absolute inset-0')
+  const className = cn(
+    blockLinkStyles,
+    // Only the clipped block takes the pointer: the link fills the stage,
+    // also where its block is still closed.
+    'pointer-events-none absolute inset-0',
+  )
   const block = <ProjectBlock project={project} reveal={reveal} />
   if (project.caseStudy)
     return (
