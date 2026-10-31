@@ -49,7 +49,7 @@ function PrivacyPage() {
             as="div"
             className="mt-10 flex flex-wrap justify-center gap-x-8 gap-y-2"
           >
-            <span>Effective October 28, 2026</span>
+            <span>Effective October 30, 2026</span>
             <span>Operator: Ali Abbas</span>
           </Meta>
         </header>
@@ -101,8 +101,10 @@ function PrivacyPage() {
 
           <PrivacySection number="03" title="Other information">
             <p>
-              The contact form collects your name, email address, and message so
-              Ali can receive and respond to your inquiry.
+              The contact form collects your name, email address, topic, and
+              message so Ali can receive and respond to your inquiry. Cloudflare
+              Turnstile checks that a person sends the form. It reads browser
+              and device signals for this check only.
             </p>
             <p>
               If you create an account to comment on a note, the authentication
@@ -141,11 +143,11 @@ function PrivacyPage() {
 
           <PrivacySection number="04" title="Service providers">
             <p>
-              Cloudflare provides hosting, security, approximate geolocation,
-              chatbot and performance storage through D1, and AI inference
-              through Workers AI. Cloudflare states that Workers AI customer
-              content is not used to train models or improve its services
-              without explicit consent.
+              Cloudflare provides hosting, security, the Turnstile human check,
+              approximate geolocation, chatbot and performance storage through
+              D1, and AI inference through Workers AI. Cloudflare states that
+              Workers AI customer content is not used to train models or improve
+              its services without explicit consent.
             </p>
             <p>
               Convex and Better Auth provide account, authentication, and

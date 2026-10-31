@@ -1,31 +1,73 @@
 import { createServerFn } from '@tanstack/react-start'
+import { getRequestHeader } from '@tanstack/react-start/server'
+import { env } from 'cloudflare:workers'
 import { Resend } from 'resend'
+import { z } from 'zod'
+import {
+  CONTACT_TOPICS,
+  HUMAN_CHECK_FAILED,
+  MAX_MESSAGE_LENGTH,
+} from './contact'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const contactInput = z.object({
+  name: z.string().trim().min(1).max(200),
+  email: z.email().max(320),
+  topic: z.enum(CONTACT_TOPICS).optional(),
+  message: z.string().trim().min(1).max(MAX_MESSAGE_LENGTH),
+  token: z.string().min(1).max(2048),
+})
 
-interface SendEmailInput {
-  name: string
-  email: string
-  message: string
+export type ContactInput = z.infer<typeof contactInput>
+
+/** Asks Cloudflare if the Turnstile token is valid. */
+async function verifyTurnstile(token: string) {
+  const secret = env.TURNSTILE_SECRET_KEY
+  if (!secret) throw new Error('TURNSTILE_SECRET_KEY is not set')
+  const body = new FormData()
+  body.append('secret', secret)
+  body.append('response', token)
+  const ip = getRequestHeader('cf-connecting-ip')
+  if (ip) body.append('remoteip', ip)
+  const response = await fetch(
+    'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+    { method: 'POST', body },
+  )
+  const result = (await response.json()) as { success?: boolean }
+  return result.success === true
 }
 
-export const sendContactEmail = createServerFn({ method: 'POST' })
-  .validator((d: SendEmailInput) => d)
-  .handler(async ({ data }) => {
-    const { name, email, message } = data
+const escapeHtml = (text: string) =>
+  text
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;')
 
+export const sendContactEmail = createServerFn({ method: 'POST' })
+  .validator((data: ContactInput) => contactInput.parse(data))
+  .handler(async ({ data }) => {
+    const { name, email, topic, message, token } = data
+
+    if (!(await verifyTurnstile(token))) {
+      throw new Error(HUMAN_CHECK_FAILED)
+    }
+
+    const resend = new Resend(env.RESEND_API_KEY)
+    const subject = topic ? `${topic}, from ${name}` : `from ${name}`
     const result = await resend.emails.send({
       from: 'New Message <form@mail.aliabbas.net>',
       to: ['ali@aliabbas.net'],
-      subject: `from ${name}`,
+      replyTo: email,
+      subject,
       html: `
         <div>
-          <p>${message}</p>
-          <strong>${name}</strong>
-          <p>${email}</p>
+          ${topic ? `<p><strong>${escapeHtml(topic)}</strong></p>` : ''}
+          <p style="white-space: pre-wrap">${escapeHtml(message)}</p>
+          <p><strong>${escapeHtml(name)}</strong><br>${escapeHtml(email)}</p>
         </div>
       `,
-      text: `${message} -${name} (${email})`,
+      text: `${topic ? `${topic}\n\n` : ''}${message}\n\n${name} (${email})`,
     })
 
     if (result.error) {

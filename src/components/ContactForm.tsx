@@ -1,92 +1,97 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { ArrowUpRight, CircleCheck, Loader2 } from 'lucide-react'
+import { Link } from '@tanstack/react-router'
+import {
+  ArrowUpRight,
+  Check,
+  CircleCheck,
+  Copy,
+  Loader2,
+  MessageCircle,
+} from 'lucide-react'
 import { motion } from 'motion/react'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import PageHeading from './PageHeading'
 import ScrollReveal from './ScrollReveal'
-import { Button } from './ui/button'
-import { Field, FieldError, FieldGroup, FieldLabel } from './ui/field'
+import { Button, buttonVariants } from './ui/button'
+import { chipStyles } from './ui/chip'
+import { Field, FieldError, FieldLabel } from './ui/field'
 import { Input } from './ui/input'
 import { Textarea } from './ui/textarea'
+import {
+  CONTACT_TOPICS,
+  HUMAN_CHECK_FAILED,
+  MAX_MESSAGE_LENGTH,
+} from '~/lib/contact'
 import { sendContactEmail } from '~/lib/email'
+import { useTurnstile } from '~/lib/turnstile'
+import { cn } from 'cn'
 
-const fieldLabelStyles = 'text-foreground text-sm font-medium'
+const EMAIL = 'ali@aliabbas.net'
 
 const formSchema = z.object({
-  name: z.string().trim().min(1, 'A name is required'),
-  email: z.email('Please provide a valid email address'),
-  message: z.string().trim().min(1, 'A message is required'),
-  verification: z.string().min(1, 'Please answer the verification question'),
+  name: z.string().trim().min(1, 'Enter your name.'),
+  email: z.email('Enter a valid email address.'),
+  topic: z.enum(CONTACT_TOPICS).optional(),
+  message: z
+    .string()
+    .trim()
+    .min(1, 'Enter a message.')
+    .max(MAX_MESSAGE_LENGTH, `Use ${MAX_MESSAGE_LENGTH} characters or fewer.`),
 })
 
 type ContactFormValues = z.infer<typeof formSchema>
 
-type Challenge = {
-  first: number
-  second: number
-  ready: boolean
-}
+const labelStyles = 'text-foreground text-sm font-medium'
 
-const createChallenge = (): Challenge => ({
-  first: Math.floor(Math.random() * 11),
-  second: Math.floor(Math.random() * 11),
-  ready: true,
-})
+// Rounded fields on the page fill, so the form matches the buttons and
+// the chips. 44px high, as the pill-lg button.
+const fieldStyles =
+  'border-border bg-background placeholder:text-fg-muted focus-visible:border-brand focus-visible:ring-brand/20 rounded-xl px-3.5 text-base! shadow-none dark:bg-background'
 
-const inputClassName =
-  'h-14 rounded-none border-x-0 border-t-0 border-b-foreground/25 px-4 text-base shadow-none focus-visible:border-brand focus-visible:ring-0'
+const quietLink =
+  'text-fg-secondary hover:text-foreground focus-visible:outline-foreground inline-flex items-center gap-1 rounded-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2'
 
 export default function ContactForm() {
   const [isSubmitted, setSubmitted] = useState(false)
-  const [challenge, setChallenge] = useState<Challenge>({
-    first: 0,
-    second: 0,
-    ready: false,
-  })
-
-  useEffect(() => {
-    setChallenge(createChallenge())
-  }, [])
+  const turnstile = useTurnstile(import.meta.env.VITE_TURNSTILE_SITE_KEY)
 
   const {
     register,
     handleSubmit,
     setError,
+    setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<ContactFormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: '',
-      email: '',
-      message: '',
-      verification: '',
-    },
+    defaultValues: { name: '', email: '', message: '' },
   })
 
+  const topic = watch('topic')
+  const messageLength = watch('message').length
+
   const onSubmit = async (values: ContactFormValues) => {
-    if (Number(values.verification) !== challenge.first + challenge.second) {
-      setError('verification', {
-        message: 'That answer is not quite right. Try the new one.',
+    const token = await turnstile.getToken()
+    if (!token) {
+      setError('root', {
+        message: `The human check did not pass. Reload the page, or write to ${EMAIL}.`,
       })
-      setChallenge(createChallenge())
       return
     }
-
     try {
       await sendContactEmail({
-        data: {
-          name: values.name,
-          email: values.email,
-          message: values.message,
-        },
+        data: { ...values, token },
       })
       setSubmitted(true)
-    } catch {
+    } catch (error) {
+      turnstile.reset()
       setError('root', {
         message:
-          'Something went wrong while sending your message. Please try again.',
+          error instanceof Error && error.message === HUMAN_CHECK_FAILED
+            ? 'The human check failed. Try again.'
+            : `Your message was not sent. Try again, or write to ${EMAIL}.`,
       })
     }
   }
@@ -98,147 +103,245 @@ export default function ContactForm() {
         animate={{ opacity: 1, scale: 1 }}
         className="mx-auto flex min-h-[75svh] max-w-[1440px] flex-col items-center justify-center px-5 text-center sm:px-8 lg:px-12"
       >
-        <span className="bg-brand text-brand-foreground flex size-20 items-center justify-center rounded-full">
-          <CircleCheck className="size-9" strokeWidth={1.5} />
+        <span className="bg-brand/10 text-brand border-brand/25 flex size-16 items-center justify-center rounded-full border">
+          <CircleCheck className="size-8" strokeWidth={1.5} />
         </span>
         <PageHeading className="mt-8">Message received.</PageHeading>
-        <p className="text-fg-muted mt-6 max-w-md text-base leading-7">
-          Thanks for reaching out. I’ll read your note and get back to you soon.
+        <p className="text-fg-muted mt-6 max-w-md text-base leading-7 text-pretty">
+          Thanks for reaching out. I read every message and usually reply in 1–2
+          days, from {EMAIL}.
         </p>
+        <Link
+          to="/work"
+          className={buttonVariants({
+            variant: 'secondary',
+            size: 'pill-lg',
+            className: 'mt-8',
+          })}
+        >
+          See the work
+        </Link>
       </motion.section>
     )
   }
 
   return (
-    <section className="gap-y-section-content py-section mx-auto grid max-w-[1440px] gap-x-14 px-5 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:gap-x-24 lg:px-12">
-      <ScrollReveal className="flex min-w-0 flex-col">
+    <section className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
+      <ScrollReveal
+        as="header"
+        className="grid justify-items-center gap-6 text-center"
+      >
         <PageHeading>Let’s build something remarkable.</PageHeading>
-        <p className="text-fg-muted mt-9 max-w-md text-base leading-7">
+        <p className="text-fg-muted max-w-xl text-base leading-7 text-pretty lg:text-lg lg:leading-8">
           I’m interested in senior frontend roles on interactive and streaming
           interfaces, where design quality matters as much as technical
           execution. If that sounds like your team, I’d like to hear from you.
         </p>
-        <div className="border-foreground/20 mt-12 grid grid-cols-2 gap-5 border-t pt-6 text-sm leading-6 lg:mt-auto">
-          <div>
-            <span className="text-fg-muted block">Best fit</span>
-            <span className="mt-1 block font-semibold">
-              Senior frontend · Interactive UI
-            </span>
-          </div>
-          <div>
-            <span className="text-fg-muted block">Response time</span>
-            <span className="mt-1 block font-semibold">Usually 1–2 days</span>
-          </div>
-        </div>
       </ScrollReveal>
 
-      <ScrollReveal delay={0.08}>
-        <form onSubmit={handleSubmit(onSubmit)} noValidate>
-          <FieldGroup className="gap-8">
+      <ScrollReveal
+        delay={0.08}
+        className="mt-section-content mx-auto max-w-xl"
+      >
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          noValidate
+          aria-label="Contact"
+          className="border-border bg-card grid gap-6 rounded-2xl border p-5 sm:p-8"
+        >
+          <div className="grid gap-6 sm:grid-cols-2 sm:gap-4">
             <Field data-invalid={Boolean(errors.name)}>
-              <FieldLabel htmlFor="contact-name" className={fieldLabelStyles}>
+              <FieldLabel htmlFor="contact-name" className={labelStyles}>
                 Name
               </FieldLabel>
               <Input
                 id="contact-name"
-                variant="filled"
+                type="text"
                 autoComplete="name"
-                placeholder="Enter your name"
                 aria-invalid={Boolean(errors.name)}
-                className={inputClassName}
+                className={cn(fieldStyles, 'h-11')}
                 {...register('name')}
               />
               <FieldError errors={[errors.name]} />
             </Field>
 
             <Field data-invalid={Boolean(errors.email)}>
-              <FieldLabel htmlFor="contact-email" className={fieldLabelStyles}>
+              <FieldLabel htmlFor="contact-email" className={labelStyles}>
                 Email
               </FieldLabel>
               <Input
                 id="contact-email"
-                variant="filled"
                 type="email"
                 autoComplete="email"
-                placeholder="Enter your email address"
                 aria-invalid={Boolean(errors.email)}
-                className={inputClassName}
+                className={cn(fieldStyles, 'h-11')}
                 {...register('email')}
               />
               <FieldError errors={[errors.email]} />
             </Field>
+          </div>
 
-            <Field data-invalid={Boolean(errors.message)}>
-              <FieldLabel
-                htmlFor="contact-message"
-                className={fieldLabelStyles}
-              >
-                Tell me about the opportunity
+          <fieldset>
+            <legend className={labelStyles}>
+              What is it about?{' '}
+              <span className="text-fg-muted font-normal">Optional</span>
+            </legend>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {CONTACT_TOPICS.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  aria-pressed={topic === item}
+                  onClick={() =>
+                    setValue('topic', topic === item ? undefined : item)
+                  }
+                  className={chipStyles({ active: topic === item })}
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          <Field data-invalid={Boolean(errors.message)}>
+            <div className="flex items-baseline justify-between gap-4">
+              <FieldLabel htmlFor="contact-message" className={labelStyles}>
+                Message
               </FieldLabel>
-              <Textarea
-                id="contact-message"
-                variant="filled"
-                placeholder="The role, team, problem, or idea…"
-                rows={7}
-                aria-invalid={Boolean(errors.message)}
-                className="border-b-foreground/25 focus-visible:border-brand min-h-44 resize-none rounded-none border-x-0 border-t-0 px-4 py-4 text-base shadow-none focus-visible:ring-0"
-                {...register('message')}
-              />
-              <FieldError errors={[errors.message]} />
-            </Field>
-
-            <Field data-invalid={Boolean(errors.verification)}>
-              <FieldLabel
-                htmlFor="contact-verification"
-                className={fieldLabelStyles}
+              <span
+                className={cn(
+                  'text-sm tabular-nums',
+                  messageLength > MAX_MESSAGE_LENGTH
+                    ? 'text-destructive'
+                    : 'text-fg-muted',
+                )}
               >
-                Human check:
-                <span>
-                  {challenge.ready
-                    ? `${challenge.first} + ${challenge.second} = ?`
-                    : 'Loading…'}
-                </span>
-              </FieldLabel>
-              <Input
-                id="contact-verification"
-                variant="filled"
-                type="number"
-                inputMode="numeric"
-                aria-invalid={Boolean(errors.verification)}
-                className={`${inputClassName} [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none`}
-                {...register('verification')}
-              />
-              <FieldError errors={[errors.verification]} />
-            </Field>
+                {messageLength} / {MAX_MESSAGE_LENGTH}
+              </span>
+            </div>
+            <Textarea
+              id="contact-message"
+              placeholder="The role, the team, the problem or the idea."
+              rows={6}
+              aria-invalid={Boolean(errors.message)}
+              className={cn(fieldStyles, 'min-h-40 resize-y py-3')}
+              {...register('message')}
+            />
+            <FieldError errors={[errors.message]} />
+          </Field>
 
-            {errors.root?.message && (
-              <p className="text-destructive text-sm">{errors.root.message}</p>
-            )}
+          {errors.root?.message && (
+            <p role="alert" className="text-destructive text-sm leading-6">
+              {errors.root.message}
+            </p>
+          )}
 
-            <Button
-              type="submit"
-              size="pill-lg"
-              disabled={isSubmitting || !challenge.ready}
-              className="group mt-2 w-full"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="animate-spin" data-icon="inline-start" />
-                  Sending
-                </>
-              ) : (
-                <>
-                  Send inquiry
-                  <ArrowUpRight
-                    className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1"
-                    data-icon="inline-end"
-                  />
-                </>
-              )}
-            </Button>
-          </FieldGroup>
+          <div>
+            {/* Turnstile shows a checkbox here only when it is not sure. */}
+            <div ref={turnstile.containerRef} className="has-[iframe]:mb-6" />
+            <div className="flex flex-col-reverse items-center gap-4 sm:flex-row sm:justify-between">
+              <p className="text-fg-muted text-sm leading-6">
+                I usually reply in 1–2 days.
+              </p>
+              <Button
+                type="submit"
+                size="pill-lg"
+                disabled={isSubmitting}
+                className="w-full sm:w-auto"
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2
+                      className="animate-spin"
+                      data-icon="inline-start"
+                    />
+                    Sending
+                  </>
+                ) : (
+                  <>
+                    Send message
+                    <ArrowUpRight data-icon="inline-end" />
+                  </>
+                )}
+              </Button>
+            </div>
+          </div>
         </form>
+
+        <OtherWays />
       </ScrollReveal>
     </section>
+  )
+}
+
+/** For people who prefer not to use a form. */
+function OtherWays() {
+  const [copied, setCopied] = useState(false)
+  const copy = async () => {
+    try {
+      await navigator.clipboard.writeText(EMAIL)
+      setCopied(true)
+      window.setTimeout(() => setCopied(false), 2000)
+    } catch {
+      window.location.href = `mailto:${EMAIL}`
+    }
+  }
+
+  return (
+    <div className="mt-8 grid justify-items-center gap-3 text-center text-sm leading-6">
+      <p className="text-fg-muted flex flex-wrap items-center justify-center gap-x-2 gap-y-1">
+        Prefer email?
+        <a href={`mailto:${EMAIL}`} className={cn(quietLink, 'font-medium')}>
+          {EMAIL}
+        </a>
+        <button
+          type="button"
+          onClick={() => void copy()}
+          className={buttonVariants({
+            variant: 'ghost',
+            size: 'sm',
+            className: 'text-sm',
+          })}
+        >
+          {copied ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
+          {copied ? 'Copied' : 'Copy'}
+        </button>
+      </p>
+      <p role="status" className="sr-only">
+        {copied ? 'Email address copied.' : ''}
+      </p>
+      <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+        <li>
+          <a
+            href="https://www.linkedin.com/in/webdevali"
+            target="_blank"
+            rel="noreferrer"
+            className={quietLink}
+          >
+            LinkedIn
+            <ArrowUpRight aria-hidden="true" className="size-3.5" />
+            <span className="sr-only">(opens in a new tab)</span>
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://github.com/alivault"
+            target="_blank"
+            rel="noreferrer"
+            className={quietLink}
+          >
+            GitHub
+            <ArrowUpRight aria-hidden="true" className="size-3.5" />
+            <span className="sr-only">(opens in a new tab)</span>
+          </a>
+        </li>
+        <li>
+          <Link to="/chat" className={quietLink}>
+            <MessageCircle aria-hidden="true" className="size-3.5" />
+            Ask AI about me first
+          </Link>
+        </li>
+      </ul>
+    </div>
   )
 }

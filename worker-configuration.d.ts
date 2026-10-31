@@ -12,6 +12,7 @@ interface __BaseEnv_Env {
   VITE_CONVEX_URL: string
   VITE_CONVEX_SITE_URL: string
   ADMIN_EMAILS: string
+  TURNSTILE_SECRET_KEY: string
 }
 declare namespace Cloudflare {
   interface GlobalProps {
@@ -35,6 +36,7 @@ declare namespace NodeJS {
       | 'VITE_CONVEX_URL'
       | 'VITE_CONVEX_SITE_URL'
       | 'ADMIN_EMAILS'
+      | 'TURNSTILE_SECRET_KEY'
     >
   > {}
 }
