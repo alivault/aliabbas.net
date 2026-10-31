@@ -3,6 +3,7 @@ import { ArrowRight, ArrowUpRight } from 'lucide-react'
 import ScrollReveal from '~/components/ScrollReveal'
 import SectionHeading from '~/components/SectionHeading'
 import Title from '~/components/Title'
+import { ButtonLink } from '~/components/ui/button'
 import type { SanityArticle } from '~/lib/sanity'
 import getFormattedDate from '~/lib/getFormattedDate'
 
@@ -17,14 +18,14 @@ export default function HomeNotesSection({
         <div>
           <SectionHeading>Notes</SectionHeading>
         </div>
-        <Link
+        <ButtonLink
           to="/notes"
-          className="group border-foreground/25 hover:text-background relative hidden items-center gap-8 overflow-hidden border-b px-3 py-4 text-base font-medium transition-colors duration-300 sm:flex"
+          variant="secondary"
+          className="hidden sm:inline-flex"
         >
-          <span className="bg-foreground absolute inset-0 translate-y-full transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:translate-y-0" />
-          <span className="relative z-10">View all notes</span>
-          <ArrowRight aria-hidden="true" className="relative z-10 size-4" />
-        </Link>
+          View all notes
+          <ArrowRight aria-hidden="true" />
+        </ButtonLink>
       </ScrollReveal>
       <div>
         {articles.length === 0 ? (
