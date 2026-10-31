@@ -131,3 +131,32 @@ test('the sources button looks pressed while the evidence shows', async ({
   await toggle.click()
   await expectFill(pressed)
 })
+
+test('the checker keeps its footer while it leaves for another page', async ({
+  page,
+}) => {
+  await open(page, '/check')
+  await page.evaluate(() => window.scrollTo({ top: 1e6 }))
+  // Note each moment when the checker is on the page without a footer.
+  await page.evaluate(() => {
+    const lost: Array<string> = []
+    Object.assign(window, { __footerLost: lost })
+    new MutationObserver(() => {
+      const checker = document.querySelector('[aria-label="Assistant mode"]')
+      if (checker && !document.querySelector('footer')) {
+        lost.push(location.pathname)
+      }
+    }).observe(document.body, { childList: true, subtree: true })
+  })
+  await page
+    .locator('footer')
+    .getByRole('link', { name: 'Work', exact: true })
+    .click()
+  await expect(page).toHaveURL(/\/work$/)
+  await expect(page.locator('main h1')).toHaveText('Built for the real world.')
+  expect(
+    await page.evaluate(
+      () => (window as unknown as { __footerLost: Array<string> }).__footerLost,
+    ),
+  ).toEqual([])
+})

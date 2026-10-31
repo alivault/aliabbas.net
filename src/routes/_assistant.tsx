@@ -29,14 +29,22 @@ export const Route = createFileRoute('/_assistant')({
 
 const ORDER: ReadonlyArray<AssistantMode> = ['chat', 'check']
 
-function modeOf(pathname: string): AssistantMode {
-  return pathname.startsWith('/check') ? 'check' : 'chat'
+function modeOf(pathname: string): AssistantMode | null {
+  if (pathname.startsWith('/check')) return 'check'
+  if (pathname === '/chat') return 'chat'
+  return null
 }
 
 function AssistantLayout() {
-  const active = useLocation({
+  // On a link to another page, the location changes while this layout is
+  // still on screen for the page transition. Keep the last mode then, so
+  // the old page does not switch to chat and lose its footer.
+  const pathMode = useLocation({
     select: (location) => modeOf(location.pathname),
   })
+  const [lastMode, setLastMode] = useState<AssistantMode>(pathMode ?? 'chat')
+  if (pathMode && pathMode !== lastMode) setLastMode(pathMode)
+  const active = pathMode ?? lastMode
   const search: { claim?: string } = useSearch({ strict: false })
   const navigate = useNavigate()
   const reduce = useReducedMotion() ?? false
