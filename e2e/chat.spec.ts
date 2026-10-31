@@ -160,3 +160,31 @@ test('the checker keeps its footer while it leaves for another page', async ({
     ),
   ).toEqual([])
 })
+
+test('the send button is concentric on one line and on the last of many', async ({
+  page,
+}) => {
+  await open(page, '/chat')
+  const field = composer(page)
+  const gaps = () =>
+    field.evaluate((textarea) => {
+      const form = textarea.closest('form')!.getBoundingClientRect()
+      const button = textarea
+        .closest('form')!
+        .querySelector('button')!
+        .getBoundingClientRect()
+      return {
+        top: Math.round(button.top - form.top),
+        bottom: Math.round(form.bottom - button.bottom),
+        right: Math.round(form.right - button.right),
+      }
+    })
+  const oneLine = await gaps()
+  expect(oneLine.top).toBe(oneLine.bottom)
+  expect(oneLine.right).toBe(oneLine.bottom)
+
+  await field.fill('one\ntwo\nthree')
+  const lines = await gaps()
+  expect(lines.bottom).toBe(oneLine.bottom)
+  expect(lines.top).toBeGreaterThan(lines.bottom)
+})

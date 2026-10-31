@@ -67,7 +67,7 @@ export default function ChatComposer({
           event.preventDefault()
           if (hasDraft) onSubmit()
         }}
-        className="border-foreground/15 bg-background focus-within:border-brand/60 relative flex items-end gap-2 rounded-[23px] border p-1"
+        className="border-foreground/15 bg-background focus-within:border-brand/60 relative flex items-end gap-2 rounded-[25px] border p-1"
       >
         <label htmlFor={id} className="sr-only">
           {labels.field}
@@ -93,28 +93,35 @@ export default function ChatComposer({
           placeholder={
             isStreaming ? labels.busyPlaceholder : labels.placeholder
           }
-          className="text-foreground placeholder:text-fg-muted max-h-32 min-h-9 resize-none border-0 bg-transparent px-2 py-2 text-base shadow-none focus-visible:border-0 focus-visible:ring-0 md:text-base dark:bg-transparent"
+          className="text-foreground placeholder:text-fg-muted max-h-32 min-h-10 resize-none border-0 bg-transparent px-2 py-2 text-base leading-6 shadow-none focus-visible:border-0 focus-visible:ring-0 md:text-base md:leading-6 dark:bg-transparent"
         />
-        <Button
-          type={showStop ? 'button' : 'submit'}
-          variant={showStop ? 'secondary' : 'default'}
-          size="icon-pill"
-          onClick={showStop ? onStop : undefined}
-          disabled={!showStop && !hasDraft}
-          aria-label={
-            showStop
-              ? labels.stop
-              : isStreaming
-                ? labels.stopAndSubmit
-                : labels.submit
-          }
-        >
-          {showStop ? (
-            <Square className="size-3.5 fill-current" />
-          ) : (
-            <ArrowUp />
-          )}
-        </Button>
+        {/* As high as one line of the field (leading-6 and py-2: 40px), so
+            the button is centered on one line and stays on the last line
+            when the field grows. pr-1 makes the gap on the right 9px, as
+            above and below, so the button is concentric with the corner:
+            radius 25px = button radius 16px + gap 9px. */}
+        <div className="flex h-10 shrink-0 items-center pr-1">
+          <Button
+            type={showStop ? 'button' : 'submit'}
+            variant={showStop ? 'secondary' : 'default'}
+            size="icon-pill"
+            onClick={showStop ? onStop : undefined}
+            disabled={!showStop && !hasDraft}
+            aria-label={
+              showStop
+                ? labels.stop
+                : isStreaming
+                  ? labels.stopAndSubmit
+                  : labels.submit
+            }
+          >
+            {showStop ? (
+              <Square className="size-3.5 fill-current" />
+            ) : (
+              <ArrowUp />
+            )}
+          </Button>
+        </div>
       </form>
       {showHints && (
         <p
