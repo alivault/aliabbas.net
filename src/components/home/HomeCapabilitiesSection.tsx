@@ -10,21 +10,20 @@ export default function HomeCapabilitiesSection() {
       <div className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
         <ScrollReveal
           as="header"
-          className="mb-section grid gap-6 lg:grid-cols-2 lg:items-end lg:gap-16"
+          className="mb-section flex flex-col items-start gap-6 sm:flex-row sm:items-end sm:justify-between"
         >
-          <SectionHeading>Skills</SectionHeading>
-          <div className="flex flex-col items-start gap-6">
-            <p className="text-fg-secondary max-w-xl text-base leading-7 text-pretty">
-              I work where design and engineering overlap. That means fewer gaps
-              between intent and implementation, faster iteration, and products
-              that keep their character all the way to production. Each skill
-              below has a live example.
+          <div className="flex max-w-2xl flex-col gap-4">
+            <SectionHeading>Skills</SectionHeading>
+            <p className="text-fg-secondary text-base leading-7 text-pretty">
+              I work where design and engineering overlap, so products keep
+              their character all the way to production. Each skill below has a
+              live example.
             </p>
-            <ButtonLink to="/skills" variant="secondary">
-              Skills and stack
-              <ArrowRight aria-hidden="true" />
-            </ButtonLink>
           </div>
+          <ButtonLink to="/skills" variant="secondary" className="shrink-0">
+            Skills and stack
+            <ArrowRight aria-hidden="true" />
+          </ButtonLink>
         </ScrollReveal>
         <SkillList headingLevel="h3" />
       </div>
