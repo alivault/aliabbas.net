@@ -189,7 +189,7 @@ test('the send button is concentric on one line and on the last of many', async 
   expect(lines.top).toBeGreaterThan(lines.bottom)
 })
 
-test('a click on the text of a collapsed source selects it, but not a link or a selection', async ({
+test('a click anywhere on a collapsed source selects it, but not a link or a selection', async ({
   page,
 }) => {
   const long = {
@@ -245,11 +245,12 @@ test('a click on the text of a collapsed source selects it, but not a link or a 
   await expect(toggle).toHaveAttribute('aria-expanded', 'false')
   await page.evaluate(() => window.getSelection()?.removeAllRanges())
 
-  // A click on the text expands the card and selects its source, as a
-  // citation does. Show less clears the selection.
+  // A click on the card, also on its padding at the edge, expands the card
+  // and selects its source, as a citation does. Show less clears the
+  // selection.
   const citation = page.locator(`[data-citation="${long.id}"]`).first()
   await expect(citation).toHaveAttribute('aria-pressed', 'false')
-  await text.click({ position: { x: 4, y: box.height - 8 } })
+  await card.click({ position: { x: 4, y: 4 } })
   const less = card.getByRole('button', { name: 'Show less' })
   await expect(less).toHaveAttribute('aria-expanded', 'true')
   await expect(citation).toHaveAttribute('aria-pressed', 'true')

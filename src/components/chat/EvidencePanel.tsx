@@ -121,11 +121,11 @@ function SourceCard({
     })
   }
 
-  // A click on the text of a collapsed card selects and expands it, a
-  // large target beside the small Show more button. Show more stays the keyboard and
-  // screen reader path, so the text is not a button. Links keep their own
-  // action, and a drag that selects text does not expand the card.
-  function expandFromText(event: MouseEvent<HTMLDivElement>) {
+  // A click anywhere on a collapsed card selects and expands it, a large
+  // target beside the small Show more button. Show more stays the keyboard
+  // and screen reader path, so the card is not a button. Links keep their
+  // own action, and a drag that selects text does not expand the card.
+  function expandFromCard(event: MouseEvent<HTMLElement>) {
     if (!expandable) return
     if ((event.target as Element).closest('a, button')) return
     if (!window.getSelection()?.isCollapsed) return
@@ -155,8 +155,10 @@ function SourceCard({
         aria-labelledby={`${elementId}-title`}
         onPointerEnter={() => onHover(source.id)}
         onPointerLeave={() => onHover(null)}
+        onClick={expandFromCard}
         className={cn(
-          'focus-visible:ring-brand/70 relative scroll-mt-4 scroll-mb-4 rounded-xl border p-4 transition-colors outline-none focus-visible:ring-2',
+          'group/card focus-visible:ring-brand/70 relative scroll-mt-4 scroll-mb-4 rounded-xl border p-4 transition-colors outline-none focus-visible:ring-2',
+          expandable && 'cursor-pointer',
           active
             ? 'border-transparent'
             : hovered
@@ -201,11 +203,10 @@ function SourceCard({
         <div
           ref={bodyRef}
           id={bodyId}
-          onClick={expandFromText}
           className={cn(
             'text-fg-secondary mt-3 space-y-2 text-sm leading-6 transition-colors [overflow-wrap:anywhere]',
             !open && 'line-clamp-4',
-            expandable && 'hover:text-foreground cursor-pointer',
+            expandable && 'group-hover/card:text-foreground',
           )}
         >
           <ReactMarkdown
