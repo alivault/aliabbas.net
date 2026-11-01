@@ -188,3 +188,72 @@ test('the send button is concentric on one line and on the last of many', async 
   expect(lines.bottom).toBe(oneLine.bottom)
   expect(lines.top).toBeGreaterThan(lines.bottom)
 })
+
+test('a click on the text of a collapsed source selects it, but not a link or a selection', async ({
+  page,
+}) => {
+  const long = {
+    id: 'S21',
+    title: 'This portfolio as working samples',
+    group: 'Projects',
+    body: [
+      'Ali built [the chat](https://example.com/chat) as a working sample.',
+      'It streams answers with inline citations, and the server checks each citation before it sends it.',
+      'Answers can be stopped, retried, and edited and sent again.',
+      'A resizable, collapsible evidence panel shows the cited sources.',
+      'The claim checker splits a claim into parts and grades each part.',
+      'Each grade quotes the record, and the server checks every quote word for word.',
+    ].join(' '),
+  }
+  await page
+    .context()
+    .route('https://example.com/**', (route) => route.fulfill({ body: 'ok' }))
+  await mockAi(page, {
+    '/api/chat': [
+      { delay: 20, event: { type: 'source', source: long } },
+      { delay: 20, event: { type: 'delta', text: 'Yes [S21].' } },
+      { delay: 20, event: { type: 'done' } },
+    ],
+  })
+  await open(page, '/chat')
+  await composer(page).fill('Has Ali built streaming interfaces?')
+  await page.keyboard.press('Enter')
+  await expect(page.getByText(/done in/)).toBeVisible()
+
+  if (!isDesktop(page)) {
+    await page.getByRole('button', { name: /1 source: .* evidence/ }).click()
+    await expect(page.getByRole('dialog')).toBeVisible()
+  }
+  const card = page.getByRole('article', { name: long.title })
+  const text = card.locator('[id$="-body"]')
+  const toggle = card.getByRole('button', { name: 'Show more' })
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+
+  // A link opens its page and leaves the card collapsed.
+  const popup = page.waitForEvent('popup')
+  await card.getByRole('link', { name: /the chat/ }).click()
+  await (await popup).close()
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+
+  // A drag that selects text leaves the card collapsed.
+  const box = (await text.boundingBox())!
+  const y = box.y + box.height - 8
+  await page.mouse.move(box.x + 4, y)
+  await page.mouse.down()
+  await page.mouse.move(box.x + box.width / 2, y, { steps: 5 })
+  await page.mouse.up()
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+  await page.evaluate(() => window.getSelection()?.removeAllRanges())
+
+  // A click on the text expands the card and selects its source, as a
+  // citation does. Show less clears the selection.
+  const citation = page.locator(`[data-citation="${long.id}"]`).first()
+  await expect(citation).toHaveAttribute('aria-pressed', 'false')
+  await text.click({ position: { x: 4, y: box.height - 8 } })
+  const less = card.getByRole('button', { name: 'Show less' })
+  await expect(less).toHaveAttribute('aria-expanded', 'true')
+  await expect(citation).toHaveAttribute('aria-pressed', 'true')
+  await less.click()
+  await expect(toggle).toHaveAttribute('aria-expanded', 'false')
+  await expect(citation).toHaveAttribute('aria-pressed', 'false')
+})

@@ -1,4 +1,5 @@
 import { useLayoutEffect, useRef, useState } from 'react'
+import type { MouseEvent } from 'react'
 import {
   ArrowUpRight,
   ChevronDown,
@@ -7,7 +8,12 @@ import {
   PanelRightClose,
   PanelRightOpen,
 } from 'lucide-react'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
+import {
+  AnimatePresence,
+  LayoutGroup,
+  motion,
+  useReducedMotion,
+} from 'motion/react'
 import type { Turn } from '~/lib/chat/chat-machine'
 import type { ChatSource } from '~/lib/chat/protocol'
 import { cn } from 'cn'
@@ -16,6 +22,7 @@ import type { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import PathText from '~/components/PathText'
 import { Button } from '~/components/ui/button'
+import { revealSource } from '~/lib/chat/reveal-source'
 import { SPRINGS } from '~/lib/design/motion'
 
 export function evidenceSourceElementId(prefix: string, sourceId: string) {
@@ -65,6 +72,7 @@ function SourceCard({
   idPrefix,
   number,
   onHover,
+  onSelect,
   source,
 }: {
   active: boolean
@@ -72,19 +80,29 @@ function SourceCard({
   idPrefix: string
   number: number
   onHover: (sourceId: string | null) => void
+  onSelect: (sourceId: string | null) => void
   source: ChatSource
 }) {
   const reduceMotion = useReducedMotion()
-  const [expanded, setExpanded] = useState(false)
   const [clamped, setClamped] = useState(false)
   const bodyRef = useRef<HTMLDivElement>(null)
-  const open = expanded || active
+  const cardRef = useRef<HTMLElement>(null)
+  // Only the selected card is open: a citation, Show more and a click on
+  // the text all select it, and the card that was open before collapses.
+  const open = active
 
-  // Offer "Show more" only when the clamp hides text.
+  // Offer Show more and Show less only when the clamp hides text. An open
+  // card can open before it was ever measured (a citation in an older
+  // answer), so it compares its text with the four lines of the clamp.
   useLayoutEffect(() => {
     const body = bodyRef.current
-    if (!body || open) return
-    const measure = () => setClamped(body.scrollHeight > body.clientHeight + 1)
+    if (!body) return
+    const measure = () => {
+      const limit = open
+        ? 4 * parseFloat(getComputedStyle(body).lineHeight)
+        : body.clientHeight
+      setClamped(body.scrollHeight > limit + 1)
+    }
     measure()
     const observer = new ResizeObserver(measure)
     observer.observe(body)
@@ -92,6 +110,27 @@ function SourceCard({
   }, [open])
   const elementId = evidenceSourceElementId(idPrefix, source.id)
   const bodyId = `${elementId}-body`
+  const expandable = !open && clamped
+
+  // When a card above it collapses, the selected card moves up, so bring
+  // it into view after the change, as a citation does.
+  function select() {
+    onSelect(source.id)
+    requestAnimationFrame(() => {
+      if (cardRef.current) revealSource(cardRef.current)
+    })
+  }
+
+  // A click on the text of a collapsed card selects and expands it, a
+  // large target beside the small Show more button. Show more stays the keyboard and
+  // screen reader path, so the text is not a button. Links keep their own
+  // action, and a drag that selects text does not expand the card.
+  function expandFromText(event: MouseEvent<HTMLDivElement>) {
+    if (!expandable) return
+    if ((event.target as Element).closest('a, button')) return
+    if (!window.getSelection()?.isCollapsed) return
+    select()
+  }
 
   return (
     <motion.li
@@ -110,6 +149,7 @@ function SourceCard({
         />
       )}
       <article
+        ref={cardRef}
         id={elementId}
         tabIndex={-1}
         aria-labelledby={`${elementId}-title`}
@@ -161,9 +201,11 @@ function SourceCard({
         <div
           ref={bodyRef}
           id={bodyId}
+          onClick={expandFromText}
           className={cn(
-            'text-fg-secondary mt-3 space-y-2 text-sm leading-6 [overflow-wrap:anywhere]',
+            'text-fg-secondary mt-3 space-y-2 text-sm leading-6 transition-colors [overflow-wrap:anywhere]',
             !open && 'line-clamp-4',
+            expandable && 'hover:text-foreground cursor-pointer',
           )}
         >
           <ReactMarkdown
@@ -189,20 +231,20 @@ function SourceCard({
           ) : (
             <span />
           )}
-          {!active && (clamped || expanded) && (
+          {clamped && (
             <button
               type="button"
-              aria-expanded={expanded}
+              aria-expanded={open}
               aria-controls={bodyId}
-              onClick={() => setExpanded((value) => !value)}
+              onClick={() => (open ? onSelect(null) : select())}
               className="group/more text-fg-secondary hover:bg-brand/10 hover:text-brand focus-visible:ring-brand/70 -mr-2 inline-flex h-7 shrink-0 items-center gap-1 rounded-full pr-2 pl-2.5 text-sm font-medium transition-[color,background-color,scale] duration-200 outline-none focus-visible:ring-2 active:scale-97 motion-reduce:active:scale-100"
             >
-              {expanded ? 'Show less' : 'Show more'}
+              {open ? 'Show less' : 'Show more'}
               <ChevronDown
                 aria-hidden="true"
                 className={cn(
                   'size-4 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none',
-                  expanded
+                  open
                     ? 'rotate-180 group-hover/more:-translate-y-px'
                     : 'group-hover/more:translate-y-px',
                 )}
@@ -258,6 +300,7 @@ export default function EvidencePanel({
   idPrefix,
   onCollapse,
   onHover,
+  onSelect,
   onShowLatest,
   scope,
   turn,
@@ -268,6 +311,8 @@ export default function EvidencePanel({
   idPrefix: string
   onCollapse?: () => void
   onHover: (sourceId: string | null) => void
+  /** Select a source, which opens its card, or clear the selection. */
+  onSelect: (sourceId: string | null) => void
   onShowLatest: () => void
   scope: EvidenceScope | undefined
   turn: Turn | undefined
@@ -345,19 +390,24 @@ export default function EvidencePanel({
 
       {turn && turn.sources.length > 0 && (
         <ol className="space-y-3" aria-label="Sources">
-          <AnimatePresence initial={false}>
-            {turn.sources.map((source, index) => (
-              <SourceCard
-                key={`${turn.attemptId}-${source.id}`}
-                source={source}
-                number={index + 1}
-                idPrefix={idPrefix}
-                active={activeSourceId === source.id}
-                hovered={hoveredSourceId === source.id}
-                onHover={onHover}
-              />
-            ))}
-          </AnimatePresence>
+          {/* One group, so when one card opens or closes, the cards below
+              it slide on the same spring as when a citation opens a card. */}
+          <LayoutGroup>
+            <AnimatePresence initial={false}>
+              {turn.sources.map((source, index) => (
+                <SourceCard
+                  key={`${turn.attemptId}-${source.id}`}
+                  source={source}
+                  number={index + 1}
+                  idPrefix={idPrefix}
+                  active={activeSourceId === source.id}
+                  hovered={hoveredSourceId === source.id}
+                  onHover={onHover}
+                  onSelect={onSelect}
+                />
+              ))}
+            </AnimatePresence>
+          </LayoutGroup>
         </ol>
       )}
     </div>

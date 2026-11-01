@@ -141,6 +141,7 @@ export default function CitationDrawerSpecimen() {
               activeSourceId={activeSourceId}
               hoveredSourceId={hoveredSourceId}
               onHover={setHoveredSourceId}
+              onSelect={setActiveSourceId}
               onShowLatest={() => undefined}
             />
           </div>

@@ -190,6 +190,7 @@ export default function ResizerSpecimen() {
                 activeSourceId={activeSourceId}
                 hoveredSourceId={hoveredSourceId}
                 onHover={setHoveredSourceId}
+                onSelect={setActiveSourceId}
                 onShowLatest={() => undefined}
                 onCollapse={() => {
                   setPanelOpen(false)

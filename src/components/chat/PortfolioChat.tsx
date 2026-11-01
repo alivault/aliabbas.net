@@ -541,6 +541,7 @@ export default function PortfolioChat() {
               activeSourceId={activeSourceId}
               hoveredSourceId={hoveredSourceId}
               onHover={handlePanelHover}
+              onSelect={setActiveSourceId}
               onShowLatest={handleShowLatest}
               onCollapse={handleCollapse}
             />
@@ -597,6 +598,7 @@ export default function PortfolioChat() {
                 activeSourceId={activeSourceId}
                 hoveredSourceId={hoveredSourceId}
                 onHover={handlePanelHover}
+                onSelect={setActiveSourceId}
                 onShowLatest={handleShowLatest}
               />
             </div>
