@@ -13,6 +13,7 @@ import type { ChatSource } from '~/lib/chat/protocol'
 import { cn } from 'cn'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import PathText from '~/components/PathText'
 import { Button } from '~/components/ui/button'
 import { SPRINGS } from '~/lib/design/motion'
@@ -21,15 +22,22 @@ export function evidenceSourceElementId(prefix: string, sourceId: string) {
   return `${prefix}-source-${sourceId}`
 }
 
+// remark-gfm turns a bare URL in a source into a link.
+const sourceRemarkPlugins = [remarkGfm]
+
 const sourceMarkdownComponents: Components = {
   a: ({ children, href }) => (
     <a
       href={href}
       target="_blank"
       rel="noreferrer"
-      className="underline decoration-current/35 underline-offset-2 hover:decoration-current"
+      className="text-brand decoration-brand/40 hover:decoration-brand focus-visible:ring-brand/70 rounded-sm font-medium underline underline-offset-2 transition-colors outline-none focus-visible:ring-2"
     >
-      {children}
+      {/* A bare URL reads better without its protocol. */}
+      {typeof children === 'string' && children === href
+        ? children.replace(/^https?:\/\//, '')
+        : children}
+      <span className="sr-only"> (opens in a new tab)</span>
     </a>
   ),
   ul: ({ children }) => (
@@ -158,7 +166,10 @@ function SourceCard({
             !open && 'line-clamp-4',
           )}
         >
-          <ReactMarkdown components={sourceMarkdownComponents}>
+          <ReactMarkdown
+            remarkPlugins={sourceRemarkPlugins}
+            components={sourceMarkdownComponents}
+          >
             {source.body}
           </ReactMarkdown>
         </div>
