@@ -6,6 +6,7 @@ import ScrollReveal from '~/components/ScrollReveal'
 import BeforeAfter from '~/components/play/BeforeAfter'
 import ControlsTabs from '~/components/play/ControlsTabs'
 import TrailerVideo from '~/components/play/TrailerVideo'
+import { cutCorners } from '~/components/play/styles'
 import '@fontsource/chakra-petch/latin-600.css'
 import '@fontsource/chakra-petch/latin-700-italic.css'
 
@@ -120,7 +121,7 @@ function PlayLink({ className = '' }: { className?: string }) {
   return (
     <a
       href={GAME_URL}
-      className={`st-cut st-btn-primary st-display inline-flex h-14 items-center gap-3 px-7 text-lg font-semibold uppercase ${className}`}
+      className={`${cutCorners} font-play inline-flex h-14 items-center gap-3 bg-[#d9ff43] px-7 text-lg font-semibold text-[#0b0c0a] uppercase shadow-[0_0_40px_rgb(217_255_67/25%)] transition-[background-color,translate] duration-150 hover:-translate-y-0.5 hover:bg-white focus-visible:-translate-y-0.5 focus-visible:bg-white ${className}`}
     >
       Play Averno
       <ArrowUpRight size={20} />
@@ -130,7 +131,7 @@ function PlayLink({ className = '' }: { className?: string }) {
 
 function SectionTitle({ children }: { children: string }) {
   return (
-    <h2 className="st-display text-4xl leading-none font-bold uppercase italic sm:text-5xl">
+    <h2 className="font-play text-4xl leading-none font-bold uppercase italic sm:text-5xl">
       {children}
     </h2>
   )
@@ -153,7 +154,7 @@ function PlayPage() {
           trigger="mount"
           className="mx-auto flex min-h-[min(82svh,880px)] max-w-[1600px] flex-col justify-end px-5 pt-40 pb-14 sm:px-8 lg:px-12 lg:pb-20"
         >
-          <h1 className="st-display text-7xl leading-none font-bold italic sm:text-8xl lg:text-9xl">
+          <h1 className="font-play text-7xl leading-none font-bold italic sm:text-8xl lg:text-9xl">
             Averno
           </h1>
           <p className="mt-6 max-w-2xl text-base leading-7 text-white/80 lg:text-lg lg:leading-8">
@@ -163,7 +164,7 @@ function PlayPage() {
           </p>
           <div className="mt-8 flex flex-col gap-5 sm:flex-row sm:items-center sm:gap-8">
             <PlayLink className="self-start" />
-            <ul className="st-display flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold tracking-wider text-white/60 uppercase">
+            <ul className="font-play flex flex-wrap gap-x-4 gap-y-1 text-sm font-semibold tracking-wider text-white/60 uppercase">
               {facts.map((fact) => (
                 <li
                   key={fact}
@@ -208,7 +209,7 @@ function PlayPage() {
               width={1600}
               height={900}
               loading="lazy"
-              className="st-cut aspect-video w-full bg-black object-cover"
+              className={`${cutCorners} aspect-video w-full bg-black object-cover`}
             />
             <figcaption className="text-fg-muted mt-3 text-sm">
               When a reactor goes, the exit opens and the countdown starts.
@@ -220,7 +221,7 @@ function PlayPage() {
           {features.map(({ icon: Icon, title, text }) => (
             <div key={title}>
               <Icon size={28} strokeWidth={1.5} aria-hidden="true" />
-              <h3 className="st-display mt-4 text-lg font-semibold uppercase">
+              <h3 className="font-play mt-4 text-lg font-semibold uppercase">
                 {title}
               </h3>
               <p className="text-fg-muted mt-2 leading-7">{text}</p>
@@ -232,7 +233,7 @@ function PlayPage() {
           <ScrollReveal>
             <h2
               id="levels"
-              className="st-display text-4xl leading-none font-bold uppercase italic sm:text-5xl"
+              className="font-play text-4xl leading-none font-bold uppercase italic sm:text-5xl"
             >
               Three levels down
             </h2>
@@ -245,7 +246,7 @@ function PlayPage() {
                 className="grid gap-8 lg:grid-cols-12 lg:items-center lg:gap-12"
               >
                 <div
-                  className={`group st-cut relative aspect-video overflow-hidden bg-black lg:col-span-7 ${
+                  className={`group ${cutCorners} relative aspect-video overflow-hidden bg-black lg:col-span-7 ${
                     index % 2 ? 'lg:order-2 lg:col-start-6' : ''
                   }`}
                 >
@@ -269,10 +270,10 @@ function PlayPage() {
                 <div
                   className={`lg:col-span-5 ${index % 2 ? 'lg:order-1' : ''}`}
                 >
-                  <p className="st-display text-fg-muted text-sm font-semibold tracking-widest uppercase">
+                  <p className="font-play text-fg-muted text-sm font-semibold tracking-widest uppercase">
                     Level {index + 1} · {level.place}
                   </p>
-                  <h3 className="st-display mt-2 text-4xl leading-none font-bold uppercase italic sm:text-5xl">
+                  <h3 className="font-play mt-2 text-4xl leading-none font-bold uppercase italic sm:text-5xl">
                     {level.name}
                   </h3>
                   <p className="text-fg-secondary mt-5 max-w-lg text-base leading-7 lg:text-lg lg:leading-8">
@@ -334,7 +335,7 @@ function PlayPage() {
               {stack.map((item) => (
                 <li
                   key={item}
-                  className="st-display border-foreground/15 text-fg-secondary border px-3 py-1 text-sm font-semibold uppercase"
+                  className="font-play border-foreground/15 text-fg-secondary border px-3 py-1 text-sm font-semibold uppercase"
                 >
                   {item}
                 </li>
@@ -363,7 +364,7 @@ function PlayPage() {
         <ScrollReveal className="mt-32">
           <div className="flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
             <div>
-              <p className="st-display text-4xl leading-none font-bold uppercase italic sm:text-5xl">
+              <p className="font-play text-4xl leading-none font-bold uppercase italic sm:text-5xl">
                 Nothing to install
               </p>
               <p className="text-fg-secondary mt-4 max-w-xl leading-7">

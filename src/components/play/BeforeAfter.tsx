@@ -1,5 +1,6 @@
 import { useId, useState } from 'react'
 import { ChevronsLeftRight } from 'lucide-react'
+import { cutCorners } from './styles'
 
 type Image = { src: string; alt: string; label: string }
 
@@ -14,7 +15,9 @@ export default function BeforeAfter({
   const id = useId()
 
   return (
-    <figure className="st-cut relative aspect-video overflow-hidden bg-black select-none">
+    <figure
+      className={`${cutCorners} relative aspect-video overflow-hidden bg-black select-none`}
+    >
       <img
         src={after.src}
         alt={after.alt}
@@ -53,10 +56,10 @@ export default function BeforeAfter({
           <ChevronsLeftRight size={20} />
         </span>
       </div>
-      <span className="st-display pointer-events-none absolute bottom-4 left-4 bg-black/70 px-2 py-1 text-xs font-semibold tracking-widest text-white uppercase">
+      <span className="font-play pointer-events-none absolute bottom-4 left-4 bg-black/70 px-2 py-1 text-xs font-semibold tracking-widest text-white uppercase">
         {before.label}
       </span>
-      <span className="st-display pointer-events-none absolute right-4 bottom-4 bg-black/70 px-2 py-1 text-xs font-semibold tracking-widest text-white uppercase">
+      <span className="font-play pointer-events-none absolute right-4 bottom-4 bg-black/70 px-2 py-1 text-xs font-semibold tracking-widest text-white uppercase">
         {after.label}
       </span>
     </figure>

@@ -75,7 +75,7 @@ function SuggestedQuestionButtons({
   onSelect: (question: string) => void
   questions: ReadonlyArray<string>
 }) {
-  // The entrance is CSS (.enter-pop), so the questions paint before
+  // The entrance is CSS (animate-enter-pop), so the questions paint before
   // hydration. They are the largest text in the first screen.
   return (
     <div className={className}>
@@ -87,7 +87,7 @@ function SuggestedQuestionButtons({
           style={{ '--enter-delay': `${index * 80}ms` } as CSSProperties}
           className={chipStyles({
             className:
-              'enter-pop hover:border-brand/35 hover:shadow-brand/45 transition-[color,background-color,border-color,box-shadow,scale] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[color-mix(in_oklab,var(--brand)_8%,var(--card))] hover:text-foreground hover:shadow-[0_6px_16px_-8px] active:scale-97 active:shadow-none motion-reduce:active:scale-100',
+              'animate-enter-pop hover:border-brand/35 hover:shadow-brand/45 transition-[color,background-color,border-color,box-shadow,scale] duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[color-mix(in_oklab,var(--brand)_8%,var(--card))] hover:text-foreground hover:shadow-[0_6px_16px_-8px] active:scale-97 active:shadow-none motion-reduce:active:scale-100',
           })}
         >
           {question}

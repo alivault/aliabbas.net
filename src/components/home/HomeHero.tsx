@@ -34,7 +34,7 @@ function scrambleWord(word: string, revealedCharacters: number) {
   }).join('')
 }
 
-// The intro is CSS (.enter-blur in globals.css), so the server-rendered
+// The intro is CSS (animate-enter-blur), so the server-rendered
 // heading paints at once and does not wait for hydration. Delays in ms.
 const INTRO_START = 120
 const LINE_STAGGER = 500
@@ -50,7 +50,7 @@ function TitleCharacters({ text, delay }: { text: string; delay: number }) {
   return Array.from(text).map((character, index) => (
     <span
       key={`${character}-${index}`}
-      className="enter-blur inline-block"
+      className="animate-enter-blur inline-block"
       style={enterDelay(delay + index * CHARACTER_STAGGER)}
       aria-hidden="true"
     >
@@ -179,7 +179,7 @@ export function HomeHero() {
               // motion.
               whileHover={{ scale: 1.015 }}
               whileTap={{ scale: 0.985 }}
-              className="enter-blur text-brand focus-visible:ring-brand/70 pointer-events-auto inline-block cursor-pointer border-0 bg-transparent p-0 text-center normal-case outline-none focus-visible:ring-2 lg:text-left"
+              className="animate-enter-blur text-brand focus-visible:ring-brand/70 pointer-events-auto inline-block cursor-pointer border-0 bg-transparent p-0 text-center normal-case outline-none focus-visible:ring-2 lg:text-left"
               // The name is only the word, so the heading reads as one
               // sentence. The title tells what a press does.
               aria-label={currentDescriptor}
@@ -212,7 +212,7 @@ export function HomeHero() {
               href="#work"
               size="lg"
               style={enterDelay(ACTIONS_DELAY)}
-              className="enter-blur pointer-events-auto"
+              className="animate-enter-blur pointer-events-auto"
             >
               See the work
               <ArrowDown aria-hidden="true" className="size-4" />
@@ -222,7 +222,7 @@ export function HomeHero() {
               variant="secondary"
               size="lg"
               style={enterDelay(ACTIONS_DELAY + 80)}
-              className="enter-blur pointer-events-auto"
+              className="animate-enter-blur pointer-events-auto"
             >
               <MessageCircle aria-hidden="true" className="size-4" />
               Ask AI about me
@@ -245,7 +245,7 @@ export function HomeHero() {
               title={
                 paused ? 'Play the changing word' : 'Pause the changing word'
               }
-              className="enter-blur pointer-events-auto motion-reduce:hidden"
+              className="animate-enter-blur pointer-events-auto motion-reduce:hidden"
             >
               {paused ? (
                 <Play aria-hidden="true" className="size-4" />

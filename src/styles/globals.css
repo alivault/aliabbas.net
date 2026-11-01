@@ -11,6 +11,8 @@
   --font-sans: 'DM Sans Variable', sans-serif;
   --font-display: var(--font-sans);
   --font-mono: 'JetBrains Mono', monospace;
+  /* The display face of /play only. The route loads it. */
+  --font-play: 'Chakra Petch', var(--font-sans);
 
   --spacing-section: var(--section-padding);
   --spacing-section-content: var(--section-content-gap);
@@ -196,14 +198,8 @@
     background: var(--background);
   }
 
-  html:has(.home-page) {
-    scroll-behavior: smooth;
-  }
-
   body {
-    @apply bg-background text-foreground;
     min-width: 320px;
-    min-height: 100vh;
   }
 
   em,
@@ -227,237 +223,31 @@
   }
 }
 
-.site-noise {
+/* Film grain over a section. The section becomes the containing block. */
+@utility site-noise {
   position: relative;
   isolation: isolate;
-}
 
-.site-noise::after {
-  position: absolute;
-  z-index: 20;
-  inset: 0;
-  pointer-events: none;
-  content: '';
-  opacity: 0.2;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
-  mix-blend-mode: soft-light;
-}
-
-.hero-tracers {
-  overflow: hidden;
-  pointer-events: none;
-  mask-image: linear-gradient(to bottom, black 12%, transparent 94%);
-}
-
-.hero-tracers i {
-  position: absolute;
-  display: block;
-  opacity: 0;
-  filter: drop-shadow(0 0 5px var(--brand));
-  will-change: transform;
-}
-
-.hero-tracers i[data-orientation='x'] {
-  top: calc(var(--tracer-line, 3) * 5.5vw);
-  left: 0;
-  width: 18vw;
-  min-width: 180px;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    color-mix(in oklab, var(--foreground) 20%, transparent) 24%,
-    var(--brand) 72%,
-    transparent
-  );
-}
-
-.hero-tracers i[data-orientation='y'] {
-  top: 0;
-  left: calc(var(--tracer-line, 12) * 5.5vw);
-  width: 1px;
-  height: 18vw;
-  min-height: 180px;
-  background: linear-gradient(
-    transparent,
-    color-mix(in oklab, var(--foreground) 20%, transparent) 24%,
-    var(--brand) 72%,
-    transparent
-  );
-}
-
-.product-model {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 1;
-  touch-action: none;
-}
-
-.product-model-canvas {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  display: block;
-  width: 100svh;
-  max-width: none;
-  height: 100svh;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-}
-
-.st-display {
-  font-family: 'Chakra Petch', var(--font-sans);
-}
-
-.st-cut {
-  clip-path: polygon(
-    14px 0,
-    100% 0,
-    100% calc(100% - 14px),
-    calc(100% - 14px) 100%,
-    0 100%,
-    0 14px
-  );
-}
-
-.st-btn-primary {
-  background: #d9ff43;
-  color: #0b0c0a;
-  box-shadow: 0 0 40px rgb(217 255 67 / 25%);
-  transition:
-    background-color 150ms,
-    transform 150ms;
-}
-
-.st-btn-primary:hover:not(:disabled),
-.st-btn-primary:focus-visible {
-  background: #fff;
-  transform: translateY(-2px);
-}
-
-.st-btn-primary:disabled {
-  cursor: not-allowed;
-  background: rgb(255 255 255 / 12%);
-  color: rgb(255 255 255 / 45%);
-  box-shadow: none;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-tracers {
-    display: none;
-  }
-}
-
-.marquee-track {
-  will-change: transform;
-  animation: marquee var(--marquee-duration, 28s) linear infinite;
-}
-
-@keyframes marquee {
-  to {
-    transform: translate3d(var(--marquee-distance, -50%), 0, 0);
+  &::after {
+    position: absolute;
+    z-index: 20;
+    inset: 0;
+    pointer-events: none;
+    content: '';
+    opacity: 0.2;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+    mix-blend-mode: soft-light;
   }
 }
 
 /*
- * Chrome border: a metal ring on the border of a secondary button, on hover.
- * Bands of chrome with prism fringes go around the button, as light on
- * polished metal. The angle is a registered property, so CSS can
- * animate it. With reduced motion, the ring shows but does not turn.
+ * The angle of the chrome ring on a secondary button (button.tsx). A
+ * registered property, so CSS can animate it.
  */
 @property --chrome-angle {
   syntax: '<angle>';
   inherits: false;
   initial-value: 0deg;
-}
-
-/* In a layer, so utilities such as absolute still win. */
-@layer components {
-  .chrome-border {
-    position: relative;
-  }
-
-  .chrome-border::before {
-    position: absolute;
-    /* Over the 1px border of the button, and only there. */
-    inset: -1px;
-    padding: 1px;
-    border-radius: inherit;
-    pointer-events: none;
-    content: '';
-    opacity: 0;
-    /* Chrome with prism fringes: dark gaps, and two white highlights with
-       warm fringes on one side and cool fringes on the other. These are the
-       colors of a material, not roles, so they are not tokens. */
-    background: conic-gradient(
-      from var(--chrome-angle),
-      oklch(0.12 0.005 260),
-      oklch(0.45 0.25 265) 8%,
-      oklch(0.78 0.15 225) 13%,
-      oklch(0.98 0.01 230) 18%,
-      oklch(0.82 0.15 70) 23%,
-      oklch(0.66 0.22 15) 28%,
-      oklch(0.55 0.26 295) 34%,
-      oklch(0.12 0.005 260) 42%,
-      oklch(0.12 0.005 260) 55%,
-      oklch(0.55 0.21 265) 62%,
-      oklch(0.9 0.1 205) 67%,
-      oklch(1 0 0) 71%,
-      oklch(0.88 0.12 80) 75%,
-      oklch(0.7 0.19 40) 80%,
-      oklch(0.6 0.27 310) 86%,
-      oklch(0.12 0.005 260) 93%
-    );
-    mask:
-      linear-gradient(black 0 0) content-box exclude,
-      linear-gradient(black 0 0);
-    transition: opacity 280ms cubic-bezier(0.22, 1, 0.36, 1);
-  }
-
-  .chrome-border:hover::before {
-    opacity: 1;
-    animation: chrome-turn 6s linear infinite;
-  }
-}
-
-@keyframes chrome-turn {
-  to {
-    --chrome-angle: 360deg;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .chrome-border:hover::before {
-    animation: none;
-  }
-}
-
-/*
- * Liquid metal on a primary button, on hover (src/lib/liquid-metal.ts). The
- * shader canvas sits under the label: the button is its stacking context.
- * While it shows, data-liquid-metal is set and the label turns light.
- * Unlayered, so it wins over the text color utility of the variant.
- */
-@layer components {
-  .liquid-metal {
-    position: relative;
-    isolation: isolate;
-  }
-}
-
-.liquid-metal[data-liquid-metal] {
-  color: var(--chrome-foreground);
-  text-shadow: 0 0 0.6em var(--chrome);
-}
-
-/* Without WebGL: dark chrome with one light band, as a still gradient. */
-.liquid-metal[data-liquid-metal='static'] {
-  background: linear-gradient(
-    160deg,
-    var(--chrome) 20%,
-    color-mix(in oklab, var(--chrome-foreground) 70%, var(--chrome)) 50%,
-    var(--chrome) 80%
-  );
 }
 
 /* Page transition. See src/lib/page-transition.ts. */
@@ -522,12 +312,17 @@ html:active-view-transition-type(page) {
   }
 }
 
+/* 16px on phones, so iOS does not zoom into a field on focus. */
 input[type='text'],
 input[type='email'],
 input[type='password'],
 input[type='number'],
 textarea {
   font-size: 16px;
+
+  @media (width >= 48rem) {
+    font-size: 14px;
+  }
 }
 
 @utility prose {
@@ -543,148 +338,96 @@ textarea {
   }
 }
 
-@media (min-width: 768px) {
-  input[type='text'],
-  input[type='email'],
-  input[type='password'],
-  input[type='number'],
-  textarea {
-    font-size: 14px;
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
   *,
   *::before,
   *::after {
     scroll-behavior: auto !important;
     animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }
 
 /*
-  Entrance animations in CSS, not in JavaScript. The server sends the page
+  Animations, as Tailwind utilities: animate-enter-up, animate-marquee and
+  so on. Inline, so a variable that an element sets (--enter-delay,
+  --marquee-duration) applies to that element.
+
+  The entrances are CSS, not JavaScript. The server sends the page
   visible, and these start at the first paint. A JavaScript entrance would
   send the content at opacity 0 and keep it hidden until hydration, which
   delays the Largest Contentful Paint by seconds on a slow phone. Set the
-  delay with --enter-delay.
+  delay with --enter-delay. The fill is backwards only: a forwards fill
+  keeps the animated properties (scale, translate) after the entrance, so
+  a hover transition on them jumps.
 */
-@keyframes enter-up {
-  from {
-    opacity: 0;
-    translate: 0 var(--enter-distance, 10px);
+@theme inline {
+  --animate-enter-up: enter-up var(--enter-duration, 550ms)
+    cubic-bezier(0.22, 1, 0.36, 1) var(--enter-delay, 0ms) backwards;
+  --animate-enter-blur: enter-blur 550ms cubic-bezier(0.22, 1, 0.36, 1)
+    var(--enter-delay, 0ms) backwards;
+  --animate-enter-pop: enter-pop 420ms cubic-bezier(0.34, 1.4, 0.64, 1)
+    var(--enter-delay, 0ms) backwards;
+  --animate-enter-soft: enter-soft 1200ms cubic-bezier(0.22, 1, 0.36, 1)
+    var(--enter-delay, 0ms) backwards;
+  --animate-marquee: marquee var(--marquee-duration, 28s) linear infinite;
+  --animate-chrome-turn: chrome-turn 6s linear infinite;
+  --animate-header-line: header-line linear both;
+
+  @keyframes enter-up {
+    from {
+      opacity: 0;
+      translate: 0 var(--enter-distance, 10px);
+    }
   }
-}
 
-@keyframes enter-blur {
-  from {
-    opacity: 0;
-    translate: 0 14px;
-    filter: blur(10px);
+  @keyframes enter-blur {
+    from {
+      opacity: 0;
+      translate: 0 14px;
+      filter: blur(10px);
+    }
   }
-}
 
-/* For elements that Tailwind places with translate (centered). */
-@keyframes enter-zoom {
-  from {
-    opacity: 0;
-    scale: 0.88;
+  @keyframes enter-pop {
+    from {
+      opacity: 0;
+      translate: 0 8px;
+      scale: 0.9;
+      filter: blur(8px);
+    }
   }
-}
 
-@keyframes enter-soft {
-  from {
-    opacity: 0;
-    scale: 0.96;
-    filter: blur(16px);
+  @keyframes enter-soft {
+    from {
+      opacity: 0;
+      scale: 0.96;
+      filter: blur(16px);
+    }
   }
-}
 
-@keyframes enter-pop {
-  from {
-    opacity: 0;
-    translate: 0 8px;
-    scale: 0.9;
-    filter: blur(8px);
+  @keyframes marquee {
+    to {
+      transform: translate3d(var(--marquee-distance, -50%), 0, 0);
+    }
   }
-}
 
-.enter-up,
-.enter-blur,
-.enter-pop,
-.enter-zoom,
-.enter-soft {
-  animation-delay: var(--enter-delay, 0ms);
-  /* Backwards only: a forwards fill keeps the animated properties (scale,
-     translate) after the entrance, so a hover transition on them jumps. */
-  animation-fill-mode: backwards;
-}
-
-.enter-up {
-  animation-name: enter-up;
-  animation-duration: var(--enter-duration, 550ms);
-  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.enter-blur {
-  animation-name: enter-blur;
-  animation-duration: 550ms;
-  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.enter-pop {
-  animation-name: enter-pop;
-  animation-duration: 420ms;
-  animation-timing-function: cubic-bezier(0.34, 1.4, 0.64, 1);
-}
-
-.enter-soft {
-  animation-name: enter-soft;
-  animation-duration: 1200ms;
-  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.enter-zoom {
-  animation-name: enter-zoom;
-  animation-duration: 750ms;
-  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .enter-up,
-  .enter-blur,
-  .enter-pop,
-  .enter-zoom,
-  .enter-soft {
-    animation: none;
+  @keyframes chrome-turn {
+    to {
+      --chrome-angle: 360deg;
+    }
   }
-}
 
-/*
- * Evidence panel header (EvidencePanel.tsx): a hairline under it appears
- * once the sources scroll under it. Without scroll-driven animations there
- * is no line, which is fine.
- */
-@supports (animation-timeline: scroll()) {
-  .evidence-header {
-    animation: evidence-header-line linear both;
-    animation-timeline: scroll(nearest);
-    animation-range: 0 16px;
-  }
-}
-
-@keyframes evidence-header-line {
-  from {
-    box-shadow: 0 1px 0 transparent;
-  }
-  to {
-    box-shadow: 0 1px 0
-      color-mix(in oklab, var(--color-foreground) 10%, transparent);
+  /* A hairline under a sticky header, driven by scroll. */
+  @keyframes header-line {
+    from {
+      box-shadow: 0 1px 0 transparent;
+    }
+    to {
+      box-shadow: 0 1px 0
+        color-mix(in oklab, var(--color-foreground) 10%, transparent);
+    }
   }
 }

@@ -96,7 +96,7 @@ export default function ControlsTabs() {
               aria-controls={`${id}-panel-${index}`}
               tabIndex={selected ? 0 : -1}
               onClick={() => setActive(index)}
-              className={`st-display inline-flex h-11 items-center gap-2 px-4 text-sm font-semibold uppercase transition-colors ${
+              className={`font-play inline-flex h-11 items-center gap-2 px-4 text-sm font-semibold uppercase transition-colors ${
                 selected
                   ? 'bg-foreground text-background'
                   : 'bg-foreground/5 text-fg-secondary hover:bg-foreground/10 hover:text-foreground'
@@ -127,7 +127,7 @@ export default function ControlsTabs() {
                 {keys.map((key) => (
                   <kbd
                     key={key}
-                    className="st-display border-foreground/20 bg-background text-foreground inline-flex h-7 min-w-7 items-center justify-center border border-b-2 px-2 text-xs font-semibold uppercase"
+                    className="font-play border-foreground/20 bg-background text-foreground inline-flex h-7 min-w-7 items-center justify-center border border-b-2 px-2 text-xs font-semibold uppercase"
                   >
                     {key}
                   </kbd>

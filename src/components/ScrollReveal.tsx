@@ -76,7 +76,7 @@ export default function ScrollReveal({
       ref={ref as never}
       initial={false}
       animate={controls}
-      className={cn('enter-up', className)}
+      className={cn('animate-enter-up', className)}
       style={
         {
           '--enter-delay': `${Math.round(delay * 1000)}ms`,

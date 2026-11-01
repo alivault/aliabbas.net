@@ -1092,10 +1092,10 @@ export default function ConnectedGlobe() {
 
   return (
     <div ref={containerRef} className="absolute inset-0">
-      {/* The entrance is CSS (.enter-soft), so server and client render the same. */}
+      {/* The entrance is CSS (animate-enter-soft), so server and client render the same. */}
       <canvas
         ref={canvasRef}
-        className="enter-soft block size-full touch-pan-y outline-none"
+        className="animate-enter-soft block size-full touch-pan-y outline-none"
         aria-label="Interactive globe with animated connections. Drag or use arrow keys to rotate."
         role="img"
         tabIndex={0}

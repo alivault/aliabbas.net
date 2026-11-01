@@ -8,8 +8,8 @@
  * One canvas and one WebGL context serve the whole site. The canvas moves
  * into the button under the pointer, covers it, and is clipped to its shape.
  * The loop runs only while a button is hovered. Buttons opt in with the
- * `liquid-metal` class; the CSS, and the fallback without WebGL, are in
- * globals.css.
+ * `liquid-metal` class; their styles, and the fallback without WebGL, are
+ * in the primary variant in button.tsx.
  */
 import { DURATIONS, EASE_IN, EASE_OUT } from '~/lib/design/motion'
 

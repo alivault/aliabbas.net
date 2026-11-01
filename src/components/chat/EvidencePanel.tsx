@@ -276,10 +276,13 @@ export default function EvidencePanel({
     <div className="flex flex-col gap-4">
       {/* Sticky, so the heading and the hide button stay at hand while the
           sources scroll. The scroll container sets the padding above it and
-          the surface color (see .evidence-header in globals.css). */}
+          the surface color. Where the browser has scroll-driven animations,
+          a hairline under it appears once the sources scroll under it. The
+          timeline comes after the animation shorthand, which resets it, so
+          it is important. */}
       <header
         data-evidence-header
-        className="evidence-header sticky top-0 z-10 -mx-5 space-y-2 bg-(--evidence-surface,var(--color-background)) px-5 pt-(--evidence-pad,1.5rem) pb-3"
+        className="supports-[animation-timeline:scroll()]:animate-header-line sticky top-0 z-10 -mx-5 space-y-2 bg-(--evidence-surface,var(--color-background)) px-5 pt-(--evidence-pad,1.5rem) pb-3 supports-[animation-timeline:scroll()]:[animation-range:0_16px]! supports-[animation-timeline:scroll()]:[animation-timeline:scroll(nearest)]!"
       >
         <div className="flex items-center justify-between gap-3">
           <h2

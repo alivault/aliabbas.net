@@ -14,8 +14,9 @@ export default function HomeExperience() {
     queryKey: ['recentArticles'],
     queryFn: () => getRecentArticles(3),
   })
+  // The has() variant gives <html> smooth scrolling, on this page only.
   return (
-    <div className="home-page bg-background text-foreground overflow-x-clip">
+    <div className="bg-background text-foreground overflow-x-clip [html:has(&)]:scroll-smooth">
       <SiteHeader />
       <main>
         <div className="flex min-h-svh flex-col">

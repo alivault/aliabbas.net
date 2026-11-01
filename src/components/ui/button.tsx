@@ -10,11 +10,20 @@ import { cn } from 'cn'
  * /design shows.
  */
 const variantClasses = {
-  // liquid-metal: a liquid metal fill on hover (liquid-metal.ts).
-  primary: 'liquid-metal bg-brand text-brand-foreground hover:bg-brand/85',
-  // chrome-border: a turning metal ring on the border on hover (globals.css).
+  // A liquid metal fill on hover. liquid-metal.ts finds the button by the
+  // liquid-metal class and draws a shader canvas under the label. While it
+  // shows, data-liquid-metal is set and the label turns light. Without
+  // WebGL (data-liquid-metal="static"), a still gradient of dark chrome
+  // with one light band.
+  primary:
+    'liquid-metal relative isolate bg-brand text-brand-foreground hover:bg-brand/85 data-liquid-metal:text-chrome-foreground data-liquid-metal:[text-shadow:0_0_0.6em_var(--chrome)] data-[liquid-metal=static]:bg-[linear-gradient(160deg,var(--chrome)_20%,color-mix(in_oklab,var(--chrome-foreground)_70%,var(--chrome))_50%,var(--chrome)_80%)]',
+  // A metal ring that turns on the 1px border on hover: bands of chrome
+  // with prism fringes, as light on polished metal. The mask keeps the
+  // gradient to the border. The colors are of a material, not roles, so
+  // they are not tokens. --chrome-angle is registered in globals.css. With
+  // reduced motion, the ring shows but does not turn.
   secondary:
-    'chrome-border border-border bg-card text-fg-secondary hover:bg-secondary hover:text-foreground aria-expanded:bg-secondary aria-expanded:text-foreground',
+    'relative border-border bg-card text-fg-secondary hover:bg-secondary hover:text-foreground aria-expanded:bg-secondary aria-expanded:text-foreground before:pointer-events-none before:absolute before:-inset-px before:rounded-[inherit] before:bg-[conic-gradient(from_var(--chrome-angle),oklch(0.12_0.005_260),oklch(0.45_0.25_265)_8%,oklch(0.78_0.15_225)_13%,oklch(0.98_0.01_230)_18%,oklch(0.82_0.15_70)_23%,oklch(0.66_0.22_15)_28%,oklch(0.55_0.26_295)_34%,oklch(0.12_0.005_260)_42%,oklch(0.12_0.005_260)_55%,oklch(0.55_0.21_265)_62%,oklch(0.9_0.1_205)_67%,oklch(1_0_0)_71%,oklch(0.88_0.12_80)_75%,oklch(0.7_0.19_40)_80%,oklch(0.6_0.27_310)_86%,oklch(0.12_0.005_260)_93%)] before:p-px before:opacity-0 before:transition-opacity before:duration-280 before:ease-[cubic-bezier(0.22,1,0.36,1)] before:[mask:linear-gradient(black_0_0)_content-box_exclude,linear-gradient(black_0_0)] hover:before:animate-chrome-turn hover:before:opacity-100 motion-reduce:hover:before:animate-none',
   ghost:
     'hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground aria-pressed:bg-muted aria-pressed:text-foreground dark:hover:bg-muted/50',
   destructive:

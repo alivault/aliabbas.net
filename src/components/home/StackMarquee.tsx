@@ -65,7 +65,7 @@ export default function StackMarquee() {
       className="text-foreground overflow-hidden py-4 sm:py-5"
     >
       <div
-        className="marquee-track flex w-max items-center"
+        className="animate-marquee flex w-max items-center will-change-transform"
         style={marqueeStyle}
         aria-hidden="true"
       >
