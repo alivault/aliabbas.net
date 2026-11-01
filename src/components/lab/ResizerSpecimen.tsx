@@ -111,12 +111,18 @@ export default function ResizerSpecimen() {
 
   const handleCite = useCallback(
     (sourceId: string) => {
+      // A second click on a selected citation clears the selection, when
+      // the panel shows it.
+      if (!collapsed && activeSourceId === sourceId) {
+        setActiveSourceId(null)
+        return
+      }
       rememberTrigger()
       setActiveSourceId(sourceId)
       setPanelOpen(true)
       requestFocus({ sourceId })
     },
-    [setPanelOpen],
+    [collapsed, activeSourceId, setPanelOpen],
   )
 
   const handleEvidenceKeyDown = (event: KeyboardEvent<HTMLElement>) => {

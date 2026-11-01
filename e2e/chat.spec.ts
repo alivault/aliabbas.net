@@ -258,3 +258,36 @@ test('a click anywhere on a collapsed source selects it, but not a link or a sel
   await expect(toggle).toHaveAttribute('aria-expanded', 'false')
   await expect(citation).toHaveAttribute('aria-pressed', 'false')
 })
+
+test('a second click on a selected citation clears it while its card shows', async ({
+  page,
+}) => {
+  await mockAi(page, { '/api/chat': chatAnswer() })
+  await open(page, '/chat')
+  await composer(page).fill('Has Ali built streaming interfaces?')
+  await page.keyboard.press('Enter')
+  await expect(page.getByText(/done in/)).toBeVisible()
+
+  // Not by role: the open drawer hides the answer from the accessibility
+  // tree.
+  const chip = page.locator(`[data-citation="${SOURCES.whimcall.id}"]`)
+  await chip.click()
+  await expect(chip).toHaveAttribute('aria-pressed', 'true')
+
+  if (isDesktop(page)) {
+    // The card shows, so the second click clears the selection, and focus
+    // stays on the citation.
+    await chip.click()
+    await expect(chip).toHaveAttribute('aria-pressed', 'false')
+    await expect(chip).toBeFocused()
+  } else {
+    // The drawer hid the citation. After it closes, a click shows the card
+    // again and keeps the selection.
+    await expect(page.getByRole('dialog')).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(page.getByRole('dialog')).toBeHidden()
+    await chip.click()
+    await expect(page.getByRole('dialog')).toBeVisible()
+    await expect(chip).toHaveAttribute('aria-pressed', 'true')
+  }
+})

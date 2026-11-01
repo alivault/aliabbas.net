@@ -254,6 +254,18 @@ export default function PortfolioChat() {
 
   const handleCite = useCallback(
     (turnId: string, sourceId: string) => {
+      // A second click on a selected citation clears the selection, when
+      // its card shows. Focus stays on the citation. When the evidence is
+      // hidden (the panel is closed, or the drawer on a phone), a click
+      // always shows the card.
+      if (
+        evidenceVisible &&
+        evidenceTurn?.id === turnId &&
+        activeSourceId === sourceId
+      ) {
+        setActiveSourceId(null)
+        return
+      }
       rememberTrigger()
       scopeTo(turnId)
       setActiveSourceId(sourceId)
@@ -264,7 +276,15 @@ export default function PortfolioChat() {
         setDrawerOpen(true)
       }
     },
-    [isDesktop, scopeTo, setPanelOpen, requestFocus],
+    [
+      evidenceVisible,
+      evidenceTurn?.id,
+      activeSourceId,
+      isDesktop,
+      scopeTo,
+      setPanelOpen,
+      requestFocus,
+    ],
   )
 
   const handleToggleEvidence = useCallback(
