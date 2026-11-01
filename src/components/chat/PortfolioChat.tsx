@@ -85,7 +85,7 @@ function SuggestedQuestionButtons({
           type="button"
           onClick={() => onSelect(question)}
           style={{ '--enter-delay': `${index * 80}ms` } as CSSProperties}
-          className={chipStyles({ className: 'enter-pop' })}
+          className={chipStyles({ className: 'enter-pop question-chip' })}
         >
           {question}
         </button>

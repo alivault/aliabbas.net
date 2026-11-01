@@ -638,6 +638,36 @@ textarea {
   animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+/* The example questions in chat. On hover the chip takes a light brand
+   tint and a soft glow. On press it shrinks a little. */
+.question-chip {
+  transition-property:
+    color, background-color, border-color, box-shadow, scale;
+  transition-duration: 200ms;
+  transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@media (hover: hover) {
+  .question-chip:hover {
+    border-color: color-mix(in oklab, var(--brand) 35%, transparent);
+    background-color: color-mix(in oklab, var(--brand) 8%, var(--card));
+    color: var(--foreground);
+    box-shadow: 0 6px 16px -8px
+      color-mix(in oklab, var(--brand) 45%, transparent);
+  }
+}
+
+.question-chip:active {
+  scale: 0.97;
+  box-shadow: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .question-chip:active {
+    scale: none;
+  }
+}
+
 .enter-pop {
   animation-name: enter-pop;
   animation-duration: 420ms;
