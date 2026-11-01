@@ -105,7 +105,7 @@ function Chromagine() {
         rel="noreferrer"
         tabIndex={-1}
         aria-hidden="true"
-        className={`${visualStyles} site-noise bg-[#335cff]`}
+        className={`${visualStyles} isolate bg-[#335cff]`}
       >
         <ChromagineMark />
       </a>

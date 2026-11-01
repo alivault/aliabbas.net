@@ -94,7 +94,7 @@ function AssistantLayout() {
     // The chat fills the screen. The checker is a page, so it has the footer.
     <Main hideFooter={active === 'chat'}>
       <section
-        className="site-noise bg-background text-foreground"
+        className="bg-background text-foreground relative isolate"
         style={{ '--assistant-bar': '4rem' } as CSSProperties}
       >
         <div className="relative z-30 mx-auto flex h-16 max-w-3xl items-end px-4 sm:px-6 lg:justify-center">

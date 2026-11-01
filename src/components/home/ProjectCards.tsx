@@ -129,9 +129,7 @@ function ProjectBlock({
         blockStyles[project.visual],
       )}
     >
-      {/* site-noise sets position: relative, so it is not on the
-          absolute layers. */}
-      <div className="site-noise size-full">
+      <div className="relative isolate size-full">
         <motion.div style={{ scale }} className="absolute inset-0">
           <ProjectMark project={project} />
         </motion.div>
