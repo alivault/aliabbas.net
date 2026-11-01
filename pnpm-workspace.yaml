@@ -4,8 +4,8 @@ allowBuilds:
   sharp: true
   workerd: true
 catalog:
-  vite: npm:@voidzero-dev/vite-plus-core@0.2.6
-  vite-plus: 0.2.6
+  vite: npm:@voidzero-dev/vite-plus-core@1.4.0
+  vite-plus: 1.4.0
 minimumReleaseAgeExclude:
   - '@tanstack/react-router@1.170.41'
   - '@tanstack/react-start-client@1.168.39'
@@ -20,7 +20,7 @@ minimumReleaseAgeExclude:
   - '@tanstack/start-server-core@1.169.39'
   - '@tanstack/start-storage-context@1.167.36'
 overrides:
-  vite: 'catalog:'
+  vite@*: 'catalog:'
 peerDependencyRules:
   allowAny:
     - vite
