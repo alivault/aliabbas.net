@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import {
   ArrowUpRight,
+  ChevronDown,
   CornerDownLeft,
   FileSearch,
   PanelRightClose,
@@ -183,9 +184,18 @@ function SourceCard({
               aria-expanded={expanded}
               aria-controls={bodyId}
               onClick={() => setExpanded((value) => !value)}
-              className="text-fg-muted hover:text-foreground focus-visible:ring-brand/70 shrink-0 rounded text-sm font-medium outline-none focus-visible:ring-2"
+              className="group/more text-fg-secondary hover:bg-brand/10 hover:text-brand focus-visible:ring-brand/70 -mr-2 inline-flex h-7 shrink-0 items-center gap-1 rounded-full pr-2 pl-2.5 text-sm font-medium transition-[color,background-color,scale] duration-200 outline-none focus-visible:ring-2 active:scale-97 motion-reduce:active:scale-100"
             >
               {expanded ? 'Show less' : 'Show more'}
+              <ChevronDown
+                aria-hidden="true"
+                className={cn(
+                  'size-4 transition-transform duration-200 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none',
+                  expanded
+                    ? 'rotate-180 group-hover/more:-translate-y-px'
+                    : 'group-hover/more:translate-y-px',
+                )}
+              />
             </button>
           )}
         </footer>
