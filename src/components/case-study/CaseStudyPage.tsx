@@ -12,17 +12,21 @@ import { caseStudies } from '~/data/case-studies'
 import type { CaseStudy } from '~/data/case-studies'
 import { recentWork } from '~/data/work'
 import type { WorkItem } from '~/data/work'
+import { CaseStudyDemo, CaseStudyHero } from './CaseStudyMedia'
 import EvidenceList from './EvidenceList'
 import StateMachineSection from './StateMachineSection'
 import { cn } from 'cn'
 
-const sectionLinks = [
-  { id: 'problem', label: 'Problem and role' },
-  { id: 'machines', label: 'State machines' },
-  { id: 'failure-modes', label: 'Failure modes' },
-  { id: 'numbers', label: 'Numbers' },
-  { id: 'sources', label: 'Sources' },
-]
+function sectionLinksOf(study: CaseStudy) {
+  return [
+    { id: 'problem', label: 'Problem and role' },
+    ...(study.media?.demo ? [{ id: 'demo', label: 'Demo' }] : []),
+    { id: 'machines', label: 'State machines' },
+    { id: 'failure-modes', label: 'Failure modes' },
+    { id: 'numbers', label: 'Numbers' },
+    { id: 'sources', label: 'Sources' },
+  ]
+}
 
 function allEvidence(study: CaseStudy) {
   const paths = new Set<string>()
@@ -111,9 +115,11 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
           </div>
         </ScrollReveal>
 
+        {study.media && <CaseStudyHero image={study.media.hero} />}
+
         <SectionNav
           label="On this page"
-          items={sectionLinks}
+          items={sectionLinksOf(study)}
           className="mt-6"
         />
 
@@ -159,6 +165,10 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
             )}
           </section>
         </ScrollReveal>
+
+        {study.media && (
+          <CaseStudyDemo media={study.media} id="demo" className="mt-section" />
+        )}
 
         <section
           id="machines"

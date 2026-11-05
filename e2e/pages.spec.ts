@@ -366,6 +366,50 @@ test('each case study shows the icon of its app', async ({ page }) => {
   }
 })
 
+test('the Pico case study shows its screenshots and its demo video', async ({
+  page,
+}) => {
+  const loaded = (image: ReturnType<typeof page.locator>) =>
+    expect
+      .poll(() =>
+        image.evaluate(
+          (element: HTMLImageElement) =>
+            element.complete ? element.naturalWidth : 0,
+        ),
+      )
+      .toBeGreaterThan(0)
+
+  for (const scheme of ['light', 'dark'] as const) {
+    await page.emulateMedia({ colorScheme: scheme })
+    await open(page, '/work/pico')
+    const hero = page.getByRole('img', { name: /^The Pico workspace\./ })
+    await expect(hero).toBeVisible()
+    await loaded(hero)
+    // The picture shows the screenshot of the color scheme of the reader.
+    await expect
+      .poll(() =>
+        hero.evaluate((element: HTMLImageElement) => element.currentSrc),
+      )
+      .toContain(`/work/pico/workspace-${scheme}.webp`)
+  }
+
+  await page
+    .getByRole('navigation', { name: 'On this page' })
+    .getByRole('link', { name: 'Demo' })
+    .click()
+  const demo = page.locator('#demo')
+  await expect(
+    demo.getByRole('heading', { name: 'See it work' }),
+  ).toBeInViewport()
+  const video = demo.locator('video')
+  await expect(video).toHaveAttribute('src', '/work/pico/child-sessions.mp4')
+  await expect(video).toHaveAttribute('controls', '')
+  await expect(video).toHaveAccessibleDescription(/has no sound/)
+  const phone = demo.getByRole('img', { name: /on a phone/ })
+  await phone.scrollIntoViewIfNeeded()
+  await loaded(phone)
+})
+
 test('the side projects are in two columns on wide screens', async ({
   page,
 }) => {

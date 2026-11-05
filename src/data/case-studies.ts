@@ -42,6 +42,30 @@ export type CaseStudyNumber = {
   method: string
 }
 
+/** A screenshot in a light and a dark version. The page shows the one
+ * that matches the color scheme of the reader. */
+export type ThemedImage = {
+  light: string
+  dark: string
+  width: number
+  height: number
+  alt: string
+}
+
+export type CaseStudyMedia = {
+  /** The full product, under the page header. */
+  hero: ThemedImage
+  demo?: {
+    title: string
+    caption: string
+    video: string
+    poster: string
+    width: number
+    height: number
+  }
+  phone?: ThemedImage & { caption: string }
+}
+
 export type CaseStudy = {
   slug: 'pico' | 'whimcall' | 'postmaster'
   title: string
@@ -54,6 +78,7 @@ export type CaseStudy = {
   /** Base URL for evidence links. Absent for private repositories. */
   evidenceBaseHref?: string
   evidenceNote: string
+  media?: CaseStudyMedia
   problem: Array<string>
   role: Array<string>
   machines: Array<StateMachine>
@@ -80,6 +105,33 @@ const pico: CaseStudy = {
   sourceHref: 'https://github.com/alivault/pico',
   evidenceBaseHref: `https://github.com/alivault/pico/blob/${PICO_COMMIT}/`,
   evidenceNote: `Paths are in the public alivault/pico repository at commit ${PICO_COMMIT}.`,
+  media: {
+    hero: {
+      light: '/work/pico/workspace-light.webp',
+      dark: '/work/pico/workspace-dark.webp',
+      width: 2898,
+      height: 1916,
+      alt: 'The Pico workspace. The sidebar lists the sessions. In the middle, an agent starts two child sessions, each in its own Git worktree, and shows each one as a card. The side panel on the right shows that both child sessions are done.',
+    },
+    demo: {
+      title: 'See it work',
+      caption:
+        'One agent starts two child sessions, each in its own Git worktree. When both are done, it merges their branches and runs the tests. The video has no sound.',
+      video: '/work/pico/child-sessions.mp4',
+      poster: '/work/pico/child-sessions-poster.webp',
+      width: 1920,
+      height: 1200,
+    },
+    phone: {
+      light: '/work/pico/mobile-light.webp',
+      dark: '/work/pico/mobile-dark.webp',
+      width: 780,
+      height: 1688,
+      alt: 'The same Pico session on a phone. Tabs above the conversation replace the side panel, and the child sessions show as cards.',
+      caption:
+        'The same session on a phone. Tabs replace the side panel, and the composer stays at the bottom.',
+    },
+  },
   problem: [
     'A coding agent can work for many minutes. During that time, the phone that shows it can lock, the Wi-Fi can drop, and the tab can reload. The server can crash, or restart after each rebuild.',
     'After each of these events, the screen must show the true state of the session. And an agent that already sent a notification, started a job, or started a child session must not do it again.',
