@@ -151,7 +151,7 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
           </section>
           <section aria-labelledby="role-heading">
             <Title as="h2" variant="card" id="role-heading">
-              Ali&apos;s role
+              My role
             </Title>
             <div className="border-foreground/25 mt-4 space-y-4 border-l pl-5">
               {study.role.map((paragraph) => (

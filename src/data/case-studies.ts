@@ -152,7 +152,7 @@ const pico: CaseStudy = {
     'After each of these events, the screen must show the true state of the session. And an agent that already sent a notification, started a job, or started a child session must not do it again.',
   ],
   role: [
-    'Ali made Pico: the product concept, the interface design, the server, the web client, and the local-first architecture.',
+    'I made Pico: the product concept, the interface design, the server, the web client, and the local-first architecture.',
     'Pico runs its agents on the open-source pi-durable runtime (@earendil-works/pi-durable). The runtime stores each step of a run in SQLite and continues unfinished runs when it opens again. Pico adds the live event stream, the reconnect logic in the browser, and its own agent tools, which follow the replay rules of the runtime.',
   ],
   machines: [
@@ -480,7 +480,7 @@ const whimcall: CaseStudy = {
     'The call must recover by itself from each of these, without a second seat for the same person and without a stuck screen.',
   ],
   role: [
-    'Ali made Whimcall: the product concept, the brand and interface design, the full-stack development, the realtime media architecture, and the deployment.',
+    'I made Whimcall: the product concept, the brand and interface design, the full-stack development, the realtime media architecture, and the deployment.',
   ],
   machines: [
     {
@@ -754,7 +754,7 @@ const postmaster: CaseStudy = {
     'Sending has a harder rule: a message must go out one time. Not zero times when the app crashes, and not two times when it starts again. And each message that arrives is HTML from a stranger, which must show as its sender made it, but must not run code or tell the sender that it was opened.',
   ],
   role: [
-    'Ali made Postmaster: the product concept, the interface design, the native macOS app in Swift and AppKit, and the website.',
+    'I made Postmaster: the product concept, the interface design, the native macOS app in Swift and AppKit, and the website.',
     'The app speaks IMAP, SMTP, JMAP, and the Gmail API with its own clients. It has no server and no helper process: one Swift actor in the app owns the connections, the local store, and the background work. Its only package dependency is Sparkle, for updates.',
   ],
   machines: [

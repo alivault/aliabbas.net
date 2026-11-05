@@ -100,7 +100,7 @@ function PrivacyPage() {
           <PrivacySection number="03" title="Other information">
             <p>
               The contact form collects your name, email address, topic, and
-              message so Ali can receive and respond to your inquiry. Cloudflare
+              message so I can receive and respond to your inquiry. Cloudflare
               Turnstile checks that a person sends the form. It reads browser
               and device signals for this check only.
             </p>
