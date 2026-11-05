@@ -372,9 +372,8 @@ test('the Pico case study shows its screenshots and its demo video', async ({
   const loaded = (image: ReturnType<typeof page.locator>) =>
     expect
       .poll(() =>
-        image.evaluate(
-          (element: HTMLImageElement) =>
-            element.complete ? element.naturalWidth : 0,
+        image.evaluate((element: HTMLImageElement) =>
+          element.complete ? element.naturalWidth : 0,
         ),
       )
       .toBeGreaterThan(0)
@@ -408,6 +407,42 @@ test('the Pico case study shows its screenshots and its demo video', async ({
   const phone = demo.getByRole('img', { name: /on a phone/ })
   await phone.scrollIntoViewIfNeeded()
   await loaded(phone)
+})
+
+test('the Whimcall case study shows the call and the full-room page', async ({
+  page,
+}) => {
+  await open(page, '/work/whimcall')
+  const naturalWidth = (image: ReturnType<typeof page.locator>) =>
+    image.evaluate((element: HTMLImageElement) =>
+      element.complete ? element.naturalWidth : 0,
+    )
+  const hero = page.getByRole('img', { name: /^A Whimcall call/ })
+  await expect.poll(() => naturalWidth(hero)).toBeGreaterThan(0)
+
+  await page
+    .getByRole('navigation', { name: 'On this page' })
+    .getByRole('link', { name: 'Screens' })
+    .click()
+  const screens = page.locator('#demo')
+  await expect(
+    screens.getByRole('heading', { name: 'The call' }),
+  ).toBeInViewport()
+  // Four screenshots of the call and one of the phone, each with a caption.
+  await expect(screens.locator('figure')).toHaveCount(5)
+  await expect(screens.locator('figure figcaption')).toHaveCount(5)
+  await expect(screens.locator('video')).toHaveCount(0)
+
+  // The failure mode about seats shows the page that a third person sees.
+  const full = page.getByRole('img', { name: /This call is full\./ })
+  await full.scrollIntoViewIfNeeded()
+  await expect.poll(() => naturalWidth(full)).toBeGreaterThan(0)
+  await expect(
+    page
+      .locator('li')
+      .filter({ has: full })
+      .getByRole('heading', { name: 'Two devices claim one seat' }),
+  ).toBeVisible()
 })
 
 test('the side projects are in two columns on wide screens', async ({

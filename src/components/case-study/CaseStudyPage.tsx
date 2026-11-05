@@ -12,15 +12,21 @@ import { caseStudies } from '~/data/case-studies'
 import type { CaseStudy } from '~/data/case-studies'
 import { recentWork } from '~/data/work'
 import type { WorkItem } from '~/data/work'
-import { CaseStudyDemo, CaseStudyHero } from './CaseStudyMedia'
+import {
+  CaseStudyDemo,
+  CaseStudyFigureBlock,
+  CaseStudyHero,
+  mediaSectionLabel,
+} from './CaseStudyMedia'
 import EvidenceList from './EvidenceList'
 import StateMachineSection from './StateMachineSection'
 import { cn } from 'cn'
 
 function sectionLinksOf(study: CaseStudy) {
+  const media = mediaSectionLabel(study.media)
   return [
     { id: 'problem', label: 'Problem and role' },
-    ...(study.media?.demo ? [{ id: 'demo', label: 'Demo' }] : []),
+    ...(media ? [{ id: 'demo', label: media }] : []),
     { id: 'machines', label: 'State machines' },
     { id: 'failure-modes', label: 'Failure modes' },
     { id: 'numbers', label: 'Numbers' },
@@ -229,6 +235,12 @@ export default function CaseStudyPage({ study }: { study: CaseStudy }) {
                     <p className="text-fg-muted mt-3 max-w-md text-base leading-7">
                       {mode.risk}
                     </p>
+                    {mode.figure && (
+                      <CaseStudyFigureBlock
+                        figure={mode.figure}
+                        className="mt-6 max-w-md"
+                      />
+                    )}
                   </div>
                 </div>
                 <div className="min-w-0">

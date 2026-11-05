@@ -34,6 +34,8 @@ export type FailureMode = {
   risk: string
   design: Array<string>
   evidence: Array<string>
+  /** A screenshot of what the person sees. */
+  figure?: CaseStudyFigure
 }
 
 export type CaseStudyNumber = {
@@ -42,19 +44,25 @@ export type CaseStudyNumber = {
   method: string
 }
 
-/** A screenshot in a light and a dark version. The page shows the one
- * that matches the color scheme of the reader. */
-export type ThemedImage = {
-  light: string
-  dark: string
+/** A screenshot. With a dark version, the page shows the one that matches
+ * the color scheme of the reader. */
+export type CaseStudyImage = {
+  src: string
+  dark?: string
   width: number
   height: number
   alt: string
 }
 
+export type CaseStudyFigure = {
+  image: CaseStudyImage
+  caption: string
+}
+
 export type CaseStudyMedia = {
   /** The full product, under the page header. */
-  hero: ThemedImage
+  hero: CaseStudyImage
+  /** A video. A study has a demo or a gallery, not both. */
   demo?: {
     title: string
     caption: string
@@ -63,7 +71,12 @@ export type CaseStudyMedia = {
     width: number
     height: number
   }
-  phone?: ThemedImage & { caption: string }
+  gallery?: {
+    title: string
+    intro?: string
+    figures: Array<CaseStudyFigure>
+  }
+  phone?: CaseStudyFigure
 }
 
 export type CaseStudy = {
@@ -107,7 +120,7 @@ const pico: CaseStudy = {
   evidenceNote: `Paths are in the public alivault/pico repository at commit ${PICO_COMMIT}.`,
   media: {
     hero: {
-      light: '/work/pico/workspace-light.webp',
+      src: '/work/pico/workspace-light.webp',
       dark: '/work/pico/workspace-dark.webp',
       width: 2898,
       height: 1916,
@@ -123,11 +136,13 @@ const pico: CaseStudy = {
       height: 1200,
     },
     phone: {
-      light: '/work/pico/mobile-light.webp',
-      dark: '/work/pico/mobile-dark.webp',
-      width: 780,
-      height: 1688,
-      alt: 'The same Pico session on a phone. Tabs above the conversation replace the side panel, and the child sessions show as cards.',
+      image: {
+        src: '/work/pico/mobile-light.webp',
+        dark: '/work/pico/mobile-dark.webp',
+        width: 780,
+        height: 1688,
+        alt: 'The same Pico session on a phone. Tabs above the conversation replace the side panel, and the child sessions show as cards.',
+      },
       caption:
         'The same session on a phone. Tabs replace the side panel, and the composer stays at the bottom.',
     },
@@ -395,6 +410,71 @@ const whimcall: CaseStudy = {
   liveHref: 'https://whimcall.com/',
   liveLabel: 'whimcall.com',
   evidenceNote: `Whimcall is a private repository. Paths are at commit ${WHIMCALL_COMMIT}.`,
+  media: {
+    hero: {
+      src: '/work/whimcall/speaker.webp',
+      width: 2400,
+      height: 1500,
+      alt: 'A Whimcall call between two people in speaker view. Jordan fills the stage, Maya shows in a small tile under him, and the call controls are at the bottom.',
+    },
+    gallery: {
+      title: 'The call',
+      intro:
+        'Screenshots of a real two-person call on a local copy of Whimcall. Each browser used a fake camera that sends a still photo from Unsplash.',
+      figures: [
+        {
+          image: {
+            src: '/work/whimcall/waiting.webp',
+            width: 1600,
+            height: 1000,
+            alt: 'Maya alone in a new call. The empty seat shows the invite link and a Copy link button.',
+          },
+          caption:
+            'Before anyone joins, the empty seat shows the invite link. The link is the whole onboarding.',
+        },
+        {
+          image: {
+            src: '/work/whimcall/grid.webp',
+            width: 1600,
+            height: 1000,
+            alt: 'Maya and Jordan side by side in grid view.',
+          },
+          caption:
+            'Grid view gives each person an equal tile. A green ring shows who is speaking.',
+        },
+        {
+          image: {
+            src: '/work/whimcall/share.webp',
+            width: 1600,
+            height: 1000,
+            alt: 'Jordan shares his screen. It fills the stage, and Maya shows in a small tile under it.',
+          },
+          caption:
+            'In speaker view, a shared screen takes the stage by itself. The cameras move to small tiles.',
+        },
+        {
+          image: {
+            src: '/work/whimcall/chat.webp',
+            width: 1600,
+            height: 1000,
+            alt: 'The chat panel is open beside the two video tiles, with three short messages.',
+          },
+          caption:
+            'Chat opens beside the call, so nobody leaves the video to type. The room does not store it.',
+        },
+      ],
+    },
+    phone: {
+      image: {
+        src: '/work/whimcall/mobile.webp',
+        width: 780,
+        height: 1688,
+        alt: 'The same call on a phone. Maya fills the screen, Jordan shows in a small tile, and the controls are at the bottom.',
+      },
+      caption:
+        'On a phone, the controls collapse into a menu and stay in reach of a thumb.',
+    },
+  },
   problem: [
     'A guest opens a link and is in a call. No account and no app. After that, much can go wrong: the Wi-Fi changes, a deploy restarts the server, a firewall blocks direct media, or a third person joins a call that was made for two.',
     'The call must recover by itself from each of these, without a second seat for the same person and without a stuck screen.',
@@ -620,6 +700,16 @@ const whimcall: CaseStudy = {
         'src/server/room-protocol.ts',
         'src/components/whimcall/call-room.tsx',
       ],
+      figure: {
+        image: {
+          src: '/work/whimcall/room-full.webp',
+          width: 1600,
+          height: 889,
+          alt: 'A page that says: This call is full. design-review is a free two-person room. Ask the host to start a new call with Whimcall Pro for groups. Buttons: Back home, See Pro.',
+        },
+        caption:
+          'A third person opens the link of a free room. The page says why, and what the host can do.',
+      },
     },
   ],
   numbers: [
