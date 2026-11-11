@@ -130,7 +130,7 @@ function SavedAnswerCard({
         aria-label="Answer, scrollable"
         onScroll={(event) => setScrollTop(event.currentTarget.scrollTop)}
         className={cn(
-          'focus-visible:ring-brand/70 overflow-y-auto overscroll-contain rounded-lg outline-none focus-visible:ring-2',
+          'focus-visible:ring-brand/70 overflow-y-auto rounded-lg outline-none focus-visible:ring-2',
           docked ? 'h-56' : 'h-40',
         )}
       >

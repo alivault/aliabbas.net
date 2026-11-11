@@ -143,7 +143,7 @@ export default function ResizerSpecimen() {
   }
 
   const conversation = (
-    <div className="h-full overflow-y-auto overscroll-contain p-5">
+    <div className="h-full overflow-y-auto p-5">
       <LabAnswer
         turn={turn}
         activeSourceId={activeSourceId}
@@ -167,7 +167,8 @@ export default function ResizerSpecimen() {
       keys="On the handle, arrows resize and Enter toggles the panel."
     >
       {isDesktop ? (
-        <div className="border-foreground/10 bg-background h-[460px] overflow-hidden rounded-lg border">
+        // The panes scroll, then hand the wheel to the page at their ends.
+        <div className="border-foreground/10 bg-background h-[460px] overflow-hidden rounded-lg border [&_*]:overscroll-auto">
           <EvidenceLayout
             layoutId="lab-evidence-layout"
             showEvidence
