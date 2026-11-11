@@ -54,15 +54,8 @@ export default function CitationDrawerSpecimen() {
       number="2"
       title="Citation drawer"
       stream={labStream}
-      description="The evidence for an answer, in a drawer. On a phone it comes up from the bottom and stops at 60% or full height. On a wide screen it comes in from the right. The source cards are the chat's real EvidencePanel."
-      notes={{
-        states:
-          'Closed or open, and in each the answer state: pending says that it searches, streaming adds cards as the answer cites them, and stopped or failed says how the answer ended.',
-        keyboard:
-          'Enter on a chip opens the drawer with focus on that source. Enter on “Open evidence” opens it at the heading. Tab stays in the drawer. Esc closes it, and focus goes back to the control that opened it.',
-        proves:
-          'The drawer is a real modal dialog with a focus trap and focus return. The stream does not stop while it is open: new sources appear in it live.',
-      }}
+      description="Evidence in a drawer: from the bottom on a phone, from the right on a wide screen."
+      keys="Enter on a chip opens its source. Esc closes and returns focus."
     >
       <div className="space-y-5">
         <LabAnswer

@@ -231,15 +231,8 @@ export default function TransitionSpecimen() {
       number="4"
       title="A move that keeps state"
       stream={stream}
-      description="A card moves between the feed and a side dock. Type a note, pin a source, or scroll the answer, then move the card. Start a slow stream and move it while the text arrives."
-      notes={{
-        states:
-          'Feed or dock, combined with every answer state. The stream, the note, the pin and the scroll position all survive the move.',
-        keyboard:
-          'Tab to “Card placement”. Arrow keys move the card. Tab into the card to type a note, pin a source with Enter or Space, and scroll the answer with the arrow keys.',
-        proves:
-          'The move is a layout animation on one element, not an unmount and a mount. The mount counter stays at 1. With reduced motion, the card jumps to its new place, with the same state.',
-      }}
+      description="Type a note or scroll, then move the card. Nothing resets."
+      keys="Arrows in “Card placement” move the card."
     >
       <div className="space-y-4">
         <PlacementGroup value={placement} onChange={setPlacement} />

@@ -43,15 +43,8 @@ export default function StreamingSpecimen() {
       number="1"
       title="Streaming answer"
       stream={labStream}
-      description="An answer that arrives token by token, with inline citations. It uses the chat's real renderer, citation filter and state machine. A local fake stream sends the tokens."
-      notes={{
-        states:
-          'Idle, pending, streaming, complete, stopped and failed. Each forced state above moves the real machine into that state.',
-        keyboard:
-          'Tab to a citation chip. Its preview opens on focus. Enter moves focus to the source in the list. Esc stops a stream.',
-        proves:
-          'The text grows without layout jumps, a chip never shows before its source, and a stop or an error keeps the text that arrived.',
-      }}
+      description="The chat's real renderer and citations, fed by a fake stream."
+      keys="Tab to a chip to preview it. Enter jumps to the source. Esc stops."
     >
       <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_16rem]">
         <LabAnswer
@@ -64,7 +57,7 @@ export default function StreamingSpecimen() {
         />
         <div className="xl:border-foreground/10 xl:border-l xl:pl-6">
           <h3 id={`${ID}-sources-label`} className="text-base font-semibold">
-            Sources, in order of first citation
+            Sources
           </h3>
           {turn && turn.sources.length > 0 ? (
             <ol
@@ -116,9 +109,7 @@ export default function StreamingSpecimen() {
             </ol>
           ) : (
             <p className="text-fg-muted mt-3 text-sm leading-6">
-              {stream.isActive
-                ? 'Sources appear here as the answer cites them.'
-                : 'No sources yet.'}
+              No sources yet.
             </p>
           )}
         </div>

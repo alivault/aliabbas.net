@@ -163,15 +163,8 @@ export default function ResizerSpecimen() {
       title="Fluid resizer"
       wide
       stream={labStream}
-      description="The answer beside its evidence. Drag the handle to resize the panel, or collapse it to a rail. The collapse runs a real spring, sampled into a CSS easing, so the browser animates it without JavaScript on each frame."
-      notes={{
-        states:
-          'Open at any width from 300 to 560 px, or collapsed to a 56 px rail. The rail keeps the source count live while the answer streams.',
-        keyboard:
-          'Tab to the handle. Left and Right arrows resize the panel, Home and End go to the limits, and Enter opens or collapses the panel. In the panel, the hide button collapses it and moves focus to the rail. Enter on the rail opens it and moves focus to the heading. Enter on a chip opens the panel at its source, and Esc goes back to the chip.',
-        proves:
-          'A drag follows the pointer with no spring. A toggle springs, and it opens again at the last width. With reduced motion, the panel moves at once.',
-      }}
+      description="Drag to resize the evidence panel, or collapse it to a rail."
+      keys="On the handle, arrows resize and Enter toggles the panel."
     >
       {isDesktop ? (
         <div className="border-foreground/10 bg-background h-[460px] overflow-hidden rounded-lg border">
@@ -220,8 +213,7 @@ export default function ResizerSpecimen() {
       ) : (
         <div className="space-y-4">
           <p className="border-foreground/15 text-fg-muted rounded-lg border border-dashed p-4 text-sm leading-6">
-            The resizer needs a screen at least 1024 px wide. On a narrow
-            screen, the chat uses the drawer in specimen 02 instead.
+            Needs a wider screen. Phones get the drawer instead.
           </p>
           <LabAnswer turn={turn} onRetry={stream.retry} />
         </div>

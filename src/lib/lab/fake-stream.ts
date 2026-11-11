@@ -32,16 +32,6 @@ export const LAB_SCENARIO_LABELS: Record<LabScenario, string> = {
   done: 'Done',
 }
 
-export const LAB_SCENARIO_HINTS: Record<LabScenario, string> = {
-  idle: 'No question yet. The empty state.',
-  loading: 'The request is open, but no token arrives.',
-  slow: 'A throttled stream: a long wait, then slow tokens.',
-  streaming: 'A normal stream that runs to the end.',
-  interrupted: 'The stream stops part way, as if you pressed Stop.',
-  error: 'The connection fails part way. Retry starts again.',
-  done: 'The full answer, with no stream.',
-}
-
 export type StreamPlan = {
   /** Delay before the first token. */
   firstTokenMs: number

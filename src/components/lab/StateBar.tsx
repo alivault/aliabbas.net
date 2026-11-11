@@ -1,12 +1,8 @@
-import { useId, useRef } from 'react'
+import { useRef } from 'react'
 import type { KeyboardEvent } from 'react'
 import { RotateCcw, Square } from 'lucide-react'
 import { Button } from '~/components/ui/button'
-import {
-  LAB_SCENARIOS,
-  LAB_SCENARIO_HINTS,
-  LAB_SCENARIO_LABELS,
-} from '~/lib/lab/fake-stream'
+import { LAB_SCENARIOS, LAB_SCENARIO_LABELS } from '~/lib/lab/fake-stream'
 import type { LabScenario } from '~/lib/lab/fake-stream'
 import { cn } from 'cn'
 import type { LabMachineState, LabStream } from './use-lab-stream'
@@ -75,7 +71,6 @@ function ScenarioRadioGroup({
   value: LabScenario
 }) {
   const refs = useRef<Array<HTMLButtonElement | null>>([])
-  const hintId = useId()
 
   const move = (event: KeyboardEvent, index: number) => {
     const last = LAB_SCENARIOS.length - 1
@@ -100,42 +95,36 @@ function ScenarioRadioGroup({
   }
 
   return (
-    <div className="space-y-2">
-      <div
-        role="radiogroup"
-        aria-label={label}
-        aria-describedby={hintId}
-        className="flex flex-wrap gap-1.5"
-      >
-        {LAB_SCENARIOS.map((scenario, index) => {
-          const checked = scenario === value
-          return (
-            <button
-              key={scenario}
-              ref={(element) => {
-                refs.current[index] = element
-              }}
-              type="button"
-              role="radio"
-              aria-checked={checked}
-              tabIndex={checked ? 0 : -1}
-              onClick={() => onChange(scenario)}
-              onKeyDown={(event) => move(event, index)}
-              className={cn(
-                'focus-visible:ring-brand/70 focus-visible:ring-offset-background rounded-full border px-3.5 py-1.5 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
-                checked
-                  ? 'border-foreground bg-foreground text-background'
-                  : 'border-foreground/15 text-fg-muted hover:border-foreground/40 hover:text-foreground',
-              )}
-            >
-              {LAB_SCENARIO_LABELS[scenario]}
-            </button>
-          )
-        })}
-      </div>
-      <p id={hintId} className="text-fg-muted text-sm">
-        {LAB_SCENARIO_HINTS[value]}
-      </p>
+    <div
+      role="radiogroup"
+      aria-label={label}
+      className="flex flex-wrap gap-1.5"
+    >
+      {LAB_SCENARIOS.map((scenario, index) => {
+        const checked = scenario === value
+        return (
+          <button
+            key={scenario}
+            ref={(element) => {
+              refs.current[index] = element
+            }}
+            type="button"
+            role="radio"
+            aria-checked={checked}
+            tabIndex={checked ? 0 : -1}
+            onClick={() => onChange(scenario)}
+            onKeyDown={(event) => move(event, index)}
+            className={cn(
+              'focus-visible:ring-brand/70 focus-visible:ring-offset-background rounded-full border px-3.5 py-1.5 text-sm transition-colors outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
+              checked
+                ? 'border-foreground bg-foreground text-background'
+                : 'border-foreground/15 text-fg-muted hover:border-foreground/40 hover:text-foreground',
+            )}
+          >
+            {LAB_SCENARIO_LABELS[scenario]}
+          </button>
+        )
+      })}
     </div>
   )
 }

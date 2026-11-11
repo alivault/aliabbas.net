@@ -18,7 +18,7 @@ export const Route = createFileRoute('/lab')({
     pageHead({
       title: 'Lab — Interface Primitives — Ali Abbas',
       description:
-        'Live specimens of the interface primitives behind this site: a streamed answer with citations, a citation drawer, a fluid resizer and a move that keeps state.',
+        'Live specimens of the parts behind this site’s chat: streaming, citations, a resizer and a move that keeps state.',
       path: '/lab',
     }),
   component: LabPage,
@@ -49,10 +49,7 @@ function LabPage() {
             >
               <PageHeading>Every state, on purpose.</PageHeading>
               <p className="text-fg-muted max-w-xl text-base leading-7 text-pretty lg:text-lg lg:leading-8">
-                These are the parts behind the chat on this site, as live
-                specimens. A local fake stream drives them. It makes no network
-                calls and runs the same way each time. Use the controls to force
-                each state.
+                The parts behind this site&apos;s chat. Force any state.
               </p>
             </ScrollReveal>
 
@@ -69,13 +66,6 @@ function LabPage() {
               <ResizerSpecimen />
               <TransitionSpecimen />
             </div>
-
-            <p className="text-fg-muted mt-16 max-w-2xl text-base leading-7">
-              The demo answer and its sources describe the code of this
-              site&apos;s chat. The text is fixed, and the timings are fixed in
-              src/lib/lab/fake-stream.ts. The renderer, the citation filter and
-              the state machine are the same code that runs the chat.
-            </p>
           </div>
         </section>
       </LabMotionProvider>
