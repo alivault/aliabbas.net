@@ -124,12 +124,12 @@ const pico: CaseStudy = {
       dark: '/work/pico/workspace-dark.webp',
       width: 2898,
       height: 1916,
-      alt: 'The Pico workspace. The sidebar lists the sessions. In the middle, an agent starts two child sessions, each in its own Git worktree, and shows each one as a card. The side panel on the right shows that both child sessions are done.',
+      alt: 'The Pico workspace. The sidebar lists the agents by project. In the middle, an agent starts two subagents, each in its own Git worktree, and shows each one as a card. The side panel on the right shows that both subagents are done.',
     },
     demo: {
       title: 'See it work',
       caption:
-        'One agent starts two child sessions, each in its own Git worktree. When both are done, it merges their branches and runs the tests. The video has no sound.',
+        'One agent starts two subagents, each in its own Git worktree. When both are done, it merges their branches and runs the tests. The video has no sound.',
       video: '/work/pico/child-sessions.mp4',
       poster: '/work/pico/child-sessions-poster.webp',
       width: 1920,
@@ -141,10 +141,10 @@ const pico: CaseStudy = {
         dark: '/work/pico/mobile-dark.webp',
         width: 780,
         height: 1688,
-        alt: 'The same Pico session on a phone. Tabs above the conversation replace the side panel, and the child sessions show as cards.',
+        alt: 'The same Pico agent on a phone. Tabs above the conversation (Changes, Agent and Terminal) replace the side panel, and the subagents show as cards.',
       },
       caption:
-        'The same session on a phone. Tabs replace the side panel, and the composer stays at the bottom.',
+        'The same agent on a phone. Tabs replace the side panel, and the composer stays at the bottom.',
     },
   },
   problem: [
