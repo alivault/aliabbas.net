@@ -2,10 +2,28 @@ import { useEffect, useRef } from 'react'
 import { useReducedMotion } from 'motion/react'
 import { cn } from 'cn'
 
-/** Points on the edge of the orb. */
+/** Points on the edge of the orb. The shader has the same number. */
 const POINTS = 72
-/** The orb radius as a part of the canvas width. The rest is room to jiggle. */
-const RADIUS = 0.3
+/**
+ * The orb radius as a part of the canvas width: the canvas is 2 radii from
+ * the center to each side. The edge can stretch to EDGE_MAX, and the center
+ * can bounce by CENTER_MAX radii, so the shape never reaches the canvas
+ * border, and the halo fades out before it.
+ */
+const RADIUS = 0.25
+const EDGE_MIN = 0.6
+const EDGE_MAX = 1.35
+const CENTER_MAX = 0.12
+
+/** Limits a value softly: it eases into the limits, and never passes them. */
+function soften(value: number, min: number, max: number) {
+  const knee = (max - min) * 0.15
+  if (value > max - knee)
+    return max - knee + knee * Math.tanh((value - max + knee) / knee)
+  if (value < min + knee)
+    return min + knee - knee * Math.tanh((min + knee - value) / knee)
+  return value
+}
 
 // The edge is a ring of springs. Each point springs back to the resting
 // shape, and pulls on its neighbors, so a poke runs around the edge as a
@@ -13,6 +31,184 @@ const RADIUS = 0.3
 const STIFFNESS = 70
 const DAMPING = 4.5
 const COUPLING = 900
+
+/** Phase speeds, per second, as in the liquid metal of the buttons. */
+const FLOW_SPEED = 0.45
+const TWIST_SPEED = 0.3
+
+const VERTEX = `#version 300 es
+in vec2 aPosition;
+void main() {
+  gl_Position = vec4(aPosition, 0.0, 1.0);
+}
+`
+
+/**
+ * A marble of light. Inside a sphere of dark glass, three ribbons of light
+ * flow and twist, as in the liquid metal of the buttons (src/lib/
+ * liquid-metal.ts): prism fringes, white-hot where a ribbon faces the
+ * viewer, and the same roll-off and grain. Each ribbon is at its own depth:
+ * the sphere bends it like a lens, and it moves with the pointer by its
+ * depth, so the marble has an inside. The colors are those of the chrome
+ * ring of the buttons.
+ */
+const FRAGMENT = `#version 300 es
+precision highp float;
+out vec4 fragColor;
+uniform vec2 uResolution;   // canvas, device pixels
+uniform vec2 uCenter;       // orb center, device pixels from the top left
+uniform float uRadius;      // device pixels
+uniform float uEdge[${POINTS}]; // edge radius at each point, 1 = uRadius
+uniform float uFlow;        // phase of the flow
+uniform float uTwist;       // phase of the twist
+uniform float uEnergy;      // 0 at rest, 1 just after a poke
+uniform vec2 uTilt;         // toward the pointer, -1 to 1
+uniform vec3 uBase;         // the --chrome token
+uniform float uSeed;        // changes each frame, for the grain
+
+const float TAU = 6.28318530718;
+const int POINTS = ${POINTS};
+
+// Pairs of tints from the chrome ring of the buttons, one for each depth.
+const vec3 WARM[3] = vec3[3](
+  vec3(0.988, 0.42, 0.2),   // orange
+  vec3(0.984, 0.256, 0.397),// coral
+  vec3(1.0, 0.695, 0.279)   // gold
+);
+const vec3 COOL[3] = vec3[3](
+  vec3(0.2, 0.39, 0.916),   // violet blue
+  vec3(0.0, 0.792, 1.0),    // cyan
+  vec3(0.517, 0.203, 0.959) // purple
+);
+const float WEIGHT[3] = float[3](1.0, 0.6, 0.38);
+
+float hash(vec2 p) {
+  p = fract(p * vec2(123.34, 456.21));
+  p += dot(p, p + 45.32);
+  return fract(p.x * p.y);
+}
+
+// The edge radius at an angle: a Catmull-Rom curve through the points.
+float edgeAt(float angle) {
+  float x = fract(angle / TAU) * float(POINTS);
+  int i = int(floor(x));
+  float t = fract(x);
+  float p0 = uEdge[(i + POINTS - 1) % POINTS];
+  float p1 = uEdge[i % POINTS];
+  float p2 = uEdge[(i + 1) % POINTS];
+  float p3 = uEdge[(i + 2) % POINTS];
+  return p1 + 0.5 * t * (p2 - p0 + t * (2.0 * p0 - 5.0 * p1 + 4.0 * p2 - p3
+    + t * (3.0 * (p1 - p2) + p3 - p0)));
+}
+
+// The ribbon at x: its center line, its width, and how much it faces the
+// viewer (1) or turns edge-on (0).
+vec3 ribbon(float x, float offset) {
+  float center = 0.24 * sin(x * 1.9 + uFlow + offset)
+    + 0.1 * sin(x * 4.3 - uFlow * 1.4 + offset * 2.0);
+  float width = 0.3 + 0.08 * sin(x * 1.3 - uFlow * 0.6 + offset);
+  float facing = abs(cos(x * 1.6 - uTwist * 3.0 + offset));
+  return vec3(center, width, facing);
+}
+
+// One channel of a ribbon: soft across, with fine strands along it.
+float strands(float v, float x) {
+  float body = exp(-v * v * 3.2);
+  float lines = 0.88 + 0.12 * sin(v * 45.0 + sin(x * 3.0) * 4.0);
+  return body * lines;
+}
+
+vec3 shade(vec2 p, float offset, vec3 warm, vec3 cool) {
+  vec3 r = ribbon(p.x, offset);
+  // Edge-on, the ribbon is thinner: its width shows its twist.
+  float width = r.y * (0.2 + 0.8 * r.z);
+  float v = (p.y - r.x) / width;
+  // Prism: red sits to one side and blue to the other.
+  float spread = 0.38;
+  vec3 color = vec3(
+    strands(v + spread, p.x),
+    strands(v, p.x),
+    strands(v - spread, p.x)
+  );
+  // White hot where the ribbon faces the viewer.
+  float light = 0.25 + 2.6 * pow(r.z, 3.0);
+  // The tint moves along the ribbon, from warm to cool.
+  vec3 tint = mix(warm, cool,
+    smoothstep(-0.6, 0.6, sin(p.x * 1.1 + uFlow * 0.4 + offset)));
+  float core = exp(-v * v * 12.0) * pow(r.z, 2.0);
+  color *= mix(tint * 1.3, vec3(1.0), core);
+  // A soft glow around the ribbon.
+  color += cool * exp(-v * v * 0.5) * 0.12;
+  return color * light;
+}
+
+mat2 rotate(float a) {
+  float c = cos(a);
+  float s = sin(a);
+  return mat2(c, -s, s, c);
+}
+
+void main() {
+  vec2 pixel = vec2(gl_FragCoord.x, uResolution.y - gl_FragCoord.y);
+  vec2 p = (pixel - uCenter) / uRadius;
+  float len = length(p);
+  float angle = atan(p.y, p.x);
+  float edge = edgeAt(angle);
+  float cover = smoothstep(edge + 1.5 / uRadius, edge - 1.5 / uRadius, len);
+
+  // The point on a unit sphere under this pixel.
+  vec2 q = p / edge;
+  float z = sqrt(max(1.0 - dot(q, q), 0.0));
+  vec3 normal = vec3(q.x, -q.y, z);
+
+  // The glass bends the light inside: the edge magnifies, like a lens.
+  vec2 lens = q / (0.55 + 0.45 * z);
+
+  vec3 light = vec3(0.0);
+  for (int k = 0; k < 3; k++) {
+    float depth = float(k);
+    vec2 uv = rotate(depth * 2.1 + uFlow * 0.06 * (depth + 1.0)) * lens;
+    // A deeper ribbon is smaller and moves more with the pointer.
+    uv = uv * (0.8 + 0.3 * depth) + uTilt * (0.1 + 0.14 * depth);
+    light += shade(vec2(uv.x * 1.6, uv.y * 0.5), depth * 2.4,
+      WARM[k], COOL[k]) * WEIGHT[k];
+  }
+  light *= 0.75 + uEnergy * 0.8;
+
+  // Light at the rim of the glass, in the colors of the chrome ring.
+  float fresnel = pow(1.0 - z, 3.0);
+  vec3 rim = mix(COOL[1], vec3(0.693, 0.19, 0.957),
+    0.5 + 0.5 * sin(angle * 2.0 + uFlow * 0.5));
+  light += rim * fresnel * 0.9;
+
+  // Soft roll-off of the brightest light, as on film.
+  vec3 lit = 1.0 - exp(-light * 1.8);
+  vec3 color = uBase + lit * (1.0 - uBase);
+
+  // Highlights on the glass.
+  float spec = pow(max(dot(normal, normalize(vec3(-0.45, 0.6, 0.65))), 0.0), 48.0);
+  spec += 0.18 * pow(max(dot(normal, normalize(vec3(0.5, -0.55, 0.65))), 0.0), 18.0);
+  color += spec;
+
+  // Grain, so the smooth gradients show no steps.
+  color += (hash(gl_FragCoord.xy + uSeed) - 0.5) * 0.012;
+  color = clamp(color, 0.0, 1.0);
+
+  // The dark glass lets a little of the page through. The light does not.
+  float glow = max(max(lit.r, lit.g), lit.b);
+  float alpha = cover * clamp(0.72 + glow * 0.45 + spec, 0.0, 1.0);
+
+  // A halo of light around the orb.
+  float outside = max(len - edge, 0.0) / edge;
+  float halo = exp(-outside * 7.0) * (0.25 + 0.35 * uEnergy) * (1.0 - cover);
+  // Fade the halo out before the canvas border, so no edge shows.
+  vec2 border = min(pixel, uResolution - pixel) / (uRadius * 0.5);
+  halo *= clamp(min(border.x, border.y), 0.0, 1.0);
+  vec3 haloTint = mix(WARM[0], COOL[0], 0.5 + 0.5 * sin(angle + uFlow * 0.3));
+
+  fragColor = vec4(color * alpha + haloTint * halo, alpha + halo * 0.6);
+}
+`
 
 /** Reads a CSS color as RGB, through a 1×1 canvas. */
 function rgb(color: string): [number, number, number] {
@@ -24,14 +220,68 @@ function rgb(color: string): [number, number, number] {
   return [r, g, b]
 }
 
-function brandColor(element: Element) {
-  return rgb(getComputedStyle(element).getPropertyValue('--brand').trim())
+function token(element: Element, name: string) {
+  return rgb(getComputedStyle(element).getPropertyValue(name).trim())
+}
+
+function compile(gl: WebGL2RenderingContext, type: number, source: string) {
+  const shader = gl.createShader(type)
+  if (!shader) return null
+  gl.shaderSource(shader, source)
+  gl.compileShader(shader)
+  return gl.getShaderParameter(shader, gl.COMPILE_STATUS) ? shader : null
+}
+
+const UNIFORMS = [
+  'uResolution',
+  'uCenter',
+  'uRadius',
+  'uEdge',
+  'uFlow',
+  'uTwist',
+  'uEnergy',
+  'uTilt',
+  'uBase',
+  'uSeed',
+] as const
+type Uniforms = Record<(typeof UNIFORMS)[number], WebGLUniformLocation | null>
+
+/** The shader on the canvas, or null if the browser has no WebGL 2. */
+function makeShader(canvas: HTMLCanvasElement) {
+  const gl = canvas.getContext('webgl2', { premultipliedAlpha: true })
+  if (!gl) return null
+  const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
+  const fragment = compile(gl, gl.FRAGMENT_SHADER, FRAGMENT)
+  const program = gl.createProgram()
+  if (!vertex || !fragment || !program) return null
+  gl.attachShader(program, vertex)
+  gl.attachShader(program, fragment)
+  gl.linkProgram(program)
+  if (!gl.getProgramParameter(program, gl.LINK_STATUS)) return null
+  gl.useProgram(program)
+
+  // One triangle that covers the canvas.
+  gl.bindBuffer(gl.ARRAY_BUFFER, gl.createBuffer())
+  gl.bufferData(
+    gl.ARRAY_BUFFER,
+    new Float32Array([-1, -1, 3, -1, -1, 3]),
+    gl.STATIC_DRAW,
+  )
+  const position = gl.getAttribLocation(program, 'aPosition')
+  gl.enableVertexAttribArray(position)
+  gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0)
+
+  const uniforms = Object.fromEntries(
+    UNIFORMS.map((name) => [name, gl.getUniformLocation(program, name)]),
+  ) as Uniforms
+  return { gl, uniforms }
 }
 
 /**
- * A glowing orb above the title of the chat. It morphs slowly. Moving the
- * pointer across it drags its surface, and a press or Enter squishes it, so
- * it wobbles. With reduced motion it is still.
+ * A marble of light above the title of the chat. It morphs slowly. Moving
+ * the pointer across it drags its surface and turns the light inside, and a
+ * press or Enter squishes it, so it wobbles. With reduced motion it is
+ * still.
  */
 export default function AskOrb({ className }: { className?: string }) {
   const buttonRef = useRef<HTMLButtonElement>(null)
@@ -52,19 +302,26 @@ export default function AskOrb({ className }: { className?: string }) {
     const button = buttonRef.current
     const canvas = canvasRef.current
     const glow = glowRef.current
-    const context = canvas?.getContext('2d')
-    if (!button || !canvas || !glow || !context) return
+    if (!button || !canvas || !glow) return
+    const shader = makeShader(canvas)
+    const context = shader ? null : canvas.getContext('2d')
+    if (!shader && !context) return
 
     const offset = new Float32Array(POINTS)
     const velocity = new Float32Array(POINTS)
+    const edges = new Float32Array(POINTS)
     const xs = new Float32Array(POINTS)
     const ys = new Float32Array(POINTS)
     const center = { x: 0, y: 0, vx: 0, vy: 0 }
+    /** The center as drawn: its bounce, softly limited. */
+    const shift = { x: 0, y: 0 }
+    const tilt = { x: 0, y: 0, toX: 0, toY: 0 }
+    const phase = { time: 0, flow: 0, twist: 0 }
     let energy = 0
-    let brand = brandColor(button)
+    let brand = token(button, '--brand')
+    let base = token(button, '--chrome')
     let size = 0
     let scale = 1
-    let time = 0
     let last = 0
     let frame = 0
     let visible = true
@@ -76,44 +333,70 @@ export default function AskOrb({ className }: { className?: string }) {
       canvas.height = Math.round(size * scale)
     }
 
-    const draw = () => {
-      const radius = size * RADIUS
-      const cx = size / 2 + center.x
-      const cy = size / 2 + center.y
+    /** The edge radius at each point: the morphing shape, plus the jiggle. */
+    const updateEdges = () => {
+      const time = phase.time
       for (let i = 0; i < POINTS; i++) {
         const angle = (i / POINTS) * Math.PI * 2
-        // The resting shape morphs: a few slow waves around the edge.
-        const rest =
+        edges[i] = soften(
           1 +
-          0.045 * Math.sin(2 * angle + time * 0.8) +
-          0.03 * Math.sin(3 * angle - time * 1.1 + 1) +
-          0.02 * Math.sin(5 * angle + time * 0.6 + 2)
-        const r = radius * (rest + offset[i])
-        xs[i] = cx + Math.cos(angle) * r
-        ys[i] = cy + Math.sin(angle) * r
+            0.045 * Math.sin(2 * angle + time * 0.8) +
+            0.03 * Math.sin(3 * angle - time * 1.1 + 1) +
+            0.02 * Math.sin(5 * angle + time * 0.6 + 2) +
+            offset[i],
+          EDGE_MIN,
+          EDGE_MAX,
+        )
       }
+      const limit = size * RADIUS * CENTER_MAX
+      shift.x = soften(center.x, -limit, limit)
+      shift.y = soften(center.y, -limit, limit)
+    }
 
+    const drawShader = (gl: WebGL2RenderingContext, uniforms: Uniforms) => {
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      gl.uniform2f(uniforms.uResolution, canvas.width, canvas.height)
+      gl.uniform2f(
+        uniforms.uCenter,
+        (size / 2 + shift.x) * scale,
+        (size / 2 + shift.y) * scale,
+      )
+      gl.uniform1f(uniforms.uRadius, size * RADIUS * scale)
+      gl.uniform1fv(uniforms.uEdge, edges)
+      gl.uniform1f(uniforms.uFlow, phase.flow)
+      gl.uniform1f(uniforms.uTwist, phase.twist)
+      gl.uniform1f(uniforms.uEnergy, energy)
+      gl.uniform2f(uniforms.uTilt, tilt.x, tilt.y)
+      gl.uniform3f(uniforms.uBase, base[0] / 255, base[1] / 255, base[2] / 255)
+      gl.uniform1f(uniforms.uSeed, (performance.now() % 1000) / 7.3)
+      gl.drawArrays(gl.TRIANGLES, 0, 3)
+    }
+
+    /** Without WebGL 2: a plain glowing blob in the brand color. */
+    const drawFlat = (ctx: CanvasRenderingContext2D) => {
+      const radius = size * RADIUS
+      const cx = size / 2 + shift.x
+      const cy = size / 2 + shift.y
+      for (let i = 0; i < POINTS; i++) {
+        const angle = (i / POINTS) * Math.PI * 2
+        xs[i] = cx + Math.cos(angle) * radius * edges[i]
+        ys[i] = cy + Math.sin(angle) * radius * edges[i]
+      }
       const [red, green, blue] = brand
       const color = (alpha: number) => `rgba(${red},${green},${blue},${alpha})`
-      context.setTransform(scale, 0, 0, scale, 0, 0)
-      context.clearRect(0, 0, size, size)
-
-      // A smooth closed curve through the midpoints of the edge.
-      context.beginPath()
+      ctx.setTransform(scale, 0, 0, scale, 0, 0)
+      ctx.clearRect(0, 0, size, size)
+      ctx.beginPath()
       const midX = (i: number) => (xs[i] + xs[(i + 1) % POINTS]) / 2
       const midY = (i: number) => (ys[i] + ys[(i + 1) % POINTS]) / 2
-      context.moveTo(midX(POINTS - 1), midY(POINTS - 1))
+      ctx.moveTo(midX(POINTS - 1), midY(POINTS - 1))
       for (let i = 0; i < POINTS; i++) {
-        context.quadraticCurveTo(xs[i], ys[i], midX(i), midY(i))
+        ctx.quadraticCurveTo(xs[i], ys[i], midX(i), midY(i))
       }
-      context.closePath()
-
-      // The body, lit from the upper left. The light drifts as it morphs.
-      const lightX = cx - radius * (0.35 + 0.08 * Math.sin(time * 0.5))
-      const lightY = cy - radius * (0.4 + 0.08 * Math.cos(time * 0.4))
-      const body = context.createRadialGradient(
-        lightX,
-        lightY,
+      ctx.closePath()
+      const body = ctx.createRadialGradient(
+        cx - radius * 0.35,
+        cy - radius * 0.4,
         radius * 0.05,
         cx,
         cy,
@@ -121,34 +404,26 @@ export default function AskOrb({ className }: { className?: string }) {
       )
       body.addColorStop(0, `rgba(255,255,255,${0.85 + energy * 0.15})`)
       body.addColorStop(0.3, color(0.95))
-      body.addColorStop(0.75, color(0.75))
       body.addColorStop(1, color(0.45))
-      context.shadowColor = color(0.9)
-      context.shadowBlur = radius * (0.45 + energy * 0.5)
-      context.fillStyle = body
-      context.fill()
+      ctx.shadowColor = color(0.9)
+      ctx.shadowBlur = radius * (0.45 + energy * 0.5)
+      ctx.fillStyle = body
+      ctx.fill()
+      ctx.shadowBlur = 0
+    }
 
-      // A darker rim gives the orb its depth.
-      context.shadowBlur = 0
-      const rim = context.createRadialGradient(
-        cx,
-        cy,
-        radius * 0.6,
-        cx,
-        cy,
-        radius * 1.1,
-      )
-      rim.addColorStop(0, 'rgba(0,0,0,0)')
-      rim.addColorStop(1, 'rgba(0,0,0,0.28)')
-      context.fillStyle = rim
-      context.fill()
-
-      glow.style.opacity = String(0.45 + energy * 0.4)
-      glow.style.transform = `translate(${center.x}px, ${center.y}px) scale(${1 + energy * 0.15})`
+    const draw = () => {
+      updateEdges()
+      if (shader) drawShader(shader.gl, shader.uniforms)
+      else if (context) drawFlat(context)
+      glow.style.opacity = String(0.3 + energy * 0.35)
+      glow.style.transform = `translate(${shift.x}px, ${shift.y}px) rotate(${phase.flow * 20}deg) scale(${1 + energy * 0.15})`
     }
 
     const step = (dt: number) => {
-      time += dt
+      phase.time += dt
+      phase.flow += dt * FLOW_SPEED * (1 + energy * 2)
+      phase.twist += dt * TWIST_SPEED * (1 + energy * 1.5)
       for (let i = 0; i < POINTS; i++) {
         const before = offset[(i + POINTS - 1) % POINTS]
         const after = offset[(i + 1) % POINTS]
@@ -162,6 +437,10 @@ export default function AskOrb({ className }: { className?: string }) {
       center.vy += (-120 * center.y - 9 * center.vy) * dt
       center.x += center.vx * dt
       center.y += center.vy * dt
+      // The light inside turns toward the pointer, smoothly.
+      const ease = Math.min(1, dt * 5)
+      tilt.x += (tilt.toX - tilt.x) * ease
+      tilt.y += (tilt.toY - tilt.y) * ease
       energy *= Math.exp(-dt * 1.6)
     }
 
@@ -192,10 +471,10 @@ export default function AskOrb({ className }: { className?: string }) {
      */
     pokeRef.current = (strength: number) => {
       if (reduceMotion) return
-      const phase = Math.random() * Math.PI * 2
+      const lobes = Math.random() * Math.PI * 2
       for (let i = 0; i < POINTS; i++) {
         const angle = (i / POINTS) * Math.PI * 2
-        velocity[i] -= strength * (1 + 0.6 * Math.sin(3 * angle + phase))
+        velocity[i] -= strength * (1 + 0.35 * Math.sin(3 * angle + lobes))
       }
       center.vy += strength * 60
       energy = Math.min(1, energy + 0.8)
@@ -210,39 +489,39 @@ export default function AskOrb({ className }: { className?: string }) {
       const box = canvas.getBoundingClientRect()
       const x = event.clientX - box.left - box.width / 2
       const y = event.clientY - box.top - box.height / 2
-      if (previous) {
-        const radius = size * RADIUS
-        const distance = Math.hypot(x, y)
-        if (distance < radius * 1.6) {
-          const angle = Math.atan2(y, x)
-          const radial =
-            ((x - previous.x) * Math.cos(angle) +
-              (y - previous.y) * Math.sin(angle)) /
-            radius
-          for (let i = 0; i < POINTS; i++) {
-            const pointAngle = (i / POINTS) * Math.PI * 2
-            const apart = Math.abs(
-              Math.atan2(
-                Math.sin(pointAngle - angle),
-                Math.cos(pointAngle - angle),
-              ),
-            )
-            if (apart < 0.7) {
-              const weight = Math.cos((apart / 0.7) * (Math.PI / 2)) ** 2
-              velocity[i] += radial * weight * 9
-            }
+      const radius = size * RADIUS
+      tilt.toX = Math.max(-1, Math.min(1, x / (radius * 1.6)))
+      tilt.toY = Math.max(-1, Math.min(1, y / (radius * 1.6)))
+      if (previous && Math.hypot(x, y) < radius * 1.6) {
+        const angle = Math.atan2(y, x)
+        const radial =
+          ((x - previous.x) * Math.cos(angle) +
+            (y - previous.y) * Math.sin(angle)) /
+          radius
+        for (let i = 0; i < POINTS; i++) {
+          const pointAngle = (i / POINTS) * Math.PI * 2
+          const apart = Math.abs(
+            Math.atan2(
+              Math.sin(pointAngle - angle),
+              Math.cos(pointAngle - angle),
+            ),
+          )
+          if (apart < 0.7) {
+            const weight = Math.cos((apart / 0.7) * (Math.PI / 2)) ** 2
+            velocity[i] += radial * weight * 9
           }
-          energy = Math.min(1, energy + 0.02)
         }
+        energy = Math.min(1, energy + 0.02)
       }
       previous = { x, y }
     }
     const onPointerLeave = () => {
       previous = null
+      tilt.toX = 0
+      tilt.toY = 0
     }
 
     resize()
-    brand = brandColor(button)
     draw()
     start()
 
@@ -261,7 +540,8 @@ export default function AskOrb({ className }: { className?: string }) {
     document.addEventListener('visibilitychange', onVisibility)
     const scheme = window.matchMedia('(prefers-color-scheme: dark)')
     const onScheme = () => {
-      brand = brandColor(button)
+      brand = token(button, '--brand')
+      base = token(button, '--chrome')
       draw()
     }
     scheme.addEventListener('change', onScheme)
@@ -286,29 +566,30 @@ export default function AskOrb({ className }: { className?: string }) {
       type="button"
       aria-label="Poke the orb"
       // A press squishes the orb, and the release lets it spring back out.
-      onPointerDown={() => poke(3)}
+      onPointerDown={() => poke(2.4)}
       onPointerUp={() => poke(-1.8)}
       onKeyDown={(event) => {
         if (event.repeat || (event.key !== 'Enter' && event.key !== ' ')) return
         event.preventDefault()
-        poke(3)
+        poke(2.4)
       }}
       className={cn(
         'focus-visible:ring-ring/50 relative size-24 shrink-0 cursor-pointer touch-none rounded-full outline-none focus-visible:ring-3 lg:size-28',
         className,
       )}
     >
-      {/* The soft light around the orb. */}
+      {/* The soft light around the orb, in the colors of the chrome ring
+          of the buttons. */}
       <span
         ref={glowRef}
         aria-hidden="true"
-        className="bg-brand/40 pointer-events-none absolute inset-[-20%] rounded-full opacity-50 blur-2xl"
+        className="pointer-events-none absolute inset-[-15%] rounded-full bg-[conic-gradient(oklch(0.55_0.21_265),oklch(0.78_0.15_225),oklch(0.82_0.15_70),oklch(0.66_0.22_15),oklch(0.55_0.26_295),oklch(0.55_0.21_265))] opacity-30 blur-2xl"
       />
-      {/* Larger than the button, so the edge can bulge out. */}
+      {/* Twice the button, so the edge can bulge out. */}
       <canvas
         ref={canvasRef}
         aria-hidden="true"
-        className="pointer-events-none absolute inset-[-33%] size-[166%]"
+        className="pointer-events-none absolute inset-[-50%] size-[200%]"
       />
     </button>
   )
