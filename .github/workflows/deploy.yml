@@ -1,5 +1,10 @@
 name: Test and deploy
 
+# A push to master deploys as soon as the fast checks pass. The end-to-end
+# tests run at the same time, against a production build of the same commit.
+# If they fail, the rollback job puts the previous version back. Pull
+# requests run the same checks and tests, and do not deploy.
+
 on:
   push:
     branches:
@@ -7,68 +12,123 @@ on:
   pull_request:
   workflow_dispatch:
 
+# A newer push to a pull request cancels the older run. On master each
+# commit has its own group: a run is never stopped part way through a deploy.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
+env:
+  WORKER_NAME: ali-abbas
+
 jobs:
-  test:
-    name: Check and test
+  ship:
+    name: Check, build and deploy
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
+    # Deploys run one at a time, in push order.
+    concurrency:
+      group: deploy-${{ github.event_name == 'pull_request' && github.sha || 'production' }}
+      cancel-in-progress: false
+    outputs:
+      previous: ${{ steps.deploy.outputs.previous }}
+      version: ${{ steps.deploy.outputs.version }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
 
-      - name: Set up Vite+
+      - name: Set up Vite+ and install dependencies
         uses: voidzero-dev/setup-vp@v1.21.2
+        with:
+          cache: true
 
-      - name: Install dependencies
-        run: vp install --frozen-lockfile
+      - name: Check, unit tests and build
+        run: |
+          vp check & check=$!
+          vp test run & unit=$!
+          vp build & build=$!
+          wait $check
+          wait $unit
+          wait $build
 
-      - name: Check project
-        run: vp check
+      - name: Deploy Worker
+        id: deploy
+        if: github.event_name != 'pull_request'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          previous=$(vp exec wrangler deployments status --name "$WORKER_NAME" --json | jq -r '.versions[0].version_id')
+          vp exec wrangler deploy --message "${GITHUB_SHA::7}" | tee deploy.log
+          version=$(grep -oP 'Current Version ID: \K\S+' deploy.log)
+          echo "previous=$previous" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
 
-      - name: Unit tests
-        run: vp test run
+  e2e:
+    name: End-to-end tests (${{ matrix.shard }}/3)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
 
-      - name: Install Chromium
-        run: vp exec playwright install --with-deps chromium
+      - name: Set up Vite+ and install dependencies
+        uses: voidzero-dev/setup-vp@v1.21.2
+        with:
+          cache: true
 
+      # E2E=1 turns off the remote Cloudflare bindings, so preview needs no
+      # login. The tests mock the AI.
+      - name: Build
+        run: vp build
+        env:
+          E2E: '1'
+
+      # The runner image has Chrome, so no browser download.
       - name: End-to-end tests
-        run: vp run test:e2e
+        run: vp exec playwright test --shard=${{ matrix.shard }}/3
+        env:
+          CHROMIUM_PATH: /usr/bin/google-chrome
 
       - name: Upload Playwright report
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-report
+          name: playwright-report-${{ matrix.shard }}
           path: |
             playwright-report/
             test-results/
           retention-days: 7
 
-  deploy:
-    name: Build and deploy
-    needs: test
-    if: github.event_name != 'pull_request'
+  rollback:
+    name: Roll back after failed tests
+    needs: [ship, e2e]
+    if: failure() && github.event_name != 'pull_request' && needs.ship.result == 'success' && needs.ship.outputs.previous != ''
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 5
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PREVIOUS: ${{ needs.ship.outputs.previous }}
+      VERSION: ${{ needs.ship.outputs.version }}
     steps:
-      - name: Check out repository
-        uses: actions/checkout@v6
-
-      - name: Set up Vite+
-        uses: voidzero-dev/setup-vp@v1.21.2
-
-      - name: Install dependencies
-        run: vp install --frozen-lockfile
-
-      - name: Deploy Worker
-        run: vp run deploy
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      # Roll back only if this run's version is still live. A newer push may
+      # have deployed since then, and its own tests decide about it.
+      - name: Roll back to the previous version
+        run: |
+          wrangler="npx --yes wrangler@4.114.0"
+          live=$($wrangler deployments status --name "$WORKER_NAME" --json | jq -r '.versions[0].version_id')
+          if [ "$live" != "$VERSION" ]; then
+            echo "Version $live is live, not $VERSION: a newer deploy replaced it. No rollback."
+            exit 0
+          fi
+          $wrangler rollback "$PREVIOUS" --name "$WORKER_NAME" --yes \
+            --message "End-to-end tests failed for ${GITHUB_SHA::7}"
+          echo "::warning::Rolled back to $PREVIOUS: the end-to-end tests failed for ${GITHUB_SHA::7}."

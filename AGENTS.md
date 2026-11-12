@@ -24,8 +24,9 @@
 ## Tests
 
 - **Unit**: `vp test run` (files `src/**/*.test.ts`)
-- **End-to-end**: `vp run test:e2e` (Playwright, 1440px and 390px, AI mocked in `e2e/fixtures.ts`). Set `CHROMIUM_PATH` to use a system Chromium.
+- **End-to-end**: `vp run test:e2e` (Playwright, AI mocked in `e2e/fixtures.ts`). Set `CHROMIUM_PATH` to use a system Chromium. Every test runs at 1440px. Tag a test `{ tag: '@mobile' }` when its result depends on the phone layout: only those also run at 390px.
 - Add an end-to-end test for each new state or keyboard path.
+- **CI** (`.github/workflows/deploy.yml`): a push to master deploys after check, unit tests and build. The end-to-end tests run at the same time against a production build, and a failure rolls the deploy back.
 
 ## Code Style
 
