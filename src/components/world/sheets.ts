@@ -7,6 +7,7 @@ import {
   MessageCircle,
   NotebookPen,
   Palette,
+  ShieldCheck,
   Sparkles,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -144,6 +145,14 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
     summary: 'Send me a message.',
     kind: 'Page',
   },
+  {
+    id: 'privacy',
+    icon: { type: 'glyph', glyph: ShieldCheck },
+    to: '/privacy',
+    title: 'Privacy',
+    summary: 'What this site collects, and why.',
+    kind: 'Page',
+  },
 ]
 
 /**
@@ -163,11 +172,7 @@ export const SHEETS: Array<SheetSpec> = PAGES.map((page, i) => {
 })
 
 /** Paths that open the sheet of another page. */
-const ALIASES: Record<string, string> = {
-  '/check': '/chat',
-  // Privacy is with contact, as in the index (Contact & legal).
-  '/privacy': '/contact',
-}
+const ALIASES: Record<string, string> = { '/check': '/chat' }
 
 /**
  * The sheet that a path opens: the sheet of that page, or of the page it is
