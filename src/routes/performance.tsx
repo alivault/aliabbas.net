@@ -276,7 +276,7 @@ function PerformancePage() {
                       href={row.url}
                       target="_blank"
                       rel="noreferrer"
-                      className="hud-fill decoration-hud/50 font-hud text-hud tracking-[0.3em] uppercase underline underline-offset-[10px]"
+                      className="hud-fill decoration-hud/50 font-hud text-hud leading-[2.2] tracking-[0.2em] uppercase underline underline-offset-[10px]"
                     >
                       {row.label}
                     </a>
