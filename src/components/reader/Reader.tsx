@@ -7,24 +7,22 @@ import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
 
 /**
  * The text of a page in the world: it shows on the left while the icon of
- * the page floats on the right. Each line comes in after the one above it.
+ * the page floats on the right. The zoom to the icon is the transition, so
+ * the text only fades in once, with no movement.
  * Short lines (titles, labels, lists, links) use the HUD face in spaced
  * capitals. Long text uses the body face, so it stays easy to read.
  */
 
 const container: Variants = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.07, delayChildren: 0.15 } },
-}
-
-const item: Variants = {
-  hidden: { opacity: 0, y: 14 },
+  hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    y: 0,
-    transition: { duration: DURATIONS.reveal, ease: EASE_OUT },
+    transition: { duration: DURATIONS.enter, ease: EASE_OUT },
   },
 }
+
+/** Blocks inside the reader do not animate on their own. */
+const item: Variants = {}
 
 /** Spaced capitals in the HUD face. */
 export const hudText =
@@ -48,7 +46,7 @@ export function Reader({ children }: { children: ReactNode }) {
   )
 }
 
-/** One block of the reader. It comes in after the block before it. */
+/** One block of the reader. */
 export function Line({
   className,
   children,
@@ -104,9 +102,7 @@ export function ReaderText({
   )
 }
 
-/**
- * A titled part of the reader. Its lines come in when it scrolls into view.
- */
+/** A titled part of the reader. */
 export function ReaderSection({
   title,
   children,
@@ -117,14 +113,7 @@ export function ReaderSection({
   id?: string
 }) {
   return (
-    <motion.section
-      id={id}
-      initial="hidden"
-      whileInView="show"
-      viewport={{ once: true, margin: '0px 0px -15% 0px' }}
-      variants={container}
-      className="mt-20 flex flex-col"
-    >
+    <motion.section id={id} variants={item} className="mt-20 flex flex-col">
       <motion.h2 variants={item} className={hudText}>
         {title}
       </motion.h2>

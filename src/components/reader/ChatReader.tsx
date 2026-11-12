@@ -110,9 +110,9 @@ function TurnView({
 
   return (
     <motion.article
-      initial={{ opacity: 0, y: 14 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: DURATIONS.reveal, ease: EASE_OUT }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: DURATIONS.enter, ease: EASE_OUT }}
     >
       <h2 className={hudText}>{turn.question}</h2>
       {paragraphs.map((text, index) => (
