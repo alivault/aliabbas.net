@@ -15,7 +15,7 @@ export const DESIGN_RULES: Array<DesignRule> = [
   {
     id: 'tokens-only',
     rule: 'Use the color tokens (bg-background, text-fg-muted, border-border, text-brand). Do not write a color value in a component.',
-    why: 'Light and dark mode then change together, and one edit changes the site.',
+    why: 'One edit to a token then changes the whole site, and the colors stay in one scheme.',
   },
   {
     id: 'text-size',
@@ -35,8 +35,8 @@ export const DESIGN_RULES: Array<DesignRule> = [
   },
   {
     id: 'titles',
-    rule: 'Make headings with Title, PageHeading or SectionHeading. Use className for layout only, not for size, weight or color. A title has one color: do not give some of its words or its number another shade. The one exception is the changing word of the homepage hero.',
-    why: 'One scale for the whole site. To change a size, change the variant in Title.tsx. A second shade in a title makes one title read as two.',
+    rule: 'In a reader, make headings with ReaderTitle and ReaderSection (src/components/reader/Reader.tsx). In the old page layout, use Title, PageHeading or SectionHeading. Use className for layout only, not for size, weight or color. A title has one color: do not give some of its words or its number another shade.',
+    why: 'One scale for each layout. To change a size, change the component. A second shade in a title makes one title read as two.',
   },
   {
     id: 'text-tones',
@@ -51,7 +51,7 @@ export const DESIGN_RULES: Array<DesignRule> = [
   },
   {
     id: 'focus',
-    rule: 'Every control shows the focus ring. When an overlay closes, focus goes back to the control that opened it.',
+    rule: 'Every control shows focus: the focus ring, or the fill of hud-fill. When an overlay closes, focus goes back to the control that opened it.',
     why: 'Keyboard users must always know where they are.',
     checkedBy: 'e2e/lab.spec.ts',
   },
@@ -71,6 +71,16 @@ export const DESIGN_RULES: Array<DesignRule> = [
     id: 'motion-tokens',
     rule: 'Animate with a spring, ease and duration from src/lib/design/motion.ts. Do not write new values in a component.',
     why: 'The same kind of change then moves the same way on every page.',
+  },
+  {
+    id: 'hud-controls',
+    rule: 'A link or button in the HUD style uses the hud-fill utility: the HUD color fills it from the bottom on hover and on keyboard focus, and the label turns dark. Do not add another hover style to it.',
+    why: 'Every control in the world answers the same way, so a visitor learns it once.',
+  },
+  {
+    id: 'one-movement',
+    rule: 'In the world, the zoom of the camera to an icon is the only movement into a page. Text fades in, one line after the other, and does not slide.',
+    why: 'Two movements at once fight for the eye. The zoom already says where the visitor goes.',
   },
   {
     id: 'reduced-motion',

@@ -11,6 +11,7 @@ import { SHEETS, sheetForPath } from './sheets'
 import {
   getWorld,
   loadVisited,
+  markHydrated,
   setWorld,
   useWorld,
   worldCommands,
@@ -37,6 +38,7 @@ export default function WorldShell({ children }: { children: ReactNode }) {
   const firstMove = useRef(true)
 
   useEffect(() => {
+    markHydrated()
     // ?gl=force draws the world also with software WebGL, for tests.
     const force = new URLSearchParams(location.search).get('gl') === 'force'
     setWebgl(force || hasFastWebGL())

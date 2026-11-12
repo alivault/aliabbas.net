@@ -46,7 +46,7 @@ export function RepoLink({ path }: { path: string }) {
       href={`https://github.com/alivault/aliabbas.net/blob/master/${path}`}
       target="_blank"
       rel="noreferrer"
-      className="text-fg-secondary hover:text-brand font-mono text-sm break-all underline decoration-current/30 underline-offset-4 transition-colors"
+      className="hud-fill text-fg-secondary decoration-hud/40 font-mono text-sm break-all underline underline-offset-4"
     >
       {path}
       <span className="sr-only"> (opens in a new tab)</span>

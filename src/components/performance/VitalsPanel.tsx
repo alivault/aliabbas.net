@@ -97,10 +97,13 @@ function MetricCard({
   return (
     <article
       aria-labelledby={`metric-${name}`}
-      className="border-foreground/10 flex flex-col gap-5 rounded-xl border p-5"
+      className="border-hud/25 flex flex-col gap-5 border p-5"
     >
       <header>
-        <h3 id={`metric-${name}`} className="text-base font-semibold">
+        <h3
+          id={`metric-${name}`}
+          className="font-hud text-hud text-sm leading-[1.9] tracking-[0.42em] uppercase"
+        >
           {info.label} ({name})
         </h3>
         <p className="text-fg-muted mt-1 text-sm leading-6">
@@ -139,7 +142,7 @@ function MetricCard({
 
       {all.count > 0 && <Distribution summary={all} />}
 
-      <dl className="border-foreground/10 mt-auto grid grid-cols-2 gap-4 border-t pt-4">
+      <dl className="border-hud/25 mt-auto grid grid-cols-2 gap-4 border-t pt-4">
         <DeviceValue label="Mobile p75" name={name} summary={summary.mobile} />
         <DeviceValue
           label="Desktop p75"
@@ -170,7 +173,7 @@ export default function VitalsPanel({
         {plural(summary.pageLoads, 'page load')} in the last{' '}
         {summary.windowDays} days.
       </p>
-      <div className="mt-6 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+      <div className="mt-6 grid gap-4 sm:grid-cols-2">
         {METRICS.map((name) => (
           <MetricCard key={name} name={name} summary={summary.metrics[name]} />
         ))}

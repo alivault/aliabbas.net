@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import type { ComponentProps, ReactNode } from 'react'
 import { createLink } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 import type { Variants } from 'motion/react'
+import { isHydrated } from '~/components/world/store'
 import { cn } from '~/lib/utils'
 import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
 
@@ -30,14 +32,27 @@ const item: Variants = {
 export const hudText =
   'font-hud text-hud text-sm tracking-[0.42em] uppercase leading-[2.2]'
 
+/**
+ * The first state of the fade. A page in the server HTML, or in the
+ * hydration of it, starts visible: text hidden until the scripts run would
+ * delay the first paint. A page opened later fades in.
+ */
+function useEnterFrom() {
+  const [from] = useState<'hidden' | false>(() =>
+    isHydrated() ? 'hidden' : false,
+  )
+  return from
+}
+
 export function Reader({ children }: { children: ReactNode }) {
+  const from = useEnterFrom()
   return (
     <main
       data-hud
       className="relative z-10 min-h-svh px-6 pt-[44svh] pb-48 sm:px-16 lg:w-[54vw] lg:max-w-[820px] lg:pt-[18svh]"
     >
       <motion.div
-        initial="hidden"
+        initial={from}
         animate="show"
         variants={container}
         className="flex flex-col"
@@ -116,10 +131,11 @@ export function ReaderSection({
   children: ReactNode
   id?: string
 }) {
+  const from = useEnterFrom()
   return (
     <motion.section
       id={id}
-      initial="hidden"
+      initial={from}
       whileInView="show"
       viewport={{ once: true, margin: '0px 0px -15% 0px' }}
       variants={container}

@@ -247,7 +247,14 @@ export const BODY_SCALE = [
 ] as const
 
 export const FONTS = {
-  sans: { family: 'DM Sans Variable', use: 'All text. Weight 400 for titles.' },
+  hud: {
+    family: 'Michroma',
+    use: 'The HUD and the readers: titles, labels, lists and links, in capitals spaced 0.42em.',
+  },
+  sans: {
+    family: 'DM Sans Variable',
+    use: 'Long text in sentence case, and all text of the old page layout.',
+  },
   mono: {
     family: 'JetBrains Mono',
     use: 'Code, file paths and ids only. Never for labels.',

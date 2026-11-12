@@ -99,3 +99,18 @@ export const worldCommands = {
   /** Walk to the next sheet that the visitor has not opened. */
   next: () => {},
 }
+
+let hydrated = false
+
+/** Called once the app runs in the browser. */
+export function markHydrated() {
+  hydrated = true
+}
+
+/**
+ * False on the server and during hydration: then a page opened by its URL
+ * shows its text in the first paint, with no fade from opacity 0.
+ */
+export function isHydrated() {
+  return hydrated
+}
