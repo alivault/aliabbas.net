@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import type { ReactNode } from 'react'
 import { Link } from '@tanstack/react-router'
 import { AnimatePresence, motion } from 'motion/react'
+import type { Variants } from 'motion/react'
 import { DURATIONS, EASE_IN, EASE_OUT } from '~/lib/design/motion'
 import { cn } from '~/lib/utils'
 import { SHEETS } from './sheets'
@@ -59,6 +60,20 @@ const GROUPS: Array<{
   },
 ]
 
+const list: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.035, delayChildren: 0.05 } },
+}
+
+/** The lines of the index fade in one after the other, with no movement. */
+const line: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { duration: DURATIONS.enter, ease: EASE_OUT },
+  },
+}
+
 const linkStyle =
   'hover:opacity-70 focus-visible:outline-hud transition-opacity focus-visible:outline-1 focus-visible:outline-offset-4'
 
@@ -108,13 +123,18 @@ export default function SiteIndex() {
           transition={{ duration: DURATIONS.enter, ease: EASE_OUT }}
           className="font-hud text-hud bg-ground/60 fixed inset-0 z-20 overflow-y-auto text-sm tracking-[0.42em] uppercase backdrop-blur-[2px]"
         >
-          <nav
+          <motion.nav
             aria-label="Index"
+            initial="hidden"
+            animate="show"
+            variants={list}
             className="flex flex-col gap-16 px-6 pt-20 pb-40 sm:px-16"
           >
             {GROUPS.map((group) => (
               <section key={group.title}>
-                <h2 className="mb-5">{group.title}</h2>
+                <motion.h2 variants={line} className="mb-5">
+                  {group.title}
+                </motion.h2>
                 <ul
                   className={cn(
                     'flex flex-col',
@@ -122,22 +142,22 @@ export default function SiteIndex() {
                   )}
                 >
                   {group.entries.map((entry) => (
-                    <li key={entry.label}>
+                    <motion.li key={entry.label} variants={line}>
                       {group.size === 'small' ? (
                         <span aria-hidden="true">→ </span>
                       ) : null}
                       <IndexLink entry={entry} onNavigate={close}>
                         {entry.label}
                       </IndexLink>
-                    </li>
+                    </motion.li>
                   ))}
                 </ul>
               </section>
             ))}
-            <p>
+            <motion.p variants={line}>
               {visited} of {SHEETS.length} found in the world
-            </p>
-          </nav>
+            </motion.p>
+          </motion.nav>
         </motion.div>
       ) : null}
     </AnimatePresence>

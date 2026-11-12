@@ -7,22 +7,24 @@ import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
 
 /**
  * The text of a page in the world: it shows on the left while the icon of
- * the page floats on the right. The zoom to the icon is the transition, so
- * the text only fades in once, with no movement.
+ * the page floats on the right. The zoom to the icon is the movement, so
+ * the text does not move: each line fades in after the one above it.
  * Short lines (titles, labels, lists, links) use the HUD face in spaced
  * capitals. Long text uses the body face, so it stays easy to read.
  */
 
 const container: Variants = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.07, delayChildren: 0.05 } },
+}
+
+const item: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { duration: DURATIONS.enter, ease: EASE_OUT },
+    transition: { duration: DURATIONS.reveal, ease: EASE_OUT },
   },
 }
-
-/** Blocks inside the reader do not animate on their own. */
-const item: Variants = {}
 
 /** Spaced capitals in the HUD face. */
 export const hudText =
@@ -46,7 +48,7 @@ export function Reader({ children }: { children: ReactNode }) {
   )
 }
 
-/** One block of the reader. */
+/** One block of the reader. It fades in after the block before it. */
 export function Line({
   className,
   children,
@@ -102,7 +104,9 @@ export function ReaderText({
   )
 }
 
-/** A titled part of the reader. */
+/**
+ * A titled part of the reader. Its lines fade in when it scrolls into view.
+ */
 export function ReaderSection({
   title,
   children,
@@ -113,7 +117,14 @@ export function ReaderSection({
   id?: string
 }) {
   return (
-    <motion.section id={id} variants={item} className="mt-20 flex flex-col">
+    <motion.section
+      id={id}
+      initial="hidden"
+      whileInView="show"
+      viewport={{ once: true, margin: '0px 0px -15% 0px' }}
+      variants={container}
+      className="mt-20 flex flex-col"
+    >
       <motion.h2 variants={item} className={hudText}>
         {title}
       </motion.h2>
