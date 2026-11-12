@@ -80,22 +80,26 @@ for (const path of ['/', '/skills']) {
       await expect(status).toHaveText('Card in the bottom left corner.')
     })
 
-    test('a thrown card lands in the corner its momentum points to', async ({
-      page,
-    }) => {
-      test.skip(!isDesktop(page), 'A throw needs a pointer.')
+    test('a dragged card lands in a corner on release', async ({ page }) => {
+      test.skip(!isDesktop(page), 'A drag needs a pointer.')
       const example = skill(page, 'Motion and interaction')
       const card = example.getByRole('button', { name: /^Card/ })
       await card.scrollIntoViewIfNeeded()
       const box = (await card.boundingBox())!
-      // A short, fast flick to the lower right. The release point is still
-      // near the top left: the momentum decides the corner.
-      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+      const stage = (await card.locator('..').boundingBox())!
+      // Drag the card past the middle of the stage, toward the lower right.
+      // The release point alone is nearest that corner, so the result does
+      // not depend on the speed that the test machine gives the drag.
+      const fromX = box.x + box.width / 2
+      const fromY = box.y + box.height / 2
+      const toX = stage.x + stage.width * 0.65
+      const toY = stage.y + stage.height * 0.7
+      await page.mouse.move(fromX, fromY)
       await page.mouse.down()
-      for (let step = 1; step <= 4; step++) {
+      for (let step = 1; step <= 5; step++) {
         await page.mouse.move(
-          box.x + box.width / 2 + step * 30,
-          box.y + box.height / 2 + step * 15,
+          fromX + ((toX - fromX) * step) / 5,
+          fromY + ((toY - fromY) * step) / 5,
         )
       }
       await page.mouse.up()
