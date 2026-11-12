@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import type { ComponentProps, ReactNode } from 'react'
 import { createLink } from '@tanstack/react-router'
 import { motion } from 'motion/react'
 import type { Variants } from 'motion/react'
 import { isHydrated } from '~/components/world/store'
+import { LightboxProvider, useLightbox } from './Lightbox'
 import { cn } from '~/lib/utils'
 import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
 
@@ -57,7 +58,7 @@ export function Reader({ children }: { children: ReactNode }) {
         variants={container}
         className="flex flex-col"
       >
-        {children}
+        <LightboxProvider>{children}</LightboxProvider>
       </motion.div>
     </main>
   )
@@ -228,32 +229,62 @@ export function ReaderFigure({
   /** A video to play in a loop, with `src` as its poster. */
   video?: string
 }) {
+  const id = useId()
+  const media = useRef<HTMLButtonElement>(null)
+  const lightbox = useLightbox()
+  const register = lightbox?.register
+
+  useEffect(() => {
+    if (!register) return
+    return register(id, {
+      item: { src, alt, width, height, caption, video },
+      element: media.current,
+    })
+  }, [register, id, src, alt, width, height, caption, video])
+
+  // While the zoom view shows it, the figure leaves its place empty.
+  const zoomed = lightbox?.openId === id
+  const mediaClass =
+    'border-hud/25 h-auto max-h-[80svh] w-auto max-w-full border'
+
   return (
     <motion.figure variants={item} className="mt-10">
-      {video ? (
-        <video
-          src={video}
-          poster={src}
-          width={width}
-          height={height}
-          muted
-          loop
-          playsInline
-          autoPlay
-          aria-label={alt}
-          className="border-hud/25 h-auto max-h-[80svh] w-auto max-w-full border"
-        />
-      ) : (
-        <img
-          src={src}
-          alt={alt}
-          width={width}
-          height={height}
-          loading="lazy"
-          decoding="async"
-          className="border-hud/25 h-auto max-h-[80svh] w-auto max-w-full border"
-        />
-      )}
+      <button
+        ref={media}
+        type="button"
+        aria-label={`Zoom: ${alt}`}
+        aria-haspopup="dialog"
+        onClick={() => lightbox?.open(id)}
+        className={cn(
+          'focus-visible:outline-hud block max-w-full cursor-zoom-in outline-none focus-visible:outline-1 focus-visible:outline-offset-4',
+          zoomed && 'invisible',
+        )}
+      >
+        {video ? (
+          <video
+            src={video}
+            poster={src}
+            width={width}
+            height={height}
+            muted
+            loop
+            playsInline
+            autoPlay
+            aria-hidden="true"
+            className={mediaClass}
+          />
+        ) : (
+          <img
+            src={src}
+            alt=""
+            width={width}
+            height={height}
+            loading="lazy"
+            decoding="async"
+            className={mediaClass}
+          />
+        )}
+      </button>
       {caption ? (
         <figcaption className="text-fg-muted mt-3 text-sm leading-6">
           {caption}
