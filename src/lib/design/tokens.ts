@@ -73,7 +73,7 @@ export const COLOR_ROLES: Record<string, { group: ColorGroup; use: string }> = {
   'primary-foreground': { group: 'Action', use: 'Text on a primary fill.' },
   brand: {
     group: 'Action',
-    use: 'Selection, the active citation and the changing word of the homepage hero. Not for titles.',
+    use: 'A light orange of the HUD, light enough for text: selection, the active citation and the active states of the lab. Not for titles.',
   },
   'brand-foreground': { group: 'Action', use: 'Text on a brand fill.' },
   chrome: {

@@ -141,7 +141,8 @@
     --fg-secondary: oklch(0.85 0.009 94);
     --fg-muted: oklch(0.77 0.008 94);
     --fg-faint: oklch(0.59 0.007 94);
-    --brand: oklch(0.806 0.139 216.4); /* #20d5f9 */
+    /* A light orange of the HUD, light enough for text: APCA Lc 62. */
+    --brand: oklch(0.78 0.14 50);
     --card: oklch(0.165 0.004 245.5);
     --card-foreground: var(--foreground);
     --popover: oklch(0.165 0.004 245.5);
@@ -194,7 +195,7 @@
   --border: oklch(0.28 0.006 245.5);
   --input: oklch(0.28 0.006 245.5);
   --ring: color-mix(in oklab, var(--foreground) 50%, transparent);
-  --brand: oklch(0.806 0.139 216.4);
+  --brand: oklch(0.78 0.14 50);
   --brand-foreground: var(--background);
   --chrome: oklch(0.12 0.005 260);
   --chrome-foreground: oklch(0.99 0 0);
@@ -287,12 +288,12 @@ textarea {
     transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  &:is(:hover, :focus-visible):not(:disabled) {
+  &:is(:hover, :focus-visible):not(:disabled, [aria-disabled='true']) {
     color: var(--background);
     text-decoration-color: transparent;
   }
 
-  &:is(:hover, :focus-visible):not(:disabled)::before {
+  &:is(:hover, :focus-visible):not(:disabled, [aria-disabled='true'])::before {
     transform: scaleY(1);
   }
 

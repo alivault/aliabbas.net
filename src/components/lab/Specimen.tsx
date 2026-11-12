@@ -1,7 +1,6 @@
 import { useId } from 'react'
 import type { ReactNode } from 'react'
 import ScrollReveal from '~/components/ScrollReveal'
-import Title from '~/components/Title'
 import { cn } from 'cn'
 import StateBar from './StateBar'
 import type { LabStream } from './use-lab-stream'
@@ -56,16 +55,21 @@ export default function Specimen({
         }}
       >
         <header className={cn('space-y-3', wide && 'max-w-2xl')}>
-          <Title as="h2" variant="card" id={headingId} className="text-balance">
+          <h2
+            id={headingId}
+            className="font-hud text-hud text-sm leading-[2.2] tracking-[0.42em] text-balance uppercase"
+          >
             {title}
-          </Title>
-          <p className="text-fg-muted text-base leading-7">{description}</p>
+          </h2>
+          <p className="text-fg-secondary text-base leading-7">{description}</p>
           <p className="text-fg-muted text-sm leading-6">
-            <span className="text-foreground font-semibold">Keys: </span>
+            <span className="font-hud text-hud mr-2 tracking-[0.3em] uppercase">
+              Keys
+            </span>
             {keys}
           </p>
         </header>
-        <div className="border-foreground/15 bg-foreground/[0.015] min-w-0 self-start rounded-xl border p-4 sm:p-6">
+        <div className="border-hud/25 bg-background/60 min-w-0 self-start border p-4 backdrop-blur-[20px] sm:p-6">
           <StateBar label={title} stream={stream} />
           <div className="pt-6">{children}</div>
         </div>

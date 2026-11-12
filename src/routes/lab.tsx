@@ -9,8 +9,6 @@ import ResizerSpecimen from '~/components/lab/ResizerSpecimen'
 import StreamingSpecimen from '~/components/lab/StreamingSpecimen'
 import TransitionSpecimen from '~/components/lab/TransitionSpecimen'
 import Main from '~/components/Main'
-import PageHeading from '~/components/PageHeading'
-import ScrollReveal from '~/components/ScrollReveal'
 import SectionNav from '~/components/SectionNav'
 
 export const Route = createFileRoute('/lab')({
@@ -33,20 +31,19 @@ const specimens = [
 
 function LabPage() {
   return (
-    <Main>
+    <Main overWorld hideFooter>
       <LabMotionProvider>
-        <section className="bg-background text-foreground">
-          <div className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
-            <ScrollReveal
-              as="header"
-              trigger="mount"
-              className="grid justify-items-center gap-6 text-center"
-            >
-              <PageHeading>Every state, on purpose.</PageHeading>
-              <p className="text-fg-muted max-w-xl text-base leading-7 text-pretty lg:text-lg lg:leading-8">
-                The parts behind this site&apos;s chat. Force any state.
+        <section data-hud className="text-foreground">
+          <div className="mx-auto max-w-[1600px] px-6 pt-[14svh] pb-48 sm:px-16">
+            <header>
+              <h1 className="font-hud text-hud text-lg leading-[1.9] tracking-[0.42em] uppercase">
+                Lab
+              </h1>
+              <p className="text-fg-secondary mt-6 max-w-[60ch] text-base leading-7">
+                Every state, on purpose. The parts behind the chat of this site,
+                each with its real code and a fake stream. Force any state.
               </p>
-            </ScrollReveal>
+            </header>
 
             <SectionNav
               label="Specimens"

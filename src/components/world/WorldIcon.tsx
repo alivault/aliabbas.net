@@ -148,8 +148,17 @@ export default function WorldIcon({
       g.position.y = sheet.y + Math.sin(t * 0.7 + index) * 0.12
       g.rotation.z = Math.sin(t * 0.5 + index * 2) * 0.03
     }
-    // Only the icon in focus stays lit while the world goes dark.
+    // Only the icon in focus stays lit while the world goes dark. The icon
+    // of a full-width page fades out instead, once the camera is there.
     dim.value = focused ? 0 : WORLD_UNIFORMS.uDim.value
+    if (texture) {
+      face.opacity = THREE.MathUtils.damp(
+        face.opacity,
+        focused && sheet.wide && getWorld().phase === 'inside' ? 0 : 1,
+        6,
+        delta,
+      )
+    }
     glow.current = THREE.MathUtils.damp(
       glow.current,
       hovered.current && !focused ? 1 : 0,

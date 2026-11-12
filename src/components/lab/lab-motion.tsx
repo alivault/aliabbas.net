@@ -102,27 +102,25 @@ export function ReducedMotionSwitch({ className }: { className?: string }) {
         onClick={() => {
           if (!system) setForced(!forced)
         }}
-        className="group/switch focus-visible:ring-brand/70 flex items-center gap-3 rounded-full outline-none focus-visible:ring-2 focus-visible:ring-offset-4 focus-visible:ring-offset-[var(--background)] aria-disabled:cursor-not-allowed"
+        className="group/switch focus-visible:ring-hud flex items-center gap-3 outline-none focus-visible:ring-1 focus-visible:ring-offset-4 focus-visible:ring-offset-[var(--background)] aria-disabled:cursor-not-allowed"
       >
         <span
           aria-hidden="true"
           className={cn(
-            'relative flex h-6 w-11 shrink-0 items-center rounded-full border p-0.5 transition-colors',
-            reduce
-              ? 'border-brand bg-brand'
-              : 'border-foreground/25 bg-foreground/[0.06]',
+            'relative flex h-6 w-11 shrink-0 items-center border p-0.5 transition-colors',
+            reduce ? 'border-hud bg-hud' : 'border-hud/40',
           )}
         >
           <span
             className={cn(
-              'size-4.5 rounded-full transition-transform',
+              'size-4.5 transition-transform',
               reduce
-                ? 'bg-brand-foreground translate-x-5'
-                : 'bg-foreground/60 translate-x-0',
+                ? 'bg-background translate-x-5'
+                : 'bg-hud/60 translate-x-0',
             )}
           />
         </span>
-        <span className="text-foreground text-sm font-semibold whitespace-nowrap">
+        <span className="font-hud text-hud text-sm tracking-[0.42em] whitespace-nowrap uppercase">
           Reduce motion
         </span>
       </button>

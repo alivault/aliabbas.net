@@ -34,6 +34,11 @@ export type SheetSpec = {
   /** A short kind label, for the HUD. */
   kind: 'Case study' | 'Page' | 'Game'
   icon: SheetIcon
+  /**
+   * The page uses the full width. The camera still flies to the icon, and
+   * then the icon fades out, so it is not behind the page.
+   */
+  wide?: boolean
   x: number
   z: number
   /** The height of the sheet center. */
@@ -87,6 +92,7 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
   },
   {
     id: 'lab',
+    wide: true,
     icon: { type: 'glyph', glyph: FlaskConical },
     to: '/lab',
     title: 'Lab',

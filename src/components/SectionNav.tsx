@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { scrollToSection } from '~/lib/scroll-to-section'
-import { chipStyles } from '~/components/ui/chip'
 import { cn } from 'cn'
 
 export type SectionNavItem = {
@@ -115,11 +114,11 @@ export default function SectionNav({
             a theme switch cannot catch them in a transition. */}
         <div
           aria-hidden="true"
-          className="border-foreground/10 bg-background/85 pointer-events-none absolute inset-0 -z-10 border-b opacity-0 backdrop-blur-[12px] backdrop-saturate-[1.8] transition-opacity duration-300 lg:group-data-stuck/bar:opacity-100"
+          className="border-hud/20 bg-background/85 pointer-events-none absolute inset-0 -z-10 border-b opacity-0 backdrop-blur-[12px] backdrop-saturate-[1.8] transition-opacity duration-300 lg:group-data-stuck/bar:opacity-100"
         />
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <nav aria-label={label}>
-            <ol className="flex flex-wrap gap-2">
+            <ol className="font-hud text-hud flex flex-wrap gap-x-8 gap-y-2 text-sm tracking-[0.42em]">
               {items.map((item) => {
                 const active = item.id === activeId
                 return (
@@ -128,17 +127,13 @@ export default function SectionNav({
                       href={`#${item.id}`}
                       onClick={scrollToSection}
                       aria-current={active ? 'location' : undefined}
-                      className={chipStyles({ active })}
+                      className={cn(
+                        'hud-fill uppercase',
+                        active ? 'bg-hud text-background' : 'text-hud/70',
+                      )}
                     >
                       {item.number && (
-                        <span
-                          className={cn(
-                            'mr-1.5 tabular-nums',
-                            active ? 'text-brand' : 'text-fg-muted',
-                          )}
-                        >
-                          {item.number}
-                        </span>
+                        <span className="mr-2 tabular-nums">{item.number}</span>
                       )}
                       {item.label}
                     </a>
