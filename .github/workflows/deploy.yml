@@ -40,10 +40,22 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
-      - name: Set up Vite+ and install dependencies
+      - name: Set up Vite+
         uses: voidzero-dev/setup-vp@v1.21.2
         with:
-          cache: true
+          run-install: false
+
+      # node_modules itself, for this lockfile: a hit skips the install.
+      - name: Restore node_modules
+        id: modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: modules-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json') }}
+
+      - name: Install dependencies
+        if: steps.modules.outputs.cache-hit != 'true'
+        run: vp install --frozen-lockfile
 
       - name: Check, unit tests and build
         run: |
@@ -79,10 +91,22 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v6
 
-      - name: Set up Vite+ and install dependencies
+      - name: Set up Vite+
         uses: voidzero-dev/setup-vp@v1.21.2
         with:
-          cache: true
+          run-install: false
+
+      # node_modules itself, for this lockfile: a hit skips the install.
+      - name: Restore node_modules
+        id: modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: modules-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json') }}
+
+      - name: Install dependencies
+        if: steps.modules.outputs.cache-hit != 'true'
+        run: vp install --frozen-lockfile
 
       # E2E=1 turns off the remote Cloudflare bindings, so preview needs no
       # login. The tests mock the AI. The Turnstile test key from
