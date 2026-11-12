@@ -49,10 +49,6 @@ export const COLOR_ROLES: Record<string, { group: ColorGroup; use: string }> = {
   popover: { group: 'Surface', use: 'Hover cards, menus and drawers.' },
   secondary: { group: 'Surface', use: 'Quiet filled controls.' },
   muted: { group: 'Surface', use: 'Wells and hover fills.' },
-  'page-base': {
-    group: 'Surface',
-    use: 'Behind the page cards during a page transition.',
-  },
   foreground: {
     group: 'Text',
     use: 'All text. Lower its opacity for less important text.',

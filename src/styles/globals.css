@@ -104,8 +104,6 @@
      APCA Lc 60+ as text and under brand-foreground. */
   --brand: oklch(0.48 0.085 216.4);
   --brand-foreground: var(--background);
-  /* Surface behind the page cards during page transitions. */
-  --page-base: oklch(0.8 0.014 94);
   /* The liquid metal of a primary button on hover (liquid-metal.ts). Dark
      in both schemes, so the light label reads on it. */
   --chrome: oklch(0.12 0.005 260);
@@ -160,7 +158,6 @@
     --contradicted: oklch(0.79 0.12 25);
     --border: oklch(0.28 0.006 245.5);
     --input: oklch(0.28 0.006 245.5);
-    --page-base: oklch(0.05 0.002 245.5);
   }
 }
 
@@ -199,7 +196,6 @@
   --ring: color-mix(in oklab, var(--foreground) 50%, transparent);
   --brand: oklch(0.806 0.139 216.4);
   --brand-foreground: var(--background);
-  --page-base: oklch(0.05 0.002 245.5);
   --chrome: oklch(0.12 0.005 260);
   --chrome-foreground: oklch(0.99 0 0);
   --hud: oklch(0.6 0.19 37);
@@ -251,68 +247,6 @@
   syntax: '<angle>';
   inherits: false;
   initial-value: 0deg;
-}
-
-/* Page transition. See src/lib/page-transition.ts. */
-html:active-view-transition-type(page) {
-  /* Each page is a card that moves over this base surface. */
-  &::view-transition-group(root) {
-    background: var(--page-base);
-  }
-
-  &::view-transition-old(root),
-  &::view-transition-new(root) {
-    mix-blend-mode: normal;
-    transform-origin: 50% 50%;
-  }
-
-  &::view-transition-old(root) {
-    animation: page-card-out 900ms cubic-bezier(0.76, 0, 0.24, 1) both;
-  }
-
-  &::view-transition-new(root) {
-    animation: page-card-in 800ms cubic-bezier(0.76, 0, 0.24, 1) 100ms both;
-  }
-
-  /*
-   * The nav text gets its own snapshot, so it stays in place. Its blur layer
-   * (.site-header-chrome) has no name: it stays in the old page snapshot,
-   * where the blur is captured, and leaves with the old page.
-   * Set the name only during the transition: a view-transition-name makes an
-   * element a backdrop root, which stops backdrop blur.
-   */
-  & .site-header {
-    view-transition-name: site-header;
-  }
-
-  &::view-transition-group(site-header) {
-    animation: none;
-  }
-
-  /* Swap the nav text at once. A cross-fade makes the text flash. */
-  &::view-transition-old(site-header) {
-    animation: none;
-    opacity: 0;
-  }
-
-  &::view-transition-new(site-header) {
-    animation: none;
-  }
-}
-
-/* Current page: move up, shrink, and fade into the base surface. */
-@keyframes page-card-out {
-  to {
-    transform: translateY(-20vh) scale(0.9);
-    opacity: 0;
-  }
-}
-
-/* Next page: slide up from the bottom at full size. */
-@keyframes page-card-in {
-  from {
-    transform: translateY(100vh);
-  }
 }
 
 /* 16px on phones, so iOS does not zoom into a field on focus. */
