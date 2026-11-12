@@ -1,4 +1,4 @@
-import { expect, test, open } from './fixtures'
+import { expect, isDesktop, open, test } from './fixtures'
 import type { Page } from '@playwright/test'
 
 function skill(page: Page, title: string) {
@@ -65,18 +65,43 @@ for (const path of ['/', '/skills']) {
       ).toBeVisible()
     })
 
-    test('arrow keys move between the motion tabs', async ({ page }) => {
+    test('arrow keys move the motion card between corners', async ({
+      page,
+    }) => {
       const example = skill(page, 'Motion and interaction')
-      await example.getByRole('tab', { name: 'Answer' }).click()
+      const status = example.getByRole('status')
+      await example.getByRole('button', { name: /^Card/ }).focus()
+      await expect(status).toHaveText('Card in the top left corner.')
       await page.keyboard.press('ArrowRight')
-      const sources = example.getByRole('tab', { name: 'Sources' })
-      await expect(sources).toBeFocused()
-      await expect(sources).toHaveAttribute('aria-selected', 'true')
-      await expect(example.getByRole('tabpanel')).toHaveText(/keeps its place/)
-      await page.keyboard.press('End')
-      await expect(example.getByRole('tab', { name: 'Notes' })).toBeFocused()
-      await page.keyboard.press('ArrowRight')
-      await expect(example.getByRole('tab', { name: 'Answer' })).toBeFocused()
+      await expect(status).toHaveText('Card in the top right corner.')
+      await page.keyboard.press('ArrowDown')
+      await expect(status).toHaveText('Card in the bottom right corner.')
+      await page.keyboard.press('ArrowLeft')
+      await expect(status).toHaveText('Card in the bottom left corner.')
+    })
+
+    test('a thrown card lands in the corner its momentum points to', async ({
+      page,
+    }) => {
+      test.skip(!isDesktop(page), 'A throw needs a pointer.')
+      const example = skill(page, 'Motion and interaction')
+      const card = example.getByRole('button', { name: /^Card/ })
+      await card.scrollIntoViewIfNeeded()
+      const box = (await card.boundingBox())!
+      // A short, fast flick to the lower right. The release point is still
+      // near the top left: the momentum decides the corner.
+      await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2)
+      await page.mouse.down()
+      for (let step = 1; step <= 4; step++) {
+        await page.mouse.move(
+          box.x + box.width / 2 + step * 30,
+          box.y + box.height / 2 + step * 15,
+        )
+      }
+      await page.mouse.up()
+      await expect(example.getByRole('status')).toHaveText(
+        'Card in the bottom right corner.',
+      )
     })
 
     test('the vitals example leaves the loading state', async ({ page }) => {

@@ -1,5 +1,5 @@
-import { useEffect, useId, useRef, useState } from 'react'
-import type { CSSProperties, KeyboardEvent, ReactNode } from 'react'
+import { useEffect, useRef } from 'react'
+import type { CSSProperties, ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
   CircleAlert,
@@ -9,48 +9,19 @@ import {
   Square,
   Zap,
 } from 'lucide-react'
-import { AnimatePresence, motion, useInView } from 'motion/react'
+import { useInView } from 'motion/react'
 import { StateTrack } from '~/components/lab/StateBar'
 import { useLabStream } from '~/components/lab/use-lab-stream'
 import type { LabMachineState } from '~/components/lab/use-lab-stream'
 import { Button } from '~/components/ui/button'
 import type { Capability } from '~/data/capabilities'
-import { DURATIONS, EASE_IN, EASE_OUT, SPRINGS } from '~/lib/design/motion'
 import { SCHEME_STYLES } from '~/lib/design/tokens'
 import { MIN_SAMPLES, formatMetric } from '~/lib/vitals'
 import type { MetricName, Rating } from '~/lib/vitals'
 import { getVitalsSummary } from '~/lib/vitals-server'
 import { cn } from 'cn'
-
-/** The frame of each example: a card with a caption under it. */
-function Frame({
-  caption,
-  children,
-  className,
-  onKeyDown,
-}: {
-  caption: ReactNode
-  children: ReactNode
-  className?: string
-  onKeyDown?: (event: KeyboardEvent) => void
-}) {
-  return (
-    <figure className="min-w-0">
-      <div
-        onKeyDown={onKeyDown}
-        className={cn(
-          'border-border bg-card flex min-h-56 flex-col rounded-xl border p-5',
-          className,
-        )}
-      >
-        {children}
-      </div>
-      <figcaption className="text-fg-muted mt-3 text-sm leading-6">
-        {caption}
-      </figcaption>
-    </figure>
-  )
-}
+import Frame from './Frame'
+import ThrowExample from './ThrowExample'
 
 const STREAM_STATUS: Record<LabMachineState, string> = {
   idle: 'Idle. No answer.',
@@ -171,128 +142,6 @@ function StreamingExample() {
           <Square className="fill-current" aria-hidden="true" />
           Stop
         </Button>
-      </div>
-    </Frame>
-  )
-}
-
-const VIEWS = [
-  {
-    id: 'answer',
-    label: 'Answer',
-    body: 'The indicator slides on a spring. The panel enters with the ease for things that enter.',
-  },
-  {
-    id: 'sources',
-    label: 'Sources',
-    body: 'Each panel keeps its place. Switch back and nothing starts again.',
-  },
-  {
-    id: 'notes',
-    label: 'Notes',
-    body: 'With reduced motion on, the indicator jumps and only the opacity changes.',
-  },
-] as const
-
-type ViewId = (typeof VIEWS)[number]['id']
-
-/** A tab list with a sliding indicator, as the mode pill of the chat. */
-function MotionExample() {
-  const [view, setView] = useState<ViewId>('answer')
-  const refs = useRef<Array<HTMLButtonElement | null>>([])
-  const groupId = useId()
-
-  const move = (event: KeyboardEvent, index: number) => {
-    const last = VIEWS.length - 1
-    const next =
-      event.key === 'ArrowRight'
-        ? index === last
-          ? 0
-          : index + 1
-        : event.key === 'ArrowLeft'
-          ? index === 0
-            ? last
-            : index - 1
-          : event.key === 'Home'
-            ? 0
-            : event.key === 'End'
-              ? last
-              : null
-    if (next === null) return
-    event.preventDefault()
-    refs.current[next]?.focus()
-    setView(VIEWS[next].id)
-  }
-
-  const current = VIEWS.find((item) => item.id === view) ?? VIEWS[0]
-
-  return (
-    <Frame caption="Arrow keys move between the tabs. The indicator uses SPRINGS.settle.">
-      <div
-        role="tablist"
-        aria-label="Motion example"
-        className="bg-muted flex w-fit gap-1 rounded-full p-1"
-      >
-        {VIEWS.map((item, index) => {
-          const selected = item.id === view
-          return (
-            <button
-              key={item.id}
-              ref={(element) => {
-                refs.current[index] = element
-              }}
-              type="button"
-              role="tab"
-              id={`${groupId}-${item.id}-tab`}
-              aria-selected={selected}
-              aria-controls={`${groupId}-panel`}
-              tabIndex={selected ? 0 : -1}
-              onClick={() => setView(item.id)}
-              onKeyDown={(event) => move(event, index)}
-              className={cn(
-                'focus-visible:ring-ring/50 relative h-8 rounded-full px-4 text-sm font-medium transition-colors outline-none focus-visible:ring-3',
-                selected
-                  ? 'text-background'
-                  : 'text-fg-muted hover:text-foreground',
-              )}
-            >
-              {selected && (
-                <motion.span
-                  layoutId={`${groupId}-indicator`}
-                  transition={SPRINGS.settle}
-                  className="bg-foreground absolute inset-0 rounded-full"
-                />
-              )}
-              <span className="relative">{item.label}</span>
-            </button>
-          )
-        })}
-      </div>
-      <div
-        role="tabpanel"
-        id={`${groupId}-panel`}
-        aria-labelledby={`${groupId}-${view}-tab`}
-        className="relative mt-5 flex-1"
-      >
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.p
-            key={current.id}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{
-              opacity: 1,
-              y: 0,
-              transition: { duration: DURATIONS.enter, ease: EASE_OUT },
-            }}
-            exit={{
-              opacity: 0,
-              y: -6,
-              transition: { duration: DURATIONS.exit, ease: EASE_IN },
-            }}
-            className="text-fg-secondary max-w-sm text-base leading-7"
-          >
-            {current.body}
-          </motion.p>
-        </AnimatePresence>
       </div>
     </Frame>
   )
@@ -419,7 +268,7 @@ function VitalsExample() {
 
 const EXAMPLES: Record<Capability['id'], () => ReactNode> = {
   streaming: StreamingExample,
-  motion: MotionExample,
+  motion: ThrowExample,
   'design-systems': DesignSystemExample,
   performance: VitalsExample,
 }
