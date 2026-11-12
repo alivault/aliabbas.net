@@ -199,8 +199,9 @@ function SignInPanel({
 
         {accessError.status === 503 ? (
           <div className="mt-8 rounded-lg border border-[#ffbf69]/30 bg-[#ffbf69]/10 p-4 text-sm leading-6 text-[#ffcf8d]">
-            Set the <code className="font-mono">ADMIN_EMAILS</code> Worker
-            secret to a comma-separated list of approved Better Auth emails.
+            Set the <code className="font-mono">ADMIN_EMAILS</code> variable in
+            wrangler.jsonc to a comma-separated list of approved Better Auth
+            emails.
           </div>
         ) : session?.user && accessError.status === 403 ? (
           <div className="mt-8">

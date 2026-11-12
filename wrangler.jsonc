@@ -60,5 +60,7 @@
     "VITE_CONVEX_SITE_URL": "https://valiant-penguin-216.convex.site",
     // The frontend hostnames that the Turnstile check accepts.
     "TURNSTILE_HOSTNAMES": "aliabbas.net,www.aliabbas.net",
+    // The Better Auth accounts that may open /admin, comma-separated.
+    "ADMIN_EMAILS": "ali@aliabbas.net",
   },
 }

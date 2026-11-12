@@ -90,12 +90,8 @@ vp exec wrangler secret put ANTHROPIC_API_KEY
 ## Chat administration
 
 Stored chat conversations are at `/admin/conversations`. Access uses the
-Better Auth accounts plus the `ADMIN_EMAILS` Worker secret, a
-comma-separated list:
-
-```bash
-vp exec wrangler secret put ADMIN_EMAILS
-```
+Better Auth accounts plus `ADMIN_EMAILS`, a comma-separated list in the
+`vars` of `wrangler.jsonc`. It is not a secret.
 
 Apply D1 migrations locally and remotely after you add one:
 
