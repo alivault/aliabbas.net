@@ -159,7 +159,6 @@ export default function ResizerSpecimen() {
   return (
     <Specimen
       id={ID}
-      number="3"
       title="Fluid resizer"
       wide
       stream={labStream}

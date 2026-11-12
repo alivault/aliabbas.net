@@ -16,7 +16,6 @@ export default function Specimen({
   description,
   id,
   keys,
-  number,
   stream,
   title,
   wide = false,
@@ -26,7 +25,6 @@ export default function Specimen({
   id: string
   /** A short line on the keyboard path. */
   keys: ReactNode
-  number: string
   stream: LabStream
   title: string
   /** Give the stage the full width, below the title. */
@@ -59,7 +57,7 @@ export default function Specimen({
       >
         <header className={cn('space-y-3', wide && 'max-w-2xl')}>
           <Title as="h2" variant="card" id={headingId} className="text-balance">
-            <span className="tabular-nums">{number}.</span> {title}
+            {title}
           </Title>
           <p className="text-fg-muted text-base leading-7">{description}</p>
           <p className="text-fg-muted text-sm leading-6">

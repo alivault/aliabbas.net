@@ -31,11 +31,6 @@ const specimens = [
   { id: 'state-transition', label: 'A move that keeps state' },
 ] as const
 
-const specimenLinks = specimens.map((specimen, index) => ({
-  ...specimen,
-  number: `${index + 1}.`,
-}))
-
 function LabPage() {
   return (
     <Main>
@@ -55,7 +50,7 @@ function LabPage() {
 
             <SectionNav
               label="Specimens"
-              items={specimenLinks}
+              items={specimens}
               trailing={<ReducedMotionSwitch />}
               className="mt-12"
             />

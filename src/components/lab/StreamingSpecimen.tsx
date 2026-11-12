@@ -40,7 +40,6 @@ export default function StreamingSpecimen() {
   return (
     <Specimen
       id={ID}
-      number="1"
       title="Streaming answer"
       stream={labStream}
       description="The chat's real renderer and citations, fed by a fake stream."

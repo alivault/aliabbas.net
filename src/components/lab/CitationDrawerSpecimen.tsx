@@ -51,7 +51,6 @@ export default function CitationDrawerSpecimen() {
   return (
     <Specimen
       id={ID}
-      number="2"
       title="Citation drawer"
       stream={labStream}
       description="Evidence in a drawer: from the bottom on a phone, from the right on a wide screen."

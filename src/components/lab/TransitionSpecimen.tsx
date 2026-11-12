@@ -228,7 +228,6 @@ export default function TransitionSpecimen() {
   return (
     <Specimen
       id={ID}
-      number="4"
       title="A move that keeps state"
       stream={stream}
       description="Type a note or scroll, then move the card. Nothing resets."
