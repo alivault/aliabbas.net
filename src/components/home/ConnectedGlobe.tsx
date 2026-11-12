@@ -1087,6 +1087,11 @@ export default function ConnectedGlobe() {
       impactGeometry.dispose()
       impactRingGeometry.dispose()
       renderer.dispose()
+      // dispose() keeps the WebGL context until garbage collection. Each
+      // visit to the home page makes a new one, and on some GPUs the old
+      // ones use enough memory that the page transition snapshot fails
+      // and shows white. Release the context now.
+      renderer.forceContextLoss()
     }
   }, [prefersDarkMode])
 
@@ -1094,6 +1099,9 @@ export default function ConnectedGlobe() {
     <div ref={containerRef} className="absolute inset-0">
       {/* The entrance is CSS (animate-enter-soft), so server and client render the same. */}
       <canvas
+        // A new canvas for each scheme: the cleanup loses the old context,
+        // and a lost canvas cannot get a new one.
+        key={prefersDarkMode ? 'dark' : 'light'}
         ref={canvasRef}
         className="animate-enter-soft block size-full touch-pan-y outline-none"
         aria-label="Interactive globe with animated connections. Drag or use arrow keys to rotate."
