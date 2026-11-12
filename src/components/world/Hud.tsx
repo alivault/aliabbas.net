@@ -51,7 +51,7 @@ export default function Hud({ inPage }: { inPage: boolean }) {
           <>
             {inPage ? (
               <Link to="/" data-sound="none" className={cn(corner, 'text-lg')}>
-                Close
+                Back
               </Link>
             ) : null}
             <button
