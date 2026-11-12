@@ -120,7 +120,7 @@ export default function SiteIndex() {
             transition: { duration: DURATIONS.exit, ease: EASE_IN },
           }}
           transition={{ duration: DURATIONS.enter, ease: EASE_OUT }}
-          className="font-hud text-hud bg-ground/60 fixed inset-0 z-20 overflow-y-auto text-sm tracking-[0.42em] uppercase backdrop-blur-[2px]"
+          className="font-hud text-hud bg-ground/60 fixed inset-0 z-20 overflow-y-auto text-sm tracking-[0.42em] uppercase backdrop-blur-[20px]"
         >
           <motion.nav
             aria-label="Index"
