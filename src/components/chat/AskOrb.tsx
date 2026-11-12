@@ -166,6 +166,20 @@ void main() {
   float edge = edgeAt(angle);
   float cover = smoothstep(edge + 1.5 / uRadius, edge - 1.5 / uRadius, len);
 
+  // A halo of light around the orb.
+  float outside = max(len - edge, 0.0) / edge;
+  float halo = exp(-outside * 7.0) * (0.25 + 0.35 * uEnergy) * (1.0 - cover);
+  // Fade the halo out before the canvas border, so no edge shows.
+  vec2 border = min(pixel, uResolution - pixel) / (uRadius * 0.5);
+  halo *= clamp(min(border.x, border.y), 0.0, 1.0);
+  vec3 haloTint = mix(WARM[0], COOL[0], 0.5 + 0.5 * sin(angle + uFlow * 0.3));
+  // Most of the canvas is outside the orb: only the halo shows there, so
+  // skip the costly light inside.
+  if (cover <= 0.0) {
+    fragColor = vec4(haloTint * halo, halo * 0.6);
+    return;
+  }
+
   // The point on a unit sphere under this pixel.
   vec2 q = p / edge;
   float z = sqrt(max(1.0 - dot(q, q), 0.0));
@@ -207,14 +221,6 @@ void main() {
   // The dark glass lets a little of the page through. The light does not.
   float glow = max(max(lit.r, lit.g), lit.b);
   float alpha = cover * clamp(0.72 + glow * 0.45 + spec, 0.0, 1.0);
-
-  // A halo of light around the orb.
-  float outside = max(len - edge, 0.0) / edge;
-  float halo = exp(-outside * 7.0) * (0.25 + 0.35 * uEnergy) * (1.0 - cover);
-  // Fade the halo out before the canvas border, so no edge shows.
-  vec2 border = min(pixel, uResolution - pixel) / (uRadius * 0.5);
-  halo *= clamp(min(border.x, border.y), 0.0, 1.0);
-  vec3 haloTint = mix(WARM[0], COOL[0], 0.5 + 0.5 * sin(angle + uFlow * 0.3));
 
   fragColor = vec4(color * alpha + haloTint * halo, alpha + halo * 0.6);
 }
