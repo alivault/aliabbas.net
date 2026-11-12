@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">
+  <!-- The Chromagine mark: eight color petals on its blue (SideProjects.tsx). -->
+  <rect width="100" height="100" rx="22" fill="#335cff"/>
+  <g stroke="#ffffff" stroke-opacity="0.35" stroke-width="0.7">
+    <rect x="39.85" y="16.4" width="20.3" height="30.1" rx="10.15" fill="#ff375f" transform="rotate(0 50 50)" opacity="0.9" style="mix-blend-mode:screen"/>
+    <rect x="39.85" y="16.4" width="20.3" height="30.1" rx="10.15" fill="#ff9f0a" transform="rotate(45 50 50)" opacity="0.9" style="mix-blend-mode:screen"/>
+    <rect x="39.85" y="16.4" width="20.3" height="30.1" rx="10.15" fill="#ffd60a" transform="rotate(90 50 50)" opacity="0.9" style="mix-blend-mode:screen"/>
+    <rect x="39.85" y="16.4" width="20.3" height="30.1" rx="10.15" fill="#30d158" transform="rotate(135 50 50)" opacity="0.9" style="mix-blend-mode:screen"/>
+    <rect x="39.85" y="16.4" width="20.3" height="30.1" rx="10.15" fill="#64d2ff" transform="rotate(180 50 50)" opacity="0.9" style="mix-blend-mode:screen"/>
+    <rect x="39.85" y="16.4" width="20.3" height="30.1" rx="10.15" fill="#0a84ff" transform="rotate(225 50 50)" opacity="0.9" style="mix-blend-mode:screen"/>
+    <rect x="39.85" y="16.4" width="20.3" height="30.1" rx="10.15" fill="#bf5af2" transform="rotate(270 50 50)" opacity="0.9" style="mix-blend-mode:screen"/>
+    <rect x="39.85" y="16.4" width="20.3" height="30.1" rx="10.15" fill="#ff2d95" transform="rotate(315 50 50)" opacity="0.9" style="mix-blend-mode:screen"/>
+  </g>
+</svg>
