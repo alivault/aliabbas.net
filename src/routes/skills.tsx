@@ -5,6 +5,7 @@ import Main from '~/components/Main'
 import PageHeading from '~/components/PageHeading'
 import ScrollReveal from '~/components/ScrollReveal'
 import SkillList from '~/components/skills/SkillList'
+import StackMarquee from '~/components/skills/StackMarquee'
 import Title from '~/components/Title'
 
 const architecture = [
@@ -45,7 +46,7 @@ function SkillsPage() {
   return (
     <Main>
       <section className="bg-background text-foreground">
-        <div className="py-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
+        <div className="pt-section pb-section-content mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
           <ScrollReveal
             as="header"
             className="grid justify-items-center gap-6 text-center"
@@ -59,7 +60,14 @@ function SkillsPage() {
               after launch.
             </p>
           </ScrollReveal>
+        </div>
 
+        {/* Full width, outside the page margins. */}
+        <ScrollReveal amount={0.4}>
+          <StackMarquee />
+        </ScrollReveal>
+
+        <div className="pb-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
           <div className="mt-section-content">
             <SkillList headingLevel="h2" />
           </div>
