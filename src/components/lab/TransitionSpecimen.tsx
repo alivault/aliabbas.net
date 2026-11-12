@@ -4,7 +4,7 @@ import { LayoutGroup, motion } from 'motion/react'
 import { cn } from 'cn'
 import LabAnswer from './LabAnswer'
 import { useLabMotion } from './lab-motion'
-import Specimen from './Specimen'
+import Specimen, { SpecimenLabel } from './Specimen'
 import { useLabStream } from './use-lab-stream'
 import type { LabStream } from './use-lab-stream'
 import { SPRINGS } from '~/lib/design/motion'
@@ -40,11 +40,7 @@ function PlacementGroup({
   }
 
   return (
-    <div
-      role="radiogroup"
-      aria-label="Card placement"
-      className="border-foreground/15 inline-flex rounded-full border p-0.5"
-    >
+    <div role="radiogroup" aria-label="Card placement" className="flex gap-x-6">
       {PLACEMENTS.map((placement, index) => (
         <button
           key={placement}
@@ -58,12 +54,27 @@ function PlacementGroup({
           onClick={() => onChange(placement)}
           onKeyDown={(event) => onKeyDown(event, index)}
           className={cn(
-            'focus-visible:ring-brand/70 rounded-full px-3.5 py-1.5 text-sm transition-colors outline-none focus-visible:ring-2',
-            value === placement
-              ? 'bg-foreground text-background'
-              : 'text-fg-muted hover:text-foreground',
+            'hud-fill group/radio flex items-center gap-3 text-base leading-7',
+            value === placement ? 'text-foreground' : 'text-fg-muted',
           )}
         >
+          <span
+            aria-hidden="true"
+            className={cn(
+              'flex size-3 shrink-0 items-center justify-center border transition-colors',
+              value === placement ? 'border-hud' : 'border-fg-faint',
+              'group-hover/radio:border-background group-focus-visible/radio:border-background',
+            )}
+          >
+            <span
+              className={cn(
+                'size-1.5 transition-colors',
+                value === placement
+                  ? 'bg-hud group-hover/radio:bg-background group-focus-visible/radio:bg-background'
+                  : 'bg-transparent',
+              )}
+            />
+          </span>
           {PLACEMENT_LABELS[placement]}
         </button>
       ))}
@@ -228,16 +239,21 @@ export default function TransitionSpecimen() {
   return (
     <Specimen
       id={ID}
-      title="A move that keeps state"
+      title="Moving card"
       stream={stream}
       description="Type a note or scroll, then move the card. Nothing resets."
-      keys="Arrows in “Card placement” move the card."
+      keys="Arrows in Placement move the card."
+      controls={
+        <div>
+          <SpecimenLabel>Placement</SpecimenLabel>
+          <PlacementGroup value={placement} onChange={setPlacement} />
+          <p role="status" className="sr-only">
+            Card in the {PLACEMENT_LABELS[placement].toLowerCase()}.
+          </p>
+        </div>
+      }
     >
-      <div className="space-y-4">
-        <PlacementGroup value={placement} onChange={setPlacement} />
-        <p role="status" className="sr-only">
-          Card in the {PLACEMENT_LABELS[placement].toLowerCase()}.
-        </p>
+      <div>
         <LayoutGroup id={ID}>
           <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_17rem] lg:grid-rows-[auto_auto_auto]">
             <SavedAnswerCard placement={placement} stream={stream} />

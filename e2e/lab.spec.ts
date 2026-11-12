@@ -83,6 +83,7 @@ test(
   'citation drawer opens, closes with Esc, and returns focus',
   { tag: '@mobile' },
   async ({ page }) => {
+    await page.getByRole('tab', { name: 'Citation drawer' }).click()
     const specimen = page.locator('#citation-drawer')
     await specimen.scrollIntoViewIfNeeded()
     const chip = specimen.locator('button').filter({ hasText: /^3$/ }).first()
@@ -102,6 +103,7 @@ test('resizer: drag and keyboard both change the panel width', async ({
   page,
 }) => {
   test.skip(!isDesktop(page), 'The resizer is a desktop layout.')
+  await page.getByRole('tab', { name: 'Fluid resizer' }).click()
   const specimen = page.locator('#fluid-resizer')
   await specimen.scrollIntoViewIfNeeded()
   const handle = specimen.getByRole('separator').first()
@@ -123,6 +125,7 @@ test('resizer: drag and keyboard both change the panel width', async ({
 })
 
 test('moving the card keeps its state', async ({ page }) => {
+  await page.getByRole('tab', { name: 'Moving card' }).click()
   const specimen = page.locator('#state-transition')
   await specimen.scrollIntoViewIfNeeded()
   const note = specimen.getByLabel('Your note')
@@ -131,4 +134,23 @@ test('moving the card keeps its state', async ({ page }) => {
   await specimen.getByRole('radio', { name: 'Dock' }).click()
   await expect(specimen.getByLabel('Your note')).toHaveValue('hello')
   await expect(specimen.getByText(/Mounted 1 time/)).toBeVisible()
+})
+
+test('tabs: arrows change the demo, and the URL keeps it', async ({ page }) => {
+  const first = page.getByRole('tab', { name: 'Streaming answer' })
+  await expect(first).toHaveAttribute('aria-selected', 'true')
+  await first.focus()
+  await page.keyboard.press('ArrowRight')
+  const drawer = page.getByRole('tab', { name: 'Citation drawer' })
+  await expect(drawer).toBeFocused()
+  await expect(drawer).toHaveAttribute('aria-selected', 'true')
+  await expect(page.locator('#citation-drawer')).toBeVisible()
+  await expect(page).toHaveURL(/demo=citation-drawer/)
+  await page.keyboard.press('End')
+  await expect(page.locator('#state-transition')).toBeVisible()
+  await page.reload()
+  await expect(page.getByRole('tab', { name: 'Moving card' })).toHaveAttribute(
+    'aria-selected',
+    'true',
+  )
 })

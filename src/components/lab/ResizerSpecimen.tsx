@@ -160,7 +160,6 @@ export default function ResizerSpecimen() {
     <Specimen
       id={ID}
       title="Fluid resizer"
-      wide
       stream={labStream}
       description="Drag to resize the evidence panel, or collapse it to a rail."
       keys="On the handle, arrows resize and Enter toggles the panel."

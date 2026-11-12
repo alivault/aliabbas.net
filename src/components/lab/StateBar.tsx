@@ -6,53 +6,61 @@ import type { LabScenario } from '~/lib/lab/fake-stream'
 import { cn } from 'cn'
 import type { LabMachineState, LabStream } from './use-lab-stream'
 
-const MACHINE_STATES: ReadonlyArray<LabMachineState> = [
-  'idle',
-  'pending',
-  'streaming',
-  'complete',
-  'stopped',
-  'failed',
-]
-
 /**
- * The machine as a strip of states. The current state is filled. The
- * three end states share one column, because a turn reaches only one.
+ * The machine as a list of its states, by their names in the code. The
+ * current state is lit. The three end states share one line, because a
+ * turn reaches only one of them.
  */
 export function StateTrack({ state }: { state: LabMachineState }) {
   const node = (name: LabMachineState) => (
     <span
       key={name}
       className={cn(
-        'font-hud border px-2 py-0.5 text-sm tracking-[0.2em] uppercase transition-colors',
+        'transition-colors',
         state === name
           ? name === 'failed'
-            ? 'border-destructive bg-destructive text-background'
-            : 'border-hud bg-hud text-background'
-          : 'border-hud/20 text-hud/50',
+            ? 'text-destructive'
+            : 'text-hud'
+          : 'text-fg-faint',
       )}
     >
       {name}
     </span>
   )
-  const arrow = (
-    <span aria-hidden="true" className="text-fg-faint text-sm">
-      →
-    </span>
-  )
 
   return (
-    <div aria-hidden="true" className="flex flex-wrap items-center gap-1.5">
-      {node('idle')}
-      {arrow}
-      {node('pending')}
-      {arrow}
-      {node('streaming')}
-      {arrow}
-      <span className="flex flex-wrap gap-1">
-        {MACHINE_STATES.slice(3).map(node)}
-      </span>
-    </div>
+    <ol aria-hidden="true" className="font-mono text-sm leading-7">
+      {(['idle', 'pending', 'streaming'] as const).map((name) => (
+        <li key={name} className="flex items-center gap-2">
+          <Dot on={state === name} />
+          {node(name)}
+        </li>
+      ))}
+      <li className="flex items-center gap-2">
+        <Dot
+          on={state === 'complete' || state === 'stopped' || state === 'failed'}
+          failed={state === 'failed'}
+        />
+        <span className="flex gap-2">
+          {node('complete')}
+          <span className="text-fg-faint">|</span>
+          {node('stopped')}
+          <span className="text-fg-faint">|</span>
+          {node('failed')}
+        </span>
+      </li>
+    </ol>
+  )
+}
+
+function Dot({ on, failed = false }: { on: boolean; failed?: boolean }) {
+  return (
+    <span
+      className={cn(
+        'size-1.5 shrink-0 transition-colors',
+        on ? (failed ? 'bg-destructive' : 'bg-hud') : 'bg-fg-faint/40',
+      )}
+    />
   )
 }
 
@@ -97,7 +105,7 @@ function ScenarioRadioGroup({
     <div
       role="radiogroup"
       aria-label={label}
-      className="font-hud flex flex-wrap gap-x-5 gap-y-2 text-sm tracking-[0.2em]"
+      className="flex flex-wrap gap-x-5 gap-y-1 lg:flex-col lg:items-start"
     >
       {LAB_SCENARIOS.map((scenario, index) => {
         const checked = scenario === value
@@ -114,10 +122,27 @@ function ScenarioRadioGroup({
             onClick={() => onChange(scenario)}
             onKeyDown={(event) => move(event, index)}
             className={cn(
-              'hud-fill uppercase',
-              checked ? 'bg-hud text-background' : 'text-hud/70',
+              'hud-fill group/radio flex items-center gap-3 text-base leading-7',
+              checked ? 'text-foreground' : 'text-fg-muted',
             )}
           >
+            <span
+              aria-hidden="true"
+              className={cn(
+                'flex size-3 shrink-0 items-center justify-center border transition-colors',
+                checked ? 'border-hud' : 'border-fg-faint',
+                'group-hover/radio:border-background group-focus-visible/radio:border-background',
+              )}
+            >
+              <span
+                className={cn(
+                  'size-1.5 transition-colors',
+                  checked
+                    ? 'bg-hud group-hover/radio:bg-background group-focus-visible/radio:bg-background'
+                    : 'bg-transparent',
+                )}
+              />
+            </span>
             {LAB_SCENARIO_LABELS[scenario]}
           </button>
         )
@@ -135,62 +160,55 @@ const STATE_ANNOUNCEMENTS: Record<LabMachineState, string> = {
   failed: 'Failed.',
 }
 
+/** The radio group of states, then Stop and Replay. */
 export default function StateBar({
   label,
   stream,
 }: {
-  /** The specimen name, for the radio group label. */
+  /** The demo name, for the radio group label. */
   label: string
   stream: LabStream
 }) {
   const { machineState, isActive, run, scenario, stop, turn } = stream
 
   return (
-    <div className="border-hud/20 flex flex-col gap-4 border-b pb-4">
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
-        <ScenarioRadioGroup
-          label={`Force a state: ${label}`}
-          value={scenario}
-          onChange={run}
-        />
-        <div className="font-hud text-hud flex shrink-0 items-center gap-6 text-sm tracking-[0.3em]">
-          <button
-            type="button"
-            className="hud-fill flex items-center gap-2 uppercase aria-disabled:opacity-40"
-            onClick={() => {
-              if (isActive) stop()
-            }}
-            // aria-disabled, not disabled: focus stays on Stop when the
-            // stream ends, so it is not lost.
-            aria-disabled={!isActive}
-            data-lab-stop=""
-            aria-keyshortcuts="Escape"
-          >
-            <Square className="size-3.5 fill-current" aria-hidden="true" />
-            Stop
-          </button>
-          <button
-            type="button"
-            className="hud-fill flex items-center gap-2 uppercase"
-            onClick={() => run(scenario)}
-          >
-            <RotateCcw className="size-4" aria-hidden="true" />
-            Replay
-          </button>
-        </div>
+    <div className="flex flex-col gap-5">
+      <ScenarioRadioGroup
+        label={`Force a state: ${label}`}
+        value={scenario}
+        onChange={run}
+      />
+      <div className="font-hud text-hud flex items-center gap-8 text-sm tracking-[0.42em]">
+        <button
+          type="button"
+          className="hud-fill flex items-center gap-2 uppercase aria-disabled:opacity-40"
+          onClick={() => {
+            if (isActive) stop()
+          }}
+          // aria-disabled, not disabled: focus stays on Stop when the
+          // stream ends, so it is not lost.
+          aria-disabled={!isActive}
+          data-lab-stop=""
+          aria-keyshortcuts="Escape"
+        >
+          <Square className="size-3 fill-current" aria-hidden="true" />
+          Stop
+        </button>
+        <button
+          type="button"
+          className="hud-fill flex items-center gap-2 uppercase"
+          onClick={() => run(scenario)}
+        >
+          <RotateCcw className="size-3.5" aria-hidden="true" />
+          Replay
+        </button>
       </div>
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
-        <span className="font-hud text-hud text-sm tracking-[0.3em] uppercase">
-          Machine state
-        </span>
-        <StateTrack state={machineState} />
-        <p role="status" className="sr-only">
-          {STATE_ANNOUNCEMENTS[machineState]}
-          {turn && !isActive
-            ? ` ${turn.sources.length} ${turn.sources.length === 1 ? 'source' : 'sources'} cited.`
-            : ''}
-        </p>
-      </div>
+      <p role="status" className="sr-only">
+        {STATE_ANNOUNCEMENTS[machineState]}
+        {turn && !isActive
+          ? ` ${turn.sources.length} ${turn.sources.length === 1 ? 'source' : 'sources'} cited.`
+          : ''}
+      </p>
     </div>
   )
 }

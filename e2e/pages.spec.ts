@@ -122,7 +122,6 @@ for (const path of [
 }
 
 for (const [path, name, target] of [
-  ['/lab', 'Specimens', 'fluid-resizer'],
   ['/work/pico', 'On this page', 'failure-modes'],
 ] as const) {
   test(`${path}: the section nav sticks and marks the section in view`, async ({
