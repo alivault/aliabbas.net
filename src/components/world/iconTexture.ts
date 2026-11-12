@@ -71,7 +71,7 @@ export async function drawIcon(icon: SheetIcon) {
         context.drawImage(image, 0, 0, SIZE, SIZE)
       }
     }
-  } else {
+  } else if (icon.type === 'glyph') {
     const hud = cssColor('--hud', '#e0501f')
     // A dark tile, a little warmer at the top, as if lit by the sky.
     const fill = context.createLinearGradient(0, 0, 0, SIZE)

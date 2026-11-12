@@ -4,7 +4,6 @@ import {
   Gauge,
   Layers,
   Mail,
-  MessageCircle,
   NotebookPen,
   Palette,
   ShieldCheck,
@@ -22,6 +21,8 @@ export type SheetIcon =
       /** Fill the square, no transparency. */ cover?: boolean
     }
   | { type: 'glyph'; glyph: LucideIcon }
+  /** The orb of the chat: a 3D marble of light, not a flat icon. */
+  | { type: 'orb' }
 
 /** A page of the site, as a sheet that floats in the world. */
 export type SheetSpec = {
@@ -121,7 +122,7 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
   },
   {
     id: 'chat',
-    icon: { type: 'glyph', glyph: MessageCircle },
+    icon: { type: 'orb' },
     to: '/chat',
     title: 'Ask about Ali',
     summary: 'An AI that knows my work. Ask it anything.',

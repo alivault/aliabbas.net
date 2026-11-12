@@ -19,7 +19,7 @@ function shortestAngle(from: number, to: number) {
 
 /** A soft dark spot under each icon, so it hangs over the ground. */
 let shadowTexture: THREE.Texture | null = null
-function getShadowTexture() {
+export function getShadowTexture() {
   if (shadowTexture) return shadowTexture
   const size = 128
   const canvas = document.createElement('canvas')

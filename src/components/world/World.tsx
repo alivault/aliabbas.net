@@ -9,6 +9,7 @@ import { SUN_DIRECTION, WORLD_UNIFORMS } from './sky'
 import { getWorld } from './store'
 import Terrain from './Terrain'
 import WorldIcon from './WorldIcon'
+import WorldOrb from './WorldOrb'
 import type { SheetSpec } from './sheets'
 
 /** Reads a color token, for the parts of the scene that match the HUD. */
@@ -70,16 +71,26 @@ export default function World({
         }}
       />
       <Footprint point={pointer} color={accent} />
-      {SHEETS.map((sheet, index) => (
-        <WorldIcon
-          key={sheet.id}
-          sheet={sheet}
-          index={index}
-          accent={accent}
-          reducedMotion={reducedMotion}
-          onOpen={onOpen}
-        />
-      ))}
+      {SHEETS.map((sheet, index) =>
+        sheet.icon.type === 'orb' ? (
+          <WorldOrb
+            key={sheet.id}
+            sheet={sheet}
+            index={index}
+            reducedMotion={reducedMotion}
+            onOpen={onOpen}
+          />
+        ) : (
+          <WorldIcon
+            key={sheet.id}
+            sheet={sheet}
+            index={index}
+            accent={accent}
+            reducedMotion={reducedMotion}
+            onOpen={onOpen}
+          />
+        ),
+      )}
       <Player reducedMotion={reducedMotion} walkTarget={walkTarget} />
       <Dimmer />
     </Canvas>
