@@ -39,7 +39,11 @@ function SkillsPage() {
         >
           <ReaderText>{capability.description}</ReaderText>
           <ReaderLinks>
-            <ReaderLink to={capability.proof.to} hash={capability.proof.hash}>
+            <ReaderLink
+              to={capability.proof.to}
+              search={capability.proof.search}
+              hash={capability.proof.hash}
+            >
               {capability.proof.label}
             </ReaderLink>
           </ReaderLinks>

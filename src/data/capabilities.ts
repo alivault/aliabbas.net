@@ -11,7 +11,8 @@ export const capabilities = [
       'I model every state a screen can enter: loading, streaming, interrupted, error and done. Typed state machines keep the interface correct when the network is slow or the user stops halfway.',
     proof: {
       to: '/lab',
-      hash: 'streaming-list',
+      search: undefined,
+      hash: undefined,
       label: 'Force each state in the Lab',
     },
   },
@@ -20,14 +21,24 @@ export const capabilities = [
     title: 'Motion and interaction',
     description:
       'Spring physics, resizers, drawers and layout transitions that keep their state. Every motion has a keyboard path and respects reduced-motion settings.',
-    proof: { to: '/lab', hash: 'fluid-resizer', label: 'Try the interactions' },
+    proof: {
+      to: '/lab',
+      search: { demo: 'fluid-resizer' },
+      hash: undefined,
+      label: 'Try the interactions',
+    },
   },
   {
     id: 'design-systems',
     title: 'Design systems',
     description:
       'Tokens, shadcn/ui and Base UI components, and written rules, so designers, engineers and coding agents build inside one system.',
-    proof: { to: '/design', hash: 'rules', label: 'Read the design system' },
+    proof: {
+      to: '/design',
+      search: undefined,
+      hash: 'rules',
+      label: 'Read the design system',
+    },
   },
   {
     id: 'performance',
@@ -36,6 +47,7 @@ export const capabilities = [
       'Screen-reader announcements, visible focus and Core Web Vitals that I measure on real visits. I measure a screen before I call it fast.',
     proof: {
       to: '/performance',
+      search: undefined,
       hash: undefined,
       label: 'See the measurements',
     },

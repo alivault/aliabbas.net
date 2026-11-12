@@ -33,6 +33,7 @@ export default function SkillList({
             </p>
             <ButtonLink
               to={capability.proof.to}
+              search={capability.proof.search}
               hash={capability.proof.hash}
               variant="secondary"
               className="mt-6"
