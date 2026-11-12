@@ -114,3 +114,18 @@ export function markHydrated() {
 export function isHydrated() {
   return hydrated
 }
+
+/**
+ * How much of the icon of an open page shows on a narrow screen, from 1 to
+ * 0. There the icon sits above the text, and the text scrolls up over it:
+ * the icon fades out over the first part of the scroll, so the text stays
+ * easy to read. On a wide screen the icon is beside the text: always 1.
+ */
+export function iconScrollShow(aspect: number) {
+  if (aspect >= 1 || typeof window === 'undefined') return 1
+  const t = Math.min(
+    1,
+    Math.max(0, window.scrollY / (window.innerHeight * 0.3)),
+  )
+  return 1 - t * t * (3 - 2 * t)
+}

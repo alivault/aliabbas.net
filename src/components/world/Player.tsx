@@ -45,6 +45,11 @@ function lerpAngle(a: number, b: number, t: number) {
  * arrows to walk, Shift to run, a click on the ground to walk there. Flights
  * (into a sheet, back out, or to the next sheet) take over until they end.
  */
+/** The vertical view of the camera, in degrees (as in World.tsx). */
+const FOV = 55
+/** The least view across, in degrees, for a tall screen. */
+const MIN_SIDE_FOV = 42
+
 export default function Player({
   reducedMotion,
   walkTarget,
@@ -102,11 +107,11 @@ export default function Player({
     const full = Boolean(sheet.wide)
     const half = Math.tan(THREE.MathUtils.degToRad(perspective.fov) / 2)
     // The share of the screen height that the icon fills.
-    const share = full ? 0.8 : wide ? 0.56 : 0.28
+    const share = full ? 0.8 : wide ? 0.56 : 0.24
     const distance = ICON_SIZE / (share * 2 * half)
     // Where the icon center is on screen, from -1 to 1.
     const screenX = full ? 0 : wide ? 0.42 : 0
-    const screenY = full ? 0 : wide ? 0 : 0.55
+    const screenY = full ? 0 : wide ? 0 : 0.5
     const facing = Math.atan2(dx, dz)
     focus.yaw = facing - (full ? 0 : wide ? 0.95 : 0.6)
     return {
@@ -216,6 +221,33 @@ export default function Player({
       )
     }
   })
+
+  // A tall screen (a phone) sees little to the sides with the same
+  // vertical view: widen it so the view is at least MIN_SIDE_FOV across.
+  useEffect(() => {
+    const perspective = camera as THREE.PerspectiveCamera
+    const aspect = size.width / size.height
+    const side = Math.tan(THREE.MathUtils.degToRad(MIN_SIDE_FOV) / 2)
+    const fromSide = THREE.MathUtils.radToDeg(2 * Math.atan(side / aspect))
+    perspective.fov = Math.max(FOV, fromSide)
+    perspective.updateProjectionMatrix()
+  }, [camera, size.width, size.height])
+
+  // On a phone, the walk starts facing the nearest icon, so the first view
+  // has one in it.
+  useEffect(() => {
+    if (size.width >= size.height || getWorld().phase !== 'roam') return
+    const here = position.current
+    const nearest = [...SHEETS].sort(
+      (a, b) =>
+        Math.hypot(a.x - here.x, a.z - here.z) -
+        Math.hypot(b.x - here.x, b.z - here.z),
+    )[0]
+    if (!nearest) return
+    yaw.current = Math.atan2(here.x - nearest.x, here.z - nearest.z)
+    // Only at the start.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // A new window size moves the icon: put the camera where it reads it.
   useEffect(() => {

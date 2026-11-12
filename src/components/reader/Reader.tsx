@@ -31,7 +31,7 @@ const item: Variants = {
 
 /** Spaced capitals in the HUD face. */
 export const hudText =
-  'font-hud text-hud text-sm tracking-[0.42em] uppercase leading-[2.2]'
+  'font-hud text-hud text-sm tracking-[0.28em] sm:tracking-[0.42em] uppercase leading-[2.2]'
 
 /**
  * The first state of the fade. A page in the server HTML, or in the
@@ -50,13 +50,15 @@ export function Reader({ children }: { children: ReactNode }) {
   return (
     <main
       data-hud
-      className="relative z-10 min-h-svh px-6 pt-[44svh] pb-48 sm:px-16 lg:w-[54vw] lg:max-w-[820px] lg:pt-[18svh]"
+      // The space above the text lets touches through to the world, so the
+      // orb of the chat can be played with on a phone too.
+      className="pointer-events-none relative z-10 min-h-svh px-6 pt-[44svh] pb-48 sm:px-16 lg:w-[54vw] lg:max-w-[820px] lg:pt-[18svh]"
     >
       <motion.div
         initial={from}
         animate="show"
         variants={container}
-        className="flex flex-col"
+        className="pointer-events-auto flex flex-col"
       >
         <LightboxProvider>{children}</LightboxProvider>
       </motion.div>

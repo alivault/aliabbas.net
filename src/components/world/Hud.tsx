@@ -32,6 +32,20 @@ export default function Hud({ inPage }: { inPage: boolean }) {
       data-hud
       className="font-hud text-hud pointer-events-none fixed inset-0 z-30 text-sm tracking-[0.42em] uppercase [&_:is(button,a,input)]:uppercase"
     >
+      {/* On a phone, the text of a page scrolls under the corners: a dark
+          band behind each edge keeps the HUD and the text apart. */}
+      {inPage ? (
+        <>
+          <div
+            aria-hidden="true"
+            className="from-background via-background absolute inset-x-0 top-0 h-28 bg-linear-to-b via-55% to-transparent lg:hidden"
+          />
+          <div
+            aria-hidden="true"
+            className="from-background via-background absolute inset-x-0 bottom-0 h-24 bg-linear-to-t via-45% to-transparent lg:hidden"
+          />
+        </>
+      ) : null}
       <div className="absolute top-5 left-6">
         <Link to="/" data-sound="none" className={corner}>
           Ali Abbas

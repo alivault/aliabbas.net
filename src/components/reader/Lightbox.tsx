@@ -40,7 +40,8 @@ export function useLightbox() {
 
 /** The box of the media in the zoom view: as large as fits, centered. */
 function targetBox(item: LightboxItem) {
-  const maxWidth = window.innerWidth * 0.86
+  // On a phone, the media takes almost the full width.
+  const maxWidth = window.innerWidth * (window.innerWidth < 640 ? 0.94 : 0.86)
   const maxHeight = window.innerHeight * 0.72
   const scale = Math.min(maxWidth / item.width, maxHeight / item.height)
   const width = item.width * scale
@@ -257,6 +258,7 @@ function View({
   const box = targetBox(item)
   const leave: Leave = { closing, direction, exitTo }
   const closeRef = useRef<HTMLButtonElement>(null)
+  const swipe = useRef<{ x: number; y: number } | null>(null)
   // Where this media starts: its figure on the first open, the side when
   // the arrows change it.
   const [from] = useState(() => fromFigure(entry.element, item))
@@ -323,8 +325,25 @@ function View({
             left: box.centerX - box.width / 2,
             top: box.centerY - box.height / 2,
           }}
-          className="fixed"
+          className="fixed touch-pan-y"
           onClick={(event) => event.stopPropagation()}
+          // A swipe to the side goes to the next or the previous media.
+          onPointerDown={(event) => {
+            swipe.current = { x: event.clientX, y: event.clientY }
+          }}
+          onPointerUp={(event) => {
+            const from = swipe.current
+            swipe.current = null
+            if (!from || count < 2) return
+            const dx = event.clientX - from.x
+            const dy = event.clientY - from.y
+            if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+              onStep(dx < 0 ? 1 : -1)
+            }
+          }}
+          onPointerCancel={() => {
+            swipe.current = null
+          }}
         >
           {item.video ? (
             <video
@@ -342,6 +361,7 @@ function View({
             <img
               src={item.src}
               alt={item.alt}
+              draggable={false}
               className="border-hud/25 size-full border object-contain"
             />
           )}

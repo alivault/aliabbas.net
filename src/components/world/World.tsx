@@ -6,7 +6,7 @@ import Player from './Player'
 import { SHEETS } from './sheets'
 import Sky from './Sky'
 import { SUN_DIRECTION, WORLD_UNIFORMS } from './sky'
-import { getWorld } from './store'
+import { getWorld, useWorld } from './store'
 import Terrain from './Terrain'
 import WorldIcon from './WorldIcon'
 import WorldOrb from './WorldOrb'
@@ -47,6 +47,8 @@ export default function World({
   const walkTarget = useRef<THREE.Vector3 | null>(null)
   const accent = useMemo(() => token('--hud', '#e0501f'), [])
   const sun = useMemo(() => SUN_DIRECTION.clone().multiplyScalar(100), [])
+  // In the world, a drag turns the camera; on a page, it scrolls the page.
+  const roaming = useWorld((s) => s.phase === 'roam')
 
   return (
     <Canvas
@@ -54,6 +56,7 @@ export default function World({
       dpr={[1, 1.5]}
       camera={{ fov: 55, near: 0.05, far: 900 }}
       gl={{ antialias: true, powerPreference: 'high-performance' }}
+      style={{ touchAction: roaming ? 'none' : 'pan-y' }}
       onPointerMissed={() => {
         pointer.current = null
       }}

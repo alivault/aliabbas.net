@@ -7,7 +7,7 @@ import { play } from '~/lib/sound'
 import { heightAt } from './noise'
 import { ICON_SIZE } from './sheets'
 import { FOG_DENSITY, SKY_GLSL, WORLD_UNIFORMS } from './sky'
-import { getWorld, setWorld } from './store'
+import { getWorld, iconScrollShow, setWorld } from './store'
 import { focus, getShadowTexture } from './WorldIcon'
 import type { SheetSpec } from './sheets'
 
@@ -38,6 +38,7 @@ uniform vec2 uCenter;       // orb center, in radii
 uniform float uSeed;
 uniform float uDim;
 uniform float uFogDensity;
+uniform float uOpacity;
 ${SKY_GLSL}
 ${ORB_GLSL}
 void main() {
@@ -48,7 +49,7 @@ void main() {
   vec2 border = (${(SPAN / 2).toFixed(1)} - abs(local)) / 0.5;
   float fade = clamp(min(border.x, border.y), 0.0, 1.0);
   vec4 orb = orbColor(p, aa, fade, orbHash(gl_FragCoord.xy + uSeed));
-  if (orb.a <= 0.002) discard;
+  if (orb.a * uOpacity <= 0.002) discard;
 
   // The fog and the dark of the world, as on the icons, on the straight
   // color; then premultiplied again.
@@ -59,7 +60,7 @@ void main() {
   float fog = 1.0 - exp(-uFogDensity * uFogDensity * dist * dist);
   color = mix(color, skyColor(dir), fog);
   color = mix(color, skyColor(dir) * 0.14, uDim);
-  gl_FragColor = vec4(color * orb.a, orb.a);
+  gl_FragColor = vec4(color * orb.a, orb.a) * uOpacity;
 }
 `
 
@@ -122,6 +123,7 @@ export default function WorldOrb({
         uSeed: { value: 0 },
         uDim: { value: 0 },
         uFogDensity: { value: FOG_DENSITY },
+        uOpacity: { value: 1 },
       },
     })
   }, [body])
@@ -139,7 +141,9 @@ export default function WorldOrb({
 
   /** True when the chat is open: the orb is a toy, not a link. */
   const isOpen = () =>
-    getWorld().target === sheet.id && getWorld().phase === 'inside'
+    getWorld().target === sheet.id &&
+    getWorld().phase === 'inside' &&
+    material.uniforms.uOpacity.value > 0.5
 
   useFrame((state, delta) => {
     const g = group.current
@@ -166,6 +170,15 @@ export default function WorldOrb({
     u.uSeed.value = (performance.now() % 1000) / 7.3
     // Only the page in focus stays lit while the world goes dark.
     u.uDim.value = focused ? 0 : WORLD_UNIFORMS.uDim.value
+    // On a phone, the orb fades as the text scrolls up over it.
+    u.uOpacity.value = THREE.MathUtils.damp(
+      u.uOpacity.value,
+      focused && getWorld().phase === 'inside'
+        ? iconScrollShow(state.size.width / state.size.height)
+        : 1,
+      10,
+      delta,
+    )
     shadow.opacity = 1 - WORLD_UNIFORMS.uDim.value
   })
 

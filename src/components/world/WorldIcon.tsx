@@ -7,7 +7,7 @@ import { drawIcon } from './iconTexture'
 import { heightAt } from './noise'
 import { ICON_SIZE } from './sheets'
 import { WORLD_UNIFORMS, withSkyFog } from './sky'
-import { getWorld, setWorld } from './store'
+import { getWorld, iconScrollShow, setWorld } from './store'
 import type { SheetSpec } from './sheets'
 
 /** The icon that the camera flies to or reads, and the way it must face. */
@@ -166,7 +166,9 @@ export default function WorldIcon({
       const distance = state.camera.position.distanceTo(g.position)
       const target = zooming
         ? THREE.MathUtils.smoothstep(distance, FADE_GONE, FADE_FROM)
-        : 1
+        : focused && phase === 'inside'
+          ? iconScrollShow(state.size.width / state.size.height)
+          : 1
       face.opacity = THREE.MathUtils.damp(face.opacity, target, 8, delta)
     }
     glow.current = THREE.MathUtils.damp(
