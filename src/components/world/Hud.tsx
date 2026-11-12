@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from '@tanstack/react-router'
+import { Volume2, VolumeX } from 'lucide-react'
 import { cn } from '~/lib/utils'
 import { isSoundOn, onSoundChange, play, setSound } from '~/lib/sound'
 import { SHEETS } from './sheets'
@@ -97,19 +98,25 @@ export default function Hud({ inPage }: { inPage: boolean }) {
         {hovered ? `${hovered.title} · ${hovered.kind}` : ''}
       </p>
 
-      <div className="absolute bottom-6 left-6 flex items-baseline gap-8">
+      <div className="absolute bottom-6 left-6 flex items-center gap-8">
         <button
           type="button"
           data-sound="toggle"
+          aria-label="Sound"
           aria-pressed={soundOn}
-          className={cn(corner, 'text-lg')}
+          title={soundOn ? 'Sound on' : 'Sound off'}
+          className={cn(corner, '-m-2 p-2')}
           onClick={() => {
             const next = !soundOn
             setSound(next)
             if (next) play('toggle')
           }}
         >
-          {soundOn ? 'Sound' : 'Silent'}
+          {soundOn ? (
+            <Volume2 aria-hidden="true" className="size-6" strokeWidth={1.5} />
+          ) : (
+            <VolumeX aria-hidden="true" className="size-6" strokeWidth={1.5} />
+          )}
         </button>
         {inPage || indexOpen ? null : (
           <button
