@@ -86,7 +86,9 @@ export default function Player({
   /**
    * Where the camera reads a page: the icon large on the right, turned at an
    * angle, and the text on the left. On a narrow screen, the icon is at the
-   * top and the text runs under it.
+   * top and the text runs under it. A full-width page (the lab) zooms
+   * straight into its icon, in the middle and face on; the icon then fades
+   * out as the page comes in.
    */
   const insidePose = (sheet: SheetSpec): Pose => {
     const perspective = camera as THREE.PerspectiveCamera
@@ -97,15 +99,16 @@ export default function Player({
     dz /= length
     const aspect = size.width / size.height
     const wide = aspect >= 1
+    const full = Boolean(sheet.wide)
     const half = Math.tan(THREE.MathUtils.degToRad(perspective.fov) / 2)
     // The share of the screen height that the icon fills.
-    const share = wide ? 0.56 : 0.28
+    const share = full ? 0.8 : wide ? 0.56 : 0.28
     const distance = ICON_SIZE / (share * 2 * half)
     // Where the icon center is on screen, from -1 to 1.
-    const screenX = wide ? 0.42 : 0
-    const screenY = wide ? 0 : 0.55
+    const screenX = full ? 0 : wide ? 0.42 : 0
+    const screenY = full ? 0 : wide ? 0 : 0.55
     const facing = Math.atan2(dx, dz)
-    focus.yaw = facing - (wide ? 0.95 : 0.6)
+    focus.yaw = facing - (full ? 0 : wide ? 0.95 : 0.6)
     return {
       position: new THREE.Vector3(
         sheet.x + dx * distance,
