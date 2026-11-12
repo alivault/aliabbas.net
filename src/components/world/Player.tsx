@@ -3,8 +3,9 @@ import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { play, setDroneOpen } from '~/lib/sound'
 import { heightAt } from './noise'
-import { focus } from './Sheet'
-import { SHEETS, SHEET_SIZE } from './sheets'
+import { ICON_SIZE, SHEETS } from './sheets'
+import { WORLD_UNIFORMS } from './sky'
+import { focus } from './WorldIcon'
 import { getWorld, markVisited, setWorld, worldCommands } from './store'
 import type { SheetSpec } from './sheets'
 
@@ -46,12 +47,9 @@ function lerpAngle(a: number, b: number, t: number) {
  */
 export default function Player({
   reducedMotion,
-  onEntered,
   walkTarget,
 }: {
   reducedMotion: boolean
-  /** The camera is in a sheet: open its page. */
-  onEntered: (sheet: SheetSpec) => void
   walkTarget: React.RefObject<THREE.Vector3 | null>
 }) {
   const { camera, gl, size } = useThree()
@@ -85,28 +83,37 @@ export default function Player({
     }
   }
 
-  /** Where the camera must be so the sheet just covers the screen. */
+  /**
+   * Where the camera reads a page: the icon large on the right, turned at an
+   * angle, and the text on the left. On a narrow screen, the icon is at the
+   * top and the text runs under it.
+   */
   const insidePose = (sheet: SheetSpec): Pose => {
-    const camera3 = camera as THREE.PerspectiveCamera
+    const perspective = camera as THREE.PerspectiveCamera
     let dx = position.current.x - sheet.x
     let dz = position.current.z - sheet.z
     const length = Math.hypot(dx, dz) || 1
     dx /= length
     dz /= length
     const aspect = size.width / size.height
-    const visible = Math.min(SHEET_SIZE.height, SHEET_SIZE.width / aspect)
-    const distance =
-      (visible * 0.97) /
-      (2 * Math.tan(THREE.MathUtils.degToRad(camera3.fov) / 2))
-    focus.yaw = Math.atan2(dx, dz)
+    const wide = aspect >= 1
+    const half = Math.tan(THREE.MathUtils.degToRad(perspective.fov) / 2)
+    // The share of the screen height that the icon fills.
+    const share = wide ? 0.56 : 0.28
+    const distance = ICON_SIZE / (share * 2 * half)
+    // Where the icon center is on screen, from -1 to 1.
+    const screenX = wide ? 0.42 : 0
+    const screenY = wide ? 0 : 0.55
+    const facing = Math.atan2(dx, dz)
+    focus.yaw = facing - (wide ? 0.95 : 0.6)
     return {
       position: new THREE.Vector3(
         sheet.x + dx * distance,
         sheet.y,
         sheet.z + dz * distance,
       ),
-      yaw: Math.atan2(dx, dz),
-      pitch: 0,
+      yaw: facing + Math.atan(screenX * half * aspect),
+      pitch: -Math.atan(screenY * half),
     }
   }
 
@@ -115,7 +122,8 @@ export default function Player({
     worldCommands.enter = (id) => {
       const sheet = SHEETS.find((s) => s.id === id)
       if (!sheet) return
-      home.current = pose()
+      // From one page to the next, keep the place to go back to.
+      if (getWorld().phase === 'roam' || !home.current) home.current = pose()
       focus.id = sheet.id
       walkTarget.current = null
       setWorld({ phase: 'entering', target: sheet.id, hover: null })
@@ -124,7 +132,6 @@ export default function Player({
         onArrive: () => {
           setWorld({ phase: 'inside' })
           markVisited(sheet.id)
-          onEntered(sheet)
         },
       })
     }
@@ -138,6 +145,8 @@ export default function Player({
       yaw.current = to.yaw
       pitch.current = to.pitch
       flight.current = null
+      // A deep link starts in the dark, with no fade.
+      WORLD_UNIFORMS.uDim.value = 1
       setWorld({ phase: 'inside', target: sheet.id, hover: null })
       markVisited(sheet.id)
     }
@@ -149,13 +158,16 @@ export default function Player({
       // visitor stood before.
       let to = home.current
       if (!to && sheet) {
-        const dx = Math.sin(focus.yaw)
-        const dz = Math.cos(focus.yaw)
+        let dx = position.current.x - sheet.x
+        let dz = position.current.z - sheet.z
+        const length = Math.hypot(dx, dz) || 1
+        dx /= length
+        dz /= length
         const x = sheet.x + dx * 6
         const z = sheet.z + dz * 6
         to = {
           position: new THREE.Vector3(x, heightAt(x, z) + EYE, z),
-          yaw: focus.yaw,
+          yaw: Math.atan2(dx, dz),
           pitch: -0.05,
         }
       }
@@ -201,6 +213,19 @@ export default function Player({
       )
     }
   })
+
+  // A new window size moves the icon: put the camera where it reads it.
+  useEffect(() => {
+    const { phase, target } = getWorld()
+    const sheet = SHEETS.find((s) => s.id === target)
+    if (phase !== 'inside' || !sheet) return
+    const to = insidePose(sheet)
+    position.current.copy(to.position)
+    yaw.current = to.yaw
+    pitch.current = to.pitch
+    // insidePose reads the camera; this runs only when the size changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [size.width, size.height])
 
   // After the commands are in place: tell the DOM.
   useEffect(() => {

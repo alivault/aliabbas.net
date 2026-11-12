@@ -33,16 +33,7 @@ export const Route = createRootRouteWithContext<{
         content: 'width=device-width, initial-scale=1, viewport-fit=cover',
       },
       { name: 'darkreader-lock', content: 'true' },
-      {
-        name: 'theme-color',
-        content: '#f1efe8',
-        media: '(prefers-color-scheme: light)',
-      },
-      {
-        name: 'theme-color',
-        content: '#050607',
-        media: '(prefers-color-scheme: dark)',
-      },
+      { name: 'theme-color', content: '#050607' },
       { title: 'Ali Abbas' },
       {
         name: 'description',
@@ -72,8 +63,9 @@ export const Route = createRootRouteWithContext<{
 function RootComponent() {
   const { convexQueryClient, token } = Route.useRouteContext()
 
+  // The site is dark only: .scheme-dark gives every token its dark value.
   return (
-    <html lang="en">
+    <html lang="en" className="scheme-dark">
       <head>
         <HeadContent />
       </head>

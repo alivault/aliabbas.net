@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import type { CSSProperties } from 'react'
 
-const stack = [
+export const STACK = [
   { name: 'React', icon: '/icons/stack/react.svg' },
   { name: 'TypeScript', icon: '/icons/stack/typescript.svg' },
   { name: 'Next.js', icon: '/icons/stack/nextjs.svg' },
@@ -61,7 +61,7 @@ export default function StackMarquee() {
     <div
       ref={containerRef}
       role="region"
-      aria-label={`Technology stack: ${stack.map(({ name }) => name).join(', ')}`}
+      aria-label={`Technology stack: ${STACK.map(({ name }) => name).join(', ')}`}
       className="text-foreground overflow-hidden py-4 sm:py-5"
     >
       <div
@@ -75,7 +75,7 @@ export default function StackMarquee() {
             ref={copyIndex === 0 ? groupRef : undefined}
             className="flex shrink-0 items-center"
           >
-            {stack.map((item) => (
+            {STACK.map((item) => (
               <div key={item.name} className="flex items-center">
                 <span className="flex size-5 shrink-0 items-center justify-center">
                   <img

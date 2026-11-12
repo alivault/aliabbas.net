@@ -12,7 +12,7 @@ export default function Main({
   hideFooterOnMobile?: boolean
 }) {
   return (
-    <div className="bg-background text-foreground min-h-svh overflow-x-clip">
+    <div className="bg-background text-foreground relative z-10 min-h-svh overflow-x-clip">
       {/* The HUD of the world is the navigation: no site header. */}
       <PageAnimation>
         <main className="min-h-[70svh] [&>:first-child]:border-t-[length:var(--header-height)] [&>:first-child]:border-t-transparent">

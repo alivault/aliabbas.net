@@ -1,5 +1,26 @@
+import {
+  Briefcase,
+  FlaskConical,
+  Gauge,
+  Layers,
+  Mail,
+  MessageCircle,
+  NotebookPen,
+  Palette,
+  Sparkles,
+} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 import { caseStudies } from '~/data/case-studies'
 import { heightAt } from './noise'
+
+/** What a sheet shows: the icon of a project, or a glyph for a page. */
+export type SheetIcon =
+  | {
+      type: 'image'
+      src: string
+      /** Fill the square, no transparency. */ cover?: boolean
+    }
+  | { type: 'glyph'; glyph: LucideIcon }
 
 /** A page of the site, as a sheet that floats in the world. */
 export type SheetSpec = {
@@ -11,24 +32,23 @@ export type SheetSpec = {
   summary: string
   /** A short kind label, for the HUD. */
   kind: 'Case study' | 'Page' | 'Game'
-  /** A picture for the sheet, from /public. */
-  image?: string
+  icon: SheetIcon
   x: number
   z: number
   /** The height of the sheet center. */
   y: number
 }
 
-/** Width and height of every sheet, in meters. */
-export const SHEET_SIZE = { width: 1.8, height: 2.4 } as const
+/** The side of every icon, in meters. */
+export const ICON_SIZE = 1.4
 
-/** How high a sheet floats over the ground, to its center. */
-const FLOAT = 2.1
+/** How high an icon floats over the ground, to its center. */
+const FLOAT = 1.9
 
-const IMAGES: Record<string, string> = {
-  pico: '/work/pico/workspace-light.webp',
-  whimcall: '/work/whimcall/grid.webp',
-  postmaster: '/postmaster.webp',
+const ICONS: Record<string, SheetIcon> = {
+  pico: { type: 'image', src: '/pico.svg' },
+  whimcall: { type: 'image', src: '/whimcall.png' },
+  postmaster: { type: 'image', src: '/postmaster.webp' },
 }
 
 const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
@@ -38,10 +58,11 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
     title: study.title,
     summary: study.summary,
     kind: 'Case study' as const,
-    image: IMAGES[study.slug],
+    icon: ICONS[study.slug],
   })),
   {
     id: 'work',
+    icon: { type: 'glyph', glyph: Layers },
     to: '/work',
     title: 'Work',
     summary: 'All the projects, with the case studies and side projects.',
@@ -49,6 +70,7 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
   },
   {
     id: 'experience',
+    icon: { type: 'glyph', glyph: Briefcase },
     to: '/experience',
     title: 'Experience',
     summary: 'Where I worked and what I made there.',
@@ -56,6 +78,7 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
   },
   {
     id: 'skills',
+    icon: { type: 'glyph', glyph: Sparkles },
     to: '/skills',
     title: 'Skills',
     summary: 'What I can do, with the evidence for each skill.',
@@ -63,6 +86,7 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
   },
   {
     id: 'lab',
+    icon: { type: 'glyph', glyph: FlaskConical },
     to: '/lab',
     title: 'Lab',
     summary: 'Small experiments with motion, shaders and interfaces.',
@@ -70,6 +94,7 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
   },
   {
     id: 'notes',
+    icon: { type: 'glyph', glyph: NotebookPen },
     to: '/notes',
     title: 'Notes',
     summary: 'Writing about frontend engineering.',
@@ -77,6 +102,11 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
   },
   {
     id: 'play',
+    icon: {
+      type: 'image',
+      src: '/play/averno-crucible-core.webp',
+      cover: true,
+    },
     to: '/play',
     title: 'Averno',
     summary: 'A game that I made. Play it in the browser.',
@@ -84,6 +114,7 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
   },
   {
     id: 'chat',
+    icon: { type: 'glyph', glyph: MessageCircle },
     to: '/chat',
     title: 'Ask about Ali',
     summary: 'An AI that knows my work. Ask it anything.',
@@ -91,6 +122,7 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
   },
   {
     id: 'performance',
+    icon: { type: 'glyph', glyph: Gauge },
     to: '/performance',
     title: 'Performance',
     summary: 'Core Web Vitals of this site, from real visits.',
@@ -98,6 +130,7 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
   },
   {
     id: 'design',
+    icon: { type: 'glyph', glyph: Palette },
     to: '/design',
     title: 'Design system',
     summary: 'The tokens and rules of this site.',
@@ -105,6 +138,7 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
   },
   {
     id: 'contact',
+    icon: { type: 'glyph', glyph: Mail },
     to: '/contact',
     title: 'Contact',
     summary: 'Send me a message.',

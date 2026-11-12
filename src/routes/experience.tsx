@@ -1,12 +1,18 @@
 import { useQuery } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { pageHead } from '~/lib/structured-data'
-import ExperienceList from '~/components/ExperienceList'
-import Main from '~/components/Main'
-import PageHeading from '~/components/PageHeading'
-import ScrollReveal from '~/components/ScrollReveal'
-import Section from '~/components/Section'
+import {
+  Reader,
+  ReaderExternal,
+  ReaderLinks,
+  ReaderList,
+  ReaderMeta,
+  ReaderSection,
+  ReaderText,
+  ReaderTitle,
+} from '~/components/reader/Reader'
 import { experiencesQuery } from '~/lib/sanity'
+import type { SanityExperience } from '~/lib/sanity'
 
 export const Route = createFileRoute('/experience')({
   head: () =>
@@ -23,42 +29,42 @@ export const Route = createFileRoute('/experience')({
   component: ExperiencePage,
 })
 
+function years(experience: SanityExperience) {
+  const start = experience.startDate.slice(0, 4)
+  const end = experience.endDate ? experience.endDate.slice(0, 4) : 'Now'
+  return start === end ? start : `${start}–${end}`
+}
+
 function ExperiencePage() {
   const { data: experiences = [], isLoading } = useQuery(experiencesQuery)
 
   return (
-    <Main>
-      <Section>
-        <ScrollReveal
-          as="header"
-          className="pb-section-content grid justify-items-center gap-6 text-center"
-        >
-          <div>
-            <PageHeading>Work that shaped me.</PageHeading>
-          </div>
-          <p className="text-fg-muted max-w-xl text-base leading-7 text-pretty lg:text-lg lg:leading-8">
-            A path through product teams, creative development, frontend
-            systems, and the problems that taught me how to ship better work.
-          </p>
-        </ScrollReveal>
-
-        {isLoading ? (
-          <div className="divide-y">
-            {[0, 1].map((item) => (
-              <div
-                key={item}
-                className="bg-foreground/[0.025] h-52 animate-pulse"
-              />
-            ))}
-          </div>
-        ) : experiences.length === 0 ? (
-          <p className="text-fg-muted py-section-content text-sm">
-            No experience yet.
-          </p>
-        ) : (
-          <ExperienceList experiences={experiences} />
-        )}
-      </Section>
-    </Main>
+    <Reader>
+      <ReaderTitle>Experience</ReaderTitle>
+      <ReaderText>
+        A path through product teams, creative development, frontend systems,
+        and the problems that taught me how to ship better work.
+      </ReaderText>
+      {isLoading ? (
+        <ReaderMeta>Loading</ReaderMeta>
+      ) : experiences.length === 0 ? (
+        <ReaderMeta>No experience yet</ReaderMeta>
+      ) : (
+        experiences.map((experience) => (
+          <ReaderSection
+            key={experience._id}
+            title={`${experience.company} (${years(experience)})`}
+          >
+            <ReaderList items={[experience.title]} className="mt-2" />
+            <ReaderText>{experience.description}</ReaderText>
+            {experience.url ? (
+              <ReaderLinks>
+                <ReaderExternal href={experience.url}>Visit</ReaderExternal>
+              </ReaderLinks>
+            ) : null}
+          </ReaderSection>
+        ))
+      )}
+    </Reader>
   )
 }

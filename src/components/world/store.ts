@@ -109,3 +109,23 @@ export function takePendingQuestion() {
   pendingQuestion = null
   return question
 }
+
+let askListener: ((question: string) => void) | null = null
+
+/**
+ * The chat page listens here while it is open, so a question from the HUD
+ * goes into the conversation on the page.
+ */
+export function listenForQuestions(listener: (question: string) => void) {
+  askListener = listener
+  return () => {
+    if (askListener === listener) askListener = null
+  }
+}
+
+/** Sends a question to the open chat page. False when it is not open. */
+export function askOpenChat(question: string) {
+  if (!askListener) return false
+  askListener(question)
+  return true
+}

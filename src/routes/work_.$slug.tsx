@@ -1,5 +1,5 @@
 import { createFileRoute, notFound } from '@tanstack/react-router'
-import CaseStudyPage from '~/components/case-study/CaseStudyPage'
+import CaseStudyReader from '~/components/reader/CaseStudyReader'
 import { getCaseStudy } from '~/data/case-studies'
 import {
   article,
@@ -49,5 +49,5 @@ function CaseStudyRoute() {
   const { slug } = Route.useLoaderData()
   const study = getCaseStudy(slug)
   if (!study) return null
-  return <CaseStudyPage study={study} />
+  return <CaseStudyReader study={study} />
 }

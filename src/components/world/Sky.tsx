@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-import { SKY_GLSL } from './sky'
+import { DIM_GLSL, SKY_GLSL, WORLD_UNIFORMS } from './sky'
 
 /** A dome around the camera. It moves with the camera, so it never ends. */
 export default function Sky() {
@@ -11,6 +11,7 @@ export default function Sky() {
       new THREE.ShaderMaterial({
         side: THREE.BackSide,
         depthWrite: false,
+        uniforms: { uDim: WORLD_UNIFORMS.uDim },
         vertexShader: /* glsl */ `
           varying vec3 vDirection;
           void main() {
@@ -21,8 +22,10 @@ export default function Sky() {
         fragmentShader: /* glsl */ `
           varying vec3 vDirection;
           ${SKY_GLSL}
+          ${DIM_GLSL}
           void main() {
-            gl_FragColor = vec4(skyColor(normalize(vDirection)), 1.0);
+            vec3 d = normalize(vDirection);
+            gl_FragColor = vec4(dimmed(skyColor(d), d), 1.0);
           }
         `,
       }),

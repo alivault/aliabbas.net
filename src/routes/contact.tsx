@@ -1,7 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { pageHead } from '~/lib/structured-data'
-import Main from '~/components/Main'
-import ContactForm from '~/components/ContactForm'
+import ContactReader from '~/components/reader/ContactReader'
 
 export const Route = createFileRoute('/contact')({
   head: () =>
@@ -15,9 +14,5 @@ export const Route = createFileRoute('/contact')({
 })
 
 function ContactPage() {
-  return (
-    <Main>
-      <ContactForm />
-    </Main>
-  )
+  return <ContactReader />
 }

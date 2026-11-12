@@ -3,7 +3,12 @@ import { Link, useNavigate } from '@tanstack/react-router'
 import { cn } from '~/lib/utils'
 import { isSoundOn, onSoundChange, play, setSound } from '~/lib/sound'
 import { SHEETS } from './sheets'
-import { setPendingQuestion, useWorld, worldCommands } from './store'
+import {
+  askOpenChat,
+  setPendingQuestion,
+  useWorld,
+  worldCommands,
+} from './store'
 
 const corner =
   'pointer-events-auto transition-opacity hover:opacity-70 focus-visible:outline-hud focus-visible:outline-1 focus-visible:outline-offset-4'
@@ -33,8 +38,9 @@ export default function Hud({ inPage }: { inPage: boolean }) {
     event.preventDefault()
     const text = question.trim()
     if (!text) return
-    setPendingQuestion(text)
     setQuestion('')
+    if (askOpenChat(text)) return
+    setPendingQuestion(text)
     void navigate({ to: '/chat' })
   }
 
@@ -51,12 +57,16 @@ export default function Hud({ inPage }: { inPage: boolean }) {
         Ali Abbas
       </Link>
 
-      <p
-        className="absolute top-5 right-6"
-        aria-label={`${visited} of ${SHEETS.length} pages found`}
-      >
-        {visited}/{SHEETS.length}
-      </p>
+      <div className="absolute top-5 right-6 flex flex-col items-end gap-1">
+        {inPage ? (
+          <Link to="/" data-sound="none" className={cn(corner, 'text-lg')}>
+            Close
+          </Link>
+        ) : null}
+        <p aria-label={`${visited} of ${SHEETS.length} pages found`}>
+          {visited}/{SHEETS.length}
+        </p>
+      </div>
 
       {/* The name of the sheet under the pointer. */}
       <p
@@ -83,11 +93,7 @@ export default function Hud({ inPage }: { inPage: boolean }) {
         >
           {soundOn ? 'Sound' : 'Silent'}
         </button>
-        {inPage ? (
-          <Link to="/" data-sound="none" className={corner}>
-            Back
-          </Link>
-        ) : (
+        {inPage ? null : (
           <button
             type="button"
             data-sound="none"
@@ -100,7 +106,7 @@ export default function Hud({ inPage }: { inPage: boolean }) {
         )}
       </div>
 
-      {inPage ? null : (
+      {
         <form
           onSubmit={ask}
           className="absolute right-6 bottom-6 flex items-baseline gap-10"
@@ -120,7 +126,7 @@ export default function Hud({ inPage }: { inPage: boolean }) {
             Send
           </button>
         </form>
-      )}
+      }
     </div>
   )
 }

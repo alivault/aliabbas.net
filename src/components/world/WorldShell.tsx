@@ -1,8 +1,7 @@
-import { Suspense, lazy, useEffect, useState } from 'react'
+import { Suspense, lazy, useEffect, useRef, useState } from 'react'
 import type { ReactNode } from 'react'
 import { Link, useLocation, useRouter } from '@tanstack/react-router'
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react'
-import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
+import { useReducedMotion } from 'motion/react'
 import { installInteractionSounds } from '~/lib/sound'
 import { hasFastWebGL } from '~/lib/webgl'
 import EnterGate from './EnterGate'
@@ -15,13 +14,15 @@ import {
   useWorld,
   worldCommands,
 } from './store'
+import type { SheetSpec } from './sheets'
 
 const World = lazy(() => import('./World'))
 
 /**
  * The frame of the whole site. The world stays mounted behind every page.
- * On `/` the visitor is in the world. On any other path, the page shows
- * over it, as if the camera had gone into that page's sheet.
+ * On `/` the visitor walks in the world. On a page, the camera holds the
+ * icon of that page on the right, the world goes dark, and the text of the
+ * page comes in on the left.
  */
 export default function WorldShell({ children }: { children: ReactNode }) {
   const path = useLocation({ select: (location) => location.pathname })
@@ -32,6 +33,7 @@ export default function WorldShell({ children }: { children: ReactNode }) {
   const inPage = path !== '/'
   // undefined until the client knows if WebGL is fast.
   const [webgl, setWebgl] = useState<boolean | undefined>(undefined)
+  const firstMove = useRef(true)
 
   useEffect(() => {
     // ?gl=force draws the world also with software WebGL, for tests.
@@ -41,13 +43,14 @@ export default function WorldShell({ children }: { children: ReactNode }) {
     return installInteractionSounds()
   }, [])
 
-  // The router moves the camera: back and forward, links between pages,
-  // and deep links.
+  // The router moves the camera: links, back and forward, and deep links.
   useEffect(() => {
     if (!ready) return
+    const first = firstMove.current
+    firstMove.current = false
     const { phase, target } = getWorld()
     if (!inPage) {
-      if (phase === 'inside' || phase === 'entering') worldCommands.leave()
+      if (phase !== 'roam' && phase !== 'leaving') worldCommands.leave()
       return
     }
     const sheet = sheetForPath(path)
@@ -55,13 +58,15 @@ export default function WorldShell({ children }: { children: ReactNode }) {
       if (phase === 'roam') setWorld({ phase: 'inside', target: null })
       return
     }
-    if (phase === 'entering' && target === sheet.id) return
-    if (phase !== 'inside' || target !== sheet.id) {
-      worldCommands.snapInto(sheet.id)
+    if (target === sheet.id && (phase === 'entering' || phase === 'inside')) {
+      return
     }
+    // A deep link starts at the icon. Later moves fly there.
+    if (first) worldCommands.snapInto(sheet.id)
+    else worldCommands.enter(sheet.id)
   }, [path, inPage, ready])
 
-  // Esc leaves a page, back to the world.
+  // Esc closes a page, back to the world.
   useEffect(() => {
     if (!inPage) return
     const onKey = (event: KeyboardEvent) => {
@@ -74,39 +79,31 @@ export default function WorldShell({ children }: { children: ReactNode }) {
     return () => window.removeEventListener('keydown', onKey)
   }, [inPage, router])
 
+  const open = (sheet: SheetSpec) => {
+    worldCommands.enter(sheet.id)
+    void router.navigate({ href: sheet.to })
+  }
+
+  // The text shows when the camera holds the icon. Before the world runs
+  // (on the server, or without WebGL), it shows at once.
+  const showText = inPage && (!ready || phase === 'inside')
+
   return (
     <>
       <div
-        aria-hidden={inPage}
+        aria-hidden="true"
         className="from-sky-warm via-sky-cool to-ground fixed inset-0 bg-linear-to-b"
       >
         {webgl ? (
           <Suspense fallback={null}>
-            <World
-              reducedMotion={reducedMotion}
-              paused={inPage && phase === 'inside'}
-              onEntered={(sheet) => void router.navigate({ href: sheet.to })}
-            />
+            <World reducedMotion={reducedMotion} onOpen={open} />
           </Suspense>
         ) : null}
       </div>
 
       {webgl === false && !inPage ? <FlatWorld /> : null}
 
-      <AnimatePresence initial={false}>
-        {inPage ? (
-          <motion.div
-            key="page"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: DURATIONS.enter, ease: EASE_OUT }}
-            className="bg-background relative z-10 min-h-svh"
-          >
-            {children}
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+      {showText ? children : null}
       {/* The home page has no content of its own: it is the world. */}
       {inPage ? null : <h1 className="sr-only">Ali Abbas</h1>}
 

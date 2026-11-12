@@ -29,6 +29,20 @@ export const SKY_GLSL = /* glsl */ `
   }
 `
 
+/**
+ * Uniforms that every world material shares. uDim (0 to 1) darkens the sky
+ * and the ground while a page is open, so only its icon stays lit.
+ */
+export const WORLD_UNIFORMS = { uDim: { value: 0 } }
+
+/** The color of the world in the dark, toward a direction. */
+export const DIM_GLSL = /* glsl */ `
+  uniform float uDim;
+  vec3 dimmed(vec3 col, vec3 d) {
+    return mix(col, skyColor(d) * 0.14, uDim);
+  }
+`
+
 /** Fog density per meter. */
 export const FOG_DENSITY = 0.011
 
@@ -36,9 +50,14 @@ export const FOG_DENSITY = 0.011
  * Replaces the flat fog of a built-in material with fog in the color of the
  * sky behind each point.
  */
-export function withSkyFog<T extends THREE.Material>(material: T): T {
+export function withSkyFog<T extends THREE.Material>(
+  material: T,
+  /** The dim of this material: the shared one, or its own. */
+  dim: { value: number } = WORLD_UNIFORMS.uDim,
+): T {
   material.onBeforeCompile = (shader) => {
     shader.uniforms.skyFogDensity = { value: FOG_DENSITY }
+    shader.uniforms.uDim = dim
     shader.vertexShader = shader.vertexShader
       .replace(
         '#include <common>',
@@ -51,7 +70,7 @@ export function withSkyFog<T extends THREE.Material>(material: T): T {
     shader.fragmentShader = shader.fragmentShader
       .replace(
         '#include <common>',
-        `#include <common>\nvarying vec3 vSkyWorld;\nuniform float skyFogDensity;\n${SKY_GLSL}`,
+        `#include <common>\nvarying vec3 vSkyWorld;\nuniform float skyFogDensity;\n${SKY_GLSL}\n${DIM_GLSL}`,
       )
       .replace(
         '#include <fog_fragment>',
@@ -60,6 +79,7 @@ export function withSkyFog<T extends THREE.Material>(material: T): T {
           float dist = length(toPoint);
           float fog = 1.0 - exp(-skyFogDensity * skyFogDensity * dist * dist);
           gl_FragColor.rgb = mix(gl_FragColor.rgb, skyColor(toPoint / dist), fog);
+          gl_FragColor.rgb = dimmed(gl_FragColor.rgb, toPoint / dist);
         }`,
       )
   }

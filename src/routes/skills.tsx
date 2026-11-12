@@ -1,10 +1,16 @@
 import { createFileRoute } from '@tanstack/react-router'
+import {
+  Reader,
+  ReaderLink,
+  ReaderLinks,
+  ReaderList,
+  ReaderSection,
+  ReaderText,
+  ReaderTitle,
+} from '~/components/reader/Reader'
+import { STACK } from '~/components/skills/StackMarquee'
+import { capabilities } from '~/data/capabilities'
 import { pageHead } from '~/lib/structured-data'
-import Main from '~/components/Main'
-import PageHeading from '~/components/PageHeading'
-import ScrollReveal from '~/components/ScrollReveal'
-import SkillList from '~/components/skills/SkillList'
-import StackMarquee from '~/components/skills/StackMarquee'
 
 export const Route = createFileRoute('/skills')({
   head: () =>
@@ -19,35 +25,29 @@ export const Route = createFileRoute('/skills')({
 
 function SkillsPage() {
   return (
-    <Main>
-      <section className="bg-background text-foreground">
-        <div className="pt-section pb-section-content mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
-          <ScrollReveal
-            as="header"
-            className="grid justify-items-center gap-6 text-center"
-          >
-            <div>
-              <PageHeading>Ideas, engineered.</PageHeading>
-            </div>
-            <p className="text-fg-muted max-w-xl text-base leading-7 text-pretty lg:text-lg lg:leading-8">
-              I bridge product design and frontend engineering, so the idea
-              survives implementation—and the interface holds up in every state
-              after launch.
-            </p>
-          </ScrollReveal>
-        </div>
-
-        {/* Full width, outside the page margins. */}
-        <ScrollReveal amount={0.4}>
-          <StackMarquee />
-        </ScrollReveal>
-
-        <div className="pb-section mx-auto max-w-[1600px] px-5 sm:px-8 lg:px-12">
-          <div className="mt-section-content">
-            <SkillList headingLevel="h2" />
-          </div>
-        </div>
-      </section>
-    </Main>
+    <Reader>
+      <ReaderTitle>Skills</ReaderTitle>
+      <ReaderText>
+        I bridge product design and frontend engineering, so the idea survives
+        implementation, and the interface holds up in every state after launch.
+      </ReaderText>
+      {capabilities.map((capability, index) => (
+        <ReaderSection
+          key={capability.id}
+          id={capability.id}
+          title={`${String.fromCharCode(65 + index)}. ${capability.title}`}
+        >
+          <ReaderText>{capability.description}</ReaderText>
+          <ReaderLinks>
+            <ReaderLink to={capability.proof.to} hash={capability.proof.hash}>
+              {capability.proof.label}
+            </ReaderLink>
+          </ReaderLinks>
+        </ReaderSection>
+      ))}
+      <ReaderSection title="Tools">
+        <ReaderList items={STACK.map((tool) => tool.name)} />
+      </ReaderSection>
+    </Reader>
   )
 }

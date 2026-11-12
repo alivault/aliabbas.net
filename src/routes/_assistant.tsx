@@ -9,6 +9,7 @@ import {
 } from '@tanstack/react-router'
 import { PanelActiveContext } from '~/components/assistant/panel-active'
 import PortfolioChat from '~/components/chat/PortfolioChat'
+import ChatReader from '~/components/reader/ChatReader'
 import ClaimChecker from '~/components/check/ClaimChecker'
 import ModeSwitch from '~/components/check/ModeSwitch'
 import type { AssistantMode } from '~/components/check/ModeSwitch'
@@ -24,8 +25,16 @@ import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
  * the checker. The new panel slides in from the side of its tab.
  */
 export const Route = createFileRoute('/_assistant')({
-  component: AssistantLayout,
+  component: AssistantRoute,
 })
+
+/** Chat is a reader in the world. The claim checker keeps its page. */
+function AssistantRoute() {
+  const chat = useLocation({
+    select: (location) => location.pathname === '/chat',
+  })
+  return chat ? <ChatReader /> : <AssistantLayout />
+}
 
 const ORDER: ReadonlyArray<AssistantMode> = ['chat', 'check']
 
