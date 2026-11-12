@@ -10,6 +10,7 @@ import { motion, useReducedMotion } from 'motion/react'
 import { usePanelActive } from '~/components/assistant/panel-active'
 import { revealSource } from '~/lib/chat/reveal-source'
 import PageHeading from '~/components/PageHeading'
+import AskOrb from './AskOrb'
 import {
   MessageScroller,
   MessageScrollerButton,
@@ -508,6 +509,7 @@ export default function PortfolioChat() {
         <section className="flex min-h-0 flex-1 flex-col">
           <div className="flex min-h-0 flex-1 items-end justify-start overflow-y-auto px-4 py-8 sm:px-6 sm:py-10 lg:items-center lg:justify-center lg:py-12">
             <div className="flex w-full max-w-3xl flex-col items-start lg:items-center">
+              <AskOrb className="mb-8" />
               <PageHeading className="text-left lg:text-center">
                 Ask about Ali.
               </PageHeading>

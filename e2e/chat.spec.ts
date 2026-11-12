@@ -295,3 +295,18 @@ test('a second click on a selected citation clears it while its card shows', asy
     await expect(chip).toHaveAttribute('aria-pressed', 'true')
   }
 })
+
+test('the orb above the title reacts to a click, Enter and Space', async ({
+  page,
+}) => {
+  await open(page, '/chat')
+  const orb = page.getByRole('button', { name: 'Poke the orb' })
+  await orb.click()
+  await expect(orb).toHaveAttribute('data-pokes', '1')
+  await orb.focus()
+  await page.keyboard.press('Enter')
+  await page.keyboard.press('Space')
+  await expect(orb).toHaveAttribute('data-pokes', '3')
+  // The page keeps its order: the orb, then the title.
+  await expect(page.locator('h1')).toHaveText('Ask about Ali.')
+})
