@@ -85,9 +85,12 @@ jobs:
           cache: true
 
       # E2E=1 turns off the remote Cloudflare bindings, so preview needs no
-      # login. The tests mock the AI.
+      # login. The tests mock the AI. The Turnstile test key from
+      # .env.development passes on localhost; the production key does not.
       - name: Build
-        run: vp build
+        run: |
+          VITE_TURNSTILE_SITE_KEY=$(grep -oP '^VITE_TURNSTILE_SITE_KEY=\K.*' .env.development) \
+            vp build
         env:
           E2E: '1'
 
