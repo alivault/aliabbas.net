@@ -51,6 +51,10 @@ for (const path of ['/', '/skills']) {
       await expect(
         example.locator('p:not([role=status])', { hasText: 'Stopped.' }),
       ).toBeVisible()
+      // Stop is disabled now: focus moves to the next action.
+      await expect(
+        example.getByRole('button', { name: 'Stream', exact: true }),
+      ).toBeFocused()
 
       await example.getByRole('button', { name: 'Stream and fail' }).click()
       await expect(status).toHaveText(/^Failed\./, { timeout: 10_000 })

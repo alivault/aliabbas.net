@@ -1,4 +1,4 @@
-import { useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import type { CSSProperties, KeyboardEvent, ReactNode } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import {
@@ -74,13 +74,23 @@ function answerTail(answer: string) {
 /** The real chat state machine, driven by the fake stream of the Lab. */
 function StreamingExample() {
   const { isActive, machineState, run, stop, turn } = useLabStream('idle')
+  const streamRef = useRef<HTMLButtonElement>(null)
   const stopRef = useRef<HTMLButtonElement>(null)
+  const ended = machineState === 'stopped' || machineState === 'failed'
 
   const start = (scenario: 'streaming' | 'error') => {
     run(scenario)
     // Focus goes to Stop, so Enter or Esc stops the stream at once.
     requestAnimationFrame(() => stopRef.current?.focus())
   }
+
+  // When the stream ends, Stop is disabled. Focus moves from it to Stream,
+  // the next action, so a disabled button does not look active.
+  useEffect(() => {
+    if (!isActive && document.activeElement === stopRef.current) {
+      streamRef.current?.focus()
+    }
+  }, [isActive])
 
   return (
     <Frame
@@ -99,16 +109,36 @@ function StreamingExample() {
         {machineState === 'pending' && (
           <p className="text-fg-muted">Waiting for the first token…</p>
         )}
-        {turn && turn.answer && <p>{answerTail(turn.answer)}</p>}
+        {turn && turn.answer && (
+          <p className={cn(ended && 'text-fg-muted')}>
+            {answerTail(turn.answer)}
+            {ended && (
+              // Marks the place where the text stopped.
+              <span
+                aria-hidden="true"
+                className={cn(
+                  'ml-1 inline-block size-2 align-middle',
+                  machineState === 'failed' ? 'bg-destructive' : 'bg-brand',
+                )}
+              />
+            )}
+          </p>
+        )}
         {machineState === 'failed' && (
-          <p className="text-destructive mt-2 flex items-center gap-1.5">
-            <CircleX aria-hidden="true" className="size-4 shrink-0" />
+          <p className="border-destructive/40 bg-destructive/10 text-foreground mt-3 inline-flex items-center gap-2 rounded-full border px-3 py-1">
+            <CircleX
+              aria-hidden="true"
+              className="text-destructive size-4 shrink-0"
+            />
             The connection failed. The text that arrived stays.
           </p>
         )}
         {machineState === 'stopped' && (
-          <p className="text-fg-muted mt-2 flex items-center gap-1.5">
-            <Square aria-hidden="true" className="size-3.5 shrink-0" />
+          <p className="border-brand/40 bg-brand/10 text-foreground mt-3 inline-flex items-center gap-2 rounded-full border px-3 py-1">
+            <Square
+              aria-hidden="true"
+              className="fill-brand text-brand size-3 shrink-0"
+            />
             Stopped. The text that arrived stays.
           </p>
         )}
@@ -117,7 +147,11 @@ function StreamingExample() {
         {STREAM_STATUS[machineState]}
       </p>
       <div className="mt-4 flex flex-wrap gap-2">
-        <Button variant="secondary" onClick={() => start('streaming')}>
+        <Button
+          ref={streamRef}
+          variant="secondary"
+          onClick={() => start('streaming')}
+        >
           <Play aria-hidden="true" />
           Stream
         </Button>
