@@ -262,6 +262,49 @@ textarea {
   }
 }
 
+/*
+  The hover of every HUD control: the HUD color fills it from the bottom,
+  and the label turns dark on it. Keyboard focus shows the same fill. The
+  padding gives the fill room; the negative margin keeps the label where
+  it was. 280ms and the curve are DURATIONS.enter and EASE_OUT (motion.ts).
+*/
+@utility hud-fill {
+  position: relative;
+  isolation: isolate;
+  padding: 0.2em 0.4em;
+  margin: -0.2em -0.4em;
+  outline: none;
+  transition: color 280ms cubic-bezier(0.22, 1, 0.36, 1);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--hud);
+    transform: scaleY(0);
+    transform-origin: bottom;
+    transition: transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  &:is(:hover, :focus-visible):not(:disabled) {
+    color: var(--background);
+    text-decoration-color: transparent;
+  }
+
+  &:is(:hover, :focus-visible):not(:disabled)::before {
+    transform: scaleY(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    transition: none;
+
+    &::before {
+      transition: none;
+    }
+  }
+}
+
 @utility prose {
   blockquote {
     font-style: normal;

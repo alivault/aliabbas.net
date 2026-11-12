@@ -74,8 +74,7 @@ const line: Variants = {
   },
 }
 
-const linkStyle =
-  'hover:opacity-70 focus-visible:outline-hud transition-opacity focus-visible:outline-1 focus-visible:outline-offset-4'
+const linkStyle = 'hud-fill'
 
 /**
  * The index of the site, over the world: every page in groups, in the HUD

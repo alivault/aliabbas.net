@@ -64,7 +64,7 @@ export default function ChatReader() {
               type="button"
               data-sound="send"
               onClick={() => send(question)}
-              className="decoration-hud/50 hover:decoration-hud text-left uppercase underline underline-offset-[10px]"
+              className="hud-fill decoration-hud/50 text-left uppercase underline underline-offset-[10px]"
             >
               {question}
             </button>
@@ -136,7 +136,7 @@ function TurnView({
           type="button"
           data-sound="none"
           onClick={onStop}
-          className={cn(hudText, 'mt-4 uppercase opacity-70 hover:opacity-100')}
+          className={cn(hudText, 'hud-fill mt-4 self-start uppercase')}
         >
           Stop
         </button>

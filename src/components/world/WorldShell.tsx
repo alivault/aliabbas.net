@@ -126,7 +126,7 @@ function FlatWorld() {
       <ul className="flex flex-col items-center gap-5">
         {SHEETS.map((sheet) => (
           <li key={sheet.id}>
-            <Link to={sheet.to} className="hover:opacity-70">
+            <Link to={sheet.to} className="hud-fill">
               {sheet.title}
             </Link>
           </li>

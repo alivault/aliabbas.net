@@ -62,7 +62,7 @@ export default function EnterGate({ active }: { active: boolean }) {
               type="button"
               autoFocus
               data-sound="none"
-              className="focus-visible:outline-hud hover:opacity-70 focus-visible:outline-1 focus-visible:outline-offset-8"
+              className="hud-fill"
               onClick={() => enter(true)}
             >
               Enter with sound
@@ -70,7 +70,7 @@ export default function EnterGate({ active }: { active: boolean }) {
             <button
               type="button"
               data-sound="none"
-              className="focus-visible:outline-hud hover:opacity-70 focus-visible:outline-1 focus-visible:outline-offset-8"
+              className="hud-fill"
               onClick={() => enter(false)}
             >
               Enter in silence

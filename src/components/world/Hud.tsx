@@ -12,8 +12,7 @@ import {
   worldCommands,
 } from './store'
 
-const corner =
-  'pointer-events-auto transition-opacity hover:opacity-70 focus-visible:outline-hud focus-visible:outline-1 focus-visible:outline-offset-4'
+const corner = 'hud-fill pointer-events-auto disabled:opacity-50'
 
 /**
  * The HUD: four corners over the world. Top left goes home, top right counts
@@ -105,7 +104,7 @@ export default function Hud({ inPage }: { inPage: boolean }) {
           aria-label="Sound"
           aria-pressed={soundOn}
           title={soundOn ? 'Sound on' : 'Sound off'}
-          className={cn(corner, '-m-2 p-2')}
+          className={corner}
           onClick={() => {
             const next = !soundOn
             setSound(next)

@@ -150,8 +150,7 @@ export function ReaderList({
   )
 }
 
-const linkStyle =
-  'decoration-hud/50 hover:decoration-hud focus-visible:outline-hud underline underline-offset-[10px] transition-colors focus-visible:outline-1 focus-visible:outline-offset-4'
+const linkStyle = 'hud-fill decoration-hud/50 underline underline-offset-[10px]'
 
 /** A link inside the site, in the HUD face. Typed like a router Link. */
 export const ReaderLink = createLink(function ReaderAnchor({

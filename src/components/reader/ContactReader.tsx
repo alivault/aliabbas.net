@@ -92,7 +92,7 @@ export default function ContactReader() {
       <ReaderLinks>
         <a
           href={`mailto:${EMAIL}`}
-          className="decoration-hud/50 hover:decoration-hud underline underline-offset-[10px]"
+          className="hud-fill decoration-hud/50 underline underline-offset-[10px]"
         >
           {EMAIL}
         </a>
@@ -130,10 +130,10 @@ export default function ContactReader() {
                         setValue('topic', topic === option ? undefined : option)
                       }
                       className={cn(
-                        'uppercase underline-offset-[10px] transition-opacity',
+                        'hud-fill uppercase underline-offset-[10px]',
                         topic === option
                           ? 'decoration-hud underline'
-                          : 'opacity-55 hover:opacity-100',
+                          : 'text-hud/60',
                       )}
                     >
                       {option}
@@ -193,7 +193,7 @@ export default function ContactReader() {
                 disabled={isSubmitting}
                 className={cn(
                   hudText,
-                  'decoration-hud/50 hover:decoration-hud self-start text-lg uppercase underline underline-offset-[10px] disabled:opacity-50',
+                  'hud-fill decoration-hud/50 self-start text-lg uppercase underline underline-offset-[10px] disabled:opacity-50',
                 )}
               >
                 {isSubmitting ? 'Sending' : 'Send'}
