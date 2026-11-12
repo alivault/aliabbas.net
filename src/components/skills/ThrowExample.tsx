@@ -6,6 +6,7 @@ import {
   motion,
   useMotionValue,
   useReducedMotion,
+  useSpring,
   useTransform,
   useVelocity,
 } from 'motion/react'
@@ -67,8 +68,15 @@ export default function ThrowExample() {
   const reduceMotion = useReducedMotion()
   const x = useMotionValue(0)
   const y = useMotionValue(0)
-  const rotate = useTransform(useVelocity(x), [-2500, 2500], [-12, 12], {
+  // The tilt follows the speed through a spring. The raw velocity is noisy
+  // in a slow drag: frames with no pointer move read as 0, and a direct
+  // tilt would flicker.
+  const tilt = useTransform(useVelocity(x), [-2500, 2500], [-12, 12], {
     clamp: true,
+  })
+  const rotate = useSpring(tilt, {
+    stiffness: SPRINGS.layout.stiffness,
+    damping: SPRINGS.layout.damping,
   })
   const [corner, setCorner] = useState<Corner>('top-left')
   const cornerRef = useRef<Corner>(corner)
