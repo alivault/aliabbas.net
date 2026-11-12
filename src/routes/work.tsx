@@ -23,8 +23,6 @@ export const Route = createFileRoute('/work')({
   component: WorkPage,
 })
 
-const LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-
 function WorkPage() {
   return (
     <Reader>
@@ -36,12 +34,12 @@ function WorkPage() {
       </ReaderText>
 
       <ReaderSection title="Products">
-        {recentWork.map((item, index) => (
+        {recentWork.map((item) => (
           <Line key={item.title} className="mt-10 flex gap-6">
             <ProductIcon src={item.image} />
             <div className="min-w-0">
               <p className={hudText}>
-                {LETTERS[index]}. {item.title} ({item.year})
+                {item.title} ({item.year})
               </p>
               <p className={hudText}>{item.category}</p>
               <p className="text-fg-secondary mt-2 max-w-[60ch] text-base leading-7">
@@ -62,7 +60,7 @@ function WorkPage() {
         <Line className="mt-10 flex gap-6">
           <ProductIcon src="/play/averno-crucible-core.webp" cover />
           <div className="min-w-0">
-            <p className={hudText}>D. Averno (2026)</p>
+            <p className={hudText}>Averno (2026)</p>
             <p className={hudText}>Browser game · 3D</p>
             <p className="text-fg-secondary mt-2 max-w-[60ch] text-base leading-7">
               A 3D shooter that runs in the browser on a computer or a phone.
@@ -77,7 +75,7 @@ function WorkPage() {
         <Line className="mt-10 flex gap-6">
           <ProductIcon src="/chromagine.svg" />
           <div className="min-w-0">
-            <p className={hudText}>E. Chromagine (2025)</p>
+            <p className={hudText}>Chromagine (2025)</p>
             <p className={hudText}>Creative tool · Color</p>
             <p className="text-fg-secondary mt-2 max-w-[60ch] text-base leading-7">
               A joyful utility for creating harmonious palettes with perceptual
