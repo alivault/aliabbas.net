@@ -8,7 +8,6 @@ import {
 import type { CSSProperties, KeyboardEvent } from 'react'
 import { motion, useReducedMotion } from 'motion/react'
 import { usePanelActive } from '~/components/assistant/panel-active'
-import { takePendingQuestion } from '~/components/world/store'
 import { revealSource } from '~/lib/chat/reveal-source'
 import PageHeading from '~/components/PageHeading'
 import AskOrb from './AskOrb'
@@ -253,12 +252,6 @@ export default function PortfolioChat() {
     },
     [send],
   )
-
-  // A question typed into the HUD of the world, before this page opened.
-  useEffect(() => {
-    const question = takePendingQuestion()
-    if (question) submit(question)
-  }, [submit])
 
   const handleCite = useCallback(
     (turnId: string, sourceId: string) => {

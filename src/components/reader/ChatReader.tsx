@@ -1,16 +1,13 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'motion/react'
 import { useChatSession } from '~/components/chat/use-chat-session'
-import {
-  listenForQuestions,
-  takePendingQuestion,
-} from '~/components/world/store'
 import { answerToPlainText } from '~/lib/chat/streaming-markdown'
 import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
 import { play } from '~/lib/sound'
 import { cn } from '~/lib/utils'
 import type { Turn } from '~/lib/chat/chat-machine'
 import {
+  Line,
   Reader,
   ReaderExternal,
   ReaderList,
@@ -26,22 +23,19 @@ const STARTERS = [
 ]
 
 /**
- * The chat as a reader. The visitor asks in the field of the HUD (bottom
- * right). Questions show in the HUD face, answers in the body face, with
- * their sources under them.
+ * The chat as a reader. Questions show in the HUD face, answers in the body
+ * face, with their sources under them. The field to ask is under the
+ * conversation.
  */
 export default function ChatReader() {
   const { turns, activeTurn, send, stop } = useChatSession()
   const end = useRef<HTMLDivElement>(null)
+  const [draft, setDraft] = useState('')
 
-  // Questions from the HUD field, and one typed before this page opened.
-  useEffect(() => {
-    const pending = takePendingQuestion()
-    if (pending) send(pending)
-    return listenForQuestions((question) => {
-      send(question)
-    })
-  }, [send])
+  const ask = (event: React.FormEvent) => {
+    event.preventDefault()
+    if (send(draft)) setDraft('')
+  }
 
   // Keep the newest answer in view while it streams.
   const lastLength = turns.at(-1)?.answer.length ?? 0
@@ -54,7 +48,7 @@ export default function ChatReader() {
       <ReaderTitle>Ask about Ali</ReaderTitle>
       <ReaderText>
         An AI that answers from Ali’s public record: his work, his notes and his
-        experience. It cites its sources. Type in the field at the bottom right.
+        experience. It cites its sources.
       </ReaderText>
       {turns.length === 0 ? (
         <ReaderList
@@ -86,6 +80,32 @@ export default function ChatReader() {
           />
         ))}
       </div>
+      <Line className="mt-14">
+        <form
+          onSubmit={ask}
+          className={cn(hudText, 'flex max-w-[60ch] items-baseline gap-8')}
+        >
+          <label htmlFor="chat-question" className="sr-only">
+            Ask about Ali
+          </label>
+          <input
+            id="chat-question"
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            placeholder="Type here"
+            autoComplete="off"
+            className="border-hud/40 focus:border-hud placeholder:text-hud/45 min-w-0 flex-1 border-b bg-transparent py-2 tracking-[0.42em] uppercase outline-none"
+          />
+          <button
+            type="submit"
+            data-sound="send"
+            disabled={!draft.trim()}
+            className="hud-fill uppercase disabled:opacity-50"
+          >
+            Send
+          </button>
+        </form>
+      </Line>
       <div ref={end} />
     </Reader>
   )

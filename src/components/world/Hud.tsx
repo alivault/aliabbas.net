@@ -1,16 +1,10 @@
 import { useEffect, useState } from 'react'
-import { Link, useNavigate } from '@tanstack/react-router'
+import { Link } from '@tanstack/react-router'
 import { Volume2, VolumeX } from 'lucide-react'
 import { cn } from '~/lib/utils'
 import { isSoundOn, onSoundChange, play, setSound } from '~/lib/sound'
 import { SHEETS } from './sheets'
-import {
-  askOpenChat,
-  setPendingQuestion,
-  setWorld,
-  useWorld,
-  worldCommands,
-} from './store'
+import { setWorld, useWorld, worldCommands } from './store'
 
 const corner = 'hud-fill pointer-events-auto disabled:opacity-50'
 
@@ -20,13 +14,11 @@ const corner = 'hud-fill pointer-events-auto disabled:opacity-50'
  * back out of a page), bottom right asks the AI.
  */
 export default function Hud({ inPage }: { inPage: boolean }) {
-  const navigate = useNavigate()
   const indexOpen = useWorld((s) => s.indexOpen)
   const hover = useWorld((s) => s.hover)
   const ready = useWorld((s) => s.ready)
   const phase = useWorld((s) => s.phase)
   const [soundOn, setSoundOn] = useState(false)
-  const [question, setQuestion] = useState('')
 
   useEffect(() => {
     setSoundOn(isSoundOn())
@@ -35,28 +27,16 @@ export default function Hud({ inPage }: { inPage: boolean }) {
 
   const hovered = SHEETS.find((s) => s.id === hover)
 
-  const ask = (event: React.FormEvent) => {
-    event.preventDefault()
-    const text = question.trim()
-    if (!text) return
-    setQuestion('')
-    if (askOpenChat(text)) return
-    setPendingQuestion(text)
-    void navigate({ to: '/chat' })
-  }
-
   return (
     <div
       data-hud
       className="font-hud text-hud pointer-events-none fixed inset-0 z-30 text-sm tracking-[0.42em] uppercase [&_:is(button,a,input)]:uppercase"
     >
-      <Link
-        to="/"
-        data-sound="none"
-        className={cn(corner, 'absolute top-5 left-6')}
-      >
-        Ali Abbas
-      </Link>
+      <div className="absolute top-5 left-6">
+        <Link to="/" data-sound="none" className={corner}>
+          Ali Abbas
+        </Link>
+      </div>
 
       <div className="absolute top-5 right-6 flex flex-col items-end gap-1">
         {indexOpen ? (
@@ -97,7 +77,7 @@ export default function Hud({ inPage }: { inPage: boolean }) {
         {hovered ? `${hovered.title} · ${hovered.kind}` : ''}
       </p>
 
-      <div className="absolute bottom-6 left-6 flex items-center gap-8">
+      <div className="absolute bottom-6 left-6 flex items-center">
         <button
           type="button"
           data-sound="toggle"
@@ -117,40 +97,21 @@ export default function Hud({ inPage }: { inPage: boolean }) {
             <VolumeX aria-hidden="true" className="size-6" strokeWidth={1.5} />
           )}
         </button>
-        {inPage || indexOpen ? null : (
+      </div>
+
+      {inPage || indexOpen ? null : (
+        <div className="absolute right-6 bottom-6">
           <button
             type="button"
             data-sound="none"
-            className={corner}
+            className={cn(corner, 'text-lg')}
             disabled={!ready || phase !== 'roam'}
             onClick={() => worldCommands.next()}
           >
             Next
           </button>
-        )}
-      </div>
-
-      {
-        <form
-          onSubmit={ask}
-          className="absolute right-6 bottom-6 flex items-baseline gap-10"
-        >
-          <label className="sr-only" htmlFor="hud-ask">
-            Ask the AI about Ali
-          </label>
-          <input
-            id="hud-ask"
-            value={question}
-            onChange={(event) => setQuestion(event.target.value)}
-            placeholder="Type here"
-            autoComplete="off"
-            className="placeholder:text-hud/45 pointer-events-auto w-56 bg-transparent tracking-[0.42em] uppercase outline-none"
-          />
-          <button type="submit" data-sound="send" className={corner}>
-            Send
-          </button>
-        </form>
-      }
+        </div>
+      )}
     </div>
   )
 }
