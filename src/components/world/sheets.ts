@@ -163,7 +163,11 @@ export const SHEETS: Array<SheetSpec> = PAGES.map((page, i) => {
 })
 
 /** Paths that open the sheet of another page. */
-const ALIASES: Record<string, string> = { '/check': '/chat' }
+const ALIASES: Record<string, string> = {
+  '/check': '/chat',
+  // Privacy is with contact, as in the index (Contact & legal).
+  '/privacy': '/contact',
+}
 
 /**
  * The sheet that a path opens: the sheet of that page, or of the page it is
