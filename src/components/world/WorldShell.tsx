@@ -6,6 +6,7 @@ import { installInteractionSounds } from '~/lib/sound'
 import { hasFastWebGL } from '~/lib/webgl'
 import EnterGate from './EnterGate'
 import Hud from './Hud'
+import SiteIndex from './SiteIndex'
 import { SHEETS, sheetForPath } from './sheets'
 import {
   getWorld,
@@ -107,6 +108,7 @@ export default function WorldShell({ children }: { children: ReactNode }) {
       {/* The home page has no content of its own: it is the world. */}
       {inPage ? null : <h1 className="sr-only">Ali Abbas</h1>}
 
+      <SiteIndex />
       <Hud inPage={inPage} />
       <EnterGate active={!inPage && webgl !== false} />
     </>

@@ -89,8 +89,9 @@ export default function World({
 /** Darkens the world while a page is open, and lights it again after. */
 function Dimmer() {
   useFrame((_, delta) => {
-    const { phase } = getWorld()
-    const target = phase === 'inside' || phase === 'entering' ? 1 : 0
+    const { phase, indexOpen } = getWorld()
+    const target =
+      phase === 'inside' || phase === 'entering' ? 1 : indexOpen ? 0.75 : 0
     WORLD_UNIFORMS.uDim.value = THREE.MathUtils.damp(
       WORLD_UNIFORMS.uDim.value,
       target,

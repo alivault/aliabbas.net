@@ -6,6 +6,7 @@ import { SHEETS } from './sheets'
 import {
   askOpenChat,
   setPendingQuestion,
+  setWorld,
   useWorld,
   worldCommands,
 } from './store'
@@ -20,7 +21,7 @@ const corner =
  */
 export default function Hud({ inPage }: { inPage: boolean }) {
   const navigate = useNavigate()
-  const visited = useWorld((s) => s.visited.length)
+  const indexOpen = useWorld((s) => s.indexOpen)
   const hover = useWorld((s) => s.hover)
   const ready = useWorld((s) => s.ready)
   const phase = useWorld((s) => s.phase)
@@ -58,14 +59,31 @@ export default function Hud({ inPage }: { inPage: boolean }) {
       </Link>
 
       <div className="absolute top-5 right-6 flex flex-col items-end gap-1">
-        {inPage ? (
-          <Link to="/" data-sound="none" className={cn(corner, 'text-lg')}>
-            Close
-          </Link>
-        ) : null}
-        <p aria-label={`${visited} of ${SHEETS.length} pages found`}>
-          {visited}/{SHEETS.length}
-        </p>
+        {indexOpen ? (
+          <button
+            type="button"
+            className={cn(corner, 'text-lg')}
+            onClick={() => setWorld({ indexOpen: false })}
+          >
+            Return
+          </button>
+        ) : (
+          <>
+            {inPage ? (
+              <Link to="/" data-sound="none" className={cn(corner, 'text-lg')}>
+                Close
+              </Link>
+            ) : null}
+            <button
+              type="button"
+              aria-haspopup="dialog"
+              className={cn(corner, inPage ? '' : 'text-lg')}
+              onClick={() => setWorld({ indexOpen: true, hover: null })}
+            >
+              Index
+            </button>
+          </>
+        )}
       </div>
 
       {/* The name of the sheet under the pointer. */}
@@ -93,7 +111,7 @@ export default function Hud({ inPage }: { inPage: boolean }) {
         >
           {soundOn ? 'Sound' : 'Silent'}
         </button>
-        {inPage ? null : (
+        {inPage || indexOpen ? null : (
           <button
             type="button"
             data-sound="none"

@@ -23,6 +23,8 @@ export type WorldState = {
   entered: boolean
   /** True when the 3D scene runs and takes commands. */
   ready: boolean
+  /** True while the index of the site is open over the world. */
+  indexOpen: boolean
 }
 
 const VISITED_KEY = 'world:visited'
@@ -34,6 +36,7 @@ let state: WorldState = {
   visited: [],
   entered: false,
   ready: false,
+  indexOpen: false,
 }
 
 const listeners = new Set<() => void>()

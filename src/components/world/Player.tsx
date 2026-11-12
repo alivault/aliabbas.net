@@ -245,7 +245,8 @@ export default function Player({
       lastY = event.clientY
     }
     const move = (event: PointerEvent) => {
-      if (!dragging || getWorld().phase !== 'roam') return
+      if (!dragging || getWorld().phase !== 'roam' || getWorld().indexOpen)
+        return
       const dx = event.clientX - lastX
       const dy = event.clientY - lastY
       lastX = event.clientX
@@ -297,7 +298,7 @@ export default function Player({
         target.matches('input, textarea, select, [role="textbox"]'))
     const down = (event: KeyboardEvent) => {
       if (!MOVE.has(event.code) || typing(event.target)) return
-      if (getWorld().phase !== 'roam') return
+      if (getWorld().phase !== 'roam' || getWorld().indexOpen) return
       if (event.code.startsWith('Arrow')) event.preventDefault()
       keys.current.add(event.code)
       walkTarget.current = null
@@ -332,7 +333,7 @@ export default function Player({
         flight.current = null
         f.onArrive?.()
       }
-    } else if (getWorld().phase === 'roam') {
+    } else if (getWorld().phase === 'roam' && !getWorld().indexOpen) {
       // Input, as a direction relative to where the camera looks.
       const k = keys.current
       const forward =
