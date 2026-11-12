@@ -292,10 +292,13 @@ export default function AskOrb({ className }: { className?: string }) {
   const glowRef = useRef<HTMLSpanElement>(null)
   const pokeRef = useRef<(strength: number) => void>(() => undefined)
   const reduceMotion = useReducedMotion()
-  /** Squish the orb. The count of pokes is on the button, for the tests. */
-  const poke = (strength: number) => {
+  /**
+   * Squish the orb. The count of pokes (clicks and keys, not drags) is on
+   * the button, for the tests.
+   */
+  const poke = (strength: number, counted = true) => {
     const button = buttonRef.current
-    if (button && strength > 0) {
+    if (button && counted) {
       button.dataset.pokes = String(Number(button.dataset.pokes ?? 0) + 1)
     }
     pokeRef.current(strength)
@@ -528,7 +531,9 @@ export default function AskOrb({ className }: { className?: string }) {
         fromX: x,
         fromY: y,
       })
-      start()
+      // The press squishes the orb at once. It is a poke only if the
+      // pointer comes up without a drag.
+      poke(2.4, false)
     }
     const onPointerUp = (event: PointerEvent) => {
       if (!drag.active) return
@@ -542,7 +547,8 @@ export default function AskOrb({ className }: { className?: string }) {
         energy = 1
         start()
       } else if (event.type === 'pointerup') {
-        poke(2.4)
+        // A click: the release lets the orb spring back out.
+        poke(-1.8)
       }
     }
 
