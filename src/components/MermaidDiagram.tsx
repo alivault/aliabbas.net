@@ -13,6 +13,12 @@ type RenderState =
 let mermaidPromise: Promise<typeof import('mermaid').default> | undefined
 
 function loadMermaid() {
+  // Only the browser draws diagrams. In the server build this is a
+  // constant, so the build drops mermaid and its diagram chunks (about 8 MB)
+  // from the Worker.
+  if (import.meta.env.SSR) {
+    return Promise.reject(new Error('Mermaid runs in the browser only.'))
+  }
   mermaidPromise ??= import('mermaid').then(({ default: mermaid }) => mermaid)
 
   return mermaidPromise
