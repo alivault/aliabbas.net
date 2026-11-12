@@ -13,6 +13,13 @@ import type { SheetSpec } from './sheets'
 /** The icon that the camera flies to or reads, and the way it must face. */
 export const focus = { id: null as string | null, yaw: 0 }
 
+/**
+ * The icon of a full-width page fades over this range of camera distance,
+ * in meters, as the camera zooms in. The camera stops at about 1.7 m.
+ */
+const FADE_FROM = 9
+const FADE_GONE = 2.4
+
 function shortestAngle(from: number, to: number) {
   return from + Math.atan2(Math.sin(to - from), Math.cos(to - from))
 }
@@ -149,16 +156,18 @@ export default function WorldIcon({
       g.rotation.z = Math.sin(t * 0.5 + index * 2) * 0.03
     }
     // Only the icon in focus stays lit while the world goes dark. The icon
-    // of a full-width page fades out instead, once the camera is there,
-    // at about the pace of the page text that fades in.
+    // of a full-width page fades out instead as the camera zooms in: by the
+    // distance to it, so it is gone when the camera arrives.
     dim.value = focused ? 0 : WORLD_UNIFORMS.uDim.value
     if (texture) {
-      face.opacity = THREE.MathUtils.damp(
-        face.opacity,
-        focused && sheet.wide && getWorld().phase === 'inside' ? 0 : 1,
-        3,
-        delta,
-      )
+      const { phase } = getWorld()
+      const zooming =
+        focused && sheet.wide && (phase === 'entering' || phase === 'inside')
+      const distance = state.camera.position.distanceTo(g.position)
+      const target = zooming
+        ? THREE.MathUtils.smoothstep(distance, FADE_GONE, FADE_FROM)
+        : 1
+      face.opacity = THREE.MathUtils.damp(face.opacity, target, 8, delta)
     }
     glow.current = THREE.MathUtils.damp(
       glow.current,
