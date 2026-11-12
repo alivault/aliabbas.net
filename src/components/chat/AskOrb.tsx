@@ -5,24 +5,27 @@ import { cn } from 'cn'
 /** Points on the edge of the orb. The shader has the same number. */
 const POINTS = 72
 /**
- * The orb radius as a part of the canvas width: the canvas is 2 radii from
- * the center to each side. The edge can stretch to EDGE_MAX, and the center
- * can bounce by CENTER_MAX radii, so the shape never reaches the canvas
- * border, and the halo fades out before it.
+ * The orb radius as a part of the canvas width: the canvas is 3 radii from
+ * the center to each side, so the orb can jiggle and stretch freely. A drag
+ * pulls the edge to at most MAX_PULL radii, and the halo fades out before
+ * the border.
  */
-const RADIUS = 0.25
-const EDGE_MIN = 0.6
-const EDGE_MAX = 1.35
-const CENTER_MAX = 0.12
+const RADIUS = 1 / 6
+const MAX_PULL = 2.4
+/** The edge never comes nearer to the center than this, in radii. */
+const EDGE_FLOOR = 0.3
 
-/** Limits a value softly: it eases into the limits, and never passes them. */
-function soften(value: number, min: number, max: number) {
-  const knee = (max - min) * 0.15
-  if (value > max - knee)
-    return max - knee + knee * Math.tanh((value - max + knee) / knee)
-  if (value < min + knee)
-    return min + knee - knee * Math.tanh((min + knee - value) / knee)
-  return value
+/** How hard a drag pulls the edge near the pointer, and how it damps it. */
+const DRAG_STIFFNESS = 700
+const DRAG_DAMPING = 14
+/** A press that moves less than this, in CSS pixels, is a click. */
+const CLICK_SLOP = 6
+
+/** Keeps a value above a floor: it eases into it, and never passes it. */
+function floor(value: number, min: number) {
+  const knee = 0.15
+  if (value > min + knee) return value
+  return min + knee - knee * Math.tanh((min + knee - value) / knee)
 }
 
 // The edge is a ring of springs. Each point springs back to the resting
@@ -313,8 +316,8 @@ export default function AskOrb({ className }: { className?: string }) {
     const xs = new Float32Array(POINTS)
     const ys = new Float32Array(POINTS)
     const center = { x: 0, y: 0, vx: 0, vy: 0 }
-    /** The center as drawn: its bounce, softly limited. */
-    const shift = { x: 0, y: 0 }
+    /** A press on the orb: where the pointer is, and if it moved. */
+    const drag = { active: false, moved: false, x: 0, y: 0, fromX: 0, fromY: 0 }
     const tilt = { x: 0, y: 0, toX: 0, toY: 0 }
     const phase = { time: 0, flow: 0, twist: 0 }
     let energy = 0
@@ -338,19 +341,15 @@ export default function AskOrb({ className }: { className?: string }) {
       const time = phase.time
       for (let i = 0; i < POINTS; i++) {
         const angle = (i / POINTS) * Math.PI * 2
-        edges[i] = soften(
+        edges[i] = floor(
           1 +
             0.045 * Math.sin(2 * angle + time * 0.8) +
             0.03 * Math.sin(3 * angle - time * 1.1 + 1) +
             0.02 * Math.sin(5 * angle + time * 0.6 + 2) +
             offset[i],
-          EDGE_MIN,
-          EDGE_MAX,
+          EDGE_FLOOR,
         )
       }
-      const limit = size * RADIUS * CENTER_MAX
-      shift.x = soften(center.x, -limit, limit)
-      shift.y = soften(center.y, -limit, limit)
     }
 
     const drawShader = (gl: WebGL2RenderingContext, uniforms: Uniforms) => {
@@ -358,8 +357,8 @@ export default function AskOrb({ className }: { className?: string }) {
       gl.uniform2f(uniforms.uResolution, canvas.width, canvas.height)
       gl.uniform2f(
         uniforms.uCenter,
-        (size / 2 + shift.x) * scale,
-        (size / 2 + shift.y) * scale,
+        (size / 2 + center.x) * scale,
+        (size / 2 + center.y) * scale,
       )
       gl.uniform1f(uniforms.uRadius, size * RADIUS * scale)
       gl.uniform1fv(uniforms.uEdge, edges)
@@ -375,8 +374,8 @@ export default function AskOrb({ className }: { className?: string }) {
     /** Without WebGL 2: a plain glowing blob in the brand color. */
     const drawFlat = (ctx: CanvasRenderingContext2D) => {
       const radius = size * RADIUS
-      const cx = size / 2 + shift.x
-      const cy = size / 2 + shift.y
+      const cx = size / 2 + center.x
+      const cy = size / 2 + center.y
       for (let i = 0; i < POINTS; i++) {
         const angle = (i / POINTS) * Math.PI * 2
         xs[i] = cx + Math.cos(angle) * radius * edges[i]
@@ -417,7 +416,7 @@ export default function AskOrb({ className }: { className?: string }) {
       if (shader) drawShader(shader.gl, shader.uniforms)
       else if (context) drawFlat(context)
       glow.style.opacity = String(0.3 + energy * 0.35)
-      glow.style.transform = `translate(${shift.x}px, ${shift.y}px) rotate(${phase.flow * 20}deg) scale(${1 + energy * 0.15})`
+      glow.style.transform = `translate(${center.x}px, ${center.y}px) rotate(${phase.flow * 20}deg) scale(${1 + energy * 0.15})`
     }
 
     const step = (dt: number) => {
@@ -430,6 +429,31 @@ export default function AskOrb({ className }: { className?: string }) {
         const pull = (before + after - 2 * offset[i]) * COUPLING
         velocity[i] +=
           (-STIFFNESS * offset[i] - DAMPING * velocity[i] + pull / POINTS) * dt
+      }
+      // A drag pulls the edge near the pointer out to the pointer (or in,
+      // inside the orb). The rest of the edge follows through its springs.
+      if (drag.active && drag.moved) {
+        const radius = size * RADIUS
+        const reach = Math.hypot(drag.x, drag.y) / radius
+        const angle = Math.atan2(drag.y, drag.x)
+        for (let i = 0; i < POINTS; i++) {
+          const pointAngle = (i / POINTS) * Math.PI * 2
+          const apart = Math.atan2(
+            Math.sin(pointAngle - angle),
+            Math.cos(pointAngle - angle),
+          )
+          const weight = Math.exp(-((apart / 0.55) ** 2))
+          const target = (reach - 1) * weight
+          velocity[i] +=
+            (DRAG_STIFFNESS * (target - offset[i]) -
+              DRAG_DAMPING * velocity[i]) *
+            weight *
+            dt
+        }
+        // The whole orb leans a little toward the pointer.
+        center.vx += 120 * drag.x * 0.08 * dt
+        center.vy += 120 * drag.y * 0.08 * dt
+        energy = Math.min(1, energy + dt * 0.8)
       }
       for (let i = 0; i < POINTS; i++) offset[i] += velocity[i] * dt
       // The center bounces on its own spring.
@@ -481,17 +505,72 @@ export default function AskOrb({ className }: { className?: string }) {
       start()
     }
 
-    // The surface follows the pointer: a move outward pulls the edge near
-    // the pointer out, and a move inward pushes it in.
+    /** The pointer from the orb center, in CSS pixels. */
+    const pointer = (event: PointerEvent) => {
+      const box = canvas.getBoundingClientRect()
+      return {
+        x: event.clientX - box.left - box.width / 2,
+        y: event.clientY - box.top - box.height / 2,
+      }
+    }
+
+    // Press and drag to stretch the orb. A press that does not move is a
+    // click: it pokes the orb.
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.button !== 0) return
+      button.setPointerCapture(event.pointerId)
+      const { x, y } = pointer(event)
+      Object.assign(drag, {
+        active: true,
+        moved: false,
+        x,
+        y,
+        fromX: x,
+        fromY: y,
+      })
+      start()
+    }
+    const onPointerUp = (event: PointerEvent) => {
+      if (!drag.active) return
+      drag.active = false
+      delete button.dataset.stretching
+      if (button.hasPointerCapture(event.pointerId)) {
+        button.releasePointerCapture(event.pointerId)
+      }
+      if (drag.moved) {
+        // Let go: the springs snap the orb back, and it wobbles.
+        energy = 1
+        start()
+      } else if (event.type === 'pointerup') {
+        poke(2.4)
+      }
+    }
+
+    // Without a press, the surface follows the pointer: a move outward
+    // pulls the edge near the pointer out, and a move inward pushes it in.
     let previous: { x: number; y: number } | null = null
     const onPointerMove = (event: PointerEvent) => {
       if (reduceMotion) return
-      const box = canvas.getBoundingClientRect()
-      const x = event.clientX - box.left - box.width / 2
-      const y = event.clientY - box.top - box.height / 2
+      const { x, y } = pointer(event)
       const radius = size * RADIUS
       tilt.toX = Math.max(-1, Math.min(1, x / (radius * 1.6)))
       tilt.toY = Math.max(-1, Math.min(1, y / (radius * 1.6)))
+      if (drag.active) {
+        if (
+          !drag.moved &&
+          Math.hypot(x - drag.fromX, y - drag.fromY) > CLICK_SLOP
+        ) {
+          drag.moved = true
+          button.dataset.stretching = ''
+        }
+        // The pull stops at MAX_PULL radii, so the orb stays on its canvas.
+        const reach = Math.hypot(x, y)
+        const limit = Math.min(1, (radius * MAX_PULL) / Math.max(reach, 1))
+        drag.x = x * limit
+        drag.y = y * limit
+        previous = null
+        return
+      }
       if (previous && Math.hypot(x, y) < radius * 1.6) {
         const angle = Math.atan2(y, x)
         const radial =
@@ -517,6 +596,7 @@ export default function AskOrb({ className }: { className?: string }) {
     }
     const onPointerLeave = () => {
       previous = null
+      if (drag.active) return
       tilt.toX = 0
       tilt.toY = 0
     }
@@ -545,7 +625,10 @@ export default function AskOrb({ className }: { className?: string }) {
       draw()
     }
     scheme.addEventListener('change', onScheme)
+    button.addEventListener('pointerdown', onPointerDown)
     button.addEventListener('pointermove', onPointerMove)
+    button.addEventListener('pointerup', onPointerUp)
+    button.addEventListener('pointercancel', onPointerUp)
     button.addEventListener('pointerleave', onPointerLeave)
 
     return () => {
@@ -554,7 +637,10 @@ export default function AskOrb({ className }: { className?: string }) {
       intersection.disconnect()
       document.removeEventListener('visibilitychange', onVisibility)
       scheme.removeEventListener('change', onScheme)
+      button.removeEventListener('pointerdown', onPointerDown)
       button.removeEventListener('pointermove', onPointerMove)
+      button.removeEventListener('pointerup', onPointerUp)
+      button.removeEventListener('pointercancel', onPointerUp)
       button.removeEventListener('pointerleave', onPointerLeave)
       pokeRef.current = () => undefined
     }
@@ -565,9 +651,6 @@ export default function AskOrb({ className }: { className?: string }) {
       ref={buttonRef}
       type="button"
       aria-label="Poke the orb"
-      // A press squishes the orb, and the release lets it spring back out.
-      onPointerDown={() => poke(2.4)}
-      onPointerUp={() => poke(-1.8)}
       onKeyDown={(event) => {
         if (event.repeat || (event.key !== 'Enter' && event.key !== ' ')) return
         event.preventDefault()
@@ -585,11 +668,11 @@ export default function AskOrb({ className }: { className?: string }) {
         aria-hidden="true"
         className="pointer-events-none absolute inset-[-15%] rounded-full bg-[conic-gradient(oklch(0.55_0.21_265),oklch(0.78_0.15_225),oklch(0.82_0.15_70),oklch(0.66_0.22_15),oklch(0.55_0.26_295),oklch(0.55_0.21_265))] opacity-30 blur-2xl"
       />
-      {/* Twice the button, so the edge can bulge out. */}
+      {/* Three times the button, so the orb can stretch out. */}
       <canvas
         ref={canvasRef}
         aria-hidden="true"
-        className="pointer-events-none absolute inset-[-50%] size-[200%]"
+        className="pointer-events-none absolute inset-[-100%] size-[300%]"
       />
     </button>
   )

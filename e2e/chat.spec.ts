@@ -310,3 +310,20 @@ test('the orb above the title reacts to a click, Enter and Space', async ({
   // The page keeps its order: the orb, then the title.
   await expect(page.locator('h1')).toHaveText('Ask about Ali.')
 })
+
+test('a drag on the orb stretches it, and is not a poke', async ({ page }) => {
+  await open(page, '/chat')
+  const orb = page.getByRole('button', { name: 'Poke the orb' })
+  const box = await orb.boundingBox()
+  if (!box) throw new Error('The orb has no box')
+  const x = box.x + box.width / 2
+  const y = box.y + box.height / 2
+  await page.mouse.move(x, y)
+  await page.mouse.down()
+  await page.mouse.move(x + 150, y - 60, { steps: 8 })
+  // The pull goes on outside the button.
+  await expect(orb).toHaveAttribute('data-stretching', '')
+  await page.mouse.up()
+  await expect(orb).not.toHaveAttribute('data-stretching')
+  await expect(orb).not.toHaveAttribute('data-pokes')
+})
