@@ -73,7 +73,14 @@ export default defineConfig({
     process.env.VITEST
       ? []
       : [
-          devtools({ injectSource: { enabled: true } }),
+          devtools({
+            injectSource: {
+              enabled: true,
+              // React Three Fiber sets each JSX prop on a three.js object,
+              // and it fails on the data-tsd-source attribute.
+              ignore: { files: [/src\/components\/world\//] },
+            },
+          }),
           tailwindcss(),
           cloudflare({
             viteEnvironment: { name: 'ssr' },

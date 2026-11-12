@@ -18,11 +18,16 @@ function token(name: string, fallback: string) {
     .getPropertyValue(name)
     .trim()
   if (!value) return fallback
-  // three.js does not read oklch: let the canvas convert it.
-  const context = document.createElement('canvas').getContext('2d')
+  // three.js does not read oklch, and a canvas keeps it as oklch when
+  // read back as a string: paint one pixel and read its sRGB value.
+  const canvas = document.createElement('canvas')
+  canvas.width = canvas.height = 1
+  const context = canvas.getContext('2d', { willReadFrequently: true })
   if (!context) return fallback
   context.fillStyle = value
-  return context.fillStyle
+  context.fillRect(0, 0, 1, 1)
+  const [r, g, b] = context.getImageData(0, 0, 1, 1).data
+  return `rgb(${r}, ${g}, ${b})`
 }
 
 /**
