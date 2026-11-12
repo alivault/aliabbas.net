@@ -95,7 +95,41 @@ function setup() {
   sfxBus.connect(reverb)
 
   buildDrone(ctx)
+  watchVisibility(ctx)
   return ctx
+}
+
+/** The level of the sound while it plays. */
+const LEVEL = 0.9
+
+let suspendTimer = 0
+
+/**
+ * When the visitor leaves the page (another tab, a minimized window, a
+ * navigation away), the sound fades out over about a second, then the
+ * audio stops to save power. It fades back in when the page shows again.
+ */
+function watchVisibility(context: AudioContext) {
+  const leave = () => {
+    if (!master) return
+    master.gain.cancelScheduledValues(context.currentTime)
+    master.gain.setTargetAtTime(0, context.currentTime, 0.3)
+    window.clearTimeout(suspendTimer)
+    suspendTimer = window.setTimeout(() => void context.suspend(), 1500)
+  }
+  const back = () => {
+    window.clearTimeout(suspendTimer)
+    if (!enabled || !master) return
+    void context.resume()
+    master.gain.cancelScheduledValues(context.currentTime)
+    master.gain.setTargetAtTime(LEVEL, context.currentTime, 0.8)
+  }
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') leave()
+    else back()
+  })
+  window.addEventListener('pagehide', leave)
+  window.addEventListener('pageshow', back)
 }
 
 /**
@@ -175,9 +209,10 @@ export function setSound(on: boolean) {
   }
   if (on) {
     const context = setup()
+    window.clearTimeout(suspendTimer)
     void context.resume()
     master!.gain.cancelScheduledValues(context.currentTime)
-    master!.gain.setTargetAtTime(0.9, context.currentTime, 1.2)
+    master!.gain.setTargetAtTime(LEVEL, context.currentTime, 1.2)
   } else if (ctx && master) {
     master.gain.cancelScheduledValues(ctx.currentTime)
     master.gain.setTargetAtTime(0, ctx.currentTime, 0.15)
