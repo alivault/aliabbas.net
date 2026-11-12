@@ -9,9 +9,9 @@ import { setWorld, useWorld, worldCommands } from './store'
 const corner = 'hud-fill pointer-events-auto disabled:opacity-50'
 
 /**
- * The HUD: four corners over the world. Top left goes home, top right counts
- * the sheets found, bottom left has sound and the next sheet (or the way
- * back out of a page), bottom right asks the AI.
+ * The HUD: four corners over the world. Top left goes home (also out of a
+ * page, back to the world), top right opens the index, bottom left turns
+ * the sound on or off, and bottom right flies to the next page.
  */
 export default function Hud({ inPage }: { inPage: boolean }) {
   const indexOpen = useWorld((s) => s.indexOpen)
@@ -48,21 +48,14 @@ export default function Hud({ inPage }: { inPage: boolean }) {
             Return
           </button>
         ) : (
-          <>
-            {inPage ? (
-              <Link to="/" data-sound="none" className={cn(corner, 'text-lg')}>
-                Back
-              </Link>
-            ) : null}
-            <button
-              type="button"
-              aria-haspopup="dialog"
-              className={cn(corner, inPage ? '' : 'text-lg')}
-              onClick={() => setWorld({ indexOpen: true, hover: null })}
-            >
-              Index
-            </button>
-          </>
+          <button
+            type="button"
+            aria-haspopup="dialog"
+            className={cn(corner, 'text-lg')}
+            onClick={() => setWorld({ indexOpen: true, hover: null })}
+          >
+            Index
+          </button>
         )}
       </div>
 
