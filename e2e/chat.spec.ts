@@ -16,26 +16,28 @@ const composer = (page: Page) =>
       : 'textarea#portfolio-question-initial-mobile',
   )
 
-test('an answer streams with citations, and a chip shows its source', async ({
-  page,
-}) => {
-  await mockAi(page, { '/api/chat': chatAnswer() })
-  await open(page, '/chat')
-  await composer(page).fill('Has Ali built streaming interfaces?')
-  await page.keyboard.press('Enter')
+test(
+  'an answer streams with citations, and a chip shows its source',
+  { tag: '@mobile' },
+  async ({ page }) => {
+    await mockAi(page, { '/api/chat': chatAnswer() })
+    await open(page, '/chat')
+    await composer(page).fill('Has Ali built streaming interfaces?')
+    await page.keyboard.press('Enter')
 
-  await expect(page.getByText(/done in/)).toBeVisible()
-  const chip = page.getByRole('button', {
-    name: `Source 2: ${SOURCES.whimcall.title}`,
-  })
-  await expect(chip).toBeVisible()
+    await expect(page.getByText(/done in/)).toBeVisible()
+    const chip = page.getByRole('button', {
+      name: `Source 2: ${SOURCES.whimcall.title}`,
+    })
+    await expect(chip).toBeVisible()
 
-  await chip.click()
-  if (!isDesktop(page)) await expect(page.getByRole('dialog')).toBeVisible()
-  const card = page.locator(':focus')
-  await expect(card).toContainText(SOURCES.whimcall.title)
-  await expect(card).toBeInViewport({ ratio: 0.5 })
-})
+    await chip.click()
+    if (!isDesktop(page)) await expect(page.getByRole('dialog')).toBeVisible()
+    const card = page.locator(':focus')
+    await expect(card).toContainText(SOURCES.whimcall.title)
+    await expect(card).toBeInViewport({ ratio: 0.5 })
+  },
+)
 
 test('Esc stops the answer and keeps the text that arrived', async ({
   page,
@@ -161,33 +163,35 @@ test('the checker keeps its footer while it leaves for another page', async ({
   ).toEqual([])
 })
 
-test('the send button is concentric on one line and on the last of many', async ({
-  page,
-}) => {
-  await open(page, '/chat')
-  const field = composer(page)
-  const gaps = () =>
-    field.evaluate((textarea) => {
-      const form = textarea.closest('form')!.getBoundingClientRect()
-      const button = textarea
-        .closest('form')!
-        .querySelector('button')!
-        .getBoundingClientRect()
-      return {
-        top: Math.round(button.top - form.top),
-        bottom: Math.round(form.bottom - button.bottom),
-        right: Math.round(form.right - button.right),
-      }
-    })
-  const oneLine = await gaps()
-  expect(oneLine.top).toBe(oneLine.bottom)
-  expect(oneLine.right).toBe(oneLine.bottom)
+test(
+  'the send button is concentric on one line and on the last of many',
+  { tag: '@mobile' },
+  async ({ page }) => {
+    await open(page, '/chat')
+    const field = composer(page)
+    const gaps = () =>
+      field.evaluate((textarea) => {
+        const form = textarea.closest('form')!.getBoundingClientRect()
+        const button = textarea
+          .closest('form')!
+          .querySelector('button')!
+          .getBoundingClientRect()
+        return {
+          top: Math.round(button.top - form.top),
+          bottom: Math.round(form.bottom - button.bottom),
+          right: Math.round(form.right - button.right),
+        }
+      })
+    const oneLine = await gaps()
+    expect(oneLine.top).toBe(oneLine.bottom)
+    expect(oneLine.right).toBe(oneLine.bottom)
 
-  await field.fill('one\ntwo\nthree')
-  const lines = await gaps()
-  expect(lines.bottom).toBe(oneLine.bottom)
-  expect(lines.top).toBeGreaterThan(lines.bottom)
-})
+    await field.fill('one\ntwo\nthree')
+    const lines = await gaps()
+    expect(lines.bottom).toBe(oneLine.bottom)
+    expect(lines.top).toBeGreaterThan(lines.bottom)
+  },
+)
 
 test('a click anywhere on a collapsed source selects it, but not a link or a selection', async ({
   page,

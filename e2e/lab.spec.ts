@@ -79,22 +79,24 @@ test.describe('streaming list', () => {
   })
 })
 
-test('citation drawer opens, closes with Esc, and returns focus', async ({
-  page,
-}) => {
-  const specimen = page.locator('#citation-drawer')
-  await specimen.scrollIntoViewIfNeeded()
-  const chip = specimen.locator('button').filter({ hasText: /^3$/ }).first()
-  await chip.click()
-  const dialog = page.getByRole('dialog')
-  await expect(dialog).toBeVisible()
-  // The chosen source has focus and is in the visible part of the drawer.
-  const card = page.locator(':focus')
-  await expect(card).toBeInViewport({ ratio: 0.5 })
-  await page.keyboard.press('Escape')
-  await expect(dialog).toBeHidden()
-  await expect(chip).toBeFocused()
-})
+test(
+  'citation drawer opens, closes with Esc, and returns focus',
+  { tag: '@mobile' },
+  async ({ page }) => {
+    const specimen = page.locator('#citation-drawer')
+    await specimen.scrollIntoViewIfNeeded()
+    const chip = specimen.locator('button').filter({ hasText: /^3$/ }).first()
+    await chip.click()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toBeVisible()
+    // The chosen source has focus and is in the visible part of the drawer.
+    const card = page.locator(':focus')
+    await expect(card).toBeInViewport({ ratio: 0.5 })
+    await page.keyboard.press('Escape')
+    await expect(dialog).toBeHidden()
+    await expect(chip).toBeFocused()
+  },
+)
 
 test('resizer: drag and keyboard both change the panel width', async ({
   page,

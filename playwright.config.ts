@@ -16,12 +16,19 @@ const publicEnv = Object.fromEntries(
 
 const PORT = 3100
 const executablePath = process.env.CHROMIUM_PATH
+/**
+ * CI tests the production build in dist (`E2E=1 vp build` first), as it
+ * ships. Locally the tests use the dev server.
+ */
+const server = process.env.CI ? 'preview' : 'dev'
 
 export default defineConfig({
   testDir: 'e2e',
   fullyParallel: true,
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
+  // One worker for each of the 4 vCPUs of a CI runner.
+  workers: process.env.CI ? 4 : undefined,
   reporter: process.env.CI ? [['github'], ['html', { open: 'never' }]] : 'list',
   use: {
     baseURL: `http://localhost:${PORT}`,
@@ -37,7 +44,10 @@ export default defineConfig({
       },
     },
     {
+      // Only the tests whose result depends on a phone layout. The other
+      // tests check the same logic on desktop.
       name: 'mobile',
+      grep: /@mobile/,
       use: {
         ...devices['Desktop Chrome'],
         viewport: { width: 390, height: 844 },
@@ -46,7 +56,7 @@ export default defineConfig({
   ],
   webServer: {
     // E2E=1 turns off remote Cloudflare bindings. The tests mock the AI.
-    command: `vp dev --port ${PORT} --strictPort`,
+    command: `vp ${server} --port ${PORT} --strictPort`,
     env: { ...publicEnv, E2E: '1' },
     url: `http://localhost:${PORT}/lab`,
     reuseExistingServer: !process.env.CI,

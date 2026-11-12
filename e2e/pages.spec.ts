@@ -60,13 +60,15 @@ for (const path of [
   '/performance',
   '/design',
 ]) {
-  test(`${path} has no text under 14px and no CSS capitals`, async ({
-    page,
-  }) => {
-    await open(page, path)
-    await expect(page.locator('main')).toBeVisible()
-    expect(await smallText(page)).toEqual([])
-  })
+  test(
+    `${path} has no text under 14px and no CSS capitals`,
+    { tag: '@mobile' },
+    async ({ page }) => {
+      await open(page, path)
+      await expect(page.locator('main')).toBeVisible()
+      expect(await smallText(page)).toEqual([])
+    },
+  )
 }
 
 // The server HTML, as a link preview reads it: no JavaScript runs.
@@ -247,59 +249,61 @@ test('each page ends with the closing call to action, except Contact', async ({
   await expect(closing).toHaveCount(0)
 })
 
-test('the work stage shows the project in the middle of the screen', async ({
-  page,
-}) => {
-  await open(page, '/work')
-  const stage = page.locator('[data-work-stage]')
-  if (!isDesktop(page)) {
-    // Small screens have no stage: each project shows its own block.
-    await expect(stage).toBeHidden()
-    await expect(
-      page.getByRole('link', { name: 'Read the Whimcall case study' }),
-    ).toBeVisible()
-    return
-  }
-  // The blocks are the faces of a cube that turns with the scroll. Hit
-  // testing follows the 3D transform, so the link at the center of the
-  // stage is the face that points at the screen.
-  const blockOnTop = () =>
-    stage.evaluate((element) => {
-      const box = element.getBoundingClientRect()
-      const hit = document
-        .elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)
-        ?.closest('a')
-      return [...element.querySelectorAll('a')].indexOf(hit!)
-    })
-  // Scroll until the middle of the row is level with the middle of the
-  // stage. The stage is sticky only after the first scroll, so repeat.
-  const alignWithStage = (title: string) =>
-    page.evaluate((title) => {
-      const row = document
-        .querySelector(`[data-work-item="${title}"]`)!
-        .getBoundingClientRect()
-      const stage = document
-        .querySelector('[data-work-stage] > div')!
-        .getBoundingClientRect()
-      window.scrollBy(
-        0,
-        row.top + row.height / 2 - (stage.top + stage.height / 2),
-      )
-    }, title)
-  const titles = ['Pico', 'Whimcall', 'Postmaster']
-  await expect(stage).toHaveAttribute('data-work-stage', 'Pico')
-  // The face of a project points at the screen when its text is level
-  // with it.
-  for (const title of ['Whimcall', 'Postmaster', 'Pico']) {
-    await expect
-      .poll(async () => {
-        await alignWithStage(title)
-        return blockOnTop()
+test(
+  'the work stage shows the project in the middle of the screen',
+  { tag: '@mobile' },
+  async ({ page }) => {
+    await open(page, '/work')
+    const stage = page.locator('[data-work-stage]')
+    if (!isDesktop(page)) {
+      // Small screens have no stage: each project shows its own block.
+      await expect(stage).toBeHidden()
+      await expect(
+        page.getByRole('link', { name: 'Read the Whimcall case study' }),
+      ).toBeVisible()
+      return
+    }
+    // The blocks are the faces of a cube that turns with the scroll. Hit
+    // testing follows the 3D transform, so the link at the center of the
+    // stage is the face that points at the screen.
+    const blockOnTop = () =>
+      stage.evaluate((element) => {
+        const box = element.getBoundingClientRect()
+        const hit = document
+          .elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)
+          ?.closest('a')
+        return [...element.querySelectorAll('a')].indexOf(hit!)
       })
-      .toBe(titles.indexOf(title))
-    await expect(stage).toHaveAttribute('data-work-stage', title)
-  }
-})
+    // Scroll until the middle of the row is level with the middle of the
+    // stage. The stage is sticky only after the first scroll, so repeat.
+    const alignWithStage = (title: string) =>
+      page.evaluate((title) => {
+        const row = document
+          .querySelector(`[data-work-item="${title}"]`)!
+          .getBoundingClientRect()
+        const stage = document
+          .querySelector('[data-work-stage] > div')!
+          .getBoundingClientRect()
+        window.scrollBy(
+          0,
+          row.top + row.height / 2 - (stage.top + stage.height / 2),
+        )
+      }, title)
+    const titles = ['Pico', 'Whimcall', 'Postmaster']
+    await expect(stage).toHaveAttribute('data-work-stage', 'Pico')
+    // The face of a project points at the screen when its text is level
+    // with it.
+    for (const title of ['Whimcall', 'Postmaster', 'Pico']) {
+      await expect
+        .poll(async () => {
+          await alignWithStage(title)
+          return blockOnTop()
+        })
+        .toBe(titles.indexOf(title))
+      await expect(stage).toHaveAttribute('data-work-stage', title)
+    }
+  },
+)
 
 test('a secondary button shows a turning chrome border on hover', async ({
   page,
