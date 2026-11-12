@@ -18,9 +18,10 @@ function smallText(page: Page) {
       if (
         !text ||
         !element ||
-        // Skip hidden text, and the TanStack devtools of the dev server.
+        // Skip hidden text, the HUD of the world (spaced capitals by
+        // design), and the TanStack devtools of the dev server.
         element.closest(
-          '.sr-only, [aria-hidden="true"], script, style, [class*="tsqd"], [class*="tanstack"]',
+          '.sr-only, [aria-hidden="true"], [data-hud], script, style, [class*="tsqd"], [class*="tanstack"]',
         )
       )
         continue

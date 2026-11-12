@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import Footer from './Footer'
 import PageAnimation from './PageAnimation'
-import SiteHeader from './SiteHeader'
 
 export default function Main({
   children,
@@ -14,7 +13,7 @@ export default function Main({
 }) {
   return (
     <div className="bg-background text-foreground min-h-svh overflow-x-clip">
-      <SiteHeader />
+      {/* The HUD of the world is the navigation: no site header. */}
       <PageAnimation>
         <main className="min-h-[70svh] [&>:first-child]:border-t-[length:var(--header-height)] [&>:first-child]:border-t-transparent">
           {children}

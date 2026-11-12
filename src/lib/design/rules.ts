@@ -19,7 +19,7 @@ export const DESIGN_RULES: Array<DesignRule> = [
   },
   {
     id: 'text-size',
-    rule: 'No text under 14px, and no capitals made with CSS. Use text-sm (14px) as the smallest size.',
+    rule: 'No text under 14px, and no capitals made with CSS. Use text-sm (14px) as the smallest size. The one exception is the HUD of the world (data-hud): spaced capitals in font-hud.',
     why: 'Small capital labels are hard to read and add noise without meaning.',
     checkedBy: 'e2e/pages.spec.ts',
   },

@@ -1,5 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router'
-import HomeExperience from '~/components/HomeExperience'
 import { jsonLdScript, pageHead, person, website } from '~/lib/structured-data'
 
 export const Route = createFileRoute('/')({
@@ -17,6 +16,7 @@ export const Route = createFileRoute('/')({
   component: Home,
 })
 
+// The home page is the world itself (see WorldShell).
 function Home() {
-  return <HomeExperience />
+  return null
 }

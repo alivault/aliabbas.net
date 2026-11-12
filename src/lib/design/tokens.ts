@@ -89,6 +89,26 @@ export const COLOR_ROLES: Record<string, { group: ColorGroup; use: string }> = {
     use: 'The label on the liquid metal. APCA Lc 90 or more on chrome.',
   },
   accent: { group: 'Action', use: 'Hover fill of menu items.' },
+  hud: {
+    group: 'Action',
+    use: 'The HUD of the world, the outline on the ground and the edge of a sheet under the pointer.',
+  },
+  'sky-warm': {
+    group: 'Surface',
+    use: 'The sky of the world, on the side of the sun.',
+  },
+  'sky-cool': {
+    group: 'Surface',
+    use: 'The sky of the world, away from the sun.',
+  },
+  'sky-haze': {
+    group: 'Surface',
+    use: 'The dark haze at the horizon of the world.',
+  },
+  ground: {
+    group: 'Surface',
+    use: 'The ground of the world, before the 3D scene loads.',
+  },
   'accent-foreground': { group: 'Action', use: 'Text on an accent fill.' },
   ring: { group: 'Action', use: 'The focus ring. Every control shows it.' },
   border: { group: 'Line', use: 'Dividers and card edges.' },

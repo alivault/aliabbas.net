@@ -4,6 +4,7 @@
 @import '@fontsource-variable/dm-sans';
 @import '@fontsource/jetbrains-mono/latin-400.css';
 @import '@fontsource/jetbrains-mono/latin-500.css';
+@import '@fontsource/michroma/latin-400.css';
 
 @plugin '@tailwindcss/typography';
 
@@ -11,6 +12,8 @@
   --font-sans: 'DM Sans Variable', sans-serif;
   --font-display: var(--font-sans);
   --font-mono: 'JetBrains Mono', monospace;
+  /* The HUD of the world: a wide face, in spaced capitals. */
+  --font-hud: 'Michroma', var(--font-sans);
   /* The display face of /play only. The route loads it. */
   --font-play: 'Chakra Petch', var(--font-sans);
 
@@ -46,6 +49,11 @@
   --color-brand-foreground: var(--brand-foreground);
   --color-chrome: var(--chrome);
   --color-chrome-foreground: var(--chrome-foreground);
+  --color-hud: var(--hud);
+  --color-sky-warm: var(--sky-warm);
+  --color-sky-cool: var(--sky-cool);
+  --color-sky-haze: var(--sky-haze);
+  --color-ground: var(--ground);
   --color-verified: var(--verified);
   --color-partial: var(--partial);
   --color-contradicted: var(--contradicted);
@@ -102,6 +110,13 @@
      in both schemes, so the light label reads on it. */
   --chrome: oklch(0.12 0.005 260);
   --chrome-foreground: oklch(0.99 0 0);
+  /* The world, the same in both schemes. The 3D scene has the same colors
+     in components/world/sky.ts and Terrain.tsx. */
+  --hud: oklch(0.6 0.19 37);
+  --sky-warm: oklch(0.66 0.1 60);
+  --sky-cool: oklch(0.45 0.025 55);
+  --sky-haze: oklch(0.24 0.02 55);
+  --ground: oklch(0.2 0.003 60);
 }
 
 @media (width >= 40rem) {
@@ -187,6 +202,11 @@
   --page-base: oklch(0.05 0.002 245.5);
   --chrome: oklch(0.12 0.005 260);
   --chrome-foreground: oklch(0.99 0 0);
+  --hud: oklch(0.6 0.19 37);
+  --sky-warm: oklch(0.66 0.1 60);
+  --sky-cool: oklch(0.45 0.025 55);
+  --sky-haze: oklch(0.24 0.02 55);
+  --ground: oklch(0.2 0.003 60);
 }
 
 @layer base {

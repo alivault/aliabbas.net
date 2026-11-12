@@ -1,0 +1,415 @@
+/**
+ * All sound of the site, made with Web Audio: no files to load.
+ *
+ * A drone plays under the world. Each interactive element plays a short
+ * sound. Browsers start audio only after a gesture, so `start()` must run in
+ * a click or a key handler. The choice (on or off) is saved.
+ */
+
+export type SoundName =
+  | 'hover'
+  | 'click'
+  | 'portal-in'
+  | 'portal-out'
+  | 'type'
+  | 'send'
+  | 'toggle'
+  | 'step'
+
+const ENABLED_KEY = 'sound:enabled'
+
+let ctx: AudioContext | null = null
+let master: GainNode | null = null
+let sfxBus: GainNode | null = null
+let droneFilter: BiquadFilterNode | null = null
+let droneGain: GainNode | null = null
+let reverb: ConvolverNode | null = null
+let enabled = false
+const listeners = new Set<(on: boolean) => void>()
+
+/** The saved choice: true, false, or null when the visitor has not chosen. */
+export function savedChoice(): boolean | null {
+  try {
+    const value = localStorage.getItem(ENABLED_KEY)
+    return value === null ? null : value === '1'
+  } catch {
+    return null
+  }
+}
+
+export function isSoundOn() {
+  return enabled
+}
+
+export function onSoundChange(listener: (on: boolean) => void) {
+  listeners.add(listener)
+  return () => {
+    listeners.delete(listener)
+  }
+}
+
+/** A reverb tail made from decaying noise. */
+function makeImpulse(context: AudioContext, seconds: number) {
+  const length = Math.floor(context.sampleRate * seconds)
+  const impulse = context.createBuffer(2, length, context.sampleRate)
+  for (let channel = 0; channel < 2; channel++) {
+    const data = impulse.getChannelData(channel)
+    for (let i = 0; i < length; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2.6)
+    }
+  }
+  return impulse
+}
+
+function noiseBuffer(context: AudioContext, seconds: number) {
+  const buffer = context.createBuffer(
+    1,
+    Math.floor(context.sampleRate * seconds),
+    context.sampleRate,
+  )
+  const data = buffer.getChannelData(0)
+  for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1
+  return buffer
+}
+
+function setup() {
+  if (ctx) return ctx
+  const AudioCtor =
+    window.AudioContext ??
+    (window as unknown as { webkitAudioContext: typeof AudioContext })
+      .webkitAudioContext
+  ctx = new AudioCtor()
+  master = ctx.createGain()
+  master.gain.value = 0
+  master.connect(ctx.destination)
+
+  reverb = ctx.createConvolver()
+  reverb.buffer = makeImpulse(ctx, 4.5)
+  const wet = ctx.createGain()
+  wet.gain.value = 0.55
+  reverb.connect(wet).connect(master)
+
+  sfxBus = ctx.createGain()
+  sfxBus.gain.value = 0.5
+  sfxBus.connect(master)
+  sfxBus.connect(reverb)
+
+  buildDrone(ctx)
+  return ctx
+}
+
+/**
+ * Low detuned saws through a slow low-pass filter, and a band of wind
+ * noise. LFOs move both, so the drone never loops the same way.
+ */
+function buildDrone(context: AudioContext) {
+  droneGain = context.createGain()
+  droneGain.gain.value = 0.22
+  droneFilter = context.createBiquadFilter()
+  droneFilter.type = 'lowpass'
+  droneFilter.frequency.value = 260
+  droneFilter.Q.value = 3
+  droneFilter.connect(droneGain)
+  droneGain.connect(master!)
+  droneGain.connect(reverb!)
+
+  const voices: Array<[number, number, OscillatorType]> = [
+    [55, -7, 'sawtooth'],
+    [55, 6, 'sawtooth'],
+    [82.41, 3, 'triangle'],
+    [110, -4, 'sine'],
+    [164.81, 9, 'sine'],
+  ]
+  for (const [frequency, detune, type] of voices) {
+    const osc = context.createOscillator()
+    osc.type = type
+    osc.frequency.value = frequency
+    osc.detune.value = detune
+    const gain = context.createGain()
+    gain.gain.value = type === 'sawtooth' ? 0.16 : 0.1
+    // Each voice swells on its own slow cycle.
+    const lfo = context.createOscillator()
+    lfo.frequency.value = 0.03 + Math.random() * 0.05
+    const depth = context.createGain()
+    depth.gain.value = gain.gain.value * 0.6
+    lfo.connect(depth).connect(gain.gain)
+    osc.connect(gain).connect(droneFilter)
+    osc.start()
+    lfo.start()
+  }
+
+  const cutoffLfo = context.createOscillator()
+  cutoffLfo.frequency.value = 0.045
+  const cutoffDepth = context.createGain()
+  cutoffDepth.gain.value = 120
+  cutoffLfo.connect(cutoffDepth).connect(droneFilter.frequency)
+  cutoffLfo.start()
+
+  const wind = context.createBufferSource()
+  wind.buffer = noiseBuffer(context, 4)
+  wind.loop = true
+  const windFilter = context.createBiquadFilter()
+  windFilter.type = 'bandpass'
+  windFilter.frequency.value = 500
+  windFilter.Q.value = 0.8
+  const windGain = context.createGain()
+  windGain.gain.value = 0.035
+  const windLfo = context.createOscillator()
+  windLfo.frequency.value = 0.07
+  const windDepth = context.createGain()
+  windDepth.gain.value = 260
+  windLfo.connect(windDepth).connect(windFilter.frequency)
+  wind.connect(windFilter).connect(windGain).connect(master!)
+  windGain.connect(reverb!)
+  wind.start()
+  windLfo.start()
+}
+
+/** Turns sound on or off, and saves the choice. Call it in a gesture. */
+export function setSound(on: boolean) {
+  enabled = on
+  try {
+    localStorage.setItem(ENABLED_KEY, on ? '1' : '0')
+  } catch {
+    // Private mode: the choice lasts for this visit only.
+  }
+  if (on) {
+    const context = setup()
+    void context.resume()
+    master!.gain.cancelScheduledValues(context.currentTime)
+    master!.gain.setTargetAtTime(0.9, context.currentTime, 1.2)
+  } else if (ctx && master) {
+    master.gain.cancelScheduledValues(ctx.currentTime)
+    master.gain.setTargetAtTime(0, ctx.currentTime, 0.15)
+  }
+  for (const listener of listeners) listener(on)
+}
+
+/**
+ * How close the visitor is to a sheet, 0 to 1. The drone opens up as a
+ * sheet comes near, and most during a portal flight.
+ */
+export function setDroneOpen(amount: number) {
+  if (!ctx || !droneFilter) return
+  droneFilter.frequency.setTargetAtTime(
+    260 + amount * 900,
+    ctx.currentTime,
+    0.4,
+  )
+}
+
+function tone(
+  context: AudioContext,
+  {
+    type = 'sine',
+    from,
+    to = from,
+    at = 0,
+    duration,
+    volume,
+  }: {
+    type?: OscillatorType
+    from: number
+    to?: number
+    at?: number
+    duration: number
+    volume: number
+  },
+) {
+  const start = context.currentTime + at
+  const osc = context.createOscillator()
+  osc.type = type
+  osc.frequency.setValueAtTime(from, start)
+  osc.frequency.exponentialRampToValueAtTime(to, start + duration)
+  const gain = context.createGain()
+  gain.gain.setValueAtTime(0, start)
+  gain.gain.linearRampToValueAtTime(volume, start + 0.005)
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration)
+  osc.connect(gain).connect(sfxBus!)
+  osc.start(start)
+  osc.stop(start + duration + 0.05)
+}
+
+function noiseHit(
+  context: AudioContext,
+  {
+    from,
+    to = from,
+    duration,
+    volume,
+    q = 1,
+  }: {
+    from: number
+    to?: number
+    duration: number
+    volume: number
+    q?: number
+  },
+) {
+  const start = context.currentTime
+  const source = context.createBufferSource()
+  source.buffer = noiseBuffer(context, duration + 0.1)
+  const filter = context.createBiquadFilter()
+  filter.type = 'bandpass'
+  filter.Q.value = q
+  filter.frequency.setValueAtTime(from, start)
+  filter.frequency.exponentialRampToValueAtTime(to, start + duration)
+  const gain = context.createGain()
+  gain.gain.setValueAtTime(0, start)
+  gain.gain.linearRampToValueAtTime(volume, start + duration * 0.4)
+  gain.gain.exponentialRampToValueAtTime(0.0001, start + duration)
+  source.connect(filter).connect(gain).connect(sfxBus!)
+  source.start(start)
+}
+
+let lastHover = 0
+
+/** Plays one interaction sound. Does nothing while sound is off. */
+export function play(name: SoundName) {
+  if (!enabled || !ctx || ctx.state !== 'running') return
+  const context = ctx
+  switch (name) {
+    case 'hover': {
+      // Many hovers in a row would buzz.
+      const now = performance.now()
+      if (now - lastHover < 60) return
+      lastHover = now
+      tone(context, { from: 1320, to: 1250, duration: 0.07, volume: 0.05 })
+      break
+    }
+    case 'click':
+      tone(context, { from: 180, to: 70, duration: 0.14, volume: 0.35 })
+      tone(context, {
+        from: 2200,
+        duration: 0.03,
+        volume: 0.06,
+        type: 'square',
+      })
+      break
+    case 'toggle':
+      tone(context, {
+        from: 660,
+        duration: 0.06,
+        volume: 0.1,
+        type: 'triangle',
+      })
+      tone(context, {
+        from: 990,
+        at: 0.07,
+        duration: 0.08,
+        volume: 0.1,
+        type: 'triangle',
+      })
+      break
+    case 'type':
+      tone(context, {
+        from: 2400 + Math.random() * 600,
+        duration: 0.02,
+        volume: 0.035,
+        type: 'square',
+      })
+      break
+    case 'send':
+      tone(context, { from: 440, to: 880, duration: 0.18, volume: 0.15 })
+      noiseHit(context, { from: 900, to: 4000, duration: 0.25, volume: 0.08 })
+      break
+    case 'step':
+      noiseHit(context, {
+        from: 300,
+        to: 150,
+        duration: 0.12,
+        volume: 0.06,
+        q: 2,
+      })
+      break
+    case 'portal-in':
+      noiseHit(context, {
+        from: 200,
+        to: 5000,
+        duration: 1.3,
+        volume: 0.22,
+        q: 3,
+      })
+      tone(context, {
+        from: 110,
+        to: 440,
+        duration: 1.4,
+        volume: 0.18,
+        type: 'triangle',
+      })
+      tone(context, { from: 55, to: 55, at: 1.2, duration: 1.6, volume: 0.3 })
+      break
+    case 'portal-out':
+      noiseHit(context, {
+        from: 5000,
+        to: 200,
+        duration: 1.1,
+        volume: 0.2,
+        q: 3,
+      })
+      tone(context, {
+        from: 440,
+        to: 110,
+        duration: 1.2,
+        volume: 0.15,
+        type: 'triangle',
+      })
+      break
+  }
+}
+
+const INTERACTIVE =
+  'a[href], button, [role="button"], [role="tab"], [role="menuitem"], [role="switch"], input[type="checkbox"], input[type="radio"], select, summary, label[for]'
+
+/**
+ * Gives every interactive element of the page a hover and a click sound.
+ * An element with `data-sound="none"` (or inside one) stays silent; one
+ * with its own sound sets `data-sound` to that sound.
+ */
+export function installInteractionSounds() {
+  let hovered: Element | null = null
+  const soundOf = (element: Element): SoundName | null => {
+    const owner = element.closest('[data-sound]')
+    const value = owner?.getAttribute('data-sound')
+    if (value === 'none') return null
+    return (value as SoundName | null) ?? 'click'
+  }
+  const onOver = (event: PointerEvent) => {
+    if (event.pointerType !== 'mouse') return
+    const element = (event.target as Element | null)?.closest(INTERACTIVE)
+    if (!element || element === hovered) return
+    hovered = element
+    if (soundOf(element)) play('hover')
+  }
+  const onOut = (event: PointerEvent) => {
+    const element = (event.target as Element | null)?.closest(INTERACTIVE)
+    if (element === hovered) hovered = null
+  }
+  const onClick = (event: MouseEvent) => {
+    const element = (event.target as Element | null)?.closest(INTERACTIVE)
+    if (!element) return
+    const sound = soundOf(element)
+    if (sound) play(sound)
+  }
+  const onKey = (event: KeyboardEvent) => {
+    const target = event.target as HTMLElement | null
+    if (
+      target?.matches(
+        'input:not([type="checkbox"], [type="radio"]), textarea',
+      ) &&
+      event.key.length === 1
+    ) {
+      play('type')
+    }
+  }
+  document.addEventListener('pointerover', onOver)
+  document.addEventListener('pointerout', onOut)
+  document.addEventListener('click', onClick, true)
+  document.addEventListener('keydown', onKey, true)
+  return () => {
+    document.removeEventListener('pointerover', onOver)
+    document.removeEventListener('pointerout', onOut)
+    document.removeEventListener('click', onClick, true)
+    document.removeEventListener('keydown', onKey, true)
+  }
+}

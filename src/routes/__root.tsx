@@ -13,6 +13,7 @@ import type { ConvexReactClient } from 'convex/react'
 import Devtools from '~/components/Devtools'
 import LiquidMetalHover from '~/components/LiquidMetalHover'
 import VitalsReporter from '~/components/VitalsReporter'
+import WorldShell from '~/components/world/WorldShell'
 import { sessionQueryOptions } from '~/lib/auth'
 import { authClient } from '~/lib/auth-client'
 import { siteSocialMeta } from '~/lib/structured-data'
@@ -84,7 +85,9 @@ function RootComponent() {
         >
           {/* Motion follows the OS setting for reduced motion on every page. */}
           <MotionConfig reducedMotion="user">
-            <Outlet />
+            <WorldShell>
+              <Outlet />
+            </WorldShell>
           </MotionConfig>
           <VitalsReporter />
           <LiquidMetalHover />
