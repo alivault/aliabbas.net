@@ -351,6 +351,36 @@ test('a primary button fills with liquid metal on hover', async ({ page }) => {
   await expect.poll(state).toMatch(/^(on|static)$/)
 })
 
+test('without a GPU, the globe is a still frame and the button metal is static', async ({
+  page,
+}) => {
+  // Headless Chromium draws WebGL in software (SwiftShader), like a browser
+  // without a GPU. An animation would keep the main thread busy.
+  await open(page, '/')
+  const globe = page.getByRole('img', { name: 'Globe with connections.' })
+  await expect(globe).toBeVisible()
+  await expect(globe).not.toHaveAttribute('tabindex')
+  const longTasks = await page.evaluate(
+    () =>
+      new Promise<number>((resolve) => {
+        let total = 0
+        const observer = new PerformanceObserver((list) => {
+          for (const entry of list.getEntries()) total += entry.duration
+        })
+        observer.observe({ type: 'longtask' })
+        setTimeout(() => {
+          observer.disconnect()
+          resolve(total)
+        }, 1500)
+      }),
+  )
+  // The main thread is free most of the time.
+  expect(longTasks).toBeLessThan(750)
+  const button = page.locator('main .liquid-metal', { hasText: 'See the work' })
+  await button.hover()
+  await expect(button).toHaveAttribute('data-liquid-metal', 'static')
+})
+
 test('each case study shows the icon of its app', async ({ page }) => {
   for (const [slug, image] of [
     ['pico', '/pico.svg'],

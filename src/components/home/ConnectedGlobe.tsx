@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
+import { hasFastWebGL } from '~/lib/webgl'
 
 const GLOBE_RADIUS = 1.42
 const ARC_POINT_COUNT = 96
@@ -312,6 +313,8 @@ export default function ConnectedGlobe() {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [prefersDarkMode, setPrefersDarkMode] = useState(getPrefersDarkMode)
+  // Without a GPU, the globe is one still frame: no drag, no keys.
+  const [interactive, setInteractive] = useState(true)
 
   useEffect(() => {
     const colorScheme = window.matchMedia('(prefers-color-scheme: dark)')
@@ -329,6 +332,8 @@ export default function ConnectedGlobe() {
     const surfaceBlending = prefersDarkMode
       ? THREE.AdditiveBlending
       : THREE.NormalBlending
+    const still = !hasFastWebGL()
+    setInteractive(!still)
 
     const renderer = new THREE.WebGLRenderer({
       canvas,
@@ -561,6 +566,7 @@ export default function ConnectedGlobe() {
       dots.frustumCulled = false
       globe.add(dots)
       landDots = dots
+      if (still) renderStill()
     })
 
     const impactGeometry = new THREE.CircleGeometry(0.02, 24)
@@ -860,7 +866,10 @@ export default function ConnectedGlobe() {
       atmosphere.scale.setScalar(GLOBE_RADIUS * 2 * 1.36 * globeRig.scale.x)
     }
 
-    const resizeObserver = new ResizeObserver(resize)
+    const resizeObserver = new ResizeObserver(() => {
+      resize()
+      if (still) renderStill()
+    })
     resizeObserver.observe(container)
     resize()
 
@@ -954,12 +963,14 @@ export default function ConnectedGlobe() {
       event.preventDefault()
     }
 
-    canvas.addEventListener('pointerdown', handlePointerDown)
-    canvas.addEventListener('pointermove', handlePointerMove)
-    canvas.addEventListener('pointerup', handlePointerUp)
-    canvas.addEventListener('pointercancel', handlePointerUp)
-    canvas.addEventListener('pointerleave', handlePointerLeave)
-    canvas.addEventListener('keydown', handleKeyDown)
+    if (!still) {
+      canvas.addEventListener('pointerdown', handlePointerDown)
+      canvas.addEventListener('pointermove', handlePointerMove)
+      canvas.addEventListener('pointerup', handlePointerUp)
+      canvas.addEventListener('pointercancel', handlePointerUp)
+      canvas.addEventListener('pointerleave', handlePointerLeave)
+      canvas.addEventListener('keydown', handleKeyDown)
+    }
 
     let isVisible = true
     const intersectionObserver = new IntersectionObserver(([entry]) => {
@@ -967,9 +978,8 @@ export default function ConnectedGlobe() {
     })
     intersectionObserver.observe(canvas)
 
-    const reduceMotion = window.matchMedia(
-      '(prefers-reduced-motion: reduce)',
-    ).matches
+    const reduceMotion =
+      still || window.matchMedia('(prefers-reduced-motion: reduce)').matches
     if (reduceMotion) {
       connections.forEach((connection, index) => {
         connection.delay = 0
@@ -978,7 +988,7 @@ export default function ConnectedGlobe() {
     }
 
     let previousTime = performance.now()
-    renderer.setAnimationLoop((time) => {
+    const drawFrame = (time: number) => {
       const delta = Math.min((time - previousTime) / 1000, 0.05)
       previousTime = time
       if (!isVisible) return
@@ -1053,9 +1063,19 @@ export default function ConnectedGlobe() {
       arcHoverAttribute.needsUpdate = true
 
       renderer.render(scene, camera)
-    })
+    }
+    // Software WebGL: one frame now, and again when the land dots load or
+    // the size changes. An animation would keep the main thread busy.
+    let stillFrame = 0
+    function renderStill() {
+      cancelAnimationFrame(stillFrame)
+      stillFrame = requestAnimationFrame(drawFrame)
+    }
+    if (still) renderStill()
+    else renderer.setAnimationLoop(drawFrame)
 
     return () => {
+      cancelAnimationFrame(stillFrame)
       isDisposed = true
       renderer.setAnimationLoop(null)
       resizeObserver.disconnect()
@@ -1104,9 +1124,13 @@ export default function ConnectedGlobe() {
         key={prefersDarkMode ? 'dark' : 'light'}
         ref={canvasRef}
         className="animate-enter-soft block size-full touch-pan-y outline-none"
-        aria-label="Interactive globe with animated connections. Drag or use arrow keys to rotate."
+        aria-label={
+          interactive
+            ? 'Interactive globe with animated connections. Drag or use arrow keys to rotate.'
+            : 'Globe with connections.'
+        }
         role="img"
-        tabIndex={0}
+        tabIndex={interactive ? 0 : undefined}
       />
     </div>
   )

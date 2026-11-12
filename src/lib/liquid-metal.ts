@@ -12,6 +12,7 @@
  * in the primary variant in button.tsx.
  */
 import { DURATIONS, EASE_IN, EASE_OUT } from '~/lib/design/motion'
+import { hasFastWebGL } from '~/lib/webgl'
 
 /** The width of the CSS border, which the canvas also covers. */
 const BORDER = 1
@@ -165,6 +166,8 @@ function makeRenderer(): Renderer | null {
     pointerEvents: 'none',
     opacity: '0',
   })
+  // No GPU: the static CSS metal, not a shader in software.
+  if (!hasFastWebGL()) return null
   const gl = canvas.getContext('webgl', { alpha: false, antialias: false })
   if (!gl) return null
   const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)

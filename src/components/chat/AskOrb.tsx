@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { hasFastWebGL } from '~/lib/webgl'
 import { useReducedMotion } from 'motion/react'
 import { cn } from 'cn'
 
@@ -262,8 +263,12 @@ const UNIFORMS = [
 ] as const
 type Uniforms = Record<(typeof UNIFORMS)[number], WebGLUniformLocation | null>
 
-/** The shader on the canvas, or null if the browser has no WebGL 2. */
+/**
+ * The shader on the canvas, or null if the browser has no WebGL 2 on a GPU.
+ * Then the flat 2D orb shows.
+ */
 function makeShader(canvas: HTMLCanvasElement) {
+  if (!hasFastWebGL()) return null
   const gl = canvas.getContext('webgl2', { premultipliedAlpha: true })
   if (!gl) return null
   const vertex = compile(gl, gl.VERTEX_SHADER, VERTEX)
