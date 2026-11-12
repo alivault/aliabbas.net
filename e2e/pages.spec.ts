@@ -260,15 +260,14 @@ test('the work stage shows the project in the middle of the screen', async ({
     ).toBeVisible()
     return
   }
-  // The blocks follow the scroll. A clip path also clips hit testing, so
-  // the link at a point of the stage is the block that is open on top
-  // there. The wipe goes from right to left, and its edge leans to the
-  // right at the top, so the top-left corner opens last.
+  // The blocks are the faces of a cube that turns with the scroll. Hit
+  // testing follows the 3D transform, so the link at the center of the
+  // stage is the face that points at the screen.
   const blockOnTop = () =>
     stage.evaluate((element) => {
       const box = element.getBoundingClientRect()
       const hit = document
-        .elementFromPoint(box.left + 4, box.top + 4)
+        .elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)
         ?.closest('a')
       return [...element.querySelectorAll('a')].indexOf(hit!)
     })
@@ -289,7 +288,8 @@ test('the work stage shows the project in the middle of the screen', async ({
     }, title)
   const titles = ['Pico', 'Whimcall', 'Postmaster']
   await expect(stage).toHaveAttribute('data-work-stage', 'Pico')
-  // The block of a project is fully open when its text is level with it.
+  // The face of a project points at the screen when its text is level
+  // with it.
   for (const title of ['Whimcall', 'Postmaster', 'Pico']) {
     await expect
       .poll(async () => {

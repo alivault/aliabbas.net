@@ -109,9 +109,23 @@ function ProjectMark({ project }: { project: WorkItem }) {
  * The project as a block with sharp corners. It fills its parent, which sets
  * the size. `reveal` is a scroll progress from 0 to 1: a wipe with a
  * 60 degree edge opens the block from right to left, and the mark settles
- * from a larger size.
+ * from a larger size. Without `reveal` the block is open.
  */
 function ProjectBlock({
+  project,
+  reveal,
+}: {
+  project: WorkItem
+  reveal?: MotionValue<number>
+}) {
+  return reveal ? (
+    <WipedBlock project={project} reveal={reveal} />
+  ) : (
+    <BlockFrame project={project} />
+  )
+}
+
+function WipedBlock({
   project,
   reveal,
 }: {
@@ -121,6 +135,18 @@ function ProjectBlock({
   const reduceMotion = useReducedMotion()
   const clipPath = useTransform(reveal, wipe)
   const scale = useTransform(reveal, [0, 1], [reduceMotion ? 1 : 1.25, 1])
+  return <BlockFrame project={project} clipPath={clipPath} scale={scale} />
+}
+
+function BlockFrame({
+  project,
+  clipPath,
+  scale,
+}: {
+  project: WorkItem
+  clipPath?: MotionValue<string>
+  scale?: MotionValue<number>
+}) {
   return (
     <motion.div
       style={{ clipPath }}
@@ -150,7 +176,7 @@ export function ProjectBlockLink({
   hidden = false,
 }: {
   project: WorkItem
-  reveal: MotionValue<number>
+  reveal?: MotionValue<number>
   hidden?: boolean
 }) {
   const a11y = hidden
