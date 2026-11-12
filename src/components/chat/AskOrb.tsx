@@ -18,6 +18,13 @@ const EDGE_FLOOR = 0.3
 /** How hard a drag pulls the edge near the pointer, and how it damps it. */
 const DRAG_STIFFNESS = 700
 const DRAG_DAMPING = 14
+/**
+ * While pressed, the orb shrinks to this size, on a spring that bounces a
+ * little when it lets go.
+ */
+const PRESSED_SCALE = 0.8
+const PRESS_STIFFNESS = 170
+const PRESS_DAMPING = 11
 /** A press that moves less than this, in CSS pixels, is a click. */
 const CLICK_SLOP = 6
 
@@ -291,17 +298,19 @@ export default function AskOrb({ className }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const glowRef = useRef<HTMLSpanElement>(null)
   const pokeRef = useRef<(strength: number) => void>(() => undefined)
+  const pressRef = useRef<(down: boolean) => void>(() => undefined)
   const reduceMotion = useReducedMotion()
   /**
-   * Squish the orb. The count of pokes (clicks and keys, not drags) is on
-   * the button, for the tests.
+   * Press (the orb shrinks and stays small, morphing) or let go (it springs
+   * back up). A full press and release (a click or a key, not a drag) is one
+   * poke. The count is on the button, for the tests.
    */
-  const poke = (strength: number, counted = true) => {
+  const press = (down: boolean, counted = true) => {
     const button = buttonRef.current
-    if (button && counted) {
+    if (button && counted && !down) {
       button.dataset.pokes = String(Number(button.dataset.pokes ?? 0) + 1)
     }
-    pokeRef.current(strength)
+    pressRef.current(down)
   }
 
   useEffect(() => {
@@ -322,6 +331,8 @@ export default function AskOrb({ className }: { className?: string }) {
     /** A press on the orb: where the pointer is, and if it moved. */
     const drag = { active: false, moved: false, x: 0, y: 0, fromX: 0, fromY: 0 }
     const tilt = { x: 0, y: 0, toX: 0, toY: 0 }
+    /** The size of the whole orb: smaller while pressed. */
+    const squeeze = { value: 1, velocity: 0, target: 1 }
     const phase = { time: 0, flow: 0, twist: 0 }
     let energy = 0
     let brand = token(button, '--brand')
@@ -345,10 +356,11 @@ export default function AskOrb({ className }: { className?: string }) {
       for (let i = 0; i < POINTS; i++) {
         const angle = (i / POINTS) * Math.PI * 2
         edges[i] = floor(
-          1 +
-            0.045 * Math.sin(2 * angle + time * 0.8) +
-            0.03 * Math.sin(3 * angle - time * 1.1 + 1) +
-            0.02 * Math.sin(5 * angle + time * 0.6 + 2) +
+          squeeze.value *
+            (1 +
+              0.045 * Math.sin(2 * angle + time * 0.8) +
+              0.03 * Math.sin(3 * angle - time * 1.1 + 1) +
+              0.02 * Math.sin(5 * angle + time * 0.6 + 2)) +
             offset[i],
           EDGE_FLOOR,
         )
@@ -419,7 +431,7 @@ export default function AskOrb({ className }: { className?: string }) {
       if (shader) drawShader(shader.gl, shader.uniforms)
       else if (context) drawFlat(context)
       glow.style.opacity = String(0.3 + energy * 0.35)
-      glow.style.transform = `translate(${center.x}px, ${center.y}px) rotate(${phase.flow * 20}deg) scale(${1 + energy * 0.15})`
+      glow.style.transform = `translate(${center.x}px, ${center.y}px) rotate(${phase.flow * 20}deg) scale(${squeeze.value * (1 + energy * 0.15)})`
     }
 
     const step = (dt: number) => {
@@ -469,6 +481,11 @@ export default function AskOrb({ className }: { className?: string }) {
       tilt.x += (tilt.toX - tilt.x) * ease
       tilt.y += (tilt.toY - tilt.y) * ease
       energy *= Math.exp(-dt * 1.6)
+      squeeze.velocity +=
+        (PRESS_STIFFNESS * (squeeze.target - squeeze.value) -
+          PRESS_DAMPING * squeeze.velocity) *
+        dt
+      squeeze.value += squeeze.velocity * dt
     }
 
     const tick = (now: number) => {
@@ -508,6 +525,13 @@ export default function AskOrb({ className }: { className?: string }) {
       start()
     }
 
+    pressRef.current = (down: boolean) => {
+      if (reduceMotion) return
+      squeeze.target = down ? PRESSED_SCALE : 1
+      // A small wobble on the way, so the shape morphs as it changes size.
+      pokeRef.current(down ? 1 : -1.2)
+    }
+
     /** The pointer from the orb center, in CSS pixels. */
     const pointer = (event: PointerEvent) => {
       const box = canvas.getBoundingClientRect()
@@ -531,9 +555,9 @@ export default function AskOrb({ className }: { className?: string }) {
         fromX: x,
         fromY: y,
       })
-      // The press squishes the orb at once. It is a poke only if the
-      // pointer comes up without a drag.
-      poke(2.4, false)
+      // The press shrinks the orb, and it stays small while held. It is a
+      // poke only if the pointer comes up without a drag.
+      press(true, false)
     }
     const onPointerUp = (event: PointerEvent) => {
       if (!drag.active) return
@@ -546,9 +570,9 @@ export default function AskOrb({ className }: { className?: string }) {
         // Let go: the springs snap the orb back, and it wobbles.
         energy = 1
         start()
-      } else if (event.type === 'pointerup') {
-        // A click: the release lets the orb spring back out.
-        poke(-1.8)
+      } else {
+        // A click: the release lets the orb spring back up.
+        press(false, event.type === 'pointerup')
       }
     }
 
@@ -568,6 +592,8 @@ export default function AskOrb({ className }: { className?: string }) {
         ) {
           drag.moved = true
           button.dataset.stretching = ''
+          // A stretch pulls the orb out at its full size.
+          squeeze.target = 1
         }
         // The pull stops at MAX_PULL radii, so the orb stays on its canvas.
         const reach = Math.hypot(x, y)
@@ -658,9 +684,14 @@ export default function AskOrb({ className }: { className?: string }) {
       type="button"
       aria-label="Poke the orb"
       onKeyDown={(event) => {
-        if (event.repeat || (event.key !== 'Enter' && event.key !== ' ')) return
+        if (event.key !== 'Enter' && event.key !== ' ') return
         event.preventDefault()
-        poke(2.4)
+        if (!event.repeat) press(true)
+      }}
+      onKeyUp={(event) => {
+        if (event.key !== 'Enter' && event.key !== ' ') return
+        event.preventDefault()
+        press(false)
       }}
       className={cn(
         'focus-visible:ring-ring/50 relative size-24 shrink-0 cursor-pointer touch-none rounded-full outline-none focus-visible:ring-3 lg:size-28',
