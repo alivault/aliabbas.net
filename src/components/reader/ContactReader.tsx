@@ -113,6 +113,7 @@ export default function ContactReader() {
         ) : (
           <Line className="mt-6 max-w-[60ch]">
             <form
+              aria-label="Contact"
               onSubmit={handleSubmit(onSubmit)}
               noValidate
               className="flex flex-col gap-6"

@@ -76,7 +76,11 @@ export default function WorldShell({ children }: { children: ReactNode }) {
       if (event.key !== 'Escape' || event.defaultPrevented) return
       // A dialog or a menu uses Esc first.
       if (document.querySelector('[role="dialog"], [role="menu"]')) return
-      void router.navigate({ to: '/' })
+      // Wait until every other listener has had the key: a page can use Esc
+      // to stop something (the claim checker), and then it is not a way out.
+      window.setTimeout(() => {
+        if (!event.defaultPrevented) void router.navigate({ to: '/' })
+      })
     }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
@@ -104,11 +108,15 @@ export default function WorldShell({ children }: { children: ReactNode }) {
         ) : null}
       </div>
 
-      {webgl === false && !inPage ? <FlatWorld /> : null}
-
       {showText ? children : null}
-      {/* The home page has no content of its own: it is the world. */}
-      {inPage ? null : <h1 className="sr-only">Ali Abbas</h1>}
+      {/* The home page has no content of its own: it is the world. Without
+          WebGL, it lists the pages. */}
+      {inPage ? null : (
+        <main>
+          <h1 className="sr-only">Ali Abbas</h1>
+          {webgl === false ? <FlatWorld /> : null}
+        </main>
+      )}
 
       <SiteIndex />
       <Hud inPage={inPage} />

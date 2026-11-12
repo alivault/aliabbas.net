@@ -8,7 +8,7 @@ test('an empty send shows an error under each required field', async ({
 }) => {
   await open(page, '/contact')
   const form = page.getByRole('form', { name: 'Contact' })
-  await form.getByRole('button', { name: 'Send message' }).click()
+  await form.getByRole('button', { name: 'Send' }).click()
 
   await expect(form.getByText('Enter your name.')).toBeVisible()
   await expect(form.getByText('Enter a valid email address.')).toBeVisible()
@@ -16,9 +16,7 @@ test('an empty send shows an error under each required field', async ({
   await expect(form.getByLabel('Name')).toBeFocused()
 })
 
-test('a topic chip toggles, and the message shows its length', async ({
-  page,
-}) => {
+test('a topic toggles, and only one is on', async ({ page }) => {
   await open(page, '/contact')
   const form = page.getByRole('form', { name: 'Contact' })
   const contract = form.getByRole('button', { name: 'Contract' })
@@ -31,9 +29,6 @@ test('a topic chip toggles, and the message shows its length', async ({
   await expect(contract).toHaveAttribute('aria-pressed', 'false')
   await fullTime.click()
   await expect(fullTime).toHaveAttribute('aria-pressed', 'false')
-
-  await form.getByLabel('Message').fill('Hello')
-  await expect(form.getByText('5 / 2000')).toBeVisible()
 })
 
 test('a failed send keeps the message and gives the email address', async ({
@@ -53,7 +48,7 @@ test('a failed send keeps the message and gives the email address', async ({
     null,
     { timeout: 20_000 },
   )
-  await form.getByRole('button', { name: 'Send message' }).click()
+  await form.getByRole('button', { name: 'Send' }).click()
 
   await expect(form.getByRole('alert')).toContainText(
     'Your message was not sent. Try again, or write to ali@aliabbas.net.',
@@ -70,9 +65,10 @@ test('the page gives other ways to get in touch', async ({ page }) => {
   ).toHaveAttribute('href', 'mailto:ali@aliabbas.net')
   await expect(page.getByRole('link', { name: /^LinkedIn/ })).toHaveAttribute(
     'href',
-    'https://www.linkedin.com/in/webdevali',
+    'https://www.linkedin.com/in/webdevali/',
   )
-  await expect(
-    page.getByRole('link', { name: 'Ask AI about me first' }),
-  ).toHaveAttribute('href', '/chat')
+  await expect(page.getByRole('link', { name: /^GitHub/ })).toHaveAttribute(
+    'href',
+    'https://github.com/alivault',
+  )
 })

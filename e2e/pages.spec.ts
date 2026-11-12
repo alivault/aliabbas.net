@@ -1,4 +1,4 @@
-import { expect, isDesktop, test, open } from './fixtures'
+import { expect, test, open } from './fixtures'
 import type { Page } from '@playwright/test'
 
 /**
@@ -121,37 +121,6 @@ for (const path of [
   })
 }
 
-for (const [path, name, target] of [
-  ['/work/pico', 'On this page', 'failure-modes'],
-] as const) {
-  test(`${path}: the section nav sticks and marks the section in view`, async ({
-    page,
-  }) => {
-    test.skip(!isDesktop(page), 'The section nav is a desktop layout.')
-    await open(page, path)
-    const nav = page.getByRole('navigation', { name })
-    await nav
-      .getByRole('link')
-      .filter({ has: page.locator(`[href$="#${target}"]`) })
-      .or(nav.locator(`a[href$="#${target}"]`))
-      .first()
-      .click()
-
-    await expect(page).toHaveURL(new RegExp(`#${target}$`))
-    await expect(nav.locator('[aria-current="location"]')).toHaveAttribute(
-      'href',
-      new RegExp(`#${target}$`),
-    )
-    const navBox = await nav.boundingBox()
-    const section = await page.locator(`#${target}`).boundingBox()
-    expect(navBox?.y ?? -1).toBeGreaterThanOrEqual(0)
-    // The section starts below the bar, not under it.
-    expect(section?.y ?? 0).toBeGreaterThanOrEqual(
-      (navBox?.y ?? 0) + (navBox?.height ?? 0),
-    )
-  })
-}
-
 test('/design/tokens.json lists the tokens and the rules', async ({
   request,
 }) => {
@@ -187,318 +156,99 @@ for (const [path, types] of [
   })
 }
 
-// The footer is in the page flow, so all of it can be reached, also on a
-// short screen.
-for (const [width, height] of [
-  [1440, 700],
-  [390, 600],
-] as const) {
-  test(`the whole footer can be reached at ${width}x${height}`, async ({
-    page,
-  }) => {
-    test.skip(!isDesktop(page), 'The test sets its own viewport.')
-    await page.setViewportSize({ width, height })
-    await open(page, '/work/pico')
-    const footer = page.locator('footer.site-footer')
-    const top = footer.getByRole('heading', { name: 'Portfolio' })
-    await top.scrollIntoViewIfNeeded()
-    await expect(top).toBeInViewport()
-    await page.evaluate(() =>
-      window.scrollTo({ top: document.documentElement.scrollHeight }),
-    )
-    await expect(
-      footer.getByText('Designed and engineered with intent.'),
-    ).toBeInViewport({ ratio: 1 })
-  })
-}
-
-test('the hero actions go to the work and to the chat', async ({ page }) => {
-  await open(page, '/')
-  // The closing section repeats the links, so look in the hero only.
-  const hero = page.locator('section').filter({ has: page.locator('h1') })
-  await hero.getByRole('link', { name: 'See the work' }).click()
-  await expect(page).toHaveURL(/#work$/)
-  await expect(
-    page.getByRole('heading', { name: 'Recent work' }),
-  ).toBeInViewport()
-
-  await page.evaluate(() => window.scrollTo({ top: 0 }))
-  await hero.getByRole('link', { name: 'Ask AI about me' }).click()
-  await expect(page).toHaveURL(/\/chat$/)
-})
-
-test('each page ends with the closing call to action, except Contact', async ({
-  page,
-}) => {
+test('Esc on a page goes back to the world', async ({ page }) => {
   await open(page, '/work')
-  const closing = page.getByRole('heading', {
-    name: 'Hard problem, high bar? That’s my favorite kind.',
-  })
-  await expect(closing).toBeAttached()
-  const actions = closing.locator('..')
-  await expect(actions.getByRole('link', { name: 'Contact' })).toHaveAttribute(
-    'href',
-    '/contact',
-  )
-  await expect(
-    actions.getByRole('link', { name: 'Ask AI about me' }),
-  ).toHaveAttribute('href', '/chat')
-
-  await open(page, '/contact')
-  await expect(page.locator('footer.site-footer')).toBeAttached()
-  await expect(closing).toHaveCount(0)
+  await page.keyboard.press('Escape')
+  await expect(page).toHaveURL(/\/$/)
 })
 
 test(
-  'the work stage shows the project in the middle of the screen',
+  'the index opens over the world and closes with Esc and Return',
   { tag: '@mobile' },
   async ({ page }) => {
-    await open(page, '/work')
-    const stage = page.locator('[data-work-stage]')
-    if (!isDesktop(page)) {
-      // Small screens have no stage: each project shows its own block.
-      await expect(stage).toBeHidden()
-      await expect(
-        page.getByRole('link', { name: 'Read the Whimcall case study' }),
-      ).toBeVisible()
-      return
-    }
-    // The blocks are the faces of a cube that turns with the scroll. Hit
-    // testing follows the 3D transform, so the link at the center of the
-    // stage is the face that points at the screen.
-    const blockOnTop = () =>
-      stage.evaluate((element) => {
-        const box = element.getBoundingClientRect()
-        const hit = document
-          .elementFromPoint(box.left + box.width / 2, box.top + box.height / 2)
-          ?.closest('a')
-        return [...element.querySelectorAll('a')].indexOf(hit!)
-      })
-    // Scroll until the middle of the row is level with the middle of the
-    // stage. The stage is sticky only after the first scroll, so repeat.
-    const alignWithStage = (title: string) =>
-      page.evaluate((title) => {
-        const row = document
-          .querySelector(`[data-work-item="${title}"]`)!
-          .getBoundingClientRect()
-        const stage = document
-          .querySelector('[data-work-stage] > div')!
-          .getBoundingClientRect()
-        window.scrollBy(
-          0,
-          row.top + row.height / 2 - (stage.top + stage.height / 2),
-        )
-      }, title)
-    const titles = ['Pico', 'Whimcall', 'Postmaster']
-    await expect(stage).toHaveAttribute('data-work-stage', 'Pico')
-    // The face of a project points at the screen when its text is level
-    // with it.
-    for (const title of ['Whimcall', 'Postmaster', 'Pico']) {
-      await expect
-        .poll(async () => {
-          await alignWithStage(title)
-          return blockOnTop()
-        })
-        .toBe(titles.indexOf(title))
-      await expect(stage).toHaveAttribute('data-work-stage', title)
-    }
+    await open(page, '/')
+    const index = page.getByRole('button', { name: 'Index' })
+    await index.click()
+    const dialog = page.getByRole('dialog')
+    await expect(dialog).toBeVisible()
+    await expect(dialog.getByRole('link', { name: /^Lab/ })).toBeVisible()
+    await page.keyboard.press('Escape')
+    await expect(dialog).toBeHidden()
+
+    await index.click()
+    await page.getByRole('button', { name: 'Return' }).click()
+    await expect(dialog).toBeHidden()
+
+    await index.click()
+    await dialog.getByRole('link', { name: /^Lab/ }).click()
+    await expect(page).toHaveURL(/\/lab$/)
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('Lab')
   },
 )
 
-test('a secondary button shows a turning chrome border on hover', async ({
-  page,
-}) => {
-  test.skip(!isDesktop(page), 'Hover needs a pointer.')
+test('without a GPU, the home page lists the pages', async ({ page }) => {
+  // Headless Chromium has no GPU: the world is a list over a still sky.
   await open(page, '/')
-  const button = page.locator('header').getByRole('link', { name: 'Contact' })
-  const ring = () =>
-    button.evaluate((element) => {
-      const style = getComputedStyle(element, '::before')
-      return { opacity: style.opacity, animation: style.animationName }
-    })
-
-  await expect.poll(ring).toEqual({ opacity: '0', animation: 'none' })
-  await button.hover()
-  await expect.poll(ring).toEqual({ opacity: '1', animation: 'chrome-turn' })
-
-  // With reduced motion, the ring shows but does not turn.
-  await page.emulateMedia({ reducedMotion: 'reduce' })
-  await expect.poll(ring).toEqual({ opacity: '1', animation: 'none' })
+  const pages = page.getByRole('navigation', { name: 'Pages' })
+  await expect(
+    pages.getByRole('link', { name: 'Ask about Ali' }),
+  ).toHaveAttribute('href', '/chat')
 })
 
-test('a primary button fills with liquid metal on hover', async ({ page }) => {
-  test.skip(!isDesktop(page), 'Hover needs a pointer.')
-  await open(page, '/')
-  const button = page.locator('main .liquid-metal', { hasText: 'See the work' })
-  // "on": the shader draws it. "static": no WebGL, so CSS draws it.
-  const state = () =>
-    button.evaluate((element) => element.dataset.liquidMetal ?? 'off')
-  const label = () =>
-    button.evaluate((element) => getComputedStyle(element).color)
-
-  await expect.poll(state).toBe('off')
-  const before = await label()
-  await button.hover()
-  await expect.poll(state).toMatch(/^(on|static)$/)
-  // The label turns light on the dark metal.
-  await expect.poll(label).not.toBe(before)
-  await page.mouse.move(4, 400)
-  await expect.poll(state).toBe('off')
-
-  // With reduced motion, the metal still shows, as a still frame.
-  await page.emulateMedia({ reducedMotion: 'reduce' })
-  await button.hover()
-  await expect.poll(state).toMatch(/^(on|static)$/)
-})
-
-test('without a GPU, the globe is a still frame and the button metal is static', async ({
+test('a figure zooms, the arrows step, and Esc zooms it back', async ({
   page,
 }) => {
-  // Headless Chromium draws WebGL in software (SwiftShader), like a browser
-  // without a GPU. An animation would keep the main thread busy.
-  await open(page, '/')
-  const globe = page.getByRole('img', { name: 'Globe with connections.' })
-  await expect(globe).toBeVisible()
-  await expect(globe).not.toHaveAttribute('tabindex')
-  const longTasks = await page.evaluate(
-    () =>
-      new Promise<number>((resolve) => {
-        let total = 0
-        const observer = new PerformanceObserver((list) => {
-          for (const entry of list.getEntries()) total += entry.duration
-        })
-        observer.observe({ type: 'longtask' })
-        setTimeout(() => {
-          observer.disconnect()
-          resolve(total)
-        }, 1500)
-      }),
+  await open(page, '/work/pico')
+  const figures = page.getByRole('button', { name: /^Zoom: / })
+  await expect(figures).toHaveCount(3)
+  await figures.first().click()
+  const view = page.getByRole('dialog', { name: 'Zoomed media' })
+  await expect(view).toBeVisible()
+  await expect(view.getByText('1/3')).toBeVisible()
+  await expect(view.getByRole('button', { name: 'Close' })).toBeFocused()
+
+  await page.keyboard.press('ArrowRight')
+  await expect(view.getByText('2/3')).toBeVisible()
+  // The demo video plays with its controls.
+  await expect(view.locator('video')).toHaveAttribute(
+    'src',
+    '/work/pico/child-sessions.mp4',
   )
-  // The main thread is free most of the time.
-  expect(longTasks).toBeLessThan(750)
-  const button = page.locator('main .liquid-metal', { hasText: 'See the work' })
-  await button.hover()
-  await expect(button).toHaveAttribute('data-liquid-metal', 'static')
+  await page.keyboard.press('ArrowLeft')
+  await page.keyboard.press('ArrowLeft')
+  await expect(view.getByText('3/3')).toBeVisible()
+
+  // Esc closes the view, not the page, and focus goes back to the figure.
+  await page.keyboard.press('Escape')
+  await expect(view).toBeHidden()
+  await expect(page).toHaveURL(/\/work\/pico$/)
+  await expect(figures.first()).toBeFocused()
 })
 
-test('each case study shows the icon of its app', async ({ page }) => {
-  for (const [slug, image] of [
-    ['pico', '/pico.svg'],
-    ['whimcall', '/whimcall.png'],
-    ['postmaster', '/postmaster.webp'],
-  ]) {
+test('the case studies with pictures load them', async ({ page }) => {
+  // Postmaster has no pictures.
+  for (const slug of ['pico', 'whimcall']) {
     await open(page, `/work/${slug}`)
-    const icon = page.locator('header [data-app-icon]')
-    await expect(icon).toHaveAttribute('src', image)
-    // The heading names the app, so the icon is decorative.
-    await expect(icon).toHaveAttribute('alt', '')
+    const image = page.locator('main figure img').first()
+    await image.scrollIntoViewIfNeeded()
     await expect
-      .poll(() =>
-        icon.evaluate((element: HTMLImageElement) => element.naturalWidth),
-      )
-      .toBeGreaterThan(0)
-  }
-})
-
-test('the Pico case study shows its screenshots and its demo video', async ({
-  page,
-}) => {
-  const loaded = (image: ReturnType<typeof page.locator>) =>
-    expect
       .poll(() =>
         image.evaluate((element: HTMLImageElement) =>
           element.complete ? element.naturalWidth : 0,
         ),
       )
       .toBeGreaterThan(0)
-
-  for (const scheme of ['light', 'dark'] as const) {
-    await page.emulateMedia({ colorScheme: scheme })
-    await open(page, '/work/pico')
-    const hero = page.getByRole('img', { name: /^The Pico workspace\./ })
-    await expect(hero).toBeVisible()
-    await loaded(hero)
-    // The picture shows the screenshot of the color scheme of the reader.
-    await expect
-      .poll(() =>
-        hero.evaluate((element: HTMLImageElement) => element.currentSrc),
-      )
-      .toContain(`/work/pico/workspace-${scheme}.webp`)
   }
-
-  await page
-    .getByRole('navigation', { name: 'On this page' })
-    .getByRole('link', { name: 'Demo' })
-    .click()
-  const demo = page.locator('#demo')
-  await expect(
-    demo.getByRole('heading', { name: 'See it work' }),
-  ).toBeInViewport()
-  const video = demo.locator('video')
-  await expect(video).toHaveAttribute('src', '/work/pico/child-sessions.mp4')
-  await expect(video).toHaveAttribute('controls', '')
-  await expect(video).toHaveAccessibleDescription(/has no sound/)
-  const phone = demo.getByRole('img', { name: /on a phone/ })
-  await phone.scrollIntoViewIfNeeded()
-  await loaded(phone)
 })
 
-test('the Whimcall case study shows the call and the full-room page', async ({
-  page,
-}) => {
-  await open(page, '/work/whimcall')
-  const naturalWidth = (image: ReturnType<typeof page.locator>) =>
-    image.evaluate((element: HTMLImageElement) =>
-      element.complete ? element.naturalWidth : 0,
-    )
-  const hero = page.getByRole('img', { name: /^A Whimcall call/ })
-  await expect.poll(() => naturalWidth(hero)).toBeGreaterThan(0)
-
-  await page
-    .getByRole('navigation', { name: 'On this page' })
-    .getByRole('link', { name: 'Screens' })
-    .click()
-  const screens = page.locator('#demo')
-  await expect(
-    screens.getByRole('heading', { name: 'The call' }),
-  ).toBeInViewport()
-  // Four screenshots of the call and one of the phone, each with a caption.
-  await expect(screens.locator('figure')).toHaveCount(5)
-  await expect(screens.locator('figure figcaption')).toHaveCount(5)
-  await expect(screens.locator('video')).toHaveCount(0)
-
-  // The failure mode about seats shows the page that a third person sees.
-  const full = page.getByRole('img', { name: /This call is full\./ })
-  await full.scrollIntoViewIfNeeded()
-  await expect.poll(() => naturalWidth(full)).toBeGreaterThan(0)
-  await expect(
-    page
-      .locator('li')
-      .filter({ has: full })
-      .getByRole('heading', { name: 'Two devices claim one seat' }),
-  ).toBeVisible()
-})
-
-test('the side projects are in two columns on wide screens', async ({
-  page,
-}) => {
+test('the work page links to each project', async ({ page }) => {
   await open(page, '/work')
-  const section = page.getByRole('region', { name: 'Side projects' })
-  const averno = section.getByRole('heading', { name: 'Averno' })
-  const chromagine = section.getByRole('heading', { name: 'Chromagine' })
-  await expect(averno).toBeVisible()
-  await expect(
-    section.getByRole('link', { name: /Visit site : Chromagine/ }),
-  ).toHaveAttribute('href', 'https://chromagine.aliabbas.net/')
-  const a = await averno.boundingBox()
-  const c = await chromagine.boundingBox()
-  if (!a || !c) throw new Error('No box for a side project title')
-  if (isDesktop(page)) {
-    // Side by side: one row, two columns.
-    expect(Math.abs(a.y - c.y)).toBeLessThan(2)
-    expect(c.x).toBeGreaterThan(a.x + a.width)
-  } else {
-    // One column: Chromagine is under Averno.
-    expect(c.y).toBeGreaterThan(a.y + a.height)
+  for (const slug of ['pico', 'whimcall', 'postmaster']) {
+    await expect(
+      page.locator(`main a[href="/work/${slug}"]`).first(),
+    ).toBeVisible()
   }
+  await expect(
+    page.locator('main a[href="https://chromagine.aliabbas.net/"]').first(),
+  ).toBeAttached()
 })
