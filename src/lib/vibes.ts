@@ -437,4 +437,4 @@ const signal: Vibe = {
   },
 }
 
-export const VIBES: ReadonlyArray<Vibe> = [dusk, drift, pulse, tide, signal]
+export const VIBES: ReadonlyArray<Vibe> = [tide, dusk, drift, pulse, signal]
