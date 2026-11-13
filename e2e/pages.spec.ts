@@ -116,7 +116,7 @@ for (const path of [
     ]) {
       expect(tag(key), key).toHaveLength(1)
     }
-    expect(tag('og:image')).toEqual(['https://aliabbas.net/og-image.png?v=3'])
+    expect(tag('og:image')).toEqual(['https://aliabbas.net/og-image.png?v=4'])
     expect(tag('twitter:image')).toEqual(tag('og:image'))
   })
 }
