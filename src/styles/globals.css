@@ -303,12 +303,13 @@ textarea {
 }
 
 /*
-  Text that scrolls under the HUD fades out at the top and the bottom of
-  the screen. It is a mask on the text, not a surface over it: no blur and
-  no fill, so the world shows behind as it does everywhere else. The top
-  fade clears the corners (the header height and a little more); the
-  bottom one clears the sound button. The stops ease the edge, so it has
-  no hard line.
+  Text that scrolls under the HUD fades out at the top of the screen. It
+  is a mask on the text, not a surface over it: no blur and no fill, so
+  the world shows behind as it does everywhere else. The fade clears the
+  top corners (the header height and a little more). The HUD has nothing
+  at the bottom, so there is no bottom fade, except where a box sets
+  --fade-bottom (the chat, above its field). The stops ease the edge, so
+  it has no hard line.
 
   scroll-fade: on a box that scrolls inside itself (the index).
   page-fade: on the page, which scrolls the window. The mask is one screen
@@ -318,7 +319,7 @@ textarea {
 */
 @utility scroll-fade {
   --fade-top: calc(var(--header-height) + 2rem);
-  --fade-bottom: 6rem;
+  --fade-bottom: 0px;
   mask-image: linear-gradient(
     to bottom,
     transparent 0,
