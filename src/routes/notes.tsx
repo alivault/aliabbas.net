@@ -44,14 +44,14 @@ function NotesPage() {
         <ReaderMeta>No notes yet</ReaderMeta>
       ) : (
         <ReaderSection title="All notes">
-          {articles.map((article, index) => (
+          {articles.map((article) => (
             <Line key={article._id} className="mt-8">
               <p className={hudText}>
                 <ReaderLink
                   to="/notes/$slug"
                   params={{ slug: article.slug.current }}
                 >
-                  {String.fromCharCode(65 + (index % 26))}. {article.title}
+                  {article.title}
                 </ReaderLink>
               </p>
               <p className={hudText}>
