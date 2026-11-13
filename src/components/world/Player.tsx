@@ -5,6 +5,7 @@ import * as THREE from 'three'
 import { play, setDroneOpen } from '~/lib/sound'
 import { spinGrab } from './cubeSpin'
 import { FOOTPRINT_SIZE } from './Footprint'
+import { frameScreenX } from './frame'
 import { iconSlot } from './iconSlot'
 import { heightAt } from './noise'
 import { ICON_SIZE, SHEETS } from './sheets'
@@ -133,7 +134,12 @@ export default function Player({
         : cube
           ? 0.2
           : 0.24
-    const screenX = slot ? (2 * slot.x) / size.width - 1 : wide ? 0.42 : 0
+    // On a wide screen the icon is at 71% of the frame's width (frame.ts).
+    const screenX = slot
+      ? (2 * slot.x) / size.width - 1
+      : wide
+        ? frameScreenX(size.width, 0.71)
+        : 0
     const screenY = slot ? 1 - (2 * slot.y) / size.height : wide ? 0 : 0.5
     const distance = ICON_SIZE / (share * 2 * half) + (cube ? ICON_SIZE / 2 : 0)
     const facing = Math.atan2(dx, dz)

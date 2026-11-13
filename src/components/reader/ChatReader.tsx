@@ -393,7 +393,7 @@ export default function ChatReader() {
           transition={{ duration: DURATIONS.enter, ease: EASE_OUT }}
           // Clear of the sound button at the bottom left, and as wide as
           // the text on a wide screen.
-          className="fixed bottom-0 left-0 z-[14] w-full pt-3 pr-6 pb-5 pl-16 sm:pr-16 lg:w-[min(54vw,820px)]"
+          className="fixed bottom-0 left-0 z-[14] w-full pt-3 pr-6 pb-5 pl-16 sm:pr-16 lg:left-[var(--frame-inset)] lg:w-[min(54vw,820px)]"
         >
           <ReaderComposer
             id="chat-question"
@@ -431,8 +431,8 @@ export default function ChatReader() {
 }
 
 /**
- * The sources of one answer, in a sidebar on the right with a blur, so the
- * orb shows through behind it. On a phone it covers the screen.
+ * The sources of one answer, in a panel that floats on the right with a
+ * blur, so the orb shows through behind it. On a phone it covers the screen.
  */
 function EvidenceSidebar({
   turn,
@@ -473,9 +473,11 @@ function EvidenceSidebar({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: DURATIONS.enter, ease: EASE_OUT }}
-      className="border-hud/20 bg-background/45 fixed inset-y-0 right-0 z-[15] flex w-full flex-col backdrop-blur-[16px] lg:w-[400px] lg:border-l"
+      // On a phone it covers the screen. On a wide screen it floats in the
+      // frame, under the HUD, and is as tall as its sources need.
+      className="border-hud/20 bg-background/45 fixed inset-0 z-[15] flex flex-col backdrop-blur-[16px] lg:top-20 lg:right-[calc(var(--frame-inset)+1.5rem)] lg:bottom-auto lg:left-auto lg:max-h-[calc(100svh-6.5rem)] lg:w-[400px] lg:border"
     >
-      <header className="border-hud/15 border-b px-6 pt-20 pb-5">
+      <header className="border-hud/15 border-b px-6 pt-20 pb-5 lg:pt-5">
         <div className="flex items-baseline justify-between gap-6">
           <h2 className={hudText}>Evidence</h2>
           <button type="button" onClick={onClose} className={actionStyle}>
@@ -509,7 +511,7 @@ function EvidenceSidebar({
             : `${count} ${count === 1 ? 'source' : 'sources'}${active ? ' so far' : ''}`}
         </p>
       </header>
-      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 pt-6 pb-24">
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-6 pt-6 pb-24 lg:pb-6">
         <ol aria-label="Sources" className="space-y-3">
           <LayoutGroup id={SOURCE_PREFIX}>
             {turn.sources.map((source, number) => (

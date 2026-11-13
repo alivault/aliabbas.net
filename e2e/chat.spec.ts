@@ -223,3 +223,21 @@ test('the evidence sidebar closes, and the sources button opens it again', async
   await expect(evidence).toBeVisible()
   await expect(toggle).toHaveAttribute('aria-pressed', 'true')
 })
+
+test('on an ultrawide screen, the page and the evidence stay in the middle frame', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 3440, height: 1440 })
+  await mockAi(page, { '/api/chat': chatAnswer() })
+  await open(page, '/ai')
+  await ask(page, 'Has Ali built streaming interfaces?')
+  await done(page)
+  // The frame is 1920px wide: 760px on each side of it.
+  const title = await page.getByRole('heading', { level: 1 }).boundingBox()
+  expect(title?.x).toBeGreaterThanOrEqual(760)
+  const panel = await page.getByLabel('Evidence').boundingBox()
+  expect((panel?.x ?? 0) + (panel?.width ?? 0)).toBeLessThanOrEqual(3440 - 760)
+  // It floats: clear of the top and the bottom of the screen.
+  expect(panel?.y).toBeGreaterThan(0)
+  expect((panel?.y ?? 0) + (panel?.height ?? 0)).toBeLessThan(1440)
+})

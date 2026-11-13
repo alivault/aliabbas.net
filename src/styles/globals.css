@@ -69,6 +69,10 @@
   --section-content-gap: 2rem;
   /* The fixed site header. Offsets under it use this value. */
   --header-height: 60px;
+  /* The page, its icon and its panels stay in a frame of at most
+     FRAME_MAX (src/components/world/frame.ts), in the middle of a wide
+     screen. This is the space on each side of it. */
+  --frame-inset: max(0px, calc((100vw - 1920px) / 2));
   --radius: 0.5rem;
   --background: oklch(0.955 0.009 94);
   --foreground: oklch(0.155 0.006 85);
