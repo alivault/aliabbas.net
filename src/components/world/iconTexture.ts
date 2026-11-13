@@ -6,26 +6,59 @@ import type { SheetIcon } from './sheets'
 
 const SIZE = 1024
 
+/**
+ * An image, decoded and ready to draw. Safari fires load on an SVG before
+ * it can paint it, so a draw right after load leaves the canvas empty:
+ * decode() waits until it can.
+ */
 function loadImage(src: string) {
   return new Promise<HTMLImageElement | null>((resolve) => {
     const image = new Image()
-    image.decoding = 'async'
-    image.onload = () => resolve(image)
+    image.onload = () => {
+      void image
+        .decode()
+        .catch(() => undefined)
+        .then(() => resolve(image))
+    }
     image.onerror = () => resolve(null)
     image.src = src
   })
+}
+
+function svgUrl(markup: string) {
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(markup)}`
+}
+
+/**
+ * An SVG file at the size it is drawn. Safari draws an SVG image at its own
+ * width and height and scales the pixels, so a 32px icon on a 700px face
+ * would blur. With the size in the markup, it draws sharp.
+ */
+async function loadSvgAt(src: string, size: number) {
+  try {
+    const markup = await (await fetch(src)).text()
+    const sized = markup.replace(/<svg\b([^>]*)>/, (_, attributes: string) => {
+      const rest = attributes
+        .replace(/\swidth="[^"]*"/, '')
+        .replace(/\sheight="[^"]*"/, '')
+      return `<svg width="${size}" height="${size}"${rest}>`
+    })
+    return await loadImage(svgUrl(sized))
+  } catch {
+    return loadImage(src)
+  }
 }
 
 /**
  * A Lucide icon as SVG markup, drawn by React into a detached node. It runs
  * from an effect, where React cannot render at once: wait for the commit.
  */
-async function glyphMarkup(glyph: LucideIcon, color: string) {
+async function glyphMarkup(glyph: LucideIcon, color: string, size: number) {
   const node = document.createElement('div')
   const root = createRoot(node)
   root.render(
     createElement(glyph, {
-      size: 24,
+      size,
       color,
       strokeWidth: 1.25,
     }),
@@ -33,10 +66,12 @@ async function glyphMarkup(glyph: LucideIcon, color: string) {
   for (let i = 0; i < 20 && !node.firstElementChild; i++) {
     await new Promise((resolve) => setTimeout(resolve, 0))
   }
-  const markup = node.innerHTML.replace(
-    '<svg ',
-    '<svg xmlns="http://www.w3.org/2000/svg" ',
-  )
+  // An SVG image needs its namespace. Safari writes it into the markup
+  // already, and a second one makes the SVG invalid, so it draws nothing.
+  const raw = node.innerHTML
+  const markup = /^<svg[^>]*\sxmlns=/.test(raw)
+    ? raw
+    : raw.replace('<svg ', '<svg xmlns="http://www.w3.org/2000/svg" ')
   root.unmount()
   return markup
 }
@@ -46,6 +81,21 @@ function cssColor(name: string, fallback: string) {
     .getPropertyValue(name)
     .trim()
   return value || fallback
+}
+
+/**
+ * A CSS color as rgb(), read back from a pixel. An SVG in an image may not
+ * know oklch() in every browser; rgb() it always knows.
+ */
+function rgbOf(color: string) {
+  const canvas = document.createElement('canvas')
+  canvas.width = canvas.height = 1
+  const context = canvas.getContext('2d', { willReadFrequently: true })
+  if (!context) return color
+  context.fillStyle = color
+  context.fillRect(0, 0, 1, 1)
+  const [r, g, b] = context.getImageData(0, 0, 1, 1).data
+  return `rgb(${r}, ${g}, ${b})`
 }
 
 /**
@@ -69,7 +119,11 @@ export async function drawIcon(icon: SheetIcon) {
   context.fillRect(0, 0, SIZE, SIZE)
 
   if (icon.type === 'image') {
-    const image = await loadImage(icon.src)
+    const inset = icon.cover ? 0 : SIZE * 0.16
+    const side = SIZE - inset * 2
+    const image = icon.src.endsWith('.svg')
+      ? await loadSvgAt(icon.src, side)
+      : await loadImage(icon.src)
     if (image) {
       if (icon.cover) {
         const scale = Math.max(SIZE / image.width, SIZE / image.height)
@@ -77,24 +131,18 @@ export async function drawIcon(icon: SheetIcon) {
         const h = image.height * scale
         context.drawImage(image, (SIZE - w) / 2, (SIZE - h) / 2, w, h)
       } else {
-        const inset = SIZE * 0.16
-        context.drawImage(
-          image,
-          inset,
-          inset,
-          SIZE - inset * 2,
-          SIZE - inset * 2,
-        )
+        context.drawImage(image, inset, inset, side, side)
       }
     }
   } else if (icon.type === 'glyph') {
+    const inset = SIZE * 0.22
+    const side = SIZE - inset * 2
+    // The stroke width is in the units of the icon's 24px grid, so a
+    // larger size keeps the same weight.
     const image = await loadImage(
-      `data:image/svg+xml;charset=utf-8,${encodeURIComponent(await glyphMarkup(icon.glyph, hud))}`,
+      svgUrl(await glyphMarkup(icon.glyph, rgbOf(hud), side)),
     )
-    if (image) {
-      const inset = SIZE * 0.22
-      context.drawImage(image, inset, inset, SIZE - inset * 2, SIZE - inset * 2)
-    }
+    if (image) context.drawImage(image, inset, inset, side, side)
   }
 
   context.strokeStyle = hud
