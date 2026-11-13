@@ -5,10 +5,16 @@ import { cn } from '~/lib/utils'
  * The surface behind the top corners of the HUD on a page: the blur and
  * edge of the header of the old site, with a light fill (20%), so the
  * world shows through. It shows when the page scrolls, so text that
- * scrolls up goes under it, not through the HUD.
+ * scrolls up goes under it, not through the HUD. Over another scroller,
+ * such as the index, that scroller says when to show it (`scrolledOver`).
  */
-export default function HeaderBlur() {
-  const [scrolled, setScrolled] = useState(false)
+export default function HeaderBlur({
+  scrolledOver,
+}: {
+  scrolledOver?: boolean
+}) {
+  const [pageScrolled, setScrolled] = useState(false)
+  const scrolled = scrolledOver ?? pageScrolled
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 0)

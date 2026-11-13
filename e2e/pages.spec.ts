@@ -170,6 +170,22 @@ test(
   },
 )
 
+test('the index blurs the top corners once it scrolls', async ({ page }) => {
+  await page.setViewportSize({ width: 1024, height: 500 })
+  await open(page, '/')
+  await page.getByRole('button', { name: 'Index' }).click()
+  const index = page.getByRole('dialog', { name: 'Index' })
+  await expect(index).toBeVisible()
+  const blur = page.locator('[data-header-blur]')
+  const opacity = () =>
+    blur.evaluate((element) => getComputedStyle(element).opacity)
+  await expect.poll(opacity).toBe('0')
+  await index.evaluate((element) => element.scrollTo({ top: 300 }))
+  await expect.poll(opacity).toBe('1')
+  await index.evaluate((element) => element.scrollTo({ top: 0 }))
+  await expect.poll(opacity).toBe('0')
+})
+
 test('Esc on a page goes back to the world', async ({ page }) => {
   await open(page, '/work')
   await page.keyboard.press('Escape')

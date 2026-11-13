@@ -25,6 +25,8 @@ export type WorldState = {
   ready: boolean
   /** True while the index of the site is open over the world. */
   indexOpen: boolean
+  /** True when the open index has scrolled, so it goes under the HUD. */
+  indexScrolled: boolean
 }
 
 const VISITED_KEY = 'world:visited'
@@ -37,6 +39,7 @@ let state: WorldState = {
   entered: false,
   ready: false,
   indexOpen: false,
+  indexScrolled: false,
 }
 
 const listeners = new Set<() => void>()
