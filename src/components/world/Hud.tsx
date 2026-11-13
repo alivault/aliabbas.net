@@ -133,7 +133,10 @@ export default function Hud({ inPage }: { inPage: boolean }) {
         )}
       >
         {hovered
-          ? `${hovered.title} · ${hovered.kind}`
+          ? // A page needs no kind; a case study and a game say what they are.
+            hovered.kind === 'Page'
+            ? hovered.title
+            : `${hovered.title} · ${hovered.kind}`
           : lost
             ? 'Lost? Click Next'
             : ''}
