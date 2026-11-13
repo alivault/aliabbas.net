@@ -52,7 +52,8 @@ export default function ReaderComposer({
           event.preventDefault()
           if (hasDraft) onSubmit()
         }}
-        className={cn(hudText, 'flex max-w-[60ch] items-end gap-8')}
+        // The field is a control, not a label: 14px, for typing.
+        className={cn(hudText, 'flex max-w-[60ch] items-end gap-8 text-sm')}
       >
         <label htmlFor={id} className="sr-only">
           {labels.field}

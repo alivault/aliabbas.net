@@ -46,7 +46,7 @@ export default function Hud({ inPage }: { inPage: boolean }) {
   return (
     <div
       data-hud
-      className="font-hud text-hud pointer-events-none fixed inset-0 z-30 text-sm tracking-[0.42em] uppercase [&_:is(button,a,input)]:uppercase"
+      className="font-hud text-hud pointer-events-none fixed inset-0 z-30 text-xs tracking-[0.42em] uppercase [&_:is(button,a,input)]:uppercase"
     >
       {inPage && !indexOpen ? (
         <div className="absolute top-5 left-6">

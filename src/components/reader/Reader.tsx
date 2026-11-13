@@ -31,7 +31,7 @@ const item: Variants = {
 
 /** Spaced capitals in the HUD face. */
 export const hudText =
-  'font-hud text-hud text-sm tracking-[0.28em] sm:tracking-[0.42em] uppercase leading-[2.2]'
+  'font-hud text-hud text-xs tracking-[0.28em] sm:tracking-[0.42em] uppercase leading-[2.2]'
 
 /**
  * The first state of the fade. A page in the server HTML, or in the

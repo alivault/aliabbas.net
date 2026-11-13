@@ -8,7 +8,7 @@ import type { LabStream } from './use-lab-stream'
 /** A short HUD label over a group of controls. */
 function Label({ children }: { children: ReactNode }) {
   return (
-    <h3 className="font-hud text-hud/70 mb-3 text-sm tracking-[0.42em] uppercase">
+    <h3 className="font-hud text-hud/70 mb-3 text-xs tracking-[0.42em] uppercase">
       {children}
     </h3>
   )

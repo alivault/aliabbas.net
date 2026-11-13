@@ -120,7 +120,7 @@ export default function SiteIndex() {
             transition: { duration: DURATIONS.exit, ease: EASE_IN },
           }}
           transition={{ duration: DURATIONS.enter, ease: EASE_OUT }}
-          className="font-hud text-hud bg-ground/60 fixed inset-0 z-20 text-sm tracking-[0.42em] uppercase backdrop-blur-[20px]"
+          className="font-hud text-hud bg-ground/60 fixed inset-0 z-20 text-xs tracking-[0.42em] uppercase backdrop-blur-[20px]"
         >
           {/* The list scrolls inside, and fades out under the HUD. */}
           <div data-index-scroll className="scroll-fade h-full overflow-y-auto">

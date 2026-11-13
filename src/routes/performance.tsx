@@ -74,7 +74,7 @@ function Method({ children }: { children: ReactNode }) {
 }
 
 const tableClass =
-  'text-fg-secondary w-full min-w-[560px] border-collapse text-left text-sm [&_td]:border-hud/20 [&_td]:border-t [&_td]:py-3 [&_td]:pr-4 [&_th]:font-hud [&_th]:text-hud [&_th]:pb-3 [&_th]:pr-4 [&_th]:text-sm [&_th]:font-normal [&_th]:tracking-[0.2em] [&_th]:whitespace-nowrap [&_th]:uppercase'
+  'text-fg-secondary w-full min-w-[560px] border-collapse text-left text-sm [&_td]:border-hud/20 [&_td]:border-t [&_td]:py-3 [&_td]:pr-4 [&_th]:font-hud [&_th]:text-hud [&_th]:pb-3 [&_th]:pr-4 [&_th]:text-xs [&_th]:font-normal [&_th]:tracking-[0.2em] [&_th]:whitespace-nowrap [&_th]:uppercase'
 
 function PerformancePage() {
   const summary = Route.useLoaderData()

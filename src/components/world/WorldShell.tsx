@@ -163,7 +163,7 @@ function FlatWorld() {
     <nav
       aria-label="Pages"
       data-hud
-      className="font-hud text-hud relative z-10 flex min-h-svh items-center justify-center text-sm tracking-[0.42em] uppercase [&_:is(button,a,input)]:uppercase"
+      className="font-hud text-hud relative z-10 flex min-h-svh items-center justify-center text-xs tracking-[0.42em] uppercase [&_:is(button,a,input)]:uppercase"
     >
       <ul className="flex flex-col items-center gap-5">
         {SHEETS.map((sheet) => (

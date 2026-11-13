@@ -228,7 +228,7 @@ const mediaVariants = {
         },
 }
 
-const control = 'hud-fill font-hud text-hud text-sm tracking-[0.42em] uppercase'
+const control = 'hud-fill font-hud text-hud text-xs tracking-[0.42em] uppercase'
 
 function View({
   entry,
@@ -287,7 +287,7 @@ function View({
         className="pointer-events-none fixed inset-x-0 top-5 flex items-start justify-between px-6"
         onClick={(event) => event.stopPropagation()}
       >
-        <p className="font-hud text-hud text-sm tracking-[0.42em]">
+        <p className="font-hud text-hud text-xs tracking-[0.42em]">
           {position}/{count}
         </p>
         <button

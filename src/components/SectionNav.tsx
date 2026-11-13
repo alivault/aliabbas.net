@@ -118,7 +118,7 @@ export default function SectionNav({
         />
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <nav aria-label={label}>
-            <ol className="font-hud text-hud flex flex-wrap gap-x-8 gap-y-2 text-sm tracking-[0.42em]">
+            <ol className="font-hud text-hud flex flex-wrap gap-x-8 gap-y-2 text-xs tracking-[0.42em]">
               {items.map((item) => {
                 const active = item.id === activeId
                 return (

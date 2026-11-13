@@ -43,7 +43,7 @@ export default function LabTabs({
     <div
       role="tablist"
       aria-label="Demos"
-      className="font-hud -mx-6 flex gap-x-10 overflow-x-auto px-6 py-2 text-sm tracking-[0.36em] whitespace-nowrap sm:mx-0 sm:px-1"
+      className="font-hud -mx-6 flex gap-x-10 overflow-x-auto px-6 py-2 text-xs tracking-[0.36em] whitespace-nowrap sm:mx-0 sm:px-1"
     >
       {SPECIMENS.map((specimen, index) => {
         const selected = specimen.id === value

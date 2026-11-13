@@ -120,7 +120,7 @@ export function ReducedMotionSwitch({ className }: { className?: string }) {
             )}
           />
         </span>
-        <span className="font-hud text-hud text-sm tracking-[0.42em] whitespace-nowrap uppercase">
+        <span className="font-hud text-hud text-xs tracking-[0.42em] whitespace-nowrap uppercase">
           Reduce motion
         </span>
       </button>

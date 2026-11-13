@@ -19,7 +19,7 @@ export const DESIGN_RULES: Array<DesignRule> = [
   },
   {
     id: 'text-size',
-    rule: 'No text under 12px, and no capitals made with CSS. Use text-xs (12px) as the smallest size, for short labels only; text-sm (14px) for controls and hints. The one exception to the capitals is the HUD of the world (data-hud): spaced capitals in font-hud.',
+    rule: 'No text under 12px, and no capitals made with CSS. Use text-xs (12px) as the smallest size, for short labels only; text-sm (14px) for controls and hints. The one exception to the capitals is the HUD of the world (data-hud): spaced capitals in font-hud, at 12px, because the face is wide. Its fields stay at 14px.',
     why: 'Small capital labels are hard to read and add noise without meaning.',
     checkedBy: 'e2e/pages.spec.ts',
   },

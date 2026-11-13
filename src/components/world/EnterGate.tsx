@@ -60,7 +60,7 @@ export default function EnterGate({ active }: { active: boolean }) {
           ref={focusOnMount}
           exit={{ opacity: 0 }}
           transition={{ duration: DURATIONS.page, ease: EASE_IN }}
-          className="font-hud text-hud bg-ground/70 fixed inset-0 z-40 flex flex-col items-center justify-center gap-16 text-sm tracking-[0.42em] uppercase backdrop-blur-sm outline-none [&_:is(button,a,input)]:uppercase"
+          className="font-hud text-hud bg-ground/70 fixed inset-0 z-40 flex flex-col items-center justify-center gap-16 text-xs tracking-[0.42em] uppercase backdrop-blur-sm outline-none [&_:is(button,a,input)]:uppercase"
         >
           <h1 id="gate-title" className="text-lg">
             Ali Abbas

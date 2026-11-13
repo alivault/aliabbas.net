@@ -178,7 +178,7 @@ export default function StateBar({
         value={scenario}
         onChange={run}
       />
-      <div className="font-hud text-hud flex items-center gap-8 text-sm tracking-[0.42em]">
+      <div className="font-hud text-hud flex items-center gap-8 text-xs tracking-[0.42em]">
         <button
           type="button"
           className="hud-fill flex items-center gap-2 uppercase aria-disabled:opacity-40"
