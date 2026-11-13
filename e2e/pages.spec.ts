@@ -161,9 +161,7 @@ test(
   { tag: '@mobile' },
   async ({ page }) => {
     await open(page, '/work/pico')
-    const blur = page.locator(
-      '[data-hud] > [aria-hidden="true"].backdrop-blur-\\[20px\\]',
-    )
+    const blur = page.locator('[data-header-blur]')
     const opacity = () =>
       blur.evaluate((element) => getComputedStyle(element).opacity)
     await expect.poll(opacity).toBe('0')
