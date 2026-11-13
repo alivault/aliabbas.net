@@ -132,7 +132,7 @@ export function ReducedMotionSwitch({ className }: { className?: string }) {
         </span>
       </button>
       {/* A click opens the tip at once, also before the hover delay ends
-          and on a touch screen; a press does not close it. */}
+          and on a touch screen, and a second click closes it. */}
       <Tooltip
         open={infoOpen}
         onOpenChange={(open, details) => {
@@ -141,7 +141,7 @@ export function ReducedMotionSwitch({ className }: { className?: string }) {
         }}
       >
         <TooltipTrigger
-          onClick={() => setInfoOpen(true)}
+          onClick={() => setInfoOpen((open) => !open)}
           aria-label="About reduce motion"
           className="hud-fill text-hud/70 hover:text-background focus-visible:text-background flex items-center"
         >

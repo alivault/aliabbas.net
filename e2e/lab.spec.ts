@@ -190,7 +190,7 @@ test('the info icon beside Reduce motion explains it, also by keyboard', async (
 })
 
 test(
-  'a click on the info icon opens its tip at once, and a second click keeps it',
+  'a click on the info icon opens its tip at once, and a second click closes it',
   { tag: '@mobile' },
   async ({ page }) => {
     const info = page.getByRole('button', { name: 'About reduce motion' })
@@ -198,6 +198,9 @@ test(
     // Move the pointer in and click at once, before the hover delay ends.
     await info.click({ delay: 0 })
     await expect(tip).toBeVisible({ timeout: 300 })
+    await info.click()
+    await expect(tip).toBeHidden()
+    // A click outside closes it too.
     await info.click()
     await expect(tip).toBeVisible()
     await page.mouse.click(10, 500)
