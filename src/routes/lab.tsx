@@ -13,6 +13,7 @@ import type { SpecimenId } from '~/components/lab/specimens'
 import StreamingSpecimen from '~/components/lab/StreamingSpecimen'
 import TransitionSpecimen from '~/components/lab/TransitionSpecimen'
 import Main from '~/components/Main'
+import CubeHandle from '~/components/world/CubeHandle'
 import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
 
 type LabSearch = { demo?: SpecimenId }
@@ -52,8 +53,9 @@ function LabPage() {
             <header className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
                 <div className="flex items-center gap-6">
-                  {/* The cube of the lab rests here (iconSlot.ts). */}
-                  <div aria-hidden="true" className="size-16 shrink-0" />
+                  {/* The cube of the lab rests here (iconSlot.ts). A drag
+                      on the square spins it. */}
+                  <CubeHandle sheetId="lab" className="size-16 shrink-0" />
                   <h1 className="font-hud text-hud text-lg leading-[1.9] tracking-[0.42em] uppercase">
                     Lab
                   </h1>

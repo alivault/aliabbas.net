@@ -7,6 +7,7 @@ import { drawIcon } from './iconTexture'
 import { heightAt } from './noise'
 import { ICON_SIZE } from './sheets'
 import { WORLD_UNIFORMS, withSkyFog } from './sky'
+import { registerSpinner } from './cubeSpin'
 import { getWorld, iconScrollShow, iconSlotShow, setWorld } from './store'
 import type { SheetSpec } from './sheets'
 
@@ -244,37 +245,23 @@ export default function WorldIcon({
   })
 
   /** The page of this cube is open, and the cube can be spun. */
-  const spinnable = () =>
-    focus.id === sheet.id && getWorld().phase === 'inside' && !sheet.wide
+  const spinnable = () => focus.id === sheet.id && getWorld().phase === 'inside'
 
-  const grab = (event: ThreeEvent<PointerEvent>) => {
-    if (event.button !== 0 || !spinnable()) return
-    event.stopPropagation()
-    try {
-      ;(event.target as Element).setPointerCapture(event.pointerId)
-    } catch {
-      // A pointer that is not active (a synthetic event) has no capture.
-    }
+  /** A press on the cube, at a point of the screen (CSS pixels). */
+  const startSpin = (x: number, y: number) => {
     const turn = turned.current
     turn.yaw.velocity = turn.tilt.velocity = 0
-    Object.assign(turn, {
-      dragging: true,
-      x: event.nativeEvent.clientX,
-      y: event.nativeEvent.clientY,
-      time: performance.now(),
-      pointer: event.pointerId,
-    })
+    Object.assign(turn, { dragging: true, x, y, time: performance.now() })
     document.body.style.cursor = 'grabbing'
     play('click')
   }
-  const drag = (event: ThreeEvent<PointerEvent>) => {
+  const moveSpin = (x: number, y: number) => {
     const turn = turned.current
     if (!turn.dragging) return
-    event.stopPropagation()
     const now = performance.now()
     const seconds = Math.max((now - turn.time) / 1000, 1 / 240)
-    const across = (event.nativeEvent.clientX - turn.x) * DRAG_TURN
-    const down = (event.nativeEvent.clientY - turn.y) * DRAG_TURN
+    const across = (x - turn.x) * DRAG_TURN
+    const down = (y - turn.y) * DRAG_TURN
     turn.yaw.offset += across
     turn.tilt.offset += down
     // The speed of the last moves, smoothed, for the spin after release.
@@ -288,8 +275,8 @@ export default function WorldIcon({
       down / seconds,
       0.5,
     )
-    turn.x = event.nativeEvent.clientX
-    turn.y = event.nativeEvent.clientY
+    turn.x = x
+    turn.y = y
     turn.time = now
   }
   /** The drag ends: on a pointer up anywhere, also off the cube. */
@@ -307,7 +294,7 @@ export default function WorldIcon({
     for (const axis of [turn.yaw, turn.tilt]) {
       axis.velocity = paused ? 0 : THREE.MathUtils.clamp(axis.velocity, -25, 25)
     }
-    document.body.style.cursor = spinnable() ? 'grab' : ''
+    document.body.style.cursor = hovered.current && spinnable() ? 'grab' : ''
   }
   useEffect(() => {
     window.addEventListener('pointerup', release)
@@ -317,10 +304,38 @@ export default function WorldIcon({
       window.removeEventListener('pointercancel', release)
     }
   })
+  // The DOM can spin this cube too (the lab page covers its cube).
+  useEffect(() =>
+    registerSpinner(sheet.id, {
+      grab: (x, y) => {
+        if (spinnable()) startSpin(x, y)
+      },
+      drag: moveSpin,
+      release,
+    }),
+  )
+
+  const grab = (event: ThreeEvent<PointerEvent>) => {
+    if (event.button !== 0 || !spinnable()) return
+    event.stopPropagation()
+    try {
+      ;(event.target as Element).setPointerCapture(event.pointerId)
+    } catch {
+      // A pointer that is not active (a synthetic event) has no capture.
+    }
+    turned.current.pointer = event.pointerId
+    startSpin(event.nativeEvent.clientX, event.nativeEvent.clientY)
+  }
+  const drag = (event: ThreeEvent<PointerEvent>) => {
+    if (!turned.current.dragging) return
+    event.stopPropagation()
+    moveSpin(event.nativeEvent.clientX, event.nativeEvent.clientY)
+  }
 
   const over = (event: ThreeEvent<PointerEvent>) => {
     event.stopPropagation()
     if (spinnable()) {
+      hovered.current = true
       if (!turned.current.dragging) document.body.style.cursor = 'grab'
       return
     }
