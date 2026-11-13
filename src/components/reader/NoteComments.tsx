@@ -16,6 +16,7 @@ import { authClient } from '~/lib/auth-client'
 import { sessionQueryKey, sessionQueryOptions } from '~/lib/auth'
 import { formatDistanceToNow } from '~/lib/getFormattedDate'
 import { cn } from '~/lib/utils'
+import Shimmer from '~/components/ui/shimmer'
 import { Line, ReaderSection, hudText } from './Reader'
 
 /** A short action in the HUD face. */
@@ -600,7 +601,9 @@ export default function NoteComments({ articleSlug }: { articleSlug: string }) {
     <ReaderSection title={count ? `Comments (${count})` : 'Comments'}>
       <Line className="mt-8 max-w-[60ch]">
         {isSessionLoading ? (
-          <p className={cn(hudText, 'animate-pulse')}>Loading</p>
+          <p className={hudText}>
+            <Shimmer>Loading</Shimmer>
+          </p>
         ) : user ? (
           signedIn()
         ) : (
@@ -610,7 +613,9 @@ export default function NoteComments({ articleSlug }: { articleSlug: string }) {
 
       <Line className="mt-12 max-w-[60ch]">
         {comments === undefined ? (
-          <p className={cn(hudText, 'animate-pulse')}>Loading</p>
+          <p className={hudText}>
+            <Shimmer>Loading</Shimmer>
+          </p>
         ) : comments.length === 0 ? (
           <p className="text-fg-muted text-base">No comments yet.</p>
         ) : (

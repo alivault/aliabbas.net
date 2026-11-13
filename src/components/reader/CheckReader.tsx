@@ -14,6 +14,7 @@ import { MAX_CLAIM_LENGTH } from '~/lib/check/protocol'
 import { VERDICTS, VERDICT_INFO } from '~/lib/check/verdicts'
 import { DURATIONS, EASE_OUT, SPRINGS } from '~/lib/design/motion'
 import { cn } from '~/lib/utils'
+import Shimmer from '~/components/ui/shimmer'
 import {
   Line,
   Reader,
@@ -444,9 +445,7 @@ function PartStatus({ part }: { part: CheckedPart }) {
         {part.status === 'graded' && part.grade ? (
           <VerdictBadge verdict={part.grade.verdict} />
         ) : part.status === 'checking' ? (
-          <span className={cn(hudText, 'text-xs motion-safe:animate-pulse')}>
-            Checking
-          </span>
+          <Shimmer className={cn(hudText, 'text-xs')}>Checking</Shimmer>
         ) : (
           <span className={cn(hudText, 'text-hud/60 text-xs')}>
             {part.status === 'stopped' ? 'Stopped' : 'Not graded'}

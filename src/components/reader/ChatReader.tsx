@@ -29,6 +29,7 @@ import { answerToPlainText } from '~/lib/chat/streaming-markdown'
 import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
 import { play } from '~/lib/sound'
 import { cn } from '~/lib/utils'
+import Shimmer from '~/components/ui/shimmer'
 import ReaderComposer from './ReaderComposer'
 import type { ComposerLabels } from './ReaderComposer'
 import {
@@ -678,7 +679,9 @@ const TurnView = memo(function TurnView({
         </CitationContext>
       ) : null}
       {turn.status === 'pending' ? (
-        <p className={cn(hudText, 'mt-4 animate-pulse')}>Thinking</p>
+        <p className={cn(hudText, 'mt-4')}>
+          <Shimmer>Thinking</Shimmer>
+        </p>
       ) : null}
       {turn.status === 'failed' ? (
         <p role="alert" className="text-destructive mt-4 text-sm">
