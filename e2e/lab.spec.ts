@@ -188,3 +188,19 @@ test('the info icon beside Reduce motion explains it, also by keyboard', async (
   await page.keyboard.press('Escape')
   await expect(page.getByText(/Some people get dizzy or sick/)).toBeHidden()
 })
+
+test(
+  'a click on the info icon opens its tip at once, and a second click keeps it',
+  { tag: '@mobile' },
+  async ({ page }) => {
+    const info = page.getByRole('button', { name: 'About reduce motion' })
+    const tip = page.getByText(/Some people get dizzy or sick/)
+    // Move the pointer in and click at once, before the hover delay ends.
+    await info.click({ delay: 0 })
+    await expect(tip).toBeVisible({ timeout: 300 })
+    await info.click()
+    await expect(tip).toBeVisible()
+    await page.mouse.click(10, 500)
+    await expect(tip).toBeHidden()
+  },
+)

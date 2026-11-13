@@ -94,6 +94,7 @@ export function LabMotionProvider({ children }: { children: ReactNode }) {
 export function ReducedMotionSwitch({ className }: { className?: string }) {
   const { reduce, system, forced, setForced } = useLabMotion()
   const descriptionId = useId()
+  const [infoOpen, setInfoOpen] = useState(false)
 
   return (
     <div
@@ -130,8 +131,17 @@ export function ReducedMotionSwitch({ className }: { className?: string }) {
           Reduce motion
         </span>
       </button>
-      <Tooltip>
+      {/* A click opens the tip at once, also before the hover delay ends
+          and on a touch screen; a press does not close it. */}
+      <Tooltip
+        open={infoOpen}
+        onOpenChange={(open, details) => {
+          if (!open && details.reason === 'trigger-press') return
+          setInfoOpen(open)
+        }}
+      >
         <TooltipTrigger
+          onClick={() => setInfoOpen(true)}
           aria-label="About reduce motion"
           className="hud-fill text-hud/70 hover:text-background focus-visible:text-background flex items-center"
         >
