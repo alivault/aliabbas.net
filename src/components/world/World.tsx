@@ -110,7 +110,7 @@ export default function World({
  * How far the world darkens behind an open page (0 none, 1 to near black).
  * Enough for the text to read, while the world still shows around it.
  */
-const PAGE_DIM = 0.6
+const PAGE_DIM = 0.85
 
 /** Darkens the world while a page is open, and lights it again after. */
 function Dimmer() {
