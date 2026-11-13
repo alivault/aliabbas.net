@@ -98,3 +98,16 @@ test('on a page, the pointer reaches the cube beside the text', async ({
   await page.getByRole('link', { name: 'Force each state in the lab' }).click()
   await expect(page).toHaveURL(/\/lab/)
 })
+
+test('the gate shows no choice as picked at load, and Tab reaches the first', async ({
+  page,
+}) => {
+  await open(page, '/?gl=force')
+  const gate = page.getByRole('dialog', { name: 'Ali Abbas' })
+  await expect(gate).toBeVisible()
+  await expect(gate).toBeFocused()
+  const withSound = gate.getByRole('button', { name: 'Enter with sound' })
+  await expect(withSound).not.toBeFocused()
+  await page.keyboard.press('Tab')
+  await expect(withSound).toBeFocused()
+})

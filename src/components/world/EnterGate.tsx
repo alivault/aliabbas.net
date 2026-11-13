@@ -4,6 +4,10 @@ import { DURATIONS, EASE_IN } from '~/lib/design/motion'
 import { play, savedChoice, setSound } from '~/lib/sound'
 import { setWorld, useWorld } from './store'
 
+/** A stable ref: it focuses the element once, when it mounts. */
+const focusOnMount = (element: HTMLElement | null) =>
+  element?.focus({ preventScroll: true })
+
 /**
  * The first visit starts here: a choice to enter with sound or in silence.
  * Browsers start audio only after a gesture, and this is that gesture. Later
@@ -50,9 +54,13 @@ export default function EnterGate({ active }: { active: boolean }) {
           role="dialog"
           aria-modal="true"
           aria-labelledby="gate-title"
+          // The dialog takes the focus, not a button: a button with focus
+          // at load shows as chosen. Tab goes to the first choice.
+          tabIndex={-1}
+          ref={focusOnMount}
           exit={{ opacity: 0 }}
           transition={{ duration: DURATIONS.page, ease: EASE_IN }}
-          className="font-hud text-hud bg-ground/70 fixed inset-0 z-40 flex flex-col items-center justify-center gap-16 text-sm tracking-[0.42em] uppercase backdrop-blur-sm [&_:is(button,a,input)]:uppercase"
+          className="font-hud text-hud bg-ground/70 fixed inset-0 z-40 flex flex-col items-center justify-center gap-16 text-sm tracking-[0.42em] uppercase backdrop-blur-sm outline-none [&_:is(button,a,input)]:uppercase"
         >
           <h1 id="gate-title" className="text-lg">
             Ali Abbas
@@ -60,7 +68,6 @@ export default function EnterGate({ active }: { active: boolean }) {
           <div className="flex flex-col items-center gap-6 sm:flex-row sm:gap-16">
             <button
               type="button"
-              autoFocus
               data-sound="none"
               className="hud-fill"
               onClick={() => enter(true)}
