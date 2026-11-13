@@ -163,10 +163,7 @@ export default function EnterGate({ active }: { active: boolean }) {
           aria-modal="true"
           aria-labelledby="gate-title"
           aria-describedby="gate-intro"
-          // The dialog takes the focus, not a control: a control with focus
-          // at load shows as chosen. Tab goes to the first link.
           tabIndex={-1}
-          ref={focusOnMount}
           exit={{ opacity: 0 }}
           transition={{ duration: DURATIONS.page, ease: EASE_IN }}
           className="font-hud text-hud bg-ground/85 fixed inset-0 z-40 flex flex-col items-center justify-center-safe gap-10 overflow-y-auto px-6 py-16 text-center tracking-[0.28em] uppercase backdrop-blur-sm outline-none sm:gap-12 sm:px-16 sm:tracking-[0.42em] [&_:is(button,a)]:uppercase"
@@ -175,7 +172,9 @@ export default function EnterGate({ active }: { active: boolean }) {
             Ali Abbas
           </h1>
           <TypedIntro onEnter={enter} />
+          {/* Enter has the focus at once, so Enter or Space goes in. */}
           <button
+            ref={focusOnMount}
             type="button"
             data-sound="hover"
             className="hud-fill text-base"

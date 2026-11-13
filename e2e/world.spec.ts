@@ -116,15 +116,15 @@ test('the gate shows the intro on each visit, and Enter goes in', async ({
   await open(page, '/?gl=force')
   const gate = page.getByRole('dialog', { name: 'Ali Abbas' })
   await expect(gate).toBeVisible()
-  await expect(gate).toBeFocused()
   await expect(gate).toContainText('senior frontend and design engineer')
   await expect(
     gate.getByRole('button', { name: 'Enter in silence' }),
   ).toHaveCount(0)
-  // Tab reaches the first link of the text; no control shows as chosen.
-  await page.keyboard.press('Tab')
-  await expect(gate.getByRole('link', { name: 'Pico' })).toBeFocused()
-  await gate.getByRole('button', { name: 'Enter', exact: true }).click()
+  // Enter has the focus, so the Enter key goes in at once.
+  await expect(
+    gate.getByRole('button', { name: 'Enter', exact: true }),
+  ).toBeFocused()
+  await page.keyboard.press('Enter')
   await expect(gate).toBeHidden()
   await expect(page.getByRole('button', { name: 'Sound' })).toHaveAttribute(
     'aria-pressed',
