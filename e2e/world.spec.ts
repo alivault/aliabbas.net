@@ -17,7 +17,7 @@ test('far from the pages, the HUD says so, and an arrow flies back', async ({
 }) => {
   needsFrames()
   await open(page, '/?gl=force')
-  await page.getByRole('button', { name: /Enter in silence/i }).click()
+  await page.getByRole('button', { name: 'Enter', exact: true }).click()
   const hint = page.getByText('Lost? Click Next')
   await expect(hint).toHaveCount(0)
 
@@ -46,7 +46,7 @@ test('a drag on a cube spins it, and a click still opens its page', async ({
 }) => {
   needsFrames()
   await open(page, '/?gl=force')
-  await page.getByRole('button', { name: /Enter in silence/i }).click()
+  await page.getByRole('button', { name: 'Enter', exact: true }).click()
   await page.waitForTimeout(1500)
 
   // Find a cube: the label at the bottom names the one under the pointer.
@@ -99,15 +99,26 @@ test('on a page, the pointer reaches the cube beside the text', async ({
   await expect(page).toHaveURL(/\/lab/)
 })
 
-test('the gate shows no choice as picked at load, and Tab reaches the first', async ({
+test('the gate shows the intro on each visit, and Enter goes in', async ({
   page,
 }) => {
+  // A visitor who came before still sees the gate.
+  await page.addInitScript(() => localStorage.setItem('sound:enabled', '1'))
   await open(page, '/?gl=force')
   const gate = page.getByRole('dialog', { name: 'Ali Abbas' })
   await expect(gate).toBeVisible()
   await expect(gate).toBeFocused()
-  const withSound = gate.getByRole('button', { name: 'Enter with sound' })
-  await expect(withSound).not.toBeFocused()
+  await expect(gate).toContainText('senior frontend and design engineer')
+  await expect(
+    gate.getByRole('button', { name: 'Enter in silence' }),
+  ).toHaveCount(0)
+  // Tab reaches the first link of the text; no control shows as chosen.
   await page.keyboard.press('Tab')
-  await expect(withSound).toBeFocused()
+  await expect(gate.getByRole('link', { name: 'Pico' })).toBeFocused()
+  await gate.getByRole('button', { name: 'Enter', exact: true }).click()
+  await expect(gate).toBeHidden()
+  await expect(page.getByRole('button', { name: 'Sound' })).toHaveAttribute(
+    'aria-pressed',
+    'true',
+  )
 })
