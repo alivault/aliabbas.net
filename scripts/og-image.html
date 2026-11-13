@@ -31,14 +31,14 @@
         font-family: 'Michroma', sans-serif;
         text-transform: uppercase;
       }
-      /* The ground darkens under the text, so it reads. */
+      /* The world darkens behind the text, so it reads. */
       .shade {
         position: absolute;
         inset: 0;
         background: linear-gradient(
-          to bottom,
-          transparent 45%,
-          oklch(0.121 0.0039 245.5 / 0.85) 100%
+          to right,
+          oklch(0.121 0.0039 245.5 / 0.7) 0%,
+          transparent 55%
         );
       }
       .site {
@@ -48,28 +48,33 @@
         font-size: 16px;
         letter-spacing: 0.42em;
       }
+      /* The text keeps to the left; the orb is on the right. */
       main {
         position: absolute;
-        left: 72px;
-        right: 72px;
-        bottom: 64px;
+        left: 64px;
+        top: 0;
+        bottom: 0;
+        width: 580px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
       }
       h1 {
-        font-size: 64px;
+        font-size: 50px;
         font-weight: 400;
         letter-spacing: 0.3em;
       }
       .role {
         margin-top: 28px;
-        font-size: 24px;
-        letter-spacing: 0.42em;
+        font-size: 17px;
+        letter-spacing: 0.36em;
         color: oklch(0.915 0.009 94);
       }
       .focus {
         margin-top: 18px;
-        font-size: 15px;
+        font-size: 13px;
+        line-height: 2;
         letter-spacing: 0.3em;
-        white-space: nowrap;
         color: oklch(0.915 0.009 94 / 0.7);
       }
     </style>
@@ -81,7 +86,8 @@
       <h1>Ali Abbas</h1>
       <p class="role">Senior Frontend Engineer</p>
       <p class="focus">
-        Streaming interfaces · state machines · motion · accessibility
+        Streaming interfaces · state machines<br />
+        Motion · accessibility
       </p>
     </main>
   </body>

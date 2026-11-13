@@ -5,7 +5,8 @@
  *   node scripts/og-image.ts
  *
  * It first draws the world of the running site (OG_WORLD_URL, by default
- * the dev server) without the HUD, and puts it behind the text. Uses the
+ * the chat page of the dev server, for its orb) without the HUD and the
+ * page, and puts it behind the text. Uses the
  * Playwright that the end-to-end tests use. Set CHROMIUM_PATH to use an
  * installed Chromium instead of Playwright's download.
  */
@@ -14,7 +15,7 @@ import { chromium } from '@playwright/test'
 
 const html = fileURLToPath(new URL('./og-image.html', import.meta.url))
 const out = fileURLToPath(new URL('../public/og-image.png', import.meta.url))
-const world = process.env.OG_WORLD_URL ?? 'http://localhost:3000/?gl=force'
+const world = process.env.OG_WORLD_URL ?? 'http://localhost:3000/ai?gl=force'
 
 const browser = await chromium.launch({
   executablePath: process.env.CHROMIUM_PATH,
