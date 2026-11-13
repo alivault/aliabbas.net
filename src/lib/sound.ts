@@ -336,6 +336,46 @@ function noiseHit(
   source.start(start)
 }
 
+/**
+ * The swoop of a flight (Next and the guide arrows), as long as the flight.
+ * The flight eases in and out, so the rush of air swells to the middle,
+ * where the camera is fastest, and dies away as it arrives. Returns a
+ * function that stops it early, for a flight that the visitor stops.
+ */
+export function playFlight(duration: number): () => void {
+  if (!enabled || !ctx || ctx.state !== 'running') return () => {}
+  const context = ctx
+  const start = context.currentTime
+  const middle = start + duration * 0.5
+  const end = start + duration
+  const source = context.createBufferSource()
+  source.buffer = noiseBuffer(context, duration + 0.1)
+  const filter = context.createBiquadFilter()
+  filter.type = 'bandpass'
+  filter.Q.value = 1.4
+  filter.frequency.setValueAtTime(300, start)
+  filter.frequency.exponentialRampToValueAtTime(2600, middle)
+  filter.frequency.exponentialRampToValueAtTime(500, end)
+  const gain = context.createGain()
+  gain.gain.setValueAtTime(0, start)
+  gain.gain.linearRampToValueAtTime(0.16, middle)
+  gain.gain.exponentialRampToValueAtTime(0.0001, end)
+  source.connect(filter).connect(gain).connect(sfxBus!)
+  source.start(start)
+  source.stop(end + 0.05)
+  tone(context, { from: 95, to: 55, duration: 0.45, volume: 0.14 })
+  return () => {
+    const now = context.currentTime
+    if (now >= end) return
+    // Hold the level of this moment, then fade it out fast: no click.
+    const level = gain.gain.value
+    gain.gain.cancelScheduledValues(now)
+    gain.gain.setValueAtTime(level, now)
+    gain.gain.setTargetAtTime(0, now, 0.06)
+    source.stop(now + 0.3)
+  }
+}
+
 let lastHover = 0
 
 /** Plays one interaction sound. Does nothing while sound is off. */

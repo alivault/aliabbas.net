@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react'
 import { nextOnTour } from './tour'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { play, setDroneOpen } from '~/lib/sound'
+import { play, playFlight, setDroneOpen } from '~/lib/sound'
 import { spinGrab } from './cubeSpin'
 import { FOOTPRINT_SIZE } from './Footprint'
 import { frameScreenX } from './frame'
@@ -36,6 +36,8 @@ type Flight = {
   lift: number
   /** A key or a drag stops it. */
   cancellable: boolean
+  /** Stops the sound of the flight, when the flight stops early. */
+  stopSound?: () => void
   onArrive?: () => void
 }
 
@@ -87,7 +89,14 @@ export default function Player({
     pitch: pitch.current,
   })
 
+  /** Stops the flight where the camera is, and its sound. */
+  const stopFlight = () => {
+    flight.current?.stopSound?.()
+    flight.current = null
+  }
+
   const fly = (to: Pose, options: Partial<Flight> = {}) => {
+    stopFlight()
     const from = pose()
     const distance = from.position.distanceTo(to.position)
     flight.current = {
@@ -187,7 +196,7 @@ export default function Player({
       position.current.copy(to.position)
       yaw.current = to.yaw
       pitch.current = to.pitch
-      flight.current = null
+      stopFlight()
       // A deep link starts in the dark, with no fade.
       WORLD_UNIFORMS.uDim.value = 1
       setWorld({ phase: 'inside', target: sheet.id, hover: null })
@@ -236,8 +245,6 @@ export default function Player({
       const z = sheet.z + dz * 5.5
       const y = heightAt(x, z) + EYE
       walkTarget.current = null
-      // The swoop of a dash: Next and the guide arrows fly the camera.
-      play('dash')
       fly(
         {
           position: new THREE.Vector3(x, y, z),
@@ -246,6 +253,10 @@ export default function Player({
         },
         { cancellable: true },
       )
+      // The swoop of a dash, as long as the flight: Next and the guide
+      // arrows fly the camera.
+      const f = flight.current as Flight | null
+      if (f) f.stopSound = playFlight(f.duration)
     }
     worldCommands.next = () => {
       if (getWorld().phase !== 'roam') return
@@ -331,7 +342,7 @@ export default function Player({
       lastX = event.clientX
       lastY = event.clientY
       if (flight.current?.cancellable && Math.hypot(dx, dy) > 2) {
-        flight.current = null
+        stopFlight()
       }
       if (flight.current) return
       const speed = event.pointerType === 'touch' ? LOOK * 1.6 : LOOK
@@ -381,7 +392,7 @@ export default function Player({
       if (event.code.startsWith('Arrow')) event.preventDefault()
       keys.current.add(event.code)
       walkTarget.current = null
-      if (flight.current?.cancellable) flight.current = null
+      if (flight.current?.cancellable) stopFlight()
     }
     const up = (event: KeyboardEvent) => keys.current.delete(event.code)
     const blur = () => keys.current.clear()
