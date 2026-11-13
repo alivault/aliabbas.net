@@ -112,7 +112,7 @@ const pico: CaseStudy = {
   category: 'Developer tool · AI agents',
   year: '2026',
   summary:
-    'A browser workspace for durable coding-agent sessions. The agent keeps its work when the stream drops, the tab sleeps, or the server restarts.',
+    'A browser workspace for coding agents. An agent keeps its work when the connection stops, the tab sleeps or the server restarts.',
   liveHref: 'https://pico.aliabbas.net/',
   liveLabel: 'pico.aliabbas.net',
   sourceHref: 'https://github.com/alivault/pico',
@@ -124,12 +124,12 @@ const pico: CaseStudy = {
       dark: '/work/pico/workspace-dark.webp',
       width: 2898,
       height: 1916,
-      alt: 'The Pico workspace. The sidebar lists the agents by project. In the middle, an agent starts two subagents, each in its own Git worktree, and shows each one as a card. The side panel on the right shows that both subagents are done.',
+      alt: 'The Pico workspace. The sidebar shows the agents of each project. In the middle, one agent starts two subagents. Each subagent has its own Git worktree and shows as a card. The panel on the right shows that the two subagents are done.',
     },
     demo: {
       title: 'See it work',
       caption:
-        'One agent starts two subagents, each in its own Git worktree. When both are done, it merges their branches and runs the tests. The video has no sound.',
+        'One agent starts two subagents, each in its own Git worktree. When the two subagents are done, the agent merges their branches and runs the tests. The video has no sound.',
       video: '/work/pico/child-sessions.mp4',
       poster: '/work/pico/child-sessions-poster.webp',
       width: 1920,
@@ -141,26 +141,26 @@ const pico: CaseStudy = {
         dark: '/work/pico/mobile-dark.webp',
         width: 780,
         height: 1688,
-        alt: 'The same Pico agent on a phone. Tabs above the conversation (Changes, Agent and Terminal) replace the side panel, and the subagents show as cards.',
+        alt: 'The same Pico agent on a phone. Tabs above the conversation (Changes, Agent and Terminal) replace the side panel. The subagents show as cards.',
       },
       caption:
-        'The same agent on a phone. Tabs replace the side panel, and the composer stays at the bottom.',
+        'The same agent on a phone. Tabs replace the side panel. The composer stays at the bottom.',
     },
   },
   problem: [
-    'A coding agent can work for many minutes. During that time, the phone that shows it can lock, the Wi-Fi can drop, and the tab can reload. The server can crash, or restart after each rebuild.',
-    'After each of these events, the screen must show the true state of the session. And an agent that already sent a notification, started a job, or started a child session must not do it again.',
+    'A coding agent can work for many minutes. During that time, the phone can lock, the Wi-Fi can stop and the tab can reload. The server can crash, or restart after each build.',
+    'After each of these events, the screen must show the true state of the session. And the agent must not do an action two times: send a notification, start a job or start a child session.',
   ],
   role: [
-    'I made Pico: the product concept, the interface design, the server, the web client, and the local-first architecture.',
-    'Pico runs its agents on the open-source pi-durable runtime (@earendil-works/pi-durable). The runtime stores each step of a run in SQLite and continues unfinished runs when it opens again. Pico adds the live event stream, the reconnect logic in the browser, and its own agent tools, which follow the replay rules of the runtime.',
+    'I made Pico: the product idea, the interface design, the server, the web client and the local-first architecture.',
+    'Pico runs its agents on the open-source pi-durable runtime (@earendil-works/pi-durable). The runtime records each step of a run in SQLite. When it starts again, it continues the runs that are not complete. Pico adds three parts: the live event stream, the reconnection logic in the browser and its own agent tools. These tools obey the replay rules of the runtime.',
   ],
   machines: [
     {
       id: 'pico-stream',
       title: 'The live event stream',
       intro:
-        'The browser gets all live updates through one Server-Sent Events stream. Each event has an ID. The first message on a new stream is always a full baseline of the session. After that, the server sends only patches against what the browser already has.',
+        'The browser gets all live updates through one Server-Sent Events stream. Each event has an ID. On a new stream, the first message is always a full baseline of the session. After that, the server sends only patches to the state that the browser has.',
       source: [
         'apps/pico/server/src/events.ts',
         'apps/pico/server/src/api.ts',
@@ -172,31 +172,31 @@ const pico: CaseStudy = {
           id: 'Connecting',
           label: 'Connecting',
           meaning:
-            'The browser opens the stream. It sends the last event ID that it saw, from memory or from session storage.',
+            'The browser opens the stream. It sends the ID of the last event that it got. It keeps this ID in memory and in session storage.',
         },
         {
           id: 'Replaying',
           label: 'Replaying',
           meaning:
-            'The server sends the events that the browser missed, from a window of the last 512 events. It skips old state events, because the baseline replaces them.',
+            'The server sends the events that the browser did not get. It keeps a window of the last 512 events. It does not send old state events, because the baseline replaces them.',
         },
         {
           id: 'Baseline',
           label: 'Baseline',
           meaning:
-            'The server sends the full state of the selected session and the session list. Events that arrive during this step wait in a queue.',
+            'The server sends the full state of the selected session and the list of sessions. Events that arrive during this step wait in a queue.',
         },
         {
           id: 'Live',
           label: 'Live',
           meaning:
-            'The server sends each new state as a patch: the start, the delete count, and the new items. Streamed text arrives as deltas.',
+            'The server sends each new state as a patch: the start position, the number of items to delete and the new items. Streamed text arrives in small parts (deltas).',
         },
         {
           id: 'Checking',
           label: 'Checking',
           meaning:
-            'The stream failed. The browser asks the health endpoint whether the server is up.',
+            'The stream failed. The browser asks the health endpoint if the server is up.',
         },
         {
           id: 'Unreachable',
@@ -229,7 +229,7 @@ const pico: CaseStudy = {
         {
           from: 'Live',
           to: 'Connecting',
-          event: 'tab back after 30 s, stream closed',
+          event: 'tab returns after 30 s, stream closed',
         },
         { from: 'Checking', to: 'Connecting', event: 'server answers' },
         { from: 'Checking', to: 'Unreachable', event: 'no answer' },
@@ -242,9 +242,9 @@ const pico: CaseStudy = {
     },
     {
       id: 'pico-tool-call',
-      title: 'One tool call across a crash',
+      title: 'One tool call through a crash',
       intro:
-        'Each tool call is a durable task. The runtime stores the intent of the call before the tool runs. If the process dies during the call, the next process decides what to do from the replay policy of the tool. Pico marks its tools with external effects as replay-safe, and each of them checks a stored memo before it acts.',
+        'Each tool call is a durable task. The runtime records the intent of the call before the tool runs. If the process stops during the call, the next process uses the replay policy of the tool to decide what to do. Pico marks its tools with external effects as replay-safe. Before each of these tools acts, it reads a stored memo.',
       source: [
         'node_modules/@earendil-works/pi-durable/README.md',
         'apps/pico/server/src/extensions/notify.ts',
@@ -256,7 +256,7 @@ const pico: CaseStudy = {
         {
           id: 'Committed',
           label: 'Intent stored',
-          meaning: 'The runtime stores the call before the tool runs.',
+          meaning: 'The runtime records the call before the tool runs.',
         },
         {
           id: 'Running',
@@ -277,13 +277,13 @@ const pico: CaseStudy = {
           id: 'Interrupted',
           label: 'Interrupted',
           meaning:
-            'The tool is not replay-safe. The model gets an “interrupted” error with the output so far, and decides what to do.',
+            'The tool is not replay-safe. The model gets an “interrupted” error with the output until that point, and decides what to do.',
         },
         {
           id: 'Rerun',
           label: 'Rerun',
           meaning:
-            'The tool is replay-safe. It runs again from the top and first reads its memo.',
+            'The tool is replay-safe. It runs again from the start, and first reads its memo.',
         },
       ],
       transitions: [
@@ -309,14 +309,14 @@ const pico: CaseStudy = {
   ],
   failureModes: [
     {
-      title: 'The live stream drops',
-      risk: 'A phone locks, the network changes, or a proxy returns a 502. Events that the server sends during the gap do not arrive.',
+      title: 'The live stream stops',
+      risk: 'A phone locks, the network changes or a proxy returns a 502 error. The browser does not get the events that the server sends during the gap.',
       design: [
-        'Every event has an ID, and the browser keeps the last one in session storage. A new stream sends it back, and the server replays the missed events from a window of 512.',
-        'Event IDs start from the clock when the server starts, so they keep growing across restarts. An ID from before a restart gets no replay; the baseline covers it.',
-        'When the window no longer covers the ID, the server says so in a resync notice and sends the full baseline. The browser never applies a patch to the wrong base.',
-        'After the baseline, state changes go out as small splices: the server finds the common start and end of the item list and sends only the middle.',
-        'The replay window keeps only the newest state event of each session, so old full states do not push out the small events.',
+        'Each event has an ID. The browser keeps the last ID in session storage. A new stream sends this ID back, and the server sends the missed events again from its window of 512.',
+        'Event IDs start from the clock time when the server starts, so they increase across restarts. An ID from before a restart gets no replay. The baseline replaces it.',
+        'If the window does not have the ID, the server sends a resync notice and the full baseline. The browser never applies a patch to the wrong state.',
+        'After the baseline, each change is a small splice. The server finds the items that are the same at the start and at the end of the list. It sends only the items between them.',
+        'The window keeps only the newest state event of each session. Old full states do not push the small events out of the window.',
       ],
       evidence: [
         'apps/pico/server/src/events.ts',
@@ -328,12 +328,12 @@ const pico: CaseStudy = {
     },
     {
       title: 'The server is down',
-      risk: 'Every request fails at the same time. Without care, the page shows one error toast for each failed request.',
+      risk: 'All requests fail at the same time. Without a guard, the page shows one error message for each failed request.',
       design: [
-        'One small store holds the connection state: unknown, online, or unreachable. A failed request or stream asks the health endpoint once.',
-        'While the server is down, the store checks again after 1 s, 2 s, 3 s, and then every 5 s. The page shows one “server unreachable” view.',
-        'When the server answers again, the page opens a new stream with the saved event ID and loads its data again.',
-        'When a tab comes back after 30 s or more in the background and its stream is not open, it reconnects at once.',
+        'One small store holds the connection state: unknown, online or unreachable. When a request or the stream fails, the store asks the health endpoint one time.',
+        'While the server is down, the store asks again after 1 s, 2 s and 3 s, and then every 5 s. The page shows one “server unreachable” view.',
+        'When the server answers, the page opens a new stream with the saved event ID and loads its data again.',
+        'A tab that returns after 30 s or more in the background reconnects immediately if its stream is closed.',
       ],
       evidence: [
         'apps/pico/src/lib/pico/server-connection.ts',
@@ -341,13 +341,13 @@ const pico: CaseStudy = {
       ],
     },
     {
-      title: 'A run is cut off by a crash or restart',
-      risk: 'The agent is in the middle of a run when the process dies. The work must not be lost, and it must not start from zero.',
+      title: 'A crash or restart stops a run',
+      risk: 'The process stops in the middle of a run. The agent must not lose the work, and it must not start again from zero.',
       design: [
-        'Sessions live in one SQLite database. The pi-durable runtime stores a checkpoint at every step of a run and continues unfinished runs when Pico opens again.',
-        'Pico keeps tool state in documents, not in server memory, so a restart does not lose a todo list, a timer, a question, or a child-session link.',
-        'A timer that was due while the server was down fires one time at startup. Its follow-up message has a fixed request ID per run, so a second delivery is refused.',
-        'Terminals and background jobs run in a separate pico-pty-host process. After a server restart, the server takes over the jobs that still run and records the ones that ended. A job with no process is marked “lost” and reported, not shown as finished.',
+        'The sessions are in one SQLite database. The pi-durable runtime records a checkpoint at each step of a run. When Pico starts again, the runtime continues the runs that are not complete.',
+        'Pico keeps the state of its tools in documents, not in server memory. A restart does not delete a todo list, a timer, a question or a link to a child session.',
+        'If a timer was due while the server was down, it fires one time at startup. Its follow-up message has a fixed request ID for each run, so the runtime refuses a second delivery.',
+        'Terminals and background jobs run in a separate process, pico-pty-host. After a server restart, the server controls the jobs that continue to run, and records the jobs that stopped. A job without a process gets the status “lost”, and Pico reports it. Pico does not show it as complete.',
       ],
       evidence: [
         'apps/pico/server/src/core/runtime.ts',
@@ -359,13 +359,13 @@ const pico: CaseStudy = {
       ],
     },
     {
-      title: 'A tool with side effects runs twice',
-      risk: 'A replay-safe tool reruns after a crash. Without a guard, it sends a second notification, starts a second job, or makes a second child session.',
+      title: 'A tool with side effects runs two times',
+      risk: 'A replay-safe tool runs again after a crash. Without a guard, it sends a second notification, starts a second job or makes a second child session.',
       design: [
-        'Each tool with an external effect checks a memo first. If the memo has a result, the tool returns it and does nothing else.',
-        'A rerun of job_start reports the job that it already started. It never starts the command again.',
-        'A rerun of spawn_session finds the child that the same tool call made. The first message to the child has the request ID spawn:<call ID>, and the runtime returns the existing submission for a request ID that it already has.',
-        'One gap stays open: the effect and its memo are two steps. A crash between them can repeat the effect. Where the effect is a message to a session, the fixed request ID closes the gap.',
+        'Each tool with an external effect reads its memo first. If the memo has a result, the tool returns that result and does nothing more.',
+        'When job_start runs again, it reports the job that it started before. It never starts the command a second time.',
+        'When spawn_session runs again, it finds the child that the same tool call made. The first message to the child has the request ID spawn:<call ID>. If the runtime already has a request ID, it returns the existing submission.',
+        'One gap is still open: the effect and its memo are two steps. A crash between these steps can repeat the effect. If the effect is a message to a session, the fixed request ID closes the gap.',
       ],
       evidence: [
         'apps/pico/server/src/extensions/notify.ts',
