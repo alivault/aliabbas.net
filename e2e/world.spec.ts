@@ -137,7 +137,7 @@ test('the intro types in, and a click on it shows all of it', async ({
 }) => {
   await open(page, '/?gl=force')
   const intro = page.locator('#gate-intro')
-  const hidden = intro.locator('span.opacity-0')
+  const hidden = intro.locator('span.text-transparent')
   await expect(hidden.first()).toBeAttached()
   await intro.click({ position: { x: 10, y: 10 } })
   await expect(hidden).toHaveCount(0)
@@ -147,5 +147,28 @@ test('with reduced motion, the intro shows at once', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' })
   await open(page, '/?gl=force')
   await expect(page.locator('#gate-intro')).toBeVisible()
-  await expect(page.locator('#gate-intro span.opacity-0')).toHaveCount(0)
+  await expect(page.locator('#gate-intro span.text-transparent')).toHaveCount(0)
+})
+
+test('as the intro types in, no letter moves', async ({ page }) => {
+  await open(page, '/?gl=force')
+  // The place of each letter, as one string.
+  const places = () =>
+    page.evaluate(() =>
+      Array.from(
+        document.querySelectorAll('#gate-intro span:not([aria-hidden])'),
+        (letter) => {
+          const box = letter.getBoundingClientRect()
+          return `${Math.round(box.x)},${Math.round(box.y)}`
+        },
+      ).join(' '),
+    )
+  const seen: Array<string> = []
+  for (let i = 0; i < 40; i++) {
+    seen.push(await places())
+    await page.waitForTimeout(50)
+  }
+  await page.locator('#gate-intro').click({ position: { x: 10, y: 10 } })
+  const end = await places()
+  expect(seen.filter((at) => at !== end)).toHaveLength(0)
 })

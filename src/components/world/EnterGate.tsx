@@ -62,15 +62,25 @@ function TypedIntro({ onEnter }: { onEnter: () => void }) {
   const letters = (text: string) =>
     Array.from(text, (character) => {
       const at = index++
+      // The cursor sits on the next letter to type, and after the last
+      // letter at the end. It is out of the flow of the text (absolute in
+      // its letter): a box in the flow, even with no width, is a place
+      // where a line can break, so lines broke in the middle of a word
+      // while the cursor was in it, and the text jumped.
+      const cursor = done
+        ? at === LENGTH - 1 && <Cursor after blink={!reduceMotion} />
+        : at === typed && <Cursor />
       return (
-        <Fragment key={at}>
-          {/* The cursor sits before the next letter to type. It has no
-              width, so the text does not move. */}
-          {!done && at === typed ? <Cursor /> : null}
-          <span className={done || at < typed ? undefined : 'opacity-0'}>
-            {character}
-          </span>
-        </Fragment>
+        <span
+          key={at}
+          className={cn(
+            cursor && 'relative',
+            !done && at >= typed && 'text-transparent',
+          )}
+        >
+          {character}
+          {cursor || null}
+        </span>
       )
     })
 
@@ -87,7 +97,12 @@ function TypedIntro({ onEnter }: { onEnter: () => void }) {
             to="/work/$slug"
             params={{ slug: part.slug }}
             onClick={onEnter}
-            className={link}
+            // The link draws the line under its letters: the line shows
+            // when the first letter is typed.
+            className={cn(
+              link,
+              !done && typed <= index && 'decoration-transparent',
+            )}
           >
             {letters(part.text)}
           </Link>
@@ -95,22 +110,30 @@ function TypedIntro({ onEnter }: { onEnter: () => void }) {
           <Fragment key={part.text}>{letters(part.text)}</Fragment>
         ),
       )}
-      {done ? <Cursor blink={!reduceMotion} /> : null}
     </p>
   )
 }
 
-/** A block cursor, as tall as a capital letter, with no width of its own. */
-function Cursor({ blink = false }: { blink?: boolean }) {
+/**
+ * A block cursor, as tall as a capital letter, over its letter (or after
+ * it). It is absolute, so it takes no room in the text.
+ */
+function Cursor({
+  after = false,
+  blink = false,
+}: {
+  after?: boolean
+  blink?: boolean
+}) {
   return (
-    <span aria-hidden="true" className="relative inline-block w-0">
-      <span
-        className={cn(
-          'bg-hud absolute bottom-[0.1em] left-[0.1em] h-[1em] w-[0.6em]',
-          blink && 'animate-cursor-blink',
-        )}
-      />
-    </span>
+    <span
+      aria-hidden="true"
+      className={cn(
+        'bg-hud absolute bottom-[0.32em] h-[1em] w-[0.6em]',
+        after ? 'left-full' : 'left-[0.1em]',
+        blink && 'animate-cursor-blink',
+      )}
+    />
   )
 }
 
