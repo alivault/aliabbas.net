@@ -49,15 +49,24 @@ function cssColor(name: string, fallback: string) {
 }
 
 /**
- * The texture of an icon in the world. A project shows its app icon on a
- * clear square. A page shows a glyph on a dark tile with the edge and the
- * line color of the HUD.
+ * The texture of a face of an icon cube. Every face is a dark tile with the
+ * edge and the line color of the HUD, so the cube is solid from every side.
+ * A project shows its app icon on it; a page shows a glyph. A cover image
+ * (a still of a game) fills the face.
  */
 export async function drawIcon(icon: SheetIcon) {
   const canvas = document.createElement('canvas')
   canvas.width = SIZE
   canvas.height = SIZE
   const context = canvas.getContext('2d')!
+  const hud = cssColor('--hud', '#e0501f')
+
+  // A dark tile, a little warmer at the top, as if lit by the sky.
+  const fill = context.createLinearGradient(0, 0, 0, SIZE)
+  fill.addColorStop(0, cssColor('--sky-haze', '#2a1a12'))
+  fill.addColorStop(1, cssColor('--ground', '#0d0b0a'))
+  context.fillStyle = fill
+  context.fillRect(0, 0, SIZE, SIZE)
 
   if (icon.type === 'image') {
     const image = await loadImage(icon.src)
@@ -68,20 +77,17 @@ export async function drawIcon(icon: SheetIcon) {
         const h = image.height * scale
         context.drawImage(image, (SIZE - w) / 2, (SIZE - h) / 2, w, h)
       } else {
-        context.drawImage(image, 0, 0, SIZE, SIZE)
+        const inset = SIZE * 0.16
+        context.drawImage(
+          image,
+          inset,
+          inset,
+          SIZE - inset * 2,
+          SIZE - inset * 2,
+        )
       }
     }
   } else if (icon.type === 'glyph') {
-    const hud = cssColor('--hud', '#e0501f')
-    // A dark tile, a little warmer at the top, as if lit by the sky.
-    const fill = context.createLinearGradient(0, 0, 0, SIZE)
-    fill.addColorStop(0, cssColor('--sky-haze', '#2a1a12'))
-    fill.addColorStop(1, cssColor('--ground', '#0d0b0a'))
-    context.fillStyle = fill
-    context.fillRect(0, 0, SIZE, SIZE)
-    context.strokeStyle = hud
-    context.lineWidth = 6
-    context.strokeRect(3, 3, SIZE - 6, SIZE - 6)
     const image = await loadImage(
       `data:image/svg+xml;charset=utf-8,${encodeURIComponent(await glyphMarkup(icon.glyph, hud))}`,
     )
@@ -90,6 +96,10 @@ export async function drawIcon(icon: SheetIcon) {
       context.drawImage(image, inset, inset, SIZE - inset * 2, SIZE - inset * 2)
     }
   }
+
+  context.strokeStyle = hud
+  context.lineWidth = 6
+  context.strokeRect(3, 3, SIZE - 6, SIZE - 6)
 
   const texture = new THREE.CanvasTexture(canvas)
   texture.colorSpace = THREE.SRGBColorSpace

@@ -49,7 +49,7 @@ export function getShadowTexture() {
 }
 
 /**
- * A page as its icon: it floats and turns over the ground. On hover it slows
+ * A page as its icon: a cube that floats and turns over the ground. On hover it slows
  * and a frame in the HUD color shows around it. When the camera flies in, it
  * stops at an angle and stays lit while the rest of the world goes dark.
  */
@@ -87,40 +87,61 @@ export default function WorldIcon({
     }
   }, [sheet])
 
+  // The four sides show the icon; the top and the bottom are plain tiles.
+  // Lambert light shades each side by the way it faces the sun, and the
+  // emissive map keeps the icon bright on the dark side.
   const face = useMemo(
     () =>
       withSkyFog(
-        new THREE.MeshBasicMaterial({
+        new THREE.MeshLambertMaterial({
+          color: new THREE.Color(0.45, 0.45, 0.45),
+          emissive: new THREE.Color(0.7, 0.7, 0.7),
           transparent: true,
-          alphaTest: 0.02,
-          side: THREE.FrontSide,
           opacity: 0,
         }),
         dim,
       ),
     [dim],
   )
+  const cap = useMemo(
+    () =>
+      withSkyFog(
+        new THREE.MeshLambertMaterial({
+          color: new THREE.Color('#2a1f19'),
+          emissive: new THREE.Color('#0d0a08'),
+          transparent: true,
+          opacity: 0,
+        }),
+        dim,
+      ),
+    [dim],
+  )
+  // Box faces: +x, -x, +y, -y, +z, -z.
+  const materials = useMemo(
+    () => [face, face, cap, cap, face, face],
+    [face, cap],
+  )
   useEffect(() => {
     if (!texture) return
     face.map = texture
+    face.emissiveMap = texture
     face.opacity = 1
+    cap.opacity = 1
     face.needsUpdate = true
-  }, [face, texture])
+  }, [face, cap, texture])
 
+  // The hover frame: the edges of the cube, a little outside it.
   const frame = useMemo(() => {
-    const half = ICON_SIZE / 2 + 0.06
-    const geometry = new THREE.BufferGeometry().setFromPoints([
-      new THREE.Vector3(-half, -half, 0),
-      new THREE.Vector3(half, -half, 0),
-      new THREE.Vector3(half, half, 0),
-      new THREE.Vector3(-half, half, 0),
-    ])
+    const size = ICON_SIZE + 0.08
+    const geometry = new THREE.EdgesGeometry(
+      new THREE.BoxGeometry(size, size, size),
+    )
     const material = new THREE.LineBasicMaterial({
       color: accent,
       transparent: true,
       opacity: 0,
     })
-    return new THREE.LineLoop(geometry, material)
+    return new THREE.LineSegments(geometry, material)
   }, [accent])
 
   const shadow = useMemo(
@@ -170,6 +191,10 @@ export default function WorldIcon({
           ? iconScrollShow(state.size.width / state.size.height)
           : 1
       face.opacity = THREE.MathUtils.damp(face.opacity, target, 8, delta)
+      cap.opacity = face.opacity
+      // An opaque cube writes depth; a fading one must not hide what is
+      // behind its own faces.
+      face.depthWrite = cap.depthWrite = face.opacity > 0.98
     }
     glow.current = THREE.MathUtils.damp(
       glow.current,
@@ -211,11 +236,8 @@ export default function WorldIcon({
         onClick={click}
       >
         <primitive object={frame} />
-        <mesh material={face} position-z={0.002}>
-          <planeGeometry args={[ICON_SIZE, ICON_SIZE]} />
-        </mesh>
-        <mesh material={face} position-z={-0.002} rotation-y={Math.PI}>
-          <planeGeometry args={[ICON_SIZE, ICON_SIZE]} />
+        <mesh material={materials}>
+          <boxGeometry args={[ICON_SIZE, ICON_SIZE, ICON_SIZE]} />
         </mesh>
       </group>
       <mesh

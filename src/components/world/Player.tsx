@@ -114,13 +114,18 @@ export default function Player({
     const full = Boolean(sheet.wide)
     const half = Math.tan(THREE.MathUtils.degToRad(perspective.fov) / 2)
     // The share of the screen height that the icon fills.
-    const share = full ? 0.8 : wide ? 0.56 : 0.24
-    const distance = ICON_SIZE / (share * 2 * half)
+    // A cube comes nearer the camera than its middle: its front half and
+    // its turned corner. Its share is smaller, and the camera stands back
+    // by half a cube. The orb is a flat disc to the camera.
+    const cube = sheet.icon.type !== 'orb'
+    const share = full ? 0.8 : wide ? (cube ? 0.42 : 0.56) : cube ? 0.2 : 0.24
+    const distance =
+      ICON_SIZE / (share * 2 * half) + (cube && !full ? ICON_SIZE / 2 : 0)
     // Where the icon center is on screen, from -1 to 1.
     const screenX = full ? 0 : wide ? 0.42 : 0
     const screenY = full ? 0 : wide ? 0 : 0.5
     const facing = Math.atan2(dx, dz)
-    focus.yaw = facing - (full ? 0 : wide ? 0.95 : 0.6)
+    focus.yaw = facing - (full ? 0 : wide ? 0.55 : 0.4)
     return {
       position: new THREE.Vector3(
         sheet.x + dx * distance,
