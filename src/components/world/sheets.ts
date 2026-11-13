@@ -123,8 +123,8 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
   {
     id: 'chat',
     icon: { type: 'orb' },
-    to: '/chat',
-    title: 'Ask about Ali',
+    to: '/ai',
+    title: 'Ask AI',
     summary: 'An AI that knows my work. Ask it anything.',
     kind: 'Page',
   },
@@ -179,7 +179,7 @@ export const SHEETS: Array<SheetSpec> = PAGES.map((page, i) => {
 })
 
 /** Paths that open the sheet of another page. */
-const ALIASES: Record<string, string> = { '/check': '/chat' }
+const ALIASES: Record<string, string> = { '/check': '/ai' }
 
 /**
  * The sheet that a path opens: the sheet of that page, or of the page it is

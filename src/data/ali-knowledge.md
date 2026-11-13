@@ -268,7 +268,7 @@ Ali's stated lessons from Pico include:
 Ali's portfolio contains working samples of streaming and verification
 interfaces:
 
-- The chat at https://aliabbas.net/chat streams answers with inline
+- The chat at https://aliabbas.net/ai streams answers with inline
   citations. The server checks each citation against these sources before it
   sends it. Answers can be stopped, retried, and edited and sent again, and a
   resizable, collapsible evidence panel (a drawer on phones) shows the cited

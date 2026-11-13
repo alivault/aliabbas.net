@@ -27,7 +27,7 @@ const linkGroups = [
     label: 'Reach me',
     links: [
       { label: 'Contact', to: '/contact' },
-      { label: 'Ask AI', to: '/chat' },
+      { label: 'Ask AI', to: '/ai' },
     ],
   },
 ] as const
@@ -70,7 +70,7 @@ export default function Footer() {
                 Contact
                 <ArrowUpRight aria-hidden="true" />
               </ButtonLink>
-              <ButtonLink to="/chat" variant="secondary" size="lg">
+              <ButtonLink to="/ai" variant="secondary" size="lg">
                 <MessageCircle aria-hidden="true" />
                 Ask AI about me
               </ButtonLink>

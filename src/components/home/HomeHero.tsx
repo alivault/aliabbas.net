@@ -218,7 +218,7 @@ export function HomeHero() {
               <ArrowDown aria-hidden="true" className="size-4" />
             </ButtonAnchor>
             <ButtonLink
-              to="/chat"
+              to="/ai"
               variant="secondary"
               size="lg"
               style={enterDelay(ACTIONS_DELAY + 80)}

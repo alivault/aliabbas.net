@@ -22,7 +22,7 @@ const navigation = [
   { label: 'Experience', to: '/experience' as const },
   { label: 'Lab', to: '/lab' as const },
   { label: 'Notes', to: '/notes' as const },
-  { label: 'Ask AI', to: '/chat' as const },
+  { label: 'Ask AI', to: '/ai' as const },
 ] as const
 
 const mobileMenuVariants: Variants = {
@@ -183,7 +183,7 @@ export default function SiteHeader() {
                 to={item.to}
                 className={cn(
                   'hover:text-foreground transition-colors',
-                  item.to === '/chat' && onCheck && 'text-foreground',
+                  item.to === '/ai' && onCheck && 'text-foreground',
                 )}
                 activeProps={{ className: 'text-foreground' }}
               >

@@ -54,7 +54,7 @@ for (const path of [
   '/contact',
   '/privacy',
   '/lab',
-  '/chat',
+  '/ai',
   '/check',
   '/work/pico',
   '/work/postmaster',
@@ -82,7 +82,7 @@ for (const path of [
   '/lab',
   '/notes',
   '/notes/building-pico-a-local-first-workspace-for-coding-agents',
-  '/chat',
+  '/ai',
   '/check',
   '/contact',
   '/design',
@@ -225,9 +225,10 @@ test('without a GPU, the home page lists the pages', async ({ page }) => {
   // Headless Chromium has no GPU: the world is a list over a still sky.
   await open(page, '/')
   const pages = page.getByRole('navigation', { name: 'Pages' })
-  await expect(
-    pages.getByRole('link', { name: 'Ask about Ali' }),
-  ).toHaveAttribute('href', '/chat')
+  await expect(pages.getByRole('link', { name: 'Ask AI' })).toHaveAttribute(
+    'href',
+    '/ai',
+  )
 })
 
 test('a figure zooms, the arrows step, and Esc zooms it back', async ({

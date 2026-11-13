@@ -321,7 +321,7 @@ function OtherWays() {
           </a>
         </li>
         <li>
-          <Link to="/chat" className={quietLink}>
+          <Link to="/ai" className={quietLink}>
             <MessageCircle aria-hidden="true" className="size-3.5" />
             Ask AI about me first
           </Link>

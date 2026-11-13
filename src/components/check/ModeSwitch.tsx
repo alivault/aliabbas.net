@@ -9,7 +9,7 @@ export type AssistantMode = 'chat' | 'check'
 const modes = [
   {
     mode: 'chat' as const,
-    to: '/chat' as const,
+    to: '/ai' as const,
     label: 'Ask a question',
     icon: MessageSquareText,
   },

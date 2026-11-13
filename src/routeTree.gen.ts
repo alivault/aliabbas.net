@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AssistantRouteImport } from './routes/_assistant'
 import { Route as ArticlesRouteImport } from './routes/articles'
+import { Route as ChatRouteImport } from './routes/chat'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DesignRouteImport } from './routes/design'
 import { Route as ExperienceRouteImport } from './routes/experience'
@@ -23,7 +24,7 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SkillsRouteImport } from './routes/skills'
 import { Route as WorkRouteImport } from './routes/work'
-import { Route as AssistantChatRouteImport } from './routes/_assistant.chat'
+import { Route as AssistantAiRouteImport } from './routes/_assistant.ai'
 import { Route as AssistantCheckRouteImport } from './routes/_assistant.check'
 import { Route as AdminConversationsRouteImport } from './routes/admin.conversations'
 import { Route as ApiChatRouteImport } from './routes/api.chat'
@@ -48,6 +49,11 @@ const AssistantRoute = AssistantRouteImport.update({
 const ArticlesRoute = ArticlesRouteImport.update({
   id: '/articles',
   path: '/articles',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatRoute = ChatRouteImport.update({
+  id: '/chat',
+  path: '/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -105,9 +111,9 @@ const WorkRoute = WorkRouteImport.update({
   path: '/work',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AssistantChatRoute = AssistantChatRouteImport.update({
-  id: '/chat',
-  path: '/chat',
+const AssistantAiRoute = AssistantAiRouteImport.update({
+  id: '/ai',
+  path: '/ai',
   getParentRoute: () => AssistantRoute,
 } as any)
 const AssistantCheckRoute = AssistantCheckRouteImport.update({
@@ -169,6 +175,7 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/articles': typeof ArticlesRoute
+  '/chat': typeof ChatRoute
   '/contact': typeof ContactRoute
   '/design': typeof DesignRoute
   '/experience': typeof ExperienceRoute
@@ -180,7 +187,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/skills': typeof SkillsRoute
   '/work': typeof WorkRoute
-  '/chat': typeof AssistantChatRoute
+  '/ai': typeof AssistantAiRoute
   '/check': typeof AssistantCheckRoute
   '/admin/conversations': typeof AdminConversationsRoute
   '/api/chat': typeof ApiChatRoute
@@ -196,6 +203,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/articles': typeof ArticlesRoute
+  '/chat': typeof ChatRoute
   '/contact': typeof ContactRoute
   '/design': typeof DesignRoute
   '/experience': typeof ExperienceRoute
@@ -207,7 +215,7 @@ export interface FileRoutesByTo {
   '/reset-password': typeof ResetPasswordRoute
   '/skills': typeof SkillsRoute
   '/work': typeof WorkRoute
-  '/chat': typeof AssistantChatRoute
+  '/ai': typeof AssistantAiRoute
   '/check': typeof AssistantCheckRoute
   '/admin/conversations': typeof AdminConversationsRoute
   '/api/chat': typeof ApiChatRoute
@@ -225,6 +233,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_assistant': typeof AssistantRouteWithChildren
   '/articles': typeof ArticlesRoute
+  '/chat': typeof ChatRoute
   '/contact': typeof ContactRoute
   '/design': typeof DesignRoute
   '/experience': typeof ExperienceRoute
@@ -236,7 +245,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/skills': typeof SkillsRoute
   '/work': typeof WorkRoute
-  '/_assistant/chat': typeof AssistantChatRoute
+  '/_assistant/ai': typeof AssistantAiRoute
   '/_assistant/check': typeof AssistantCheckRoute
   '/admin/conversations': typeof AdminConversationsRoute
   '/api/chat': typeof ApiChatRoute
@@ -254,6 +263,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/articles'
+    | '/chat'
     | '/contact'
     | '/design'
     | '/experience'
@@ -265,7 +275,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/skills'
     | '/work'
-    | '/chat'
+    | '/ai'
     | '/check'
     | '/admin/conversations'
     | '/api/chat'
@@ -281,6 +291,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/articles'
+    | '/chat'
     | '/contact'
     | '/design'
     | '/experience'
@@ -292,7 +303,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/skills'
     | '/work'
-    | '/chat'
+    | '/ai'
     | '/check'
     | '/admin/conversations'
     | '/api/chat'
@@ -309,6 +320,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_assistant'
     | '/articles'
+    | '/chat'
     | '/contact'
     | '/design'
     | '/experience'
@@ -320,7 +332,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/skills'
     | '/work'
-    | '/_assistant/chat'
+    | '/_assistant/ai'
     | '/_assistant/check'
     | '/admin/conversations'
     | '/api/chat'
@@ -338,6 +350,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AssistantRoute: typeof AssistantRouteWithChildren
   ArticlesRoute: typeof ArticlesRoute
+  ChatRoute: typeof ChatRoute
   ContactRoute: typeof ContactRoute
   DesignRoute: typeof DesignRoute
   ExperienceRoute: typeof ExperienceRoute
@@ -382,6 +395,13 @@ declare module '@tanstack/react-router' {
       path: '/articles'
       fullPath: '/articles'
       preLoaderRoute: typeof ArticlesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chat': {
+      id: '/chat'
+      path: '/chat'
+      fullPath: '/chat'
+      preLoaderRoute: typeof ChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -461,11 +481,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WorkRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_assistant/chat': {
-      id: '/_assistant/chat'
-      path: '/chat'
-      fullPath: '/chat'
-      preLoaderRoute: typeof AssistantChatRouteImport
+    '/_assistant/ai': {
+      id: '/_assistant/ai'
+      path: '/ai'
+      fullPath: '/ai'
+      preLoaderRoute: typeof AssistantAiRouteImport
       parentRoute: typeof AssistantRoute
     }
     '/_assistant/check': {
@@ -549,12 +569,12 @@ declare module '@tanstack/react-router' {
 }
 
 interface AssistantRouteChildren {
-  AssistantChatRoute: typeof AssistantChatRoute
+  AssistantAiRoute: typeof AssistantAiRoute
   AssistantCheckRoute: typeof AssistantCheckRoute
 }
 
 const AssistantRouteChildren: AssistantRouteChildren = {
-  AssistantChatRoute: AssistantChatRoute,
+  AssistantAiRoute: AssistantAiRoute,
   AssistantCheckRoute: AssistantCheckRoute,
 }
 
@@ -566,6 +586,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AssistantRoute: AssistantRouteWithChildren,
   ArticlesRoute: ArticlesRoute,
+  ChatRoute: ChatRoute,
   ContactRoute: ContactRoute,
   DesignRoute: DesignRoute,
   ExperienceRoute: ExperienceRoute,

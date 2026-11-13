@@ -31,7 +31,7 @@ export const Route = createFileRoute('/_assistant')({
 /** Chat is a reader in the world. The claim checker keeps its page. */
 function AssistantRoute() {
   const chat = useLocation({
-    select: (location) => location.pathname === '/chat',
+    select: (location) => location.pathname === '/ai',
   })
   return chat ? <ChatReader /> : <AssistantLayout />
 }
@@ -40,7 +40,7 @@ const ORDER: ReadonlyArray<AssistantMode> = ['chat', 'check']
 
 function modeOf(pathname: string): AssistantMode | null {
   if (pathname.startsWith('/check')) return 'check'
-  if (pathname === '/chat') return 'chat'
+  if (pathname === '/ai') return 'chat'
   return null
 }
 

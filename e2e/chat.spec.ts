@@ -17,7 +17,7 @@ test(
   { tag: '@mobile' },
   async ({ page }) => {
     await mockAi(page, { '/api/chat': chatAnswer() })
-    await open(page, '/chat')
+    await open(page, '/ai')
     await ask(page, 'Has Ali built streaming interfaces?')
 
     const answer = lastTurn(page)
@@ -40,7 +40,7 @@ test('a chip opens its source, and a second click closes it', async ({
   page,
 }) => {
   await mockAi(page, { '/api/chat': chatAnswer() })
-  await open(page, '/chat')
+  await open(page, '/ai')
   await ask(page, 'Has Ali built streaming interfaces?')
   await done(page)
 
@@ -55,7 +55,7 @@ test('a chip opens its source, and a second click closes it', async ({
   await page.keyboard.press('Escape')
   await expect(chip).toBeFocused()
   await page.waitForTimeout(100)
-  await expect(page).toHaveURL(/\/chat$/)
+  await expect(page).toHaveURL(/\/ai$/)
 
   await chip.click()
   await expect(chip).toHaveAttribute('aria-pressed', 'false')
@@ -65,7 +65,7 @@ test('Esc stops the answer, keeps its text, and offers Retry', async ({
   page,
 }) => {
   await mockAi(page, { '/api/chat': chatAnswer(250) })
-  await open(page, '/chat')
+  await open(page, '/ai')
   await ask(page, 'Has Ali built streaming interfaces?')
 
   const answer = lastTurn(page)
@@ -73,7 +73,7 @@ test('Esc stops the answer, keeps its text, and offers Retry', async ({
   await page.keyboard.press('Escape')
   await expect(answer.getByText('Stopped', { exact: true })).toBeVisible()
   // The Esc stopped the answer; it did not leave the page.
-  await expect(page).toHaveURL(/\/chat$/)
+  await expect(page).toHaveURL(/\/ai$/)
   const text = await answer.innerText()
   await page.waitForTimeout(800)
   expect(await answer.innerText()).toBe(text)
@@ -85,7 +85,7 @@ test('Esc stops the answer, keeps its text, and offers Retry', async ({
 
 test('Stop under the answer ends it', async ({ page }) => {
   await mockAi(page, { '/api/chat': chatAnswer(250) })
-  await open(page, '/chat')
+  await open(page, '/ai')
   await ask(page, 'Has Ali built streaming interfaces?')
   const answer = lastTurn(page)
   await expect(answer).toContainText('Yes. Ali built')
@@ -97,7 +97,7 @@ test('Regenerate sends the question again as a new attempt', async ({
   page,
 }) => {
   await mockAi(page, { '/api/chat': chatAnswer() })
-  await open(page, '/chat')
+  await open(page, '/ai')
   await ask(page, 'Which project is the strongest?')
   await done(page)
   await page.getByRole('button', { name: 'Regenerate' }).click()
@@ -131,7 +131,7 @@ test('a link to this site opens the page in the app, and the chat stays', async 
     { delay: 20, event: { type: 'done' } },
   ]
   await mockAi(page, { '/api/chat': frames })
-  await open(page, '/chat')
+  await open(page, '/ai')
   await ask(page, 'What is Pico?')
   await done(page)
 
@@ -145,13 +145,13 @@ test('a link to this site opens the page in the app, and the chat stays', async 
   expect(await page.evaluate(() => '__samePage' in window)).toBe(true)
 
   await page.goBack()
-  await expect(page).toHaveURL(/\/chat$/)
+  await expect(page).toHaveURL(/\/ai$/)
   await expect(page.locator('[data-turn]')).toContainText('the Pico case study')
 })
 
 test('a starter question asks at once', async ({ page }) => {
   await mockAi(page, { '/api/chat': chatAnswer() })
-  await open(page, '/chat')
+  await open(page, '/ai')
   await page.getByRole('button', { name: 'What does Ali build?' }).click()
   await expect(lastTurn(page).getByRole('heading', { level: 2 })).toHaveText(
     'What does Ali build?',
@@ -168,7 +168,7 @@ test('a starter question asks at once', async ({ page }) => {
 
 test('Shift+Enter adds a line, and Enter sends', async ({ page }) => {
   await mockAi(page, { '/api/chat': chatAnswer() })
-  await open(page, '/chat')
+  await open(page, '/ai')
   const field = page.getByLabel('Ask about Ali')
   await field.fill('one')
   await page.keyboard.press('Shift+Enter')
