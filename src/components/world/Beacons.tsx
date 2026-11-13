@@ -46,7 +46,7 @@ export default function Beacons({ color }: { color: string }) {
               // Turned to the camera around the vertical, and wider far
               // away, so it keeps about the same width on screen.
               vec3 right = normalize(vec3(toCamera.z, 0.0, -toCamera.x) + 1e-5);
-              float width = 0.12 + distance * 0.004;
+              float width = 0.3 + distance * 0.012;
               vec3 world = uBase + right * position.x * width
                 + vec3(0.0, position.y * ${HEIGHT.toFixed(1)}, 0.0);
               vDistance = distance;
