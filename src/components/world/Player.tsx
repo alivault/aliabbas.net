@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { play, setDroneOpen } from '~/lib/sound'
+import { FOOTPRINT_SIZE } from './Footprint'
 import { heightAt } from './noise'
 import { ICON_SIZE, SHEETS } from './sheets'
 import { WORLD_UNIFORMS } from './sky'
@@ -389,8 +390,10 @@ export default function Player({
       if (!forward && !strafe && target) {
         const dx = target.x - position.current.x
         const dz = target.z - position.current.z
-        const distance = Math.hypot(dx, dz)
-        if (distance < 0.4) {
+        // The walk stops at the near edge of the square on the ground, not
+        // at its middle: the square marks the place to stand in front of.
+        const distance = Math.hypot(dx, dz) - FOOTPRINT_SIZE / 2
+        if (distance < 0.15) {
           walkTarget.current = null
         } else {
           wish.set(dx, 0, dz)

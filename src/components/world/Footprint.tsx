@@ -3,7 +3,9 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import { heightAt } from './noise'
 
-const SIZE = 5
+/** The side of the square, in meters. */
+export const FOOTPRINT_SIZE = 5
+const SIZE = FOOTPRINT_SIZE
 const SAMPLES = 12
 
 /**
