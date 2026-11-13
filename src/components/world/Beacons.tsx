@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import * as THREE from 'three'
-import { ICON_SIZE, SHEETS } from './sheets'
+import { SHEETS } from './sheets'
 import { WORLD_UNIFORMS } from './sky'
 
 /** How high a beacon rises over its icon, in meters. */
@@ -28,13 +28,10 @@ export default function Beacons({ color }: { color: string }) {
           depthWrite: false,
           blending: THREE.AdditiveBlending,
           uniforms: {
-            uBase: {
-              value: new THREE.Vector3(
-                sheet.x,
-                sheet.y + ICON_SIZE * 0.75,
-                sheet.z,
-              ),
-            },
+            // From the center of the icon: the icon hides the part inside
+            // it, so the light leaves its top with no gap, also as the
+            // icon bobs.
+            uBase: { value: new THREE.Vector3(sheet.x, sheet.y, sheet.z) },
             uColor: { value: new THREE.Color(color) },
             uDim: WORLD_UNIFORMS.uDim,
           },
