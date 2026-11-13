@@ -118,14 +118,7 @@ export default function Hud({ inPage }: { inPage: boolean }) {
             : 'opacity-0',
         )}
       >
-        {hovered
-          ? // Only the game says what it is; a title says enough for the rest.
-            hovered.kind === 'Game'
-            ? `${hovered.title} · ${hovered.kind}`
-            : hovered.title
-          : lost
-            ? 'Lost? Click Next'
-            : ''}
+        {hovered ? hovered.title : lost ? 'Lost? Click Next' : ''}
       </p>
 
       {/* Toward the nearest icons, when none is in sight. */}

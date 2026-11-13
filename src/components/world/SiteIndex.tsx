@@ -24,7 +24,7 @@ const GROUPS: Array<{
       { label: 'Pico', to: '/work/pico' },
       { label: 'Whimcall', to: '/work/whimcall' },
       { label: 'Postmaster', to: '/work/postmaster' },
-      { label: 'Averno — Browser game', to: '/play' },
+      { label: 'Averno', to: '/play' },
       { label: 'All work', to: '/work' },
     ],
   },

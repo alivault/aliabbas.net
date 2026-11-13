@@ -32,8 +32,6 @@ export type SheetSpec = {
   title: string
   /** One or two short lines under the title. */
   summary: string
-  /** A short kind label, for the HUD. */
-  kind: 'Case study' | 'Page' | 'Game'
   icon: SheetIcon
   /**
    * The page uses the full width. The camera puts the icon small, in the
@@ -64,7 +62,6 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
     to: `/work/${study.slug}`,
     title: study.title,
     summary: study.summary,
-    kind: 'Case study' as const,
     icon: ICONS[study.slug],
   })),
   {
@@ -73,7 +70,6 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
     to: '/work',
     title: 'Work',
     summary: 'All the projects, with the case studies and side projects.',
-    kind: 'Page',
   },
   {
     id: 'experience',
@@ -81,7 +77,6 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
     to: '/experience',
     title: 'Experience',
     summary: 'Where I worked and what I made there.',
-    kind: 'Page',
   },
   {
     id: 'skills',
@@ -89,7 +84,6 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
     to: '/skills',
     title: 'Skills',
     summary: 'What I can do, with the evidence for each skill.',
-    kind: 'Page',
   },
   {
     id: 'lab',
@@ -98,7 +92,6 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
     to: '/lab',
     title: 'Lab',
     summary: 'Small experiments with motion, shaders and interfaces.',
-    kind: 'Page',
   },
   {
     id: 'notes',
@@ -106,7 +99,6 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
     to: '/notes',
     title: 'Notes',
     summary: 'Writing about frontend engineering.',
-    kind: 'Page',
   },
   {
     id: 'play',
@@ -118,7 +110,6 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
     to: '/play',
     title: 'Averno',
     summary: 'A game that I made. Play it in the browser.',
-    kind: 'Game',
   },
   {
     id: 'chat',
@@ -126,7 +117,6 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
     to: '/ai',
     title: 'Ask AI',
     summary: 'An AI that knows my work. Ask it anything.',
-    kind: 'Page',
   },
   {
     id: 'performance',
@@ -134,7 +124,6 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
     to: '/performance',
     title: 'Performance',
     summary: 'Core Web Vitals of this site, from real visits.',
-    kind: 'Page',
   },
   {
     id: 'design',
@@ -142,7 +131,6 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
     to: '/design',
     title: 'Design system',
     summary: 'The tokens and rules of this site.',
-    kind: 'Page',
   },
   {
     id: 'contact',
@@ -150,7 +138,6 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
     to: '/contact',
     title: 'Contact',
     summary: 'Send me a message.',
-    kind: 'Page',
   },
   {
     id: 'privacy',
@@ -158,7 +145,6 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
     to: '/privacy',
     title: 'Privacy',
     summary: 'What this site collects, and why.',
-    kind: 'Page',
   },
 ]
 
