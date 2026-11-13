@@ -187,8 +187,15 @@ export default function Terrain({
     }
   }
 
-  const move = (event: ThreeEvent<PointerEvent>) => onPoint(event.point)
+  // The ray can cross more than one chunk: a near hill, then the ground
+  // behind it. Each chunk gets the event, nearest first, so only the first
+  // may act; without this, the far one won and the walk went past the hill.
+  const move = (event: ThreeEvent<PointerEvent>) => {
+    event.stopPropagation()
+    onPoint(event.point)
+  }
   const click = (event: ThreeEvent<MouseEvent>) => {
+    event.stopPropagation()
     // A drag to look around is not a click on the ground.
     if (event.delta > 6) return
     onPick(event.point)
