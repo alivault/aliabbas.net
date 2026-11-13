@@ -123,3 +123,21 @@ test('the gate shows the intro on each visit, and Enter goes in', async ({
     'true',
   )
 })
+
+test('the intro types in, and a click on it shows all of it', async ({
+  page,
+}) => {
+  await open(page, '/?gl=force')
+  const intro = page.locator('#gate-intro')
+  const hidden = intro.locator('span.opacity-0')
+  await expect(hidden.first()).toBeAttached()
+  await intro.click({ position: { x: 10, y: 10 } })
+  await expect(hidden).toHaveCount(0)
+})
+
+test('with reduced motion, the intro shows at once', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await open(page, '/?gl=force')
+  await expect(page.locator('#gate-intro')).toBeVisible()
+  await expect(page.locator('#gate-intro span.opacity-0')).toHaveCount(0)
+})

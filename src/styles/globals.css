@@ -411,6 +411,14 @@ textarea {
   --animate-marquee: marquee var(--marquee-duration, 28s) linear infinite;
   --animate-chrome-turn: chrome-turn 6s linear infinite;
   --animate-header-line: header-line linear both;
+  /* A terminal cursor: on, then off, with no fade. */
+  --animate-cursor-blink: cursor-blink 1.06s steps(1) infinite;
+
+  @keyframes cursor-blink {
+    50% {
+      opacity: 0;
+    }
+  }
 
   @keyframes enter-up {
     from {
