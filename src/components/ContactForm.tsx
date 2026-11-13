@@ -26,6 +26,7 @@ import {
 } from '~/lib/contact'
 import { sendContactEmail } from '~/lib/email'
 import { useTurnstile } from '~/lib/turnstile'
+import { copyText } from '~/lib/clipboard'
 import { cn } from 'cn'
 
 const EMAIL = 'ali@aliabbas.net'
@@ -271,11 +272,10 @@ export default function ContactForm() {
 function OtherWays() {
   const [copied, setCopied] = useState(false)
   const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(EMAIL)
+    if (await copyText(EMAIL)) {
       setCopied(true)
       window.setTimeout(() => setCopied(false), 2000)
-    } catch {
+    } else {
       window.location.href = `mailto:${EMAIL}`
     }
   }

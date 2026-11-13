@@ -15,6 +15,7 @@ import { VERDICTS, VERDICT_INFO } from '~/lib/check/verdicts'
 import { DURATIONS, EASE_OUT, SPRINGS } from '~/lib/design/motion'
 import { cn } from '~/lib/utils'
 import Shimmer from '~/components/ui/shimmer'
+import { copyText } from '~/lib/clipboard'
 import {
   Line,
   Reader,
@@ -155,7 +156,7 @@ export default function CheckReader() {
   const copyLink = () => {
     const url = new URL('/check', window.location.origin)
     url.searchParams.set('claim', state.claim)
-    void navigator.clipboard?.writeText(url.toString())
+    void copyText(url.toString())
   }
 
   return (

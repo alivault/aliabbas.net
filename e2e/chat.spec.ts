@@ -246,3 +246,28 @@ test('on an ultrawide screen, the page and the evidence stay in the middle frame
   expect(panel?.y).toBeGreaterThan(0)
   expect((panel?.y ?? 0) + (panel?.height ?? 0)).toBeLessThan(1440)
 })
+
+test('Copy works on a page without the Clipboard API (plain http)', async ({
+  page,
+}) => {
+  // On plain http (a LAN or Tailscale address) the browser has no
+  // navigator.clipboard. The copy command does the work then.
+  await page.addInitScript(() => {
+    Object.defineProperty(navigator, 'clipboard', { value: undefined })
+    document.addEventListener('copy', () => {
+      ;(window as unknown as { copied: string }).copied =
+        document.getSelection()?.toString() ?? ''
+    })
+  })
+  await mockAi(page, { '/api/chat': chatAnswer() })
+  await open(page, '/ai')
+  await ask(page, 'Has Ali built streaming interfaces?')
+  await done(page)
+  await lastTurn(page).getByRole('button', { name: 'Copy' }).click()
+  await expect(
+    lastTurn(page).getByRole('button', { name: 'Copied' }),
+  ).toBeVisible()
+  expect(
+    await page.evaluate(() => (window as unknown as { copied: string }).copied),
+  ).toContain('Ali built Pico [1]')
+})

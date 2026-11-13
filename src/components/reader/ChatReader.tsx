@@ -30,6 +30,7 @@ import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
 import { play } from '~/lib/sound'
 import { cn } from '~/lib/utils'
 import Shimmer from '~/components/ui/shimmer'
+import { copyText } from '~/lib/clipboard'
 import ReaderComposer from './ReaderComposer'
 import type { ComposerLabels } from './ReaderComposer'
 import {
@@ -568,10 +569,7 @@ function CopyAnswer({ text }: { text: string }) {
     <button
       type="button"
       onClick={() => {
-        void navigator.clipboard
-          .writeText(text)
-          .then(() => setCopied(true))
-          .catch(() => undefined)
+        void copyText(text).then(setCopied)
       }}
       className={actionStyle}
     >
