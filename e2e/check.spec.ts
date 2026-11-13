@@ -91,3 +91,66 @@ test('a link with a claim runs the check at once', async ({ page }) => {
     'Ali built Pico in Rust.',
   ])
 })
+
+test('Esc stops the check and does not leave the page', async ({ page }) => {
+  await mockAi(page, { '/api/check': checkStream(600) })
+  await open(page, '/check')
+  await page.getByRole('button', { name: 'Ali built Pico in Rust.' }).click()
+  await expect(page.getByText('Part 1: Ali built Pico')).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.getByText(/^Stopped\. /)).toBeVisible()
+  await page.waitForTimeout(100)
+  await expect(page).toHaveURL(/\/check/)
+  await expect(page.getByRole('button', { name: 'Check again' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Edit claim' })).toBeVisible()
+})
+
+test('a claim typed in the field is checked, and the URL keeps it', async ({
+  page,
+}) => {
+  await mockAi(page, { '/api/check': checkStream() })
+  await open(page, '/check')
+  await page
+    .getByLabel('A claim about Ali to check')
+    .fill('Ali built Pico in Rust.')
+  await page.keyboard.press('Enter')
+  await expect(
+    page.getByRole('heading', { name: 'Overall grade' }),
+  ).toBeVisible()
+  await expect(page).toHaveURL(/\/check\?claim=Ali/)
+  await page.getByRole('button', { name: 'Edit claim' }).click()
+  await expect(page.getByLabel('A claim about Ali to check')).toBeFocused()
+  await expect(page.getByLabel('A claim about Ali to check')).toHaveValue(
+    'Ali built Pico in Rust.',
+  )
+})
+
+test('a trip to the chat and back keeps the result and the chat draft', async ({
+  page,
+}) => {
+  await mockAi(page, { '/api/check': checkStream() })
+  await open(page, '/check')
+  await page.getByRole('button', { name: 'Ali built Pico in Rust.' }).click()
+  await expect(
+    page.getByRole('heading', { name: 'Overall grade' }),
+  ).toBeVisible()
+
+  await page.getByRole('link', { name: 'Ask a question instead' }).click()
+  await expect(page).toHaveURL(/\/ai$/)
+  await page.getByLabel('Ask about Ali').fill('a draft that must survive')
+  await page.getByRole('link', { name: 'Check a claim instead' }).click()
+  await expect(page).toHaveURL(/\/check\?claim=/)
+  await expect(
+    page.getByRole('heading', { name: 'Overall grade' }),
+  ).toBeVisible()
+  // The result came back without a new check.
+  const requests = await page.evaluate(
+    () => (window as unknown as { __aiRequests: Array<unknown> }).__aiRequests,
+  )
+  expect(requests).toHaveLength(1)
+
+  await page.getByRole('link', { name: 'Ask a question instead' }).click()
+  await expect(page.getByLabel('Ask about Ali')).toHaveValue(
+    'a draft that must survive',
+  )
+})

@@ -7,6 +7,7 @@ import {
 } from '~/components/chat/AnswerMarkdown'
 import type { CitationContextValue } from '~/components/chat/AnswerMarkdown'
 import { useSharedChatSession } from '~/components/chat/ChatSessionProvider'
+import { useCheckSession } from '~/components/check/CheckSessionProvider'
 import {
   SourceCard,
   evidenceSourceElementId,
@@ -19,9 +20,13 @@ import { answerToPlainText } from '~/lib/chat/streaming-markdown'
 import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
 import { play } from '~/lib/sound'
 import { cn } from '~/lib/utils'
+import ReaderComposer from './ReaderComposer'
+import type { ComposerLabels } from './ReaderComposer'
 import {
   Line,
   Reader,
+  ReaderLink,
+  ReaderLinks,
   ReaderList,
   ReaderText,
   ReaderTitle,
@@ -36,6 +41,16 @@ const STARTERS = [
 ]
 
 const SOURCE_PREFIX = 'chat'
+
+const CHAT_LABELS: ComposerLabels = {
+  field: 'Ask about Ali',
+  placeholder: 'Type here',
+  busyPlaceholder: 'Ask something else',
+  submit: 'Send',
+  stop: 'Stop the answer',
+  stopAndSubmit: 'Stop the answer and send',
+  submitHint: 'send',
+}
 
 type Pick = { turnId: string; sourceId: string }
 
@@ -59,6 +74,7 @@ export default function ChatReader() {
   /** The chip that opened a source, for Esc in the list to go back to. */
   const trigger = useRef<HTMLElement | null>(null)
   const streaming = activeTurn !== undefined
+  const lastClaim = useCheckSession().state.claim
   /** Follow the newest answer, unless the visitor scrolled up to read. */
   const following = useRef(true)
 
@@ -199,6 +215,11 @@ export default function ChatReader() {
         An AI that answers from Ali’s public record: his work, his notes and his
         experience. Each claim links to its source.
       </ReaderText>
+      <ReaderLinks>
+        <ReaderLink to="/check" search={lastClaim ? { claim: lastClaim } : {}}>
+          Check a claim instead
+        </ReaderLink>
+      </ReaderLinks>
       {turns.length === 0 ? starterList : null}
 
       <p role="status" aria-live="polite" className="sr-only">
@@ -225,10 +246,12 @@ export default function ChatReader() {
       </div>
 
       <Line className="mt-14">
-        <Composer
+        <ReaderComposer
+          id="chat-question"
           fieldRef={field}
+          labels={CHAT_LABELS}
           value={draft}
-          streaming={streaming}
+          busy={streaming}
           onChange={setDraft}
           onSubmit={() => submit(draft)}
           onStop={onStop}
@@ -242,80 +265,6 @@ export default function ChatReader() {
       ) : null}
       <div ref={end} />
     </Reader>
-  )
-}
-
-/**
- * The field to ask. Enter sends, Shift+Enter adds a line. While an answer
- * streams, the button stops it; with a new question typed, it sends that
- * one, which stops the answer first.
- */
-function Composer({
-  fieldRef,
-  value,
-  streaming,
-  onChange,
-  onSubmit,
-  onStop,
-}: {
-  fieldRef: React.RefObject<HTMLTextAreaElement | null>
-  value: string
-  streaming: boolean
-  onChange: (value: string) => void
-  onSubmit: () => void
-  onStop: () => void
-}) {
-  const hasDraft = value.trim().length > 0
-  const showStop = streaming && !hasDraft
-  return (
-    <form
-      onSubmit={(event) => {
-        event.preventDefault()
-        if (hasDraft) onSubmit()
-      }}
-      className={cn(hudText, 'flex max-w-[60ch] items-end gap-8')}
-    >
-      <label htmlFor="chat-question" className="sr-only">
-        Ask about Ali
-      </label>
-      <textarea
-        ref={fieldRef}
-        id="chat-question"
-        value={value}
-        rows={1}
-        maxLength={1000}
-        onChange={(event) => onChange(event.target.value)}
-        onKeyDown={(event) => {
-          if (
-            event.key === 'Enter' &&
-            !event.shiftKey &&
-            !event.nativeEvent.isComposing
-          ) {
-            event.preventDefault()
-            if (hasDraft) onSubmit()
-          }
-        }}
-        placeholder={streaming ? 'Ask something else' : 'Type here'}
-        autoComplete="off"
-        className="border-hud/40 focus:border-hud placeholder:text-hud/45 field-sizing-content max-h-48 min-w-0 flex-1 resize-none border-b bg-transparent py-2 tracking-[0.42em] uppercase outline-none"
-      />
-      <button
-        type={showStop ? 'button' : 'submit'}
-        data-sound={showStop ? 'none' : 'send'}
-        onClick={showStop ? onStop : undefined}
-        disabled={!showStop && !hasDraft}
-        aria-label={
-          showStop
-            ? 'Stop the answer'
-            : streaming
-              ? 'Stop the answer and send'
-              : 'Send'
-        }
-        className="hud-fill mb-2 uppercase disabled:opacity-50"
-      >
-        {showStop ? 'Stop' : 'Send'}
-      </button>
-    </form>
   )
 }
 

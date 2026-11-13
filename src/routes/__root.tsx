@@ -15,6 +15,7 @@ import LiquidMetalHover from '~/components/LiquidMetalHover'
 import VitalsReporter from '~/components/VitalsReporter'
 import WorldShell from '~/components/world/WorldShell'
 import { ChatSessionProvider } from '~/components/chat/ChatSessionProvider'
+import { CheckSessionProvider } from '~/components/check/CheckSessionProvider'
 import { sessionQueryOptions } from '~/lib/auth'
 import { authClient } from '~/lib/auth-client'
 import { siteSocialMeta } from '~/lib/structured-data'
@@ -79,9 +80,11 @@ function RootComponent() {
           {/* Motion follows the OS setting for reduced motion on every page. */}
           <MotionConfig reducedMotion="user">
             <ChatSessionProvider>
-              <WorldShell>
-                <Outlet />
-              </WorldShell>
+              <CheckSessionProvider>
+                <WorldShell>
+                  <Outlet />
+                </WorldShell>
+              </CheckSessionProvider>
             </ChatSessionProvider>
           </MotionConfig>
           <VitalsReporter />
