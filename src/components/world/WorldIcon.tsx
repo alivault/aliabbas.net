@@ -162,10 +162,12 @@ export default function WorldIcon({
       // the vertical axis, up and down tilts it toward or away from the
       // camera. Let go, and it spins on, slows down, and settles with a
       // face to the camera.
-      // Both settle on a quarter turn, so a face looks straight out.
+      // The spin settles on a quarter turn, so a face looks straight out.
+      // The tilt rolls back upright (after any number of full flips), so
+      // the icon on that face is right side up.
       for (const [axis, step] of [
         [turn.yaw, QUARTER],
-        [turn.tilt, QUARTER],
+        [turn.tilt, Math.PI * 2],
       ] as const) {
         if (turn.dragging) continue
         axis.velocity *= Math.exp(-2.5 * delta)
