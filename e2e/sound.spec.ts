@@ -23,15 +23,26 @@ test('with sound on, Previous and Next change the music, and the choice stays', 
 })
 
 test(
-  'the chat field stays clear of the music buttons',
+  'the sound buttons are at the top, left of Index',
   { tag: '@mobile' },
   async ({ page }) => {
-    await open(page, '/ai')
+    await open(page, '/skills')
     await page.getByRole('button', { name: 'Sound' }).click()
     const next = await page
       .getByRole('button', { name: 'Next music' })
       .boundingBox()
-    const field = await page.getByLabel('Ask about Ali').boundingBox()
-    expect(field!.x).toBeGreaterThan(next!.x + next!.width)
+    const index = await page
+      .getByRole('button', { name: 'Index' })
+      .boundingBox()
+    expect(next!.x + next!.width).toBeLessThan(index!.x)
+    // The label of Index changes, and the buttons at its left stay.
+    const sound = page.getByRole('button', { name: 'Sound' })
+    const before = (await sound.boundingBox())!.x
+    await page.getByRole('button', { name: 'Index' }).click()
+    await expect(page.getByRole('button', { name: 'Return' })).toBeVisible()
+    expect((await sound.boundingBox())!.x).toBe(before)
+    expect(
+      Math.abs(next!.y + next!.height / 2 - (index!.y + index!.height / 2)),
+    ).toBeLessThan(4)
   },
 )

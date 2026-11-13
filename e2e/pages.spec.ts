@@ -335,7 +335,9 @@ test('Index, Return and Close are one control that changes its label', async ({
   page,
 }) => {
   await open(page, '/skills')
-  const control = page.locator('[data-hud] .absolute.top-5.right-6 button')
+  const control = page
+    .locator('[data-hud] .absolute.top-5.right-6 button')
+    .last()
   await expect(control).toHaveAccessibleName('Index')
   await control.click()
   await expect(control).toHaveAccessibleName('Return')

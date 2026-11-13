@@ -21,8 +21,8 @@ const corner = 'hud-fill pointer-events-auto disabled:opacity-50'
 
 /**
  * The HUD over the world. The name at the top center goes home; on a page,
- * Back at the top left goes to where the visitor came from, top right opens the index, bottom left turns
- * the sound on or off, and bottom right flies to the next page.
+ * Back at the top left goes to where the visitor came from, top right opens the index, the sound and
+ * music buttons sit left of Index, and bottom right flies to the next page.
  */
 export default function Hud({ inPage }: { inPage: boolean }) {
   const indexOpen = useWorld((s) => s.indexOpen)
@@ -116,25 +116,115 @@ export default function Hud({ inPage }: { inPage: boolean }) {
         </Link>
       </div>
 
-      <div className="absolute top-5 right-6 flex flex-col items-end gap-1">
+      <div className="absolute top-5 right-6 flex items-center gap-6">
+        {/* Music, then Sound, left of Index. Sound stays in place when the
+            music buttons show. */}
+        <div className="relative flex items-center gap-4">
+          {soundOn ? (
+            // The music: one of five vibes. Its name shows below for a
+            // moment after a change.
+            <>
+              <button
+                type="button"
+                data-sound="none"
+                aria-label="Previous music"
+                className={corner}
+                onClick={() => stepVibe(-1)}
+              >
+                <Rewind
+                  aria-hidden="true"
+                  className="size-4"
+                  strokeWidth={1.5}
+                />
+              </button>
+              <button
+                type="button"
+                data-sound="none"
+                aria-label="Next music"
+                className={corner}
+                onClick={() => stepVibe(1)}
+              >
+                <FastForward
+                  aria-hidden="true"
+                  className="size-4"
+                  strokeWidth={1.5}
+                />
+              </button>
+              <p
+                aria-live="polite"
+                className={cn(
+                  'absolute top-full right-0 mt-2 whitespace-nowrap transition-opacity duration-500',
+                  vibeShown ? 'opacity-100' : 'opacity-0',
+                )}
+              >
+                <span className="sr-only">Music: </span>
+                {VIBE_NAMES[vibe]}
+                <span className="text-hud/60">
+                  {' '}
+                  {vibe + 1}/{VIBE_NAMES.length}
+                </span>
+              </p>
+            </>
+          ) : null}
+          <button
+            type="button"
+            data-sound="toggle"
+            aria-label="Sound"
+            aria-pressed={soundOn}
+            title={soundOn ? 'Sound on' : 'Sound off'}
+            className={corner}
+            onClick={() => {
+              const next = !soundOn
+              setSound(next)
+              if (next) play('toggle')
+            }}
+          >
+            {soundOn ? (
+              <Volume2
+                aria-hidden="true"
+                className="size-4"
+                strokeWidth={1.5}
+              />
+            ) : (
+              <VolumeX
+                aria-hidden="true"
+                className="size-4"
+                strokeWidth={1.5}
+              />
+            )}
+          </button>
+        </div>
+
         {/* One control that changes its job in place: Index opens the
             index, Return closes it. Its label scrambles into the new word.
             Under the zoom view of a picture it reads Close, as the Close of
-            the zoom view does, so it scrambles back to Index after it. */}
-        <button
-          type="button"
-          aria-haspopup={indexOpen ? undefined : 'dialog'}
-          className={cn(corner, lightboxOpen && 'invisible')}
-          onClick={() =>
-            indexOpen
-              ? setWorld({ indexOpen: false })
-              : setWorld({ indexOpen: true, hover: null })
-          }
-        >
-          <ScrambleText
-            text={lightboxOpen ? 'Close' : indexOpen ? 'Return' : 'Index'}
-          />
-        </button>
+            the zoom view does, so it scrambles back to Index after it.
+            Its slot is as wide as the longest word, and the label holds to
+            the right edge, so the buttons at its left do not move while it
+            scrambles. */}
+        <div className="relative">
+          <span aria-hidden="true" className="invisible">
+            Return
+          </span>
+          <button
+            type="button"
+            aria-haspopup={indexOpen ? undefined : 'dialog'}
+            className={cn(
+              corner,
+              'absolute top-0 right-0 whitespace-nowrap',
+              lightboxOpen && 'invisible',
+            )}
+            onClick={() =>
+              indexOpen
+                ? setWorld({ indexOpen: false })
+                : setWorld({ indexOpen: true, hover: null })
+            }
+          >
+            <ScrambleText
+              text={lightboxOpen ? 'Close' : indexOpen ? 'Return' : 'Index'}
+            />
+          </button>
+        </div>
       </div>
 
       {/* The name of the sheet under the pointer. */}
@@ -152,70 +242,6 @@ export default function Hud({ inPage }: { inPage: boolean }) {
 
       {/* Toward the nearest icons, when none is in sight. */}
       {inPage || indexOpen ? null : <GuideArrows />}
-
-      <div className="absolute bottom-6 left-6 flex items-center">
-        <button
-          type="button"
-          data-sound="toggle"
-          aria-label="Sound"
-          aria-pressed={soundOn}
-          title={soundOn ? 'Sound on' : 'Sound off'}
-          className={corner}
-          onClick={() => {
-            const next = !soundOn
-            setSound(next)
-            if (next) play('toggle')
-          }}
-        >
-          {soundOn ? (
-            <Volume2 aria-hidden="true" className="size-6" strokeWidth={1.5} />
-          ) : (
-            <VolumeX aria-hidden="true" className="size-6" strokeWidth={1.5} />
-          )}
-        </button>
-        {soundOn ? (
-          // The music: one of five vibes. Its name shows above for a
-          // moment after a change.
-          <div className="ml-4 flex items-center gap-4">
-            <button
-              type="button"
-              data-sound="none"
-              aria-label="Previous music"
-              className={corner}
-              onClick={() => stepVibe(-1)}
-            >
-              <Rewind aria-hidden="true" className="size-6" strokeWidth={1.5} />
-            </button>
-            <button
-              type="button"
-              data-sound="none"
-              aria-label="Next music"
-              className={corner}
-              onClick={() => stepVibe(1)}
-            >
-              <FastForward
-                aria-hidden="true"
-                className="size-6"
-                strokeWidth={1.5}
-              />
-            </button>
-            <p
-              aria-live="polite"
-              className={cn(
-                'absolute bottom-full left-0 mb-2 whitespace-nowrap transition-opacity duration-500',
-                vibeShown ? 'opacity-100' : 'opacity-0',
-              )}
-            >
-              <span className="sr-only">Music: </span>
-              {VIBE_NAMES[vibe]}
-              <span className="text-hud/60">
-                {' '}
-                {vibe + 1}/{VIBE_NAMES.length}
-              </span>
-            </p>
-          </div>
-        ) : null}
-      </div>
 
       {inPage || indexOpen ? null : (
         <div className="absolute right-6 bottom-6">
