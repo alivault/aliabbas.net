@@ -21,6 +21,8 @@ import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import PathText from '~/components/PathText'
+import { sitePath } from '~/lib/chat/site-link'
+import SmartLink from './SmartLink'
 import { Button } from '~/components/ui/button'
 import { revealSource } from '~/lib/chat/reveal-source'
 import { SPRINGS } from '~/lib/design/motion'
@@ -34,18 +36,15 @@ const sourceRemarkPlugins = [remarkGfm]
 
 const sourceMarkdownComponents: Components = {
   a: ({ children, href }) => (
-    <a
+    <SmartLink
       href={href}
-      target="_blank"
-      rel="noreferrer"
       className="text-brand decoration-brand/40 hover:decoration-brand focus-visible:ring-brand/70 rounded-sm font-medium underline underline-offset-2 transition-colors outline-none focus-visible:ring-2"
     >
       {/* A bare URL reads better without its protocol. */}
       {typeof children === 'string' && children === href
         ? children.replace(/^https?:\/\//, '')
         : children}
-      <span className="sr-only"> (opens in a new tab)</span>
-    </a>
+    </SmartLink>
   ),
   ul: ({ children }) => (
     <ul className="list-disc space-y-1 pl-4">{children}</ul>
@@ -58,6 +57,11 @@ const sourceMarkdownComponents: Components = {
   ),
 }
 
+/** A page of this site shows its path; another site shows its host. */
+function sourceLabel(href: string) {
+  return sitePath(href) ?? hostname(href)
+}
+
 function hostname(href: string) {
   try {
     return new URL(href).hostname.replace(/^www\./, '')
@@ -66,7 +70,7 @@ function hostname(href: string) {
   }
 }
 
-function SourceCard({
+export function SourceCard({
   active,
   hovered,
   idPrefix,
@@ -219,16 +223,15 @@ function SourceCard({
 
         <footer className="mt-3 flex items-center justify-between gap-3">
           {source.href ? (
-            <a
+            <SmartLink
               href={source.href}
-              target="_blank"
-              rel="noreferrer"
               className="text-fg-muted hover:text-brand inline-flex min-w-0 items-center gap-1 text-sm transition-colors"
             >
-              <span className="truncate">{hostname(source.href)}</span>
-              <ArrowUpRight className="size-3 shrink-0" aria-hidden="true" />
-              <span className="sr-only">(opens in a new tab)</span>
-            </a>
+              <span className="truncate">{sourceLabel(source.href)}</span>
+              {sitePath(source.href) === null ? (
+                <ArrowUpRight className="size-3 shrink-0" aria-hidden="true" />
+              ) : null}
+            </SmartLink>
           ) : (
             <span />
           )}

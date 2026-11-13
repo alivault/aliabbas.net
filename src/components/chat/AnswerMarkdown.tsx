@@ -14,6 +14,8 @@ import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import PathText from '~/components/PathText'
+import { sitePath } from '~/lib/chat/site-link'
+import SmartLink from './SmartLink'
 import { SPRINGS } from '~/lib/design/motion'
 
 export type CitationContextValue = {
@@ -146,7 +148,7 @@ function CitationChip({ sourceId }: { sourceId: string }) {
         <p className="text-fg-muted flex items-center justify-between gap-3 text-sm">
           <span className="truncate">
             {source.href
-              ? hostname(source.href)
+              ? (sitePath(source.href) ?? hostname(source.href))
               : (context.fallbackOrigin ?? 'Ali’s public record')}
           </span>
           <span className="shrink-0">Select to open</span>
@@ -172,14 +174,12 @@ const markdownComponents: Components = {
       )
     }
     return (
-      <a
+      <SmartLink
         href={href}
-        target="_blank"
-        rel="noreferrer"
         className="font-semibold underline decoration-current/35 underline-offset-4 hover:decoration-current"
       >
         {children}
-      </a>
+      </SmartLink>
     )
   },
   h1: ({ children }) => (
