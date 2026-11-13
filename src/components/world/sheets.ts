@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { caseStudies } from '~/data/case-studies'
+import type { ObjectKind } from './objects'
 import { heightAt } from './noise'
 
 /** What a sheet shows: the icon of a project, or a glyph for a page. */
@@ -20,7 +21,11 @@ export type SheetIcon =
       src: string
       /** Fill the square, no transparency. */ cover?: boolean
     }
-  | { type: 'glyph'; glyph: LucideIcon }
+  /**
+   * A page: a glyph where the icon is flat (the index), and a 3D object
+   * in the world.
+   */
+  | { type: 'glyph'; glyph: LucideIcon; object: ObjectKind }
   /** The orb of the chat: a 3D marble of light, not a flat icon. */
   | { type: 'orb' }
 
@@ -66,21 +71,21 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
   })),
   {
     id: 'work',
-    icon: { type: 'glyph', glyph: Layers },
+    icon: { type: 'glyph', glyph: Layers, object: 'stack' },
     to: '/work',
     title: 'Work',
     summary: 'All the projects, with the case studies and side projects.',
   },
   {
     id: 'experience',
-    icon: { type: 'glyph', glyph: Briefcase },
+    icon: { type: 'glyph', glyph: Briefcase, object: 'briefcase' },
     to: '/experience',
     title: 'Experience',
     summary: 'Where I worked and what I made there.',
   },
   {
     id: 'skills',
-    icon: { type: 'glyph', glyph: BrainCog },
+    icon: { type: 'glyph', glyph: BrainCog, object: 'gears' },
     to: '/skills',
     title: 'Skills',
     summary: 'What I can do, with the evidence for each skill.',
@@ -88,14 +93,14 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
   {
     id: 'lab',
     wide: true,
-    icon: { type: 'glyph', glyph: FlaskConical },
+    icon: { type: 'glyph', glyph: FlaskConical, object: 'flask' },
     to: '/lab',
     title: 'Lab',
     summary: 'Small experiments with motion, shaders and interfaces.',
   },
   {
     id: 'notes',
-    icon: { type: 'glyph', glyph: NotebookPen },
+    icon: { type: 'glyph', glyph: NotebookPen, object: 'notebook' },
     to: '/notes',
     title: 'Notes',
     summary: 'Writing about frontend engineering.',
@@ -120,28 +125,28 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
   },
   {
     id: 'performance',
-    icon: { type: 'glyph', glyph: Gauge },
+    icon: { type: 'glyph', glyph: Gauge, object: 'dial' },
     to: '/performance',
     title: 'Performance',
     summary: 'Core Web Vitals of this site, from real visits.',
   },
   {
     id: 'design',
-    icon: { type: 'glyph', glyph: Palette },
+    icon: { type: 'glyph', glyph: Palette, object: 'pen' },
     to: '/design',
     title: 'Design system',
     summary: 'The tokens and rules of this site.',
   },
   {
     id: 'contact',
-    icon: { type: 'glyph', glyph: Mail },
+    icon: { type: 'glyph', glyph: Mail, object: 'plane' },
     to: '/contact',
     title: 'Contact',
     summary: 'Send me a message.',
   },
   {
     id: 'privacy',
-    icon: { type: 'glyph', glyph: ShieldCheck },
+    icon: { type: 'glyph', glyph: ShieldCheck, object: 'padlock' },
     to: '/privacy',
     title: 'Privacy',
     summary: 'What this site collects, and why.',

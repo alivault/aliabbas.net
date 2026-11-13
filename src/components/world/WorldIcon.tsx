@@ -5,6 +5,7 @@ import type { ThreeEvent } from '@react-three/fiber'
 import { play } from '~/lib/sound'
 import { drawIcon } from './iconTexture'
 import { heightAt } from './noise'
+import { buildObject } from './objects'
 import { ICON_SIZE } from './sheets'
 import { WORLD_UNIFORMS, withSkyFog } from './sky'
 import { registerSpinner, spinGrab } from './cubeSpin'
@@ -16,12 +17,40 @@ export const focus = { id: null as string | null, yaw: 0 }
 
 /** A quarter turn: the cube settles with a face to the camera. */
 const QUARTER = Math.PI / 2
+/** An object settles with its front to the camera: a full turn. */
+const FULL_TURN = Math.PI * 2
+/** An object fills a little more than the side of a cube: it has air. */
+const OBJECT_SCALE = ICON_SIZE * 1.12
 /** Radians of spin for each pixel of a drag. */
 const DRAG_TURN = 0.012
 const UP = new THREE.Vector3(0, 1, 0)
 
 function shortestAngle(from: number, to: number) {
   return from + Math.atan2(Math.sin(to - from), Math.cos(to - from))
+}
+
+/** A box that takes the pointer and draws nothing. */
+const HIT_MATERIAL = new THREE.MeshBasicMaterial({
+  colorWrite: false,
+  depthWrite: false,
+})
+
+/**
+ * Fades the materials of an object to `shown` (0 to 1) of their own
+ * opacity. A material is transparent only while it fades (or when it is
+ * glass): an opaque one sorts and writes depth as a solid.
+ */
+function fadeObject(materials: Array<THREE.Material>, shown: number) {
+  for (const material of materials) {
+    const own = material.userData.opacity as number
+    material.opacity = own * shown
+    const transparent = own < 1 || shown < 0.98
+    if (material.transparent !== transparent) {
+      material.transparent = transparent
+      material.depthWrite = !transparent
+      material.needsUpdate = true
+    }
+  }
 }
 
 /** A soft dark spot under each icon, so it hangs over the ground. */
@@ -68,8 +97,10 @@ export function shadowGeometry(x: number, z: number) {
 }
 
 /**
- * A page as its icon: a cube that floats and turns over the ground. On hover it slows
- * and a frame in the HUD color shows around it. When the camera flies in, it
+ * A page as its icon: a project as a cube with its app icon, a page as a
+ * 3D object (objects/). It floats and turns over the ground. On hover it
+ * slows; a cube gets a frame in the HUD color, an object glows brighter
+ * and moves (a lid opens, a needle swings). When the camera flies in, it
  * stops at an angle and stays lit while the rest of the world goes dark.
  */
 export default function WorldIcon({
@@ -112,8 +143,21 @@ export default function WorldIcon({
   /** 1 while this icon is in focus: no fog, so a far camera (the small
       cube of the lab) does not darken it. */
   const clear = useMemo(() => ({ value: 0 }), [])
+  /** How much of the icon shows, 0 to 1 (it fades as text scrolls over). */
+  const shown = useRef(1)
+
+  const kind = sheet.icon.type === 'glyph' ? sheet.icon.object : null
+  const object = useMemo(() => {
+    if (!kind) return null
+    const built = buildObject(kind, accent)
+    built.root.scale.setScalar(OBJECT_SCALE)
+    for (const material of built.kit.materials) withSkyFog(material, dim, clear)
+    return built
+  }, [kind, accent, dim, clear])
+  useEffect(() => () => object?.kit.dispose(), [object])
 
   useEffect(() => {
+    if (object) return
     let alive = true
     let made: THREE.Texture | null = null
     void drawIcon(sheet.icon).then((t) => {
@@ -125,7 +169,7 @@ export default function WorldIcon({
       alive = false
       made?.dispose()
     }
-  }, [sheet])
+  }, [sheet, object])
 
   // Every face shows the icon. Lambert light shades each face by the way
   // it faces the sun, and the emissive map keeps the icon bright on the
@@ -201,7 +245,7 @@ export default function WorldIcon({
       // The tilt rolls back upright (after any number of full flips), so
       // the icon on that face is right side up.
       for (const [axis, step] of [
-        [turn.yaw, QUARTER],
+        [turn.yaw, object ? FULL_TURN : QUARTER],
         [turn.tilt, Math.PI * 2],
       ] as const) {
         if (turn.dragging) continue
@@ -338,14 +382,15 @@ export default function WorldIcon({
       4,
       Math.min(delta, 0.05),
     )
-    if (texture) {
-      const inside = focused && getWorld().phase === 'inside'
-      const target = !inside
+    const inside = focused && getWorld().phase === 'inside'
+    const showTarget = !inside
+      ? 1
+      : sheet.wide
         ? 1
-        : sheet.wide
-          ? 1
-          : iconScrollShow(state.size.width / state.size.height)
-      face.opacity = THREE.MathUtils.damp(face.opacity, target, 8, delta)
+        : iconScrollShow(state.size.width / state.size.height)
+    shown.current = THREE.MathUtils.damp(shown.current, showTarget, 8, delta)
+    if (texture) {
+      face.opacity = shown.current
       // An opaque cube writes depth; a fading one must not hide what is
       // behind its own faces.
       face.depthWrite = face.opacity > 0.98
@@ -356,7 +401,22 @@ export default function WorldIcon({
       8,
       delta,
     )
-    ;(frame.material as THREE.LineBasicMaterial).opacity = glow.current
+    if (object) {
+      fadeObject(object.kit.materials, shown.current)
+      const boost = focused && sheet.wide ? 1.4 : 1
+      for (const material of object.kit.glows) {
+        material.emissiveIntensity =
+          (material.userData.glow as number) * boost * (1 + glow.current * 0.5)
+      }
+      object.update({
+        t,
+        delta: Math.min(delta, 0.05),
+        hover: glow.current,
+        motion: !reducedMotion,
+      })
+    } else {
+      ;(frame.material as THREE.LineBasicMaterial).opacity = glow.current
+    }
     shadow.opacity = 1 - WORLD_UNIFORMS.uDim.value
   })
 
@@ -494,10 +554,23 @@ export default function WorldIcon({
         onPointerMove={drag}
         onClick={click}
       >
-        <primitive object={frame} />
-        <mesh material={face}>
-          <boxGeometry args={[ICON_SIZE, ICON_SIZE, ICON_SIZE]} />
-        </mesh>
+        {object ? (
+          <>
+            <primitive object={object.root} />
+            {/* One box takes the pointer for the whole object, so the
+                hover does not flicker between its parts and the gaps. */}
+            <mesh material={HIT_MATERIAL}>
+              <boxGeometry args={[ICON_SIZE, ICON_SIZE, ICON_SIZE]} />
+            </mesh>
+          </>
+        ) : (
+          <>
+            <primitive object={frame} />
+            <mesh material={face}>
+              <boxGeometry args={[ICON_SIZE, ICON_SIZE, ICON_SIZE]} />
+            </mesh>
+          </>
+        )}
       </group>
       <mesh
         material={shadow}
