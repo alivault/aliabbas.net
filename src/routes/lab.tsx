@@ -13,6 +13,7 @@ import type { SpecimenId } from '~/components/lab/specimens'
 import StreamingSpecimen from '~/components/lab/StreamingSpecimen'
 import TransitionSpecimen from '~/components/lab/TransitionSpecimen'
 import Main from '~/components/Main'
+import { Stagger, StaggerItem } from '~/components/reader/Reader'
 import CubeHandle from '~/components/world/CubeHandle'
 import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
 
@@ -49,26 +50,31 @@ function LabPage() {
     <Main overWorld hideFooter>
       <LabMotionProvider>
         <section data-hud className="text-foreground">
-          <div className="mx-auto max-w-[1440px] px-6 pt-[14svh] pb-48 sm:px-16">
+          {/* The page fades in line by line, as the readers do. */}
+          <Stagger className="mx-auto max-w-[1440px] px-6 pt-[14svh] pb-48 sm:px-16">
             <header className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <div className="flex items-center gap-6">
+                <StaggerItem className="flex items-center gap-6">
                   {/* The cube of the lab rests here (iconSlot.ts). A drag
                       on the square spins it. */}
                   <CubeHandle sheetId="lab" className="size-16 shrink-0" />
                   <h1 className="font-hud text-hud text-lg leading-[1.9] tracking-[0.42em] uppercase">
                     Lab
                   </h1>
-                </div>
-                <p className="text-fg-secondary mt-4 max-w-[52ch] text-base leading-7">
-                  The parts behind the chat of this site, each with its real
-                  code and a fake stream. Force any state.
-                </p>
+                </StaggerItem>
+                <StaggerItem>
+                  <p className="text-fg-secondary mt-4 max-w-[52ch] text-base leading-7">
+                    The parts behind the chat of this site, each with its real
+                    code and a fake stream. Force any state.
+                  </p>
+                </StaggerItem>
               </div>
-              <ReducedMotionSwitch />
+              <StaggerItem>
+                <ReducedMotionSwitch />
+              </StaggerItem>
             </header>
 
-            <div className="border-hud/20 mt-12 border-b pb-3">
+            <StaggerItem className="border-hud/20 mt-12 border-b pb-3">
               <LabTabs
                 value={demo}
                 onChange={(id) =>
@@ -79,21 +85,26 @@ function LabPage() {
                   })
                 }
               />
-            </div>
+            </StaggerItem>
 
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.div
-                key={demo}
-                className="mt-12"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0, transition: { duration: DURATIONS.exit } }}
-                transition={{ duration: DURATIONS.enter, ease: EASE_OUT }}
-              >
-                <Demo />
-              </motion.div>
-            </AnimatePresence>
-          </div>
+            <StaggerItem>
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={demo}
+                  className="mt-12"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{
+                    opacity: 0,
+                    transition: { duration: DURATIONS.exit },
+                  }}
+                  transition={{ duration: DURATIONS.enter, ease: EASE_OUT }}
+                >
+                  <Demo />
+                </motion.div>
+              </AnimatePresence>
+            </StaggerItem>
+          </Stagger>
         </section>
       </LabMotionProvider>
     </Main>

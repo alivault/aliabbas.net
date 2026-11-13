@@ -45,6 +45,44 @@ function useEnterFrom() {
   return from
 }
 
+/**
+ * The same staggered fade for a page that does not use Reader (the lab):
+ * each StaggerItem fades in after the one before it.
+ */
+export function Stagger({
+  children,
+  className,
+}: {
+  children: ReactNode
+  className?: string
+}) {
+  const from = useEnterFrom()
+  return (
+    <motion.div
+      initial={from}
+      animate="show"
+      variants={container}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+export function StaggerItem({
+  children,
+  className,
+}: {
+  children: ReactNode
+  className?: string
+}) {
+  return (
+    <motion.div variants={item} className={className}>
+      {children}
+    </motion.div>
+  )
+}
+
 export function Reader({ children }: { children: ReactNode }) {
   const from = useEnterFrom()
   return (
