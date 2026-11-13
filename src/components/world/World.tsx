@@ -102,12 +102,22 @@ export default function World({
   )
 }
 
+/**
+ * How far the world darkens behind an open page (0 none, 1 to near black).
+ * Enough for the text to read, while the world still shows around it.
+ */
+const PAGE_DIM = 0.6
+
 /** Darkens the world while a page is open, and lights it again after. */
 function Dimmer() {
   useFrame((_, delta) => {
     const { phase, indexOpen } = getWorld()
     const target =
-      phase === 'inside' || phase === 'entering' ? 1 : indexOpen ? 0.75 : 0
+      phase === 'inside' || phase === 'entering'
+        ? PAGE_DIM
+        : indexOpen
+          ? 0.75
+          : 0
     WORLD_UNIFORMS.uDim.value = THREE.MathUtils.damp(
       WORLD_UNIFORMS.uDim.value,
       target,
