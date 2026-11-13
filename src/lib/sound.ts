@@ -1,10 +1,13 @@
 /**
  * All sound of the site, made with Web Audio: no files to load.
  *
- * A drone plays under the world: a warm chord that moves slowly. Each
- * interactive element plays a short sound. Browsers start audio only after a gesture, so `start()` must run in
+ * Music plays under the world: one of five vibes (vibes.ts), which the
+ * visitor can change in the HUD. Each interactive element plays a short
+ * sound. Browsers start audio only after a gesture, so `start()` must run in
  * a click or a key handler. The choice (on or off) is saved.
  */
+
+import { VIBES } from './vibes'
 
 export type SoundName =
   | 'hover'
@@ -18,6 +21,7 @@ export type SoundName =
   | 'dash'
 
 const ENABLED_KEY = 'sound:enabled'
+const VIBE_KEY = 'sound:vibe'
 
 let ctx: AudioContext | null = null
 let master: GainNode | null = null
@@ -96,7 +100,7 @@ function setup() {
   sfxBus.connect(master)
   sfxBus.connect(reverb)
 
-  buildDrone(ctx)
+  buildMusicBus(ctx)
   watchVisibility(ctx)
   return ctx
 }
@@ -134,109 +138,104 @@ function watchVisibility(context: AudioContext) {
   window.addEventListener('pageshow', back)
 }
 
-/** The open cutoff of the drone, in Hz, far from every page. */
-const DRONE_CUTOFF = 900
+/** The vibe that plays, and the way to stop it. */
+let vibeIndex = 0
+let stopVibe: (() => void) | null = null
+let vibeCutoff = VIBES[0].cutoff
+let noise: AudioBuffer | null = null
+const vibeListeners = new Set<(index: number) => void>()
 
 /**
- * The chords of the drone, low voice first. Each has an added ninth, which
- * sounds warm and open; a bare fifth sounded ominous. Each voice moves to
- * the nearest note of the next chord, so a change is a slow glide.
+ * The shared output of the music: one low-pass filter that opens near a
+ * page, then a level, to the master and the reverb.
  */
-const CHORDS: Array<Array<number>> = [
-  // D major add9: D2 D3 A3 E4 F#4
-  [73.42, 146.83, 220.0, 329.63, 369.99],
-  // G major 9: G2 D3 B3 F#4 A4
-  [98.0, 146.83, 246.94, 369.99, 440.0],
-  // D major add9 again
-  [73.42, 146.83, 220.0, 329.63, 369.99],
-  // E minor 9: E2 D3 B3 F#4 G4
-  [82.41, 146.83, 246.94, 369.99, 392.0],
-]
-/** Seconds that each chord holds, and the time constant of a glide. */
-const CHORD_SECONDS = 24
-const GLIDE = 3
-
-/**
- * Soft sines and triangles in a slow chord progression, through an open
- * low-pass filter, and a little wind. LFOs swell each voice on its own
- * cycle, so the drone never loops the same way.
- */
-function buildDrone(context: AudioContext) {
+function buildMusicBus(context: AudioContext) {
   droneGain = context.createGain()
-  droneGain.gain.value = 0.2
+  droneGain.gain.value = 0.25
   droneFilter = context.createBiquadFilter()
   droneFilter.type = 'lowpass'
-  droneFilter.frequency.value = DRONE_CUTOFF
   droneFilter.Q.value = 0.5
   droneFilter.connect(droneGain)
   droneGain.connect(master!)
   droneGain.connect(reverb!)
+  noise = noiseBuffer(context, 2)
+  vibeIndex = savedVibe()
+  stopVibe = startVibe(context, vibeIndex)
+}
 
-  const shapes: Array<OscillatorType> = [
-    'sine',
-    'triangle',
-    'triangle',
-    'sine',
-    'sine',
-  ]
-  const levels = [0.12, 0.08, 0.07, 0.05, 0.045]
-  const voices = CHORDS[0].map((frequency, index) => {
-    const osc = context.createOscillator()
-    osc.type = shapes[index]
-    osc.frequency.value = frequency
-    // A few cents apart from true pitch: warm, without a slow throb.
-    osc.detune.value = (index % 2 ? 1 : -1) * 3
-    const gain = context.createGain()
-    gain.gain.value = levels[index]
-    // Each voice swells on its own slow cycle.
-    const lfo = context.createOscillator()
-    lfo.frequency.value = 0.03 + Math.random() * 0.05
-    const depth = context.createGain()
-    depth.gain.value = levels[index] * 0.5
-    lfo.connect(depth).connect(gain.gain)
-    osc.connect(gain).connect(droneFilter!)
-    osc.start()
-    lfo.start()
-    return osc
+/** Starts a vibe with a fade in. Returns a function that fades it out. */
+function startVibe(context: AudioContext, index: number) {
+  const vibe = VIBES[index]
+  const fade = context.createGain()
+  fade.gain.value = 0
+  fade.connect(droneFilter!)
+  const space = context.createGain()
+  space.gain.value = 0
+  space.connect(reverb!)
+  const stop = vibe.build({
+    context,
+    out: fade,
+    space,
+    noise: noise!,
+    audible: () => enabled,
   })
+  const now = context.currentTime
+  fade.gain.setTargetAtTime(vibe.level, now, 0.8)
+  space.gain.setTargetAtTime(0.6, now, 0.8)
+  vibeCutoff = vibe.cutoff
+  droneFilter!.frequency.setTargetAtTime(vibe.cutoff, now, 0.5)
+  return () => {
+    const at = context.currentTime
+    fade.gain.setTargetAtTime(0, at, 0.5)
+    space.gain.setTargetAtTime(0, at, 0.5)
+    window.setTimeout(() => {
+      stop()
+      fade.disconnect()
+      space.disconnect()
+    }, 3000)
+  }
+}
 
-  let chord = 0
-  window.setInterval(() => {
-    chord = (chord + 1) % CHORDS.length
-    CHORDS[chord].forEach((frequency, index) =>
-      voices[index].frequency.setTargetAtTime(
-        frequency,
-        context.currentTime,
-        GLIDE,
-      ),
-    )
-  }, CHORD_SECONDS * 1000)
+function savedVibe() {
+  try {
+    const value = Number(localStorage.getItem(VIBE_KEY))
+    return Number.isInteger(value) && value >= 0 && value < VIBES.length
+      ? value
+      : 0
+  } catch {
+    return 0
+  }
+}
 
-  const cutoffLfo = context.createOscillator()
-  cutoffLfo.frequency.value = 0.045
-  const cutoffDepth = context.createGain()
-  cutoffDepth.gain.value = 200
-  cutoffLfo.connect(cutoffDepth).connect(droneFilter.frequency)
-  cutoffLfo.start()
+/** The names of the vibes, in order. */
+export const VIBE_NAMES = VIBES.map((vibe) => vibe.name)
 
-  const wind = context.createBufferSource()
-  wind.buffer = noiseBuffer(context, 4)
-  wind.loop = true
-  const windFilter = context.createBiquadFilter()
-  windFilter.type = 'bandpass'
-  windFilter.frequency.value = 700
-  windFilter.Q.value = 0.8
-  const windGain = context.createGain()
-  windGain.gain.value = 0.018
-  const windLfo = context.createOscillator()
-  windLfo.frequency.value = 0.07
-  const windDepth = context.createGain()
-  windDepth.gain.value = 260
-  windLfo.connect(windDepth).connect(windFilter.frequency)
-  wind.connect(windFilter).connect(windGain).connect(master!)
-  windGain.connect(reverb!)
-  wind.start()
-  windLfo.start()
+/** The vibe that plays, or the saved one before the audio starts. */
+export function getVibe() {
+  return ctx ? vibeIndex : savedVibe()
+}
+
+export function onVibeChange(listener: (index: number) => void) {
+  vibeListeners.add(listener)
+  return () => {
+    vibeListeners.delete(listener)
+  }
+}
+
+/** Moves to the next vibe (1) or the one before (-1), with a crossfade. */
+export function stepVibe(direction: 1 | -1) {
+  if (!ctx) vibeIndex = savedVibe()
+  vibeIndex = (vibeIndex + direction + VIBES.length) % VIBES.length
+  try {
+    localStorage.setItem(VIBE_KEY, String(vibeIndex))
+  } catch {
+    // Private mode: the choice lasts for this visit only.
+  }
+  if (ctx && droneFilter) {
+    stopVibe?.()
+    stopVibe = startVibe(ctx, vibeIndex)
+  }
+  for (const listener of vibeListeners) listener(vibeIndex)
 }
 
 /** Turns sound on or off, and saves the choice. Call it in a gesture. */
@@ -267,7 +266,7 @@ export function setSound(on: boolean) {
 export function setDroneOpen(amount: number) {
   if (!ctx || !droneFilter) return
   droneFilter.frequency.setTargetAtTime(
-    DRONE_CUTOFF + amount * 1600,
+    vibeCutoff + amount * 1600,
     ctx.currentTime,
     0.4,
   )

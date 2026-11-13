@@ -1,8 +1,23 @@
 import { useEffect, useState } from 'react'
 import { Link, useRouter } from '@tanstack/react-router'
-import { ArrowLeft, Volume2, VolumeX } from 'lucide-react'
+import {
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
+  Volume2,
+  VolumeX,
+} from 'lucide-react'
 import { cn } from '~/lib/utils'
-import { isSoundOn, onSoundChange, play, setSound } from '~/lib/sound'
+import {
+  VIBE_NAMES,
+  getVibe,
+  isSoundOn,
+  onSoundChange,
+  onVibeChange,
+  play,
+  setSound,
+  stepVibe,
+} from '~/lib/sound'
 import GuideArrows from './GuideArrows'
 import { SHEETS } from './sheets'
 import { setWorld, useWorld, worldCommands } from './store'
@@ -21,12 +36,30 @@ export default function Hud({ inPage }: { inPage: boolean }) {
   const phase = useWorld((s) => s.phase)
   const lost = useWorld((s) => s.lost)
   const [soundOn, setSoundOn] = useState(false)
+  const [vibe, setVibe] = useState(0)
+  /** The name of the vibe shows for a moment after a change. */
+  const [vibeShown, setVibeShown] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
     setSoundOn(isSoundOn())
-    return onSoundChange(setSoundOn)
+    setVibe(getVibe())
+    const offSound = onSoundChange(setSoundOn)
+    const offVibe = onVibeChange((index) => {
+      setVibe(index)
+      setVibeShown(true)
+    })
+    return () => {
+      offSound()
+      offVibe()
+    }
   }, [])
+
+  useEffect(() => {
+    if (!vibeShown) return
+    const timer = window.setTimeout(() => setVibeShown(false), 2400)
+    return () => window.clearTimeout(timer)
+  }, [vibeShown, vibe])
 
   const hovered = SHEETS.find((s) => s.id === hover)
 
@@ -144,6 +177,52 @@ export default function Hud({ inPage }: { inPage: boolean }) {
             <VolumeX aria-hidden="true" className="size-6" strokeWidth={1.5} />
           )}
         </button>
+        {soundOn ? (
+          // The music: one of five vibes. Its name shows above for a
+          // moment after a change.
+          <div className="ml-3 flex items-center gap-1">
+            <button
+              type="button"
+              data-sound="none"
+              aria-label="Previous music"
+              className={corner}
+              onClick={() => stepVibe(-1)}
+            >
+              <ChevronLeft
+                aria-hidden="true"
+                className="size-5"
+                strokeWidth={1.5}
+              />
+            </button>
+            <button
+              type="button"
+              data-sound="none"
+              aria-label="Next music"
+              className={corner}
+              onClick={() => stepVibe(1)}
+            >
+              <ChevronRight
+                aria-hidden="true"
+                className="size-5"
+                strokeWidth={1.5}
+              />
+            </button>
+            <p
+              aria-live="polite"
+              className={cn(
+                'absolute bottom-full left-0 mb-2 whitespace-nowrap transition-opacity duration-500',
+                vibeShown ? 'opacity-100' : 'opacity-0',
+              )}
+            >
+              <span className="sr-only">Music: </span>
+              {VIBE_NAMES[vibe]}
+              <span className="text-hud/60">
+                {' '}
+                {vibe + 1}/{VIBE_NAMES.length}
+              </span>
+            </p>
+          </div>
+        ) : null}
       </div>
 
       {inPage || indexOpen ? null : (
