@@ -12,6 +12,7 @@ import {
   setSound,
   stepVibe,
 } from '~/lib/sound'
+import ScrambleText from '~/components/ui/scramble-text'
 import GuideArrows from './GuideArrows'
 import { SHEETS } from './sheets'
 import { setWorld, useWorld, worldCommands } from './store'
@@ -29,6 +30,7 @@ export default function Hud({ inPage }: { inPage: boolean }) {
   const ready = useWorld((s) => s.ready)
   const phase = useWorld((s) => s.phase)
   const lost = useWorld((s) => s.lost)
+  const lightboxOpen = useWorld((s) => s.lightboxOpen)
   const [soundOn, setSoundOn] = useState(false)
   const [vibe, setVibe] = useState(0)
   /** The name of the vibe shows for a moment after a change. */
@@ -115,24 +117,24 @@ export default function Hud({ inPage }: { inPage: boolean }) {
       </div>
 
       <div className="absolute top-5 right-6 flex flex-col items-end gap-1">
-        {indexOpen ? (
-          <button
-            type="button"
-            className={corner}
-            onClick={() => setWorld({ indexOpen: false })}
-          >
-            Return
-          </button>
-        ) : (
-          <button
-            type="button"
-            aria-haspopup="dialog"
-            className={corner}
-            onClick={() => setWorld({ indexOpen: true, hover: null })}
-          >
-            Index
-          </button>
-        )}
+        {/* One control that changes its job in place: Index opens the
+            index, Return closes it. Its label scrambles into the new word.
+            Under the zoom view of a picture it reads Close, as the Close of
+            the zoom view does, so it scrambles back to Index after it. */}
+        <button
+          type="button"
+          aria-haspopup={indexOpen ? undefined : 'dialog'}
+          className={cn(corner, lightboxOpen && 'invisible')}
+          onClick={() =>
+            indexOpen
+              ? setWorld({ indexOpen: false })
+              : setWorld({ indexOpen: true, hover: null })
+          }
+        >
+          <ScrambleText
+            text={lightboxOpen ? 'Close' : indexOpen ? 'Return' : 'Index'}
+          />
+        </button>
       </div>
 
       {/* The name of the sheet under the pointer. */}

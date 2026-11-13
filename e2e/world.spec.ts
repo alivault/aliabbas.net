@@ -50,7 +50,8 @@ test('a drag on a cube spins it, and a click still opens its page', async ({
   await page.waitForTimeout(1500)
 
   // Find a cube: the label at the bottom names the one under the pointer.
-  const label = page.locator('[data-hud] p[aria-live="polite"]')
+  // The name of the icon under the pointer (the first live line of the HUD).
+  const label = page.locator('[data-hud] p[aria-live="polite"]').first()
   let cube: { x: number; y: number } | null = null
   for (let y = 250; y < 600 && !cube; y += 25) {
     for (let x = 100; x < 1300 && !cube; x += 25) {

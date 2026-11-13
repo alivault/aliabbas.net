@@ -330,3 +330,17 @@ test('the work page links to each project', async ({ page }) => {
     page.locator('main a[href="https://chromagine.aliabbas.net/"]').first(),
   ).toBeAttached()
 })
+
+test('Index, Return and Close are one control that changes its label', async ({
+  page,
+}) => {
+  await open(page, '/skills')
+  const control = page.locator('[data-hud] .absolute.top-5.right-6 button')
+  await expect(control).toHaveAccessibleName('Index')
+  await control.click()
+  await expect(control).toHaveAccessibleName('Return')
+  // The label scrambles in, then reads the word.
+  await expect(control.locator('[aria-hidden="true"]')).toHaveText('Return')
+  await control.click()
+  await expect(control).toHaveAccessibleName('Index')
+})

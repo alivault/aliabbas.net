@@ -27,6 +27,8 @@ export type WorldState = {
   indexOpen: boolean
   /** True when the visitor has walked far from every sheet. */
   lost: boolean
+  /** True while the zoom view of a picture covers the page. */
+  lightboxOpen: boolean
 }
 
 const VISITED_KEY = 'world:visited'
@@ -40,6 +42,7 @@ let state: WorldState = {
   ready: false,
   indexOpen: false,
   lost: false,
+  lightboxOpen: false,
 }
 
 const listeners = new Set<() => void>()

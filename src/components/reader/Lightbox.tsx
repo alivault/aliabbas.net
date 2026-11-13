@@ -13,6 +13,8 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { AnimatePresence, motion } from 'motion/react'
 import { DURATIONS, EASE_IN, EASE_OUT } from '~/lib/design/motion'
 import { cn } from '~/lib/utils'
+import ScrambleText from '~/components/ui/scramble-text'
+import { setWorld } from '~/components/world/store'
 
 /** A picture or a video of a reader, as the zoom view shows it. */
 export type LightboxItem = {
@@ -179,6 +181,13 @@ export function LightboxProvider({ children }: { children: ReactNode }) {
   const list = openId ? ordered() : []
   const index = list.findIndex(([id]) => id === openId)
   const current = index === -1 ? null : list[index][1]
+  // The HUD under the zoom view reads Close too, and scrambles back to
+  // Index as the view closes.
+  const showing = current !== null
+  useEffect(() => {
+    setWorld({ lightboxOpen: showing })
+  }, [showing])
+  useEffect(() => () => setWorld({ lightboxOpen: false }), [])
 
   return (
     <LightboxContext.Provider value={api}>
@@ -297,7 +306,8 @@ function View({
           data-sound="click"
           className={cn(control, 'pointer-events-auto')}
         >
-          Close
+          {/* It takes the place of Index in the HUD. */}
+          <ScrambleText text="Close" from="Index" />
         </button>
       </div>
 
