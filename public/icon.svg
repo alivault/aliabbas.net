@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- The logo in HUD orange on the dark background of the site. -->
+  <circle cx="32" cy="32" r="32" fill="#050607"/>
+  <g transform="translate(14.6 18.2) scale(0.4)" fill="#d94816">
+    <path d="M19.4196 53.5981C25.5133 64.2833 38.8393 68.3571 38.8393 68.3571H19.4196H0C0 68.3571 13.326 64.2833 19.4196 53.5981Z"/>
+    <path d="M38.8393 15.931L68.5289 68.3571H87L48.0474 0L38.8393 15.931Z"/>
+  </g>
+</svg>

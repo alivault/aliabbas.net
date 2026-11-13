@@ -44,7 +44,12 @@ export const Route = createRootRouteWithContext<{
       },
       ...siteSocialMeta,
     ],
-    links: [{ rel: 'icon', href: '/icon.png' }],
+    // The logo in HUD orange. The PNGs are renders of public/icon.svg.
+    links: [
+      { rel: 'icon', href: '/icon.svg', type: 'image/svg+xml' },
+      { rel: 'icon', href: '/icon.png', type: 'image/png', sizes: '64x64' },
+      { rel: 'apple-touch-icon', href: '/apple-touch-icon.png' },
+    ],
   }),
   beforeLoad: async (ctx) => {
     // Use ensureQueryData to cache auth - prevents refetch on every navigation
