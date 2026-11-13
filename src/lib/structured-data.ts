@@ -7,7 +7,7 @@
 export const SITE_URL = 'https://aliabbas.net'
 const PERSON_ID = `${SITE_URL}/#person`
 const WEBSITE_ID = `${SITE_URL}/#website`
-const OG_IMAGE_URL = `${SITE_URL}/og-image.png?v=3`
+const OG_IMAGE_URL = `${SITE_URL}/og-image.png?v=4`
 
 type JsonLd = Record<string, unknown>
 
