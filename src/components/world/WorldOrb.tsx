@@ -8,7 +8,7 @@ import { heightAt } from './noise'
 import { ICON_SIZE } from './sheets'
 import { FOG_DENSITY, SKY_GLSL, WORLD_UNIFORMS } from './sky'
 import { getWorld, iconScrollShow, setWorld } from './store'
-import { focus, getShadowTexture } from './WorldIcon'
+import { focus, getShadowTexture, shadowGeometry } from './WorldIcon'
 import type { SheetSpec } from './sheets'
 
 /** The orb is as wide as an icon. */
@@ -138,6 +138,10 @@ export default function WorldOrb({
     [],
   )
   const ground = heightAt(sheet.x, sheet.z)
+  const shadowShape = useMemo(
+    () => shadowGeometry(sheet.x, sheet.z),
+    [sheet.x, sheet.z],
+  )
 
   /** True when the chat is open: the orb is a toy, not a link. */
   const isOpen = () =>
@@ -296,11 +300,9 @@ export default function WorldOrb({
       </group>
       <mesh
         material={shadow}
-        position={[sheet.x, ground + 0.05, sheet.z]}
-        rotation-x={-Math.PI / 2}
-      >
-        <planeGeometry args={[ICON_SIZE * 1.4, ICON_SIZE * 1.4]} />
-      </mesh>
+        geometry={shadowShape}
+        position={[sheet.x, ground, sheet.z]}
+      />
     </>
   )
 }

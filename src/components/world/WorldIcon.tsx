@@ -49,6 +49,25 @@ export function getShadowTexture() {
 }
 
 /**
+ * The ground under the spot, as a small mesh that follows the hills. A
+ * flat plane cuts into a slope: the ground hides the part under it, with
+ * a hard edge. It sits a little above heightAt, as the ground mesh is
+ * coarser than the noise and can be a little higher between its points.
+ */
+export function shadowGeometry(x: number, z: number) {
+  const size = ICON_SIZE * 1.4
+  const geometry = new THREE.PlaneGeometry(size, size, 12, 12)
+  geometry.rotateX(-Math.PI / 2)
+  const ground = heightAt(x, z)
+  const positions = geometry.attributes.position as THREE.BufferAttribute
+  for (let i = 0; i < positions.count; i++) {
+    const height = heightAt(x + positions.getX(i), z + positions.getZ(i))
+    positions.setY(i, height - ground + 0.12)
+  }
+  return geometry
+}
+
+/**
  * A page as its icon: a cube that floats and turns over the ground. On hover it slows
  * and a frame in the HUD color shows around it. When the camera flies in, it
  * stops at an angle and stays lit while the rest of the world goes dark.
@@ -157,6 +176,10 @@ export default function WorldIcon({
     [],
   )
   const ground = heightAt(sheet.x, sheet.z)
+  const shadowShape = useMemo(
+    () => shadowGeometry(sheet.x, sheet.z),
+    [sheet.x, sheet.z],
+  )
 
   useFrame((state, delta) => {
     const g = group.current
@@ -472,11 +495,9 @@ export default function WorldIcon({
       </group>
       <mesh
         material={shadow}
-        position={[sheet.x, ground + 0.05, sheet.z]}
-        rotation-x={-Math.PI / 2}
-      >
-        <planeGeometry args={[ICON_SIZE * 1.4, ICON_SIZE * 1.4]} />
-      </mesh>
+        geometry={shadowShape}
+        position={[sheet.x, ground, sheet.z]}
+      />
     </>
   )
 }
