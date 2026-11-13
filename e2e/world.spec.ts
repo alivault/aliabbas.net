@@ -28,6 +28,14 @@ test('far from the pages, the HUD says so, and an arrow flies back', async ({
   await expect(hint).toHaveCSS('opacity', '1', { timeout: 60_000 })
   await page.keyboard.up('s')
   await page.keyboard.up('Shift')
+  // The hint is at the bottom, in line with Next.
+  const hintBox = (await hint.boundingBox())!
+  const nextBox = (await page
+    .getByRole('button', { name: 'Next', exact: true })
+    .boundingBox())!
+  expect(
+    Math.abs(hintBox.y + hintBox.height / 2 - (nextBox.y + nextBox.height / 2)),
+  ).toBeLessThan(3)
 
   // Turn away from the pages: arrows point to the nearest ones.
   await page.mouse.move(150, 600)
