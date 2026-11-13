@@ -7,18 +7,11 @@ import { drawIcon } from './iconTexture'
 import { heightAt } from './noise'
 import { ICON_SIZE } from './sheets'
 import { WORLD_UNIFORMS, withSkyFog } from './sky'
-import { getWorld, iconScrollShow, setWorld } from './store'
+import { getWorld, iconScrollShow, iconSlotShow, setWorld } from './store'
 import type { SheetSpec } from './sheets'
 
 /** The icon that the camera flies to or reads, and the way it must face. */
 export const focus = { id: null as string | null, yaw: 0 }
-
-/**
- * The icon of a full-width page fades over this range of camera distance,
- * in meters, as the camera zooms in. The camera stops at about 1.7 m.
- */
-const FADE_FROM = 9
-const FADE_GONE = 2.4
 
 /** A quarter turn: the cube settles with a face to the camera. */
 const QUARTER = Math.PI / 2
@@ -224,20 +217,17 @@ export default function WorldIcon({
       }
       g.position.y = sheet.y + Math.sin(t * 0.7 + index) * 0.12
     }
-    // Only the icon in focus stays lit while the world goes dark. The icon
-    // of a full-width page fades out instead as the camera zooms in: by the
-    // distance to it, so it is gone when the camera arrives.
+    // Only the icon in focus stays lit while the world goes dark. On a
+    // narrow screen it fades as the text scrolls over it; the small icon of
+    // the lab fades as its title scrolls away.
     dim.value = focused ? 0 : WORLD_UNIFORMS.uDim.value
     if (texture) {
-      const { phase } = getWorld()
-      const zooming =
-        focused && sheet.wide && (phase === 'entering' || phase === 'inside')
-      const distance = state.camera.position.distanceTo(g.position)
-      const target = zooming
-        ? THREE.MathUtils.smoothstep(distance, FADE_GONE, FADE_FROM)
-        : focused && phase === 'inside'
-          ? iconScrollShow(state.size.width / state.size.height)
-          : 1
+      const inside = focused && getWorld().phase === 'inside'
+      const target = !inside
+        ? 1
+        : sheet.wide
+          ? iconSlotShow()
+          : iconScrollShow(state.size.width / state.size.height)
       face.opacity = THREE.MathUtils.damp(face.opacity, target, 8, delta)
       // An opaque cube writes depth; a fading one must not hide what is
       // behind its own faces.

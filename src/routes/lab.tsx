@@ -51,9 +51,13 @@ function LabPage() {
           <div className="mx-auto max-w-[1440px] px-6 pt-[14svh] pb-48 sm:px-16">
             <header className="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
               <div>
-                <h1 className="font-hud text-hud text-lg leading-[1.9] tracking-[0.42em] uppercase">
-                  Lab
-                </h1>
+                <div className="flex items-center gap-6">
+                  {/* The cube of the lab rests here (iconSlot.ts). */}
+                  <div aria-hidden="true" className="size-16 shrink-0" />
+                  <h1 className="font-hud text-hud text-lg leading-[1.9] tracking-[0.42em] uppercase">
+                    Lab
+                  </h1>
+                </div>
                 <p className="text-fg-secondary mt-4 max-w-[52ch] text-base leading-7">
                   The parts behind the chat of this site, each with its real
                   code and a fake stream. Force any state.

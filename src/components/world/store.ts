@@ -132,3 +132,13 @@ export function iconScrollShow(aspect: number) {
   )
   return 1 - t * t * (3 - 2 * t)
 }
+
+/**
+ * How much of the small icon of a full-width page (the lab) shows: it sits
+ * before the title, and fades out as the title scrolls away.
+ */
+export function iconSlotShow() {
+  if (typeof window === 'undefined') return 1
+  const t = Math.min(1, Math.max(0, window.scrollY / 160))
+  return 1 - t * t * (3 - 2 * t)
+}

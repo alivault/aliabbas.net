@@ -3,6 +3,7 @@ import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { play, setDroneOpen } from '~/lib/sound'
 import { FOOTPRINT_SIZE } from './Footprint'
+import { iconSlot } from './iconSlot'
 import { heightAt } from './noise'
 import { ICON_SIZE, SHEETS } from './sheets'
 import { WORLD_UNIFORMS } from './sky'
@@ -98,9 +99,8 @@ export default function Player({
   /**
    * Where the camera reads a page: the icon large on the right, turned at an
    * angle, and the text on the left. On a narrow screen, the icon is at the
-   * top and the text runs under it. A full-width page (the lab) zooms
-   * straight into its icon, in the middle and face on; the icon then fades
-   * out as the page comes in.
+   * top and the text runs under it. A full-width page (the lab) puts its
+   * icon small, in the square before its title (iconSlot.ts).
    */
   const insidePose = (sheet: SheetSpec): Pose => {
     const perspective = camera as THREE.PerspectiveCamera
@@ -113,27 +113,40 @@ export default function Player({
     const wide = aspect >= 1
     const full = Boolean(sheet.wide)
     const half = Math.tan(THREE.MathUtils.degToRad(perspective.fov) / 2)
-    // The share of the screen height that the icon fills.
     // A cube comes nearer the camera than its middle: its front half and
     // its turned corner. Its share is smaller, and the camera stands back
     // by half a cube. The orb is a flat disc to the camera.
     const cube = sheet.icon.type !== 'orb'
-    const share = full ? 0.8 : wide ? (cube ? 0.42 : 0.56) : cube ? 0.2 : 0.24
-    const distance =
-      ICON_SIZE / (share * 2 * half) + (cube && !full ? ICON_SIZE / 2 : 0)
-    // Where the icon center is on screen, from -1 to 1.
-    const screenX = full ? 0 : wide ? 0.42 : 0
-    const screenY = full ? 0 : wide ? 0 : 0.5
+    const slot = full ? iconSlot(size.width, size.height) : null
+    // The share of the screen height that the icon fills, and where its
+    // middle is on screen, from -1 to 1.
+    const share = slot
+      ? (slot.size / size.height) * 0.6
+      : wide
+        ? cube
+          ? 0.42
+          : 0.56
+        : cube
+          ? 0.2
+          : 0.24
+    const screenX = slot ? (2 * slot.x) / size.width - 1 : wide ? 0.42 : 0
+    const screenY = slot ? 1 - (2 * slot.y) / size.height : wide ? 0 : 0.5
+    const distance = ICON_SIZE / (share * 2 * half) + (cube ? ICON_SIZE / 2 : 0)
     const facing = Math.atan2(dx, dz)
-    focus.yaw = facing - (full ? 0 : wide ? 0.55 : 0.4)
+    focus.yaw = facing - (full ? 0.35 : wide ? 0.55 : 0.4)
+    // The camera pitches so the icon is at screenY, then turns so it is at
+    // screenX. The turn is exact for a pitched camera: the side offset
+    // shrinks by the length of the pitched ray.
+    const up = screenY * half
+    const side = screenX * half * aspect
     return {
       position: new THREE.Vector3(
         sheet.x + dx * distance,
         sheet.y,
         sheet.z + dz * distance,
       ),
-      yaw: facing + Math.atan(screenX * half * aspect),
-      pitch: -Math.atan(screenY * half),
+      yaw: facing + Math.atan(side / Math.sqrt(1 + up * up)),
+      pitch: -Math.atan(up),
     }
   }
 

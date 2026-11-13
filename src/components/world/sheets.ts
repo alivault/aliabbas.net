@@ -36,8 +36,8 @@ export type SheetSpec = {
   kind: 'Case study' | 'Page' | 'Game'
   icon: SheetIcon
   /**
-   * The page uses the full width. The camera still flies to the icon, and
-   * then the icon fades out, so it is not behind the page.
+   * The page uses the full width. The camera puts the icon small, in the
+   * square before the page title (iconSlot.ts), not beside the text.
    */
   wide?: boolean
   x: number
