@@ -18,7 +18,6 @@ export type SoundName =
   | 'send'
   | 'toggle'
   | 'step'
-  | 'dash'
 
 const ENABLED_KEY = 'sound:enabled'
 const VIBE_KEY = 'sound:vibe'
@@ -337,16 +336,18 @@ function noiseHit(
 }
 
 /**
- * The swoop of a flight (Next and the guide arrows), as long as the flight.
- * The flight eases in and out, so the rush of air swells to the middle,
- * where the camera is fastest, and dies away as it arrives. Returns a
- * function that stops it early, for a flight that the visitor stops.
+ * The swoop of a move of the camera, as long as the move: a flight (Next
+ * and the guide arrows) or a dash (a click on the ground). The rush of air
+ * is loudest at `peak` (a part of the duration), where the camera is
+ * fastest, and dies away as it arrives: a flight eases in and out, so its
+ * peak is the middle; a dash is fastest early. Returns a function that
+ * stops it early, for a move that the visitor stops.
  */
-export function playFlight(duration: number): () => void {
+export function playFlight(duration: number, peak = 0.5): () => void {
   if (!enabled || !ctx || ctx.state !== 'running') return () => {}
   const context = ctx
   const start = context.currentTime
-  const middle = start + duration * 0.5
+  const middle = start + duration * peak
   const end = start + duration
   const source = context.createBufferSource()
   source.buffer = noiseBuffer(context, duration + 0.1)
@@ -435,17 +436,6 @@ export function play(name: SoundName) {
         volume: 0.06,
         q: 2,
       })
-      break
-    case 'dash':
-      // A rush of air: noise that rises and falls, over a low thump.
-      noiseHit(context, {
-        from: 300,
-        to: 2600,
-        duration: 0.6,
-        volume: 0.16,
-        q: 1.4,
-      })
-      tone(context, { from: 95, to: 55, duration: 0.45, volume: 0.14 })
       break
     case 'portal-in':
       noiseHit(context, {

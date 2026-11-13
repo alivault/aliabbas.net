@@ -172,3 +172,46 @@ test('as the intro types in, no letter moves', async ({ page }) => {
   const end = await places()
   expect(seen.filter((at) => at !== end)).toHaveLength(0)
 })
+
+test('a click on the ground plays a swoop as long as the dash', async ({
+  page,
+}) => {
+  needsFrames()
+  // Record each swoop: its rush of air ends at 500 Hz, at the end of the
+  // move. The time from now to there is its length.
+  await page.addInitScript(() => {
+    const w = window as unknown as { swoops: Array<number> }
+    w.swoops = []
+    // It is called with its AudioParam below.
+    // eslint-disable-next-line typescript/unbound-method
+    const ramp = AudioParam.prototype.exponentialRampToValueAtTime
+    AudioParam.prototype.exponentialRampToValueAtTime = function (value, time) {
+      const context = (window as unknown as { __audio?: AudioContext }).__audio
+      if (value === 500 && context) w.swoops.push(time - context.currentTime)
+      return ramp.call(this, value, time)
+    }
+    const Context = window.AudioContext
+    window.AudioContext = class extends Context {
+      constructor(options?: AudioContextOptions) {
+        super(options)
+        ;(window as unknown as { __audio: AudioContext }).__audio = this
+      }
+    }
+  })
+  await open(page, '/?gl=force')
+  await page.getByRole('button', { name: 'Enter', exact: true }).click()
+  await page.waitForTimeout(1500)
+  const swoops = () =>
+    page.evaluate(() => (window as unknown as { swoops: Array<number> }).swoops)
+  // Near the bottom of the screen: the ground, a few meters away.
+  await page.mouse.click(720, 860)
+  await expect.poll(async () => (await swoops()).length).toBe(1)
+  const [near] = await swoops()
+  await page.waitForTimeout(2500)
+  // Near the horizon: far away, so a longer dash.
+  await page.mouse.click(720, 560)
+  await expect.poll(async () => (await swoops()).length).toBe(2)
+  const [, far] = await swoops()
+  expect(near).toBeGreaterThan(0.3)
+  expect(far).toBeGreaterThan(near)
+})

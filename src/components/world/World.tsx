@@ -1,7 +1,6 @@
 import { useMemo, useRef } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-import { play } from '~/lib/sound'
 import Beacons from './Beacons'
 import Footprint from './Footprint'
 import GuideProbe from './GuideProbe'
@@ -73,8 +72,8 @@ export default function World({
         }}
         onPick={(point) => {
           if (getWorld().phase !== 'roam') return
+          // The player plays the dash, as long as the dash.
           walkTarget.current = point.clone()
-          play('dash')
         }}
       />
       <Footprint point={pointer} color={accent} />

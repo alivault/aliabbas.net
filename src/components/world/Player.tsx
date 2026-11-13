@@ -5,6 +5,7 @@ import * as THREE from 'three'
 import { play, playFlight, setDroneOpen } from '~/lib/sound'
 import { spinGrab } from './cubeSpin'
 import { FOOTPRINT_SIZE } from './Footprint'
+import { CLICK_EASE, CLICK_WALK, dashTiming } from './dash'
 import { frameScreenX } from './frame'
 import { iconSlot } from './iconSlot'
 import { heightAt } from './noise'
@@ -17,12 +18,6 @@ import type { SheetSpec } from './sheets'
 const EYE = 1.7
 const WALK = 5
 const RUN = 11
-/**
- * A move to a clicked point is a dash: much faster than a run, and it slows
- * down near the end (CLICK_EASE per second of the distance that is left).
- */
-const CLICK_WALK = 40
-const CLICK_EASE = 4
 const LOOK = 0.0035
 
 type Pose = { position: THREE.Vector3; yaw: number; pitch: number }
@@ -81,6 +76,8 @@ export default function Player({
   /** The sheets that Next has shown in this tour, in order. */
   const toured = useRef(new Set<string>())
   const stepClock = useRef(0)
+  /** The dash that has its sound, and the function that stops it. */
+  const dash = useRef<{ target: THREE.Vector3; stop: () => void } | null>(null)
   const droneClock = useRef(0)
 
   const pose = (): Pose => ({
@@ -441,6 +438,25 @@ export default function Player({
       let speed = k.has('ShiftLeft') || k.has('ShiftRight') ? RUN : WALK
 
       const target = walkTarget.current
+      // A new dash starts its swoop, as long as the dash; a dash that ends
+      // or stops (a key, a new click) stops it.
+      if (dash.current && dash.current.target !== target) {
+        dash.current.stop()
+        dash.current = null
+      }
+      if (target && !dash.current && !forward && !strafe) {
+        const timing = dashTiming(
+          Math.hypot(
+            target.x - position.current.x,
+            target.z - position.current.z,
+          ) -
+            FOOTPRINT_SIZE / 2,
+        )
+        dash.current = {
+          target,
+          stop: playFlight(timing.duration, timing.peak),
+        }
+      }
       if (!forward && !strafe && target) {
         const dx = target.x - position.current.x
         const dz = target.z - position.current.z
