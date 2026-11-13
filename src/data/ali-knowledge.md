@@ -11,15 +11,21 @@ clients. Do not infer facts that are not stated here.
 - Portfolio: https://aliabbas.net
 - LinkedIn: https://www.linkedin.com/in/webdevali/
 - GitHub: https://github.com/alivault
-- Public positioning: senior frontend engineer for interactive and streaming
-  interfaces, with a strong design background and full-stack range.
+- Public positioning: senior frontend engineer and design engineer for
+  interactive and streaming interfaces, with a strong design background and
+  full-stack range.
+- Experience: 5+ years of production React and TypeScript, and 15+ years of
+  brand, product, and web design before and alongside it, including creative
+  director and design director roles.
+- Employment: Ali left Super Studios Inc. in August 2026 and does not have a
+  current employer.
 - Location/work mode shown on the site: US / Remote.
 - Current status shown on the site: open to opportunities.
 - Primary focus: senior frontend engineering for interactive and streaming
   interfaces: state machines, motion, design systems, performance and
   accessibility.
-- Best-fit work: senior frontend roles where design quality matters as much as
-  technical execution.
+- Best-fit work: senior frontend and design engineer roles where design
+  quality matters as much as technical execution.
 - Contact: use https://aliabbas.net/contact. The site says Ali usually responds
   within one to two days.
 
@@ -45,9 +51,9 @@ evidence of success before he treats implementation as complete.
 ### Motion and interaction
 
 Ali builds spring-based motion, resizable and collapsible panels, drawers with
-snap points, and layout transitions that keep their state. The portfolio's
-evidence panel is a resizable panel with a spring collapse, a rail, and a
-mobile drawer. He gives every interaction a keyboard path and respects
+snap points, and layout transitions that keep their state. The portfolio is a
+3D world in React Three Fiber, where a click flies the camera to a page. He
+gives every interaction a keyboard path and respects
 reduced-motion settings. He brings a strong visual point of view to art
 direction and interaction.
 
@@ -69,6 +75,13 @@ portfolio is a production full-stack system with server rendering, managed
 content, authentication, realtime comments, transactional email, and edge
 deployment.
 
+### Working with AI agents
+
+Ali works with coding agents every day. In his words, agents do most of his
+typing now; his job is to decide what to build, check every change by hand,
+and own what ships. He directs all of his agent work through Pico, his own
+open-source workspace.
+
 ### Collaboration and approach
 
 - Works closely with developers, designers, product managers, clients, and
@@ -86,9 +99,15 @@ deployment.
 
 Technologies publicly represented across Ali's current site, work, and writing:
 
-- Interface and frontend: React, Next.js, TanStack Start, TypeScript, Tailwind
-  CSS, Motion, GSAP, Three.js, shadcn/ui, responsive design, accessibility, and
-  design systems.
+- Interface and frontend: React 19, Next.js, TanStack Start, TanStack Router,
+  TanStack Query, TanStack Store, TypeScript, Tailwind CSS, Motion, GSAP,
+  Three.js, WebGL and GLSL shaders, shadcn/ui, Base UI, server-side rendering,
+  responsive design, accessibility, and design systems.
+- Real-time and state: Server-Sent Events, WebSockets, WebRTC, streaming UI,
+  optimistic updates, interruption and recovery, reducer state machines, and
+  IndexedDB offline queues.
+- Quality: Vitest, Playwright, GitHub Actions, Lighthouse, and Core Web Vitals
+  field data.
 - Product and visual design: Figma, Sketch, Webflow, Adobe Creative Suite,
   Flinto, After Effects, interaction design, UX/UI, prototyping, brand systems,
   motion direction, and creative direction.
@@ -109,42 +128,51 @@ The architecture described on Ali's portfolio is:
 
 ## Professional experience
 
-### Senior Frontend Engineer — Super Studios Inc. (2024–August 2026)
+### Senior Frontend Engineer — Super Studios Inc. (April 2024–August 2026)
 
-Ali left Super Studios in August 2026. There, he designed and developed key
-components for modern, responsive web applications using Next.js, TypeScript, and Tailwind CSS. He collaborated with developers,
-designers, and product managers to deliver user-centered interfaces that
-prioritized performance, accessibility, and engagement.
+Ali left Super Studios in August 2026. There, he owned the frontend of
+consumer web products in React, Next.js, and TypeScript: component
+architecture, interaction states, motion, responsive behavior, accessibility,
+and performance. He built reusable component systems with Tailwind CSS and
+shadcn/ui, so new pages and features came from the same parts. He designed
+every state a screen can enter (connecting, loading, empty, error, and
+success), and shipped animated, wallet-connected, and CMS-backed products
+(SuperVerse, Impostors, and BlackHole) with GSAP, Motion, RainbowKit, and
+Sanity, tuned to stay smooth on desktop and mobile. He worked directly with
+designers and product leads to turn early ideas and incomplete requirements
+into production interfaces.
 
 Company: https://superstudios.io/
 
-### Frontend Engineer — Super Studios Inc. (2021–2024)
+### Frontend Engineer — Super Studios Inc. (March 2021–April 2024)
 
-Ali designed and developed user interfaces using Figma for UX/UI, Webflow for
-prototyping, and Next.js for modern responsive web experiences. This role shows
+Ali took product and campaign ideas from early Figma and Webflow designs to
+responsive Next.js builds, with teams across brand, product, design, and
+engineering. He did the interface design, prototyping, and frontend
+development himself, so fewer details got lost between design and code. This role shows
 the progression from design into production frontend engineering at the same
 company.
 
-### Brand Architect — Freelance (2019–2021)
+### Brand Architect — Freelance (March 2019–March 2021)
 
 Ali used Adobe Creative Suite, Figma, and Webflow to architect and prototype
 digital products, including website design, application user interfaces, and
 logo creation.
 
-### Product Designer — DApp Evolution (2018–2019)
+### Product Designer — DApp Evolution (December 2018–March 2019, contract)
 
 Ali led application design for TronChat, a DAppEvolution social media product
 designed to let users earn TRX and connect cryptocurrency and blockchain use
 cases. He collaborated with the CTO on high-fidelity designs in Sketch and
 created UI animations with Flinto and After Effects.
 
-### Design Director — Live Streaming App (2016–2018)
+### Design Director — Live Streaming App (October 2016–December 2018)
 
 Ali led branding, application design, and web design. Within a year of the
 rebrand, the app had more than 1,000 daily active users, average engagement of
 48 minutes, and more than 5,000 monthly active users.
 
-### Creative Director and Co-Founder — Verge Collective (2012–2016)
+### Creative Director and Co-Founder — Verge Collective (October 2012–September 2016)
 
 Ali managed the brand design roadmap and worked directly with clients to
 understand their goals and challenges. He translated those insights for the
@@ -212,7 +240,9 @@ and WebRTC. Cloudflare Workers and hibernating Durable Objects coordinate rooms
 and reconnectable WebSocket signaling. Two-person calls use direct P2P media
 with TURN fallback; group rooms switch to Cloudflare Realtime SFU. Better Auth,
 WebAuthn passkeys, Cloudflare D1 with Drizzle, Plunk transactional email, and
-Stripe billing support accounts and paid room entitlements.
+Stripe billing support accounts and paid room entitlements. Call quality
+adapts to WebRTC stats, and Vitest covers the core room, media, auth, and
+billing logic.
 
 ### Pico — local-first developer tool (2026)
 
@@ -237,7 +267,12 @@ API and live updates. Earlier versions also had native macOS and iOS clients in
 SwiftUI; Pico is now web-only.
 
 Sessions are durable. They live in one SQLite database, runs continue after a
-crash or restart, and tools with side effects do not run twice. Pico adds agent
+crash or restart, and tools with side effects do not run twice. One hub reaches
+agents on other machines over SSH. A user can stop a turn, steer it
+mid-stream, or queue a follow-up; prompts written offline wait in an IndexedDB
+queue and send when the server comes back. ARIA live regions announce the
+streaming status. Release automation, server tests, and browser smoke checks
+run in CI. Pico adds agent
 tools such as todo lists, questions to the user, charts and diagrams, timers,
 background jobs, child sessions in Git worktrees, LSP, browser automation,
 memory, web access, and MCP. Tool profiles limit what the agent can do, and Web
@@ -265,13 +300,19 @@ Ali's stated lessons from Pico include:
 
 ### aliabbas.net — this portfolio as working samples (2026)
 
-Ali's portfolio contains working samples of streaming and verification
+Ali's portfolio is a 3D world built with React Three Fiber on TanStack Start
+and Cloudflare Workers. Each page floats in the world as a cube; the AI chat
+is an orb. A click flies the camera to the icon, and the page opens beside
+it. A HUD, a drone, and interface sounds sit over the world. The previous
+version of the site is archived at https://v1.aliabbas.net.
+
+The portfolio contains working samples of streaming and verification
 interfaces:
 
 - The chat at https://aliabbas.net/ai streams answers with inline
   citations. The server checks each citation against these sources before it
-  sends it. Answers can be stopped, retried, and edited and sent again, and a
-  resizable, collapsible evidence panel (a drawer on phones) shows the cited
+  sends it. Answers can be stopped, retried, and edited and sent again, and an
+  evidence panel beside the answer (full screen on phones) shows the cited
   sources.
 - The claim checker at https://aliabbas.net/check splits a claim about Ali
   into parts and grades each part as verified, partly verified, not
@@ -289,6 +330,17 @@ interfaces:
   kept content hidden until JavaScript loaded. Ali moved the entrances to CSS,
   and the Largest Contentful Paint of the chat page went from 4.4 s to 3.5 s
   in Lighthouse's mobile test.
+
+### Averno — 3D browser game (2026)
+
+Play: https://aliabbas.net/play
+
+Averno is a six-degrees-of-freedom mine shooter that runs in the browser,
+built by Ali in three.js, with a 3D cockpit, live holographic displays, a
+responsive HUD, and layered adaptive music. Ali cut the first-visit download
+by 32% on desktop and 38% on phones: meshopt compression made the 3D models
+64% smaller, and screenshots before and after differ in fewer than 0.03% of
+pixels. Content-hashed file names cut repeat-visit requests from 40 to 2.
 
 ### Postmaster — native Mac email client (2026)
 
@@ -434,8 +486,9 @@ variables are intentionally consumed outside the shell file.
 - Ali has moved from brand and design leadership into hands-on frontend and
   full-stack product engineering while retaining strong visual and interaction
   skills.
-- His current senior frontend role includes cross-functional delivery with
-  performance and accessibility priorities.
+- His senior frontend role at Super Studios (April 2024 to August 2026)
+  included cross-functional delivery with performance and accessibility
+  priorities.
 - His public work includes production Web3 and gaming experiences, CMS-backed
   platforms, interaction systems, wallet flows, responsive engineering, and
   motion direction.
