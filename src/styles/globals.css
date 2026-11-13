@@ -331,6 +331,9 @@ textarea {
 
 @utility page-fade {
   @apply scroll-fade;
+  /* A page with a field at the bottom of the screen (the chat) sets
+     --page-fade-bottom, so the text fades out above the field. */
+  --fade-bottom: var(--page-fade-bottom, 6rem);
   mask-size: 100% var(--page-view, 100dvh);
   mask-position: 0 var(--page-scroll, 0px);
 

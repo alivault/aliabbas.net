@@ -29,7 +29,14 @@ test(
     await expect(
       answer.getByRole('button', { name: `Source 1: ${SOURCES.pico.title}` }),
     ).toBeVisible()
-    const sources = answer.getByRole('region', { name: /^Sources for/ })
+    // The evidence opens beside the answer on a wide screen; on a phone,
+    // with the sources button.
+    if ((page.viewportSize()?.width ?? 0) < 1024) {
+      await answer.getByRole('button', { name: '2 sources' }).click()
+    }
+    const sources = page.getByLabel('Evidence').getByRole('list', {
+      name: 'Sources',
+    })
     await expect(sources.getByText(SOURCES.whimcall.title)).toBeVisible()
     await expect(sources.getByText(SOURCES.pico.title)).toBeVisible()
     await expect(page.getByLabel('Ask about Ali')).toHaveValue('')
@@ -177,4 +184,42 @@ test('Shift+Enter adds a line, and Enter sends', async ({ page }) => {
   await page.keyboard.press('Enter')
   await expect(field).toHaveValue('')
   await expect(page.locator('[data-turn]')).toHaveCount(1)
+})
+
+test(
+  'the field stays at the bottom of the screen, also after a scroll',
+  { tag: '@mobile' },
+  async ({ page }) => {
+    await mockAi(page, { '/api/chat': chatAnswer() })
+    await open(page, '/ai')
+    const field = page.getByLabel('Ask about Ali')
+    const bottomGap = () =>
+      field.evaluate(
+        (element) => innerHeight - element.getBoundingClientRect().bottom,
+      )
+    expect(await bottomGap()).toBeLessThan(60)
+    await ask(page, 'Has Ali built streaming interfaces?')
+    await done(page)
+    await page.evaluate(() => window.scrollTo({ top: 0 }))
+    expect(await bottomGap()).toBeLessThan(60)
+  },
+)
+
+test('the evidence sidebar closes, and the sources button opens it again', async ({
+  page,
+}) => {
+  await mockAi(page, { '/api/chat': chatAnswer() })
+  await open(page, '/ai')
+  await ask(page, 'Has Ali built streaming interfaces?')
+  await done(page)
+  const evidence = page.getByLabel('Evidence')
+  // A wide screen opens it with the first sources.
+  await expect(evidence).toBeVisible()
+  await evidence.getByRole('button', { name: 'Close' }).click()
+  await expect(evidence).toHaveCount(0)
+  const toggle = lastTurn(page).getByRole('button', { name: '2 sources' })
+  await expect(toggle).toHaveAttribute('aria-pressed', 'false')
+  await toggle.click()
+  await expect(evidence).toBeVisible()
+  await expect(toggle).toHaveAttribute('aria-pressed', 'true')
 })
