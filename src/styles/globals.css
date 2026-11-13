@@ -326,10 +326,12 @@ textarea {
     rgb(0 0 0 / 0.35) calc(var(--fade-top) * 0.68),
     rgb(0 0 0 / 0.8) calc(var(--fade-top) * 0.86),
     black var(--fade-top),
-    black calc(100% - var(--fade-bottom)),
-    rgb(0 0 0 / 0.8) calc(100% - var(--fade-bottom) * 0.86),
-    rgb(0 0 0 / 0.35) calc(100% - var(--fade-bottom) * 0.68),
-    transparent calc(100% - var(--fade-bottom) * 0.45),
+    black calc(100% - var(--fade-clear, 0px) - var(--fade-bottom)),
+    rgb(0 0 0 / 0.8)
+      calc(100% - var(--fade-clear, 0px) - var(--fade-bottom) * 0.86),
+    rgb(0 0 0 / 0.35)
+      calc(100% - var(--fade-clear, 0px) - var(--fade-bottom) * 0.68),
+    transparent calc(100% - var(--fade-clear, 0px) - var(--fade-bottom) * 0.45),
     transparent 100%
   );
   mask-repeat: no-repeat;
@@ -337,9 +339,13 @@ textarea {
 
 @utility page-fade {
   @apply scroll-fade;
-  /* A page with a field at the bottom of the screen (the chat) sets
-     --page-fade-bottom, so the text fades out above the field. */
-  --fade-bottom: var(--page-fade-bottom, 6rem);
+  /* Nothing of the HUD is at the bottom of a page, so the text goes to
+     the edge of the screen. A page with a field at the bottom of the
+     screen (the chat) sets --page-fade-clear to its height and
+     --page-fade-bottom: the text is hidden under the field, and fades out
+     above it. */
+  --fade-clear: var(--page-fade-clear, 0px);
+  --fade-bottom: var(--page-fade-bottom, 0px);
   mask-size: 100% var(--page-view, 100dvh);
   mask-position: 0 var(--page-scroll, 0px);
 

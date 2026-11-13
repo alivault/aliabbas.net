@@ -346,3 +346,18 @@ test('Index, Return and Close are one control that changes its label', async ({
   await control.click()
   await expect(control).toHaveAccessibleName('Index')
 })
+
+test('a page fades its text at the bottom only above the chat field', async ({
+  page,
+}) => {
+  const fadeBottom = () =>
+    page
+      .locator('.page-fade')
+      .evaluate((element) =>
+        getComputedStyle(element).getPropertyValue('--fade-bottom').trim(),
+      )
+  await open(page, '/skills')
+  expect(await fadeBottom()).toBe('0px')
+  await open(page, '/ai')
+  await expect.poll(fadeBottom).toBe('6rem')
+})

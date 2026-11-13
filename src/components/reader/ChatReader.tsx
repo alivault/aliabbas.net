@@ -27,7 +27,7 @@ import type { Turn } from '~/lib/chat/chat-machine'
 import { revealSource } from '~/lib/chat/reveal-source'
 import { answerToPlainText } from '~/lib/chat/streaming-markdown'
 import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
-import { isSoundOn, onSoundChange, play } from '~/lib/sound'
+import { play } from '~/lib/sound'
 import { cn } from '~/lib/utils'
 import Shimmer from '~/components/ui/shimmer'
 import { copyText } from '~/lib/clipboard'
@@ -67,15 +67,6 @@ function useDesktop() {
     () => window.matchMedia(DESKTOP).matches,
     () => false,
   )
-}
-
-function useSoundOn() {
-  const [on, setOn] = useState(false)
-  useEffect(() => {
-    setOn(isSoundOn())
-    return onSoundChange(setOn)
-  }, [])
-  return on
 }
 
 /** Renders into the body, after the first render in the browser. */
@@ -122,7 +113,6 @@ export default function ChatReader() {
   /** Follow the newest answer, unless the visitor scrolled up to read. */
   const following = useRef(true)
   const desktop = useDesktop()
-  const soundOn = useSoundOn()
   /** The answer that the evidence shows: null for the latest one. */
   const [shownTurnId, setShownTurnId] = useState<string | null>(null)
   const [panelOpen, setPanelOpen] = useState(false)
@@ -288,13 +278,15 @@ export default function ChatReader() {
     const root = document.documentElement
     const measure = () => {
       setComposerHeight(box.offsetHeight)
-      root.style.setProperty('--page-fade-bottom', `${box.offsetHeight + 24}px`)
+      root.style.setProperty('--page-fade-clear', `${box.offsetHeight}px`)
+      root.style.setProperty('--page-fade-bottom', '6rem')
     }
     measure()
     const observer = new ResizeObserver(measure)
     observer.observe(box)
     return () => {
       observer.disconnect()
+      root.style.removeProperty('--page-fade-clear')
       root.style.removeProperty('--page-fade-bottom')
     }
   })
@@ -403,12 +395,9 @@ export default function ChatReader() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: DURATIONS.enter, ease: EASE_OUT }}
-          // Clear of the sound buttons at the bottom left (more of them
-          // while sound is on), and as wide as the text on a wide screen.
-          className={cn(
-            'fixed bottom-0 left-0 z-[14] w-full pt-3 pr-6 pb-5 sm:pr-16 lg:left-[var(--frame-inset)] lg:w-[var(--reader-width)]',
-            soundOn ? 'pl-36' : 'pl-16',
-          )}
+          // At the bottom of the screen, in line with the text, and as
+          // wide as the text on a wide screen.
+          className="fixed bottom-0 left-0 z-[14] w-full px-6 pt-3 pb-6 sm:px-16 lg:left-[var(--frame-inset)] lg:w-[var(--reader-width)]"
         >
           <ReaderComposer
             id="chat-question"
