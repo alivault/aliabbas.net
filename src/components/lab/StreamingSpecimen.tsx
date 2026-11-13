@@ -15,7 +15,8 @@ function footnoteId(sourceId: string) {
 }
 
 export default function StreamingSpecimen() {
-  const stream = useLabStream('done')
+  // It opens in the middle of a stream: the state it shows best.
+  const stream = useLabStream('streaming')
   const { reduce } = useLabMotion()
   const [activeSourceId, setActiveSourceId] = useState<string | null>(null)
   const [hoveredSourceId, setHoveredSourceId] = useState<string | null>(null)

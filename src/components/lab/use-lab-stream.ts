@@ -60,7 +60,7 @@ function doneState(turnId: string, attemptId: string, at: number) {
  */
 export function useLabStream(initialScenario: LabScenario = 'done') {
   // The first render is the same on the server and the client: the empty
-  // state or the full answer. A stream starts only on input.
+  // state or the full answer. A stream scenario starts after it.
   const [state, dispatch] = useReducer(labReducer, initialScenario, (first) =>
     first === 'done'
       ? doneState('lab-turn-0', 'lab-turn-0-a1', 0)
@@ -155,6 +155,17 @@ export function useLabStream(initialScenario: LabScenario = 'done') {
     },
     [play],
   )
+
+  // A stream scenario starts after the first render, so the server and
+  // the client still render the same empty state first.
+  const started = useRef(false)
+  useEffect(() => {
+    if (started.current) return
+    started.current = true
+    if (initialScenario !== 'idle' && initialScenario !== 'done') {
+      run(initialScenario)
+    }
+  }, [initialScenario, run])
 
   useEffect(() => cancel, [])
 

@@ -15,6 +15,16 @@ test.beforeEach(async ({ page }) => {
 })
 
 test.describe('streaming list', () => {
+  test('it opens in the middle of a stream', async ({ page }) => {
+    const specimen = page.locator('#streaming-list')
+    await expect(
+      specimen.getByRole('radio', { name: 'Streaming', exact: true }),
+    ).toHaveAttribute('aria-checked', 'true')
+    await expect(specimen.getByRole('status')).toHaveText(
+      /^(Loading|Streaming)\./,
+    )
+  })
+
   test('every forced state reaches its machine state', async ({ page }) => {
     const specimen = page.locator('#streaming-list')
     const status = specimen.getByRole('status')
