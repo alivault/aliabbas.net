@@ -12,9 +12,10 @@ import { highlightQuote } from '~/lib/check/evidence'
 import type { EvidenceQuote } from '~/lib/check/evidence'
 import { MAX_CLAIM_LENGTH } from '~/lib/check/protocol'
 import { VERDICTS, VERDICT_INFO } from '~/lib/check/verdicts'
-import { DURATIONS, EASE_OUT, SPRINGS } from '~/lib/design/motion'
+import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
 import { cn } from '~/lib/utils'
 import Shimmer from '~/components/ui/shimmer'
+import CheckProgress from '~/components/check/CheckProgress'
 import { copyText } from '~/lib/clipboard'
 import {
   Line,
@@ -326,31 +327,21 @@ function Summary({
   if (state.status === 'splitting' || state.status === 'checking') {
     return (
       <div className="flex flex-col gap-3">
-        <p className="text-fg-muted text-sm">
-          {state.status === 'splitting'
-            ? 'Splitting the claim into parts…'
-            : `Grading ${plural(total, 'part')}: ${graded} done.`}
-        </p>
-        <div
-          role="progressbar"
-          aria-label="Check progress"
-          aria-valuemin={0}
-          aria-valuemax={Math.max(total, 1)}
-          aria-valuenow={graded}
-          className="bg-hud/15 h-px overflow-hidden"
-        >
-          <motion.div
-            className="bg-hud h-full origin-left"
-            initial={false}
-            animate={{
-              scaleX:
-                state.status === 'splitting'
-                  ? 0.06
-                  : (graded + 0.3) / Math.max(total, 1),
-            }}
-            transition={reduceMotion ? { duration: 0 } : SPRINGS.settle}
-          />
+        <div className="flex items-baseline justify-between gap-6">
+          <Shimmer className={hudText}>
+            {state.status === 'splitting' ? 'Splitting the claim' : 'Grading'}
+          </Shimmer>
+          {state.status === 'checking' ? (
+            <span className="text-fg-muted text-sm tabular-nums">
+              {graded} of {plural(total, 'part')}
+            </span>
+          ) : null}
         </div>
+        <CheckProgress
+          done={graded}
+          total={total}
+          splitting={state.status === 'splitting'}
+        />
         <button
           type="button"
           data-sound="none"

@@ -154,3 +154,26 @@ test('a trip to the chat and back keeps the result and the chat draft', async ({
     'a draft that must survive',
   )
 })
+
+test('while it works, the check shows what it does and a moving bar', async ({
+  page,
+}) => {
+  await mockAi(page, { '/api/check': checkStream(1500) })
+  await open(page, '/check')
+  await page.getByRole('button', { name: 'Ali built Pico in Rust.' }).click()
+  const bar = page.getByRole('progressbar', { name: 'Check progress' })
+  await expect(bar).toHaveAttribute('aria-valuetext', 'Splitting the claim')
+  await expect(
+    page.getByText('Splitting the claim', { exact: true }),
+  ).toBeVisible()
+  await expect(bar).toHaveAttribute('aria-valuetext', '0 of 2 parts graded')
+  await expect(page.getByText('0 of 2 parts')).toBeVisible()
+  // The bar creeps on while a part waits: it does not stand still.
+  const fill = bar.locator('div').first()
+  const width = () =>
+    fill.evaluate((element) => getComputedStyle(element).clipPath)
+  const before = await width()
+  await page.waitForTimeout(400)
+  expect(await width()).not.toBe(before)
+  await expect(bar).toHaveAttribute('aria-valuetext', '1 of 2 parts graded')
+})
