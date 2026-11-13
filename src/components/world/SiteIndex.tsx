@@ -21,9 +21,9 @@ const GROUPS: Array<{
     title: 'Work',
     size: 'large',
     entries: [
-      { label: 'Pico — Case study', to: '/work/pico' },
-      { label: 'Whimcall — Case study', to: '/work/whimcall' },
-      { label: 'Postmaster — Case study', to: '/work/postmaster' },
+      { label: 'Pico', to: '/work/pico' },
+      { label: 'Whimcall', to: '/work/whimcall' },
+      { label: 'Postmaster', to: '/work/postmaster' },
       { label: 'Averno — Browser game', to: '/play' },
       { label: 'All work', to: '/work' },
     ],
