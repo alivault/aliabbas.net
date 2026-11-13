@@ -237,6 +237,11 @@ test('on an ultrawide screen, the page and the evidence stay in the middle frame
   expect(title?.x).toBeGreaterThanOrEqual(760)
   const panel = await page.getByLabel('Evidence').boundingBox()
   expect((panel?.x ?? 0) + (panel?.width ?? 0)).toBeLessThanOrEqual(3440 - 760)
+  // It is beside the text, not at the far side of the frame.
+  const answer = await lastTurn(page).locator('p').first().boundingBox()
+  const gap = (panel?.x ?? 0) - ((answer?.x ?? 0) + (answer?.width ?? 0))
+  expect(gap).toBeGreaterThan(0)
+  expect(gap).toBeLessThan(200)
   // It floats: clear of the top and the bottom of the screen.
   expect(panel?.y).toBeGreaterThan(0)
   expect((panel?.y ?? 0) + (panel?.height ?? 0)).toBeLessThan(1440)

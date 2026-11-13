@@ -90,7 +90,7 @@ export function Reader({ children }: { children: ReactNode }) {
       data-hud
       // The space above the text lets touches through to the world, so the
       // orb of the chat can be played with on a phone too.
-      className="pointer-events-none relative z-10 min-h-svh px-6 pt-[44svh] pb-48 sm:px-16 lg:ml-[var(--frame-inset)] lg:w-[54vw] lg:max-w-[820px] lg:pt-[18svh]"
+      className="pointer-events-none relative z-10 min-h-svh px-6 pt-[44svh] pb-48 sm:px-16 lg:ml-[var(--frame-inset)] lg:w-[var(--reader-width)] lg:pt-[18svh]"
     >
       <motion.div
         initial={from}

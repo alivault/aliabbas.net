@@ -132,6 +132,7 @@ const LAYOUT = new Set([
   'section-content-gap',
   'header-height',
   'frame-inset',
+  'reader-width',
 ])
 
 /** Every color custom property in `:root`, in CSS order. */
