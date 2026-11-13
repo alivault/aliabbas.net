@@ -4,6 +4,7 @@ import { ArrowLeft, Volume2, VolumeX } from 'lucide-react'
 import HeaderBlur from '~/components/HeaderBlur'
 import { cn } from '~/lib/utils'
 import { isSoundOn, onSoundChange, play, setSound } from '~/lib/sound'
+import GuideArrows from './GuideArrows'
 import { SHEETS } from './sheets'
 import { setWorld, useWorld, worldCommands } from './store'
 
@@ -20,6 +21,7 @@ export default function Hud({ inPage }: { inPage: boolean }) {
   const hover = useWorld((s) => s.hover)
   const ready = useWorld((s) => s.ready)
   const phase = useWorld((s) => s.phase)
+  const lost = useWorld((s) => s.lost)
   const [soundOn, setSoundOn] = useState(false)
   const router = useRouter()
 
@@ -124,11 +126,20 @@ export default function Hud({ inPage }: { inPage: boolean }) {
         aria-live="polite"
         className={cn(
           'absolute bottom-20 left-1/2 -translate-x-1/2 text-center whitespace-nowrap transition-opacity',
-          hovered && !inPage ? 'opacity-100' : 'opacity-0',
+          (hovered || lost) && !inPage && !indexOpen
+            ? 'opacity-100'
+            : 'opacity-0',
         )}
       >
-        {hovered ? `${hovered.title} · ${hovered.kind}` : ''}
+        {hovered
+          ? `${hovered.title} · ${hovered.kind}`
+          : lost
+            ? 'Lost? Click Next'
+            : ''}
       </p>
+
+      {/* Toward the nearest icons, when none is in sight. */}
+      {inPage || indexOpen ? null : <GuideArrows />}
 
       <div className="absolute bottom-6 left-6 flex items-center">
         <button
@@ -157,7 +168,12 @@ export default function Hud({ inPage }: { inPage: boolean }) {
           <button
             type="button"
             data-sound="none"
-            className={cn(corner, 'text-lg')}
+            // When the visitor is lost, Next pulses: it is the way back.
+            className={cn(
+              corner,
+              'text-lg',
+              lost && 'motion-safe:animate-pulse',
+            )}
             disabled={!ready || phase !== 'roam'}
             onClick={() => worldCommands.next()}
           >

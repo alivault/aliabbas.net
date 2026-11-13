@@ -217,11 +217,9 @@ export default function Player({
         },
       })
     }
-    worldCommands.next = () => {
-      if (getWorld().phase !== 'roam') return
-      const { visited } = getWorld()
+    /** Fly to a stop in front of a sheet, facing it. */
+    const flyNear = (sheet: (typeof SHEETS)[number]) => {
       const here = position.current
-      const sheet = nextOnTour(SHEETS, here, visited, toured.current)
       let dx = here.x - sheet.x
       let dz = here.z - sheet.z
       const length = Math.hypot(dx, dz) || 1
@@ -240,6 +238,17 @@ export default function Player({
         },
         { cancellable: true },
       )
+    }
+    worldCommands.next = () => {
+      if (getWorld().phase !== 'roam') return
+      const { visited } = getWorld()
+      flyNear(nextOnTour(SHEETS, position.current, visited, toured.current))
+    }
+    worldCommands.goTo = (id) => {
+      const sheet = SHEETS.find((s) => s.id === id)
+      if (!sheet || getWorld().phase !== 'roam') return
+      toured.current.add(sheet.id)
+      flyNear(sheet)
     }
   })
 

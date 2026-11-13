@@ -27,6 +27,8 @@ export type WorldState = {
   indexOpen: boolean
   /** True when the open index has scrolled, so it goes under the HUD. */
   indexScrolled: boolean
+  /** True when the visitor has walked far from every sheet. */
+  lost: boolean
 }
 
 const VISITED_KEY = 'world:visited'
@@ -40,6 +42,7 @@ let state: WorldState = {
   ready: false,
   indexOpen: false,
   indexScrolled: false,
+  lost: false,
 }
 
 const listeners = new Set<() => void>()
@@ -101,6 +104,8 @@ export const worldCommands = {
   snapInto: (_id: string) => {},
   /** Walk to the next sheet that the visitor has not opened. */
   next: () => {},
+  /** Fly to a stop in front of a sheet, without opening it. */
+  goTo: (_id: string) => {},
 }
 
 let hydrated = false
