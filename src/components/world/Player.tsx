@@ -1,4 +1,5 @@
 import { useEffect, useRef } from 'react'
+import { nextOnTour } from './tour'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { play, setDroneOpen } from '~/lib/sound'
@@ -73,6 +74,8 @@ export default function Player({
   const keys = useRef(new Set<string>())
   const flight = useRef<Flight | null>(null)
   const home = useRef<Pose | null>(null)
+  /** The sheets that Next has shown in this tour, in order. */
+  const toured = useRef(new Set<string>())
   const stepClock = useRef(0)
   const droneClock = useRef(0)
 
@@ -218,14 +221,7 @@ export default function Player({
       if (getWorld().phase !== 'roam') return
       const { visited } = getWorld()
       const here = position.current
-      const candidates = SHEETS.filter((s) => !visited.includes(s.id))
-      const pool = candidates.length ? candidates : SHEETS
-      // The nearest one that is not right in front of the visitor.
-      const sheet =
-        [...pool]
-          .map((s) => ({ s, d: Math.hypot(s.x - here.x, s.z - here.z) }))
-          .filter(({ d }) => d > 7)
-          .sort((a, b) => a.d - b.d)[0]?.s ?? pool[0]
+      const sheet = nextOnTour(SHEETS, here, visited, toured.current)
       let dx = here.x - sheet.x
       let dz = here.z - sheet.z
       const length = Math.hypot(dx, dz) || 1
