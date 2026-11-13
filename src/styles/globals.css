@@ -296,6 +296,62 @@ textarea {
   }
 }
 
+/*
+  Text that scrolls under the HUD fades out at the top and the bottom of
+  the screen. It is a mask on the text, not a surface over it: no blur and
+  no fill, so the world shows behind as it does everywhere else. The top
+  fade clears the corners (the header height and a little more); the
+  bottom one clears the sound button. The stops ease the edge, so it has
+  no hard line.
+
+  scroll-fade: on a box that scrolls inside itself (the index).
+  page-fade: on the page, which scrolls the window. The mask is one screen
+  high and moves down as the window scrolls, so it stays on the screen:
+  with a scroll timeline where the browser has one, else at
+  --page-scroll, which WorldShell sets on scroll.
+*/
+@utility scroll-fade {
+  --fade-top: calc(var(--header-height) + 2rem);
+  --fade-bottom: 6rem;
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent calc(var(--fade-top) * 0.5),
+    rgb(0 0 0 / 0.35) calc(var(--fade-top) * 0.68),
+    rgb(0 0 0 / 0.8) calc(var(--fade-top) * 0.86),
+    black var(--fade-top),
+    black calc(100% - var(--fade-bottom)),
+    rgb(0 0 0 / 0.8) calc(100% - var(--fade-bottom) * 0.86),
+    rgb(0 0 0 / 0.35) calc(100% - var(--fade-bottom) * 0.68),
+    transparent calc(100% - var(--fade-bottom) * 0.45),
+    transparent 100%
+  );
+  mask-repeat: no-repeat;
+}
+
+@utility page-fade {
+  @apply scroll-fade;
+  mask-size: 100% var(--page-view, 100dvh);
+  mask-position: 0 var(--page-scroll, 0px);
+
+  @supports (animation-timeline: scroll()) {
+    /* 0% to 100% of the free height of the page (its height less one
+       screen) is 0 to the full scroll of the window, as the page is the
+       height of the document. */
+    animation: page-fade-follow linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+
+@keyframes page-fade-follow {
+  from {
+    mask-position: 0 0%;
+  }
+  to {
+    mask-position: 0 100%;
+  }
+}
+
 @utility prose {
   blockquote {
     font-style: normal;

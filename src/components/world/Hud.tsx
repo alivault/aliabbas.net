@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useRouter } from '@tanstack/react-router'
 import { ArrowLeft, Volume2, VolumeX } from 'lucide-react'
-import HeaderBlur from '~/components/HeaderBlur'
 import { cn } from '~/lib/utils'
 import { isSoundOn, onSoundChange, play, setSound } from '~/lib/sound'
 import GuideArrows from './GuideArrows'
@@ -17,7 +16,6 @@ const corner = 'hud-fill pointer-events-auto disabled:opacity-50'
  */
 export default function Hud({ inPage }: { inPage: boolean }) {
   const indexOpen = useWorld((s) => s.indexOpen)
-  const indexScrolled = useWorld((s) => s.indexScrolled)
   const hover = useWorld((s) => s.hover)
   const ready = useWorld((s) => s.ready)
   const phase = useWorld((s) => s.phase)
@@ -50,18 +48,6 @@ export default function Hud({ inPage }: { inPage: boolean }) {
       data-hud
       className="font-hud text-hud pointer-events-none fixed inset-0 z-30 text-sm tracking-[0.42em] uppercase [&_:is(button,a,input)]:uppercase"
     >
-      {/* The text of a page scrolls under the corners: a blur behind the
-          top once the page scrolls, and on a phone a dark band at the
-          bottom, keep the HUD and the text apart. */}
-      {inPage || indexOpen ? (
-        <HeaderBlur scrolledOver={indexOpen ? indexScrolled : undefined} />
-      ) : null}
-      {inPage ? (
-        <div
-          aria-hidden="true"
-          className="from-background via-background absolute inset-x-0 bottom-0 h-24 bg-linear-to-t via-45% to-transparent lg:hidden"
-        />
-      ) : null}
       {inPage && !indexOpen ? (
         <div className="absolute top-5 left-6">
           <button

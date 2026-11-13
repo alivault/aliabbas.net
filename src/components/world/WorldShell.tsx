@@ -95,6 +95,26 @@ export default function WorldShell({ children }: { children: ReactNode }) {
   // (on the server, or without WebGL), it shows at once.
   const showText = inPage && (!ready || phase === 'inside')
 
+  // Keeps the fade of the page on the screen where the browser has no
+  // scroll timeline: the mask moves down by the scroll of the window.
+  const pageLayer = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (!showText) return
+    const place = () => {
+      const layer = pageLayer.current
+      if (!layer) return
+      layer.style.setProperty('--page-scroll', `${window.scrollY}px`)
+      layer.style.setProperty('--page-view', `${window.innerHeight}px`)
+    }
+    place()
+    window.addEventListener('scroll', place, { passive: true })
+    window.addEventListener('resize', place)
+    return () => {
+      window.removeEventListener('scroll', place)
+      window.removeEventListener('resize', place)
+    }
+  }, [showText])
+
   return (
     <>
       <div
@@ -108,7 +128,13 @@ export default function WorldShell({ children }: { children: ReactNode }) {
         ) : null}
       </div>
 
-      {showText ? children : null}
+      {/* The page fades out under the HUD at the top and the bottom of the
+          screen (page-fade in globals.css). */}
+      {showText ? (
+        <div ref={pageLayer} className="page-fade">
+          {children}
+        </div>
+      ) : null}
       {/* The home page has no content of its own: it is the world. Without
           WebGL, it lists the pages. */}
       {inPage ? null : (

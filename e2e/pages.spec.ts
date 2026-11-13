@@ -156,34 +156,51 @@ for (const [path, types] of [
   })
 }
 
+/** The mask image of an element. */
+const fadeOf = (element: Element) => {
+  const style = getComputedStyle(element)
+  return style.maskImage || style.getPropertyValue('-webkit-mask-image')
+}
+
 test(
-  'a page blurs the top corners only after it scrolls',
+  'a page fades out under the HUD by a mask that stays on the screen',
   { tag: '@mobile' },
   async ({ page }) => {
     await open(page, '/work/pico')
-    const blur = page.locator('[data-header-blur]')
-    const opacity = () =>
-      blur.evaluate((element) => getComputedStyle(element).opacity)
-    await expect.poll(opacity).toBe('0')
-    await page.evaluate(() => window.scrollTo({ top: 600 }))
-    await expect.poll(opacity).toBe('1')
+    const layer = page.locator('.page-fade')
+    expect(await layer.evaluate(fadeOf)).toContain('linear-gradient')
+    // The HUD draws no surface behind its corners: no blur anywhere.
+    const blurs = await page
+      .locator('[data-hud] *')
+      .evaluateAll((elements) =>
+        elements.filter(
+          (element) => getComputedStyle(element).backdropFilter !== 'none',
+        ),
+      )
+    expect(blurs).toHaveLength(0)
+
+    // After a scroll, the mask has moved down with the screen.
+    await page.evaluate(() => window.scrollTo({ top: 900 }))
+    const top = () =>
+      layer.evaluate((element) => {
+        const style = getComputedStyle(element)
+        const free = element.scrollHeight - window.innerHeight
+        const position = style.maskPosition.split(' ')[1] ?? '0px'
+        return position.endsWith('%')
+          ? (parseFloat(position) / 100) * free
+          : parseFloat(position)
+      })
+    await expect.poll(top).toBeGreaterThan(890)
+    expect(await top()).toBeLessThan(910)
   },
 )
 
-test('the index blurs the top corners once it scrolls', async ({ page }) => {
-  await page.setViewportSize({ width: 1024, height: 500 })
+test('the index list fades out under the HUD', async ({ page }) => {
   await open(page, '/')
   await page.getByRole('button', { name: 'Index' }).click()
-  const index = page.getByRole('dialog', { name: 'Index' })
-  await expect(index).toBeVisible()
-  const blur = page.locator('[data-header-blur]')
-  const opacity = () =>
-    blur.evaluate((element) => getComputedStyle(element).opacity)
-  await expect.poll(opacity).toBe('0')
-  await index.evaluate((element) => element.scrollTo({ top: 300 }))
-  await expect.poll(opacity).toBe('1')
-  await index.evaluate((element) => element.scrollTo({ top: 0 }))
-  await expect.poll(opacity).toBe('0')
+  const list = page.locator('[data-index-scroll]')
+  await expect(list).toBeVisible()
+  expect(await list.evaluate(fadeOf)).toContain('linear-gradient')
 })
 
 test('Esc on a page goes back to the world', async ({ page }) => {

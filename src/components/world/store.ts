@@ -25,8 +25,6 @@ export type WorldState = {
   ready: boolean
   /** True while the index of the site is open over the world. */
   indexOpen: boolean
-  /** True when the open index has scrolled, so it goes under the HUD. */
-  indexScrolled: boolean
   /** True when the visitor has walked far from every sheet. */
   lost: boolean
 }
@@ -41,7 +39,6 @@ let state: WorldState = {
   entered: false,
   ready: false,
   indexOpen: false,
-  indexScrolled: false,
   lost: false,
 }
 

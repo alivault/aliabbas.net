@@ -6,7 +6,7 @@ import type { Variants } from 'motion/react'
 import { DURATIONS, EASE_IN, EASE_OUT } from '~/lib/design/motion'
 import { cn } from '~/lib/utils'
 import { SHEETS } from './sheets'
-import { getWorld, setWorld, useWorld } from './store'
+import { setWorld, useWorld } from './store'
 
 const EMAIL = 'ali@aliabbas.net'
 
@@ -103,11 +103,6 @@ export default function SiteIndex() {
 
   const close = () => setWorld({ indexOpen: false })
 
-  // The HUD shows its blur once the index scrolls under the top corners.
-  useEffect(() => {
-    if (!open) setWorld({ indexScrolled: false })
-  }, [open])
-
   return (
     <AnimatePresence>
       {open ? (
@@ -125,49 +120,46 @@ export default function SiteIndex() {
             transition: { duration: DURATIONS.exit, ease: EASE_IN },
           }}
           transition={{ duration: DURATIONS.enter, ease: EASE_OUT }}
-          onScroll={(event) => {
-            const scrolled = event.currentTarget.scrollTop > 0
-            if (scrolled !== getWorld().indexScrolled) {
-              setWorld({ indexScrolled: scrolled })
-            }
-          }}
-          className="font-hud text-hud bg-ground/60 fixed inset-0 z-20 overflow-y-auto text-sm tracking-[0.42em] uppercase backdrop-blur-[20px]"
+          className="font-hud text-hud bg-ground/60 fixed inset-0 z-20 text-sm tracking-[0.42em] uppercase backdrop-blur-[20px]"
         >
-          <motion.nav
-            aria-label="Index"
-            initial="hidden"
-            animate="show"
-            variants={list}
-            className="flex flex-col gap-16 px-6 pt-20 pb-40 sm:px-16"
-          >
-            {GROUPS.map((group) => (
-              <section key={group.title}>
-                <motion.h2 variants={line} className="mb-5 text-xs">
-                  {group.title}
-                </motion.h2>
-                <ul
-                  className={cn(
-                    'flex flex-col',
-                    group.size === 'large' ? 'gap-4 text-lg' : 'gap-3',
-                  )}
-                >
-                  {group.entries.map((entry) => (
-                    <motion.li key={entry.label} variants={line}>
-                      {group.size === 'small' ? (
-                        <span aria-hidden="true">→ </span>
-                      ) : null}
-                      <IndexLink entry={entry} onNavigate={close}>
-                        {entry.label}
-                      </IndexLink>
-                    </motion.li>
-                  ))}
-                </ul>
-              </section>
-            ))}
-            <motion.p variants={line}>
-              {visited} of {SHEETS.length} found in the world
-            </motion.p>
-          </motion.nav>
+          {/* The list scrolls inside, and fades out under the HUD. */}
+          <div data-index-scroll className="scroll-fade h-full overflow-y-auto">
+            <motion.nav
+              aria-label="Index"
+              initial="hidden"
+              animate="show"
+              variants={list}
+              className="flex flex-col gap-16 px-6 pt-20 pb-40 sm:px-16"
+            >
+              {GROUPS.map((group) => (
+                <section key={group.title}>
+                  <motion.h2 variants={line} className="mb-5 text-xs">
+                    {group.title}
+                  </motion.h2>
+                  <ul
+                    className={cn(
+                      'flex flex-col',
+                      group.size === 'large' ? 'gap-4 text-lg' : 'gap-3',
+                    )}
+                  >
+                    {group.entries.map((entry) => (
+                      <motion.li key={entry.label} variants={line}>
+                        {group.size === 'small' ? (
+                          <span aria-hidden="true">→ </span>
+                        ) : null}
+                        <IndexLink entry={entry} onNavigate={close}>
+                          {entry.label}
+                        </IndexLink>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </section>
+              ))}
+              <motion.p variants={line}>
+                {visited} of {SHEETS.length} found in the world
+              </motion.p>
+            </motion.nav>
+          </div>
         </motion.div>
       ) : null}
     </AnimatePresence>
