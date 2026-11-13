@@ -23,7 +23,8 @@ const EVIDENCE_ID = 'lab-evidence-panel'
 type FocusTarget = 'heading' | 'rail' | { sourceId: string }
 
 export default function ResizerSpecimen() {
-  const stream = useLabStream('done')
+  // It opens in the middle of a stream, as the other demos do.
+  const stream = useLabStream('streaming')
   const isDesktop = useIsDesktop()
   const { reduce } = useLabMotion()
   const [collapsed, setCollapsed] = useState(false)

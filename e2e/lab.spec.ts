@@ -164,3 +164,17 @@ test('tabs: arrows change the demo, and the URL keeps it', async ({ page }) => {
     'true',
   )
 })
+
+test('every demo opens in the middle of a stream', async ({ page }) => {
+  for (const [tab, id] of [
+    ['Citation drawer', 'citation-drawer'],
+    ['Fluid resizer', 'fluid-resizer'],
+    ['Moving card', 'state-transition'],
+  ] as const) {
+    await page.getByRole('tab', { name: tab }).click()
+    const specimen = page.locator(`#${id}`)
+    await expect(
+      specimen.getByRole('radio', { name: 'Streaming', exact: true }),
+    ).toHaveAttribute('aria-checked', 'true')
+  }
+})

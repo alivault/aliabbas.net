@@ -233,7 +233,8 @@ function Placeholder({
 }
 
 export default function TransitionSpecimen() {
-  const stream = useLabStream('done')
+  // It opens in the middle of a stream, as the other demos do.
+  const stream = useLabStream('streaming')
   const [placement, setPlacement] = useState<Placement>('feed')
 
   return (

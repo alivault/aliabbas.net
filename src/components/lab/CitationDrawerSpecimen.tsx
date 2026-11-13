@@ -21,7 +21,8 @@ const ID = 'citation-drawer'
 const PREFIX = 'lab-drawer'
 
 export default function CitationDrawerSpecimen() {
-  const stream = useLabStream('done')
+  // It opens in the middle of a stream, as the other demos do.
+  const stream = useLabStream('streaming')
   const isDesktop = useIsDesktop()
   const [open, setOpen] = useState(false)
   const [activeSourceId, setActiveSourceId] = useState<string | null>(null)
