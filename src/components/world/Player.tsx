@@ -236,7 +236,8 @@ export default function Player({
       const z = sheet.z + dz * 5.5
       const y = heightAt(x, z) + EYE
       walkTarget.current = null
-      play('click')
+      // The swoop of a dash: Next and the guide arrows fly the camera.
+      play('dash')
       fly(
         {
           position: new THREE.Vector3(x, y, z),
