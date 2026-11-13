@@ -44,30 +44,32 @@ function fitSvgToContent(container: HTMLElement | null) {
   svg.style.maxWidth = `${width}px`
 }
 
-function getPrefersDarkMode() {
-  return (
-    typeof window !== 'undefined' &&
-    window.matchMedia('(prefers-color-scheme: dark)').matches
-  )
+/**
+ * A color token of the site as rgb(), for mermaid, which does not read
+ * oklch(): paint one pixel with it and read the pixel back.
+ */
+function tokenColor(name: string, fallback: string) {
+  const value = getComputedStyle(document.documentElement)
+    .getPropertyValue(name)
+    .trim()
+  const canvas = document.createElement('canvas')
+  canvas.width = canvas.height = 1
+  const context = canvas.getContext('2d', { willReadFrequently: true })
+  if (!value || !context) return fallback
+  context.fillStyle = value
+  context.fillRect(0, 0, 1, 1)
+  const [r, g, b] = context.getImageData(0, 0, 1, 1).data
+  return `#${[r, g, b].map((c) => c.toString(16).padStart(2, '0')).join('')}`
 }
 
 export function MermaidDiagram({ value }: { value: MermaidDiagramValue }) {
   const renderId = `mermaid-${useId().replace(/[^a-zA-Z0-9_-]/g, '')}`
   const [state, setState] = useState<RenderState>({ status: 'loading' })
-  const [prefersDarkMode, setPrefersDarkMode] = useState(getPrefersDarkMode)
   const svgContainerRef = useRef<HTMLDivElement>(null)
 
   useLayoutEffect(() => {
     if (state.status === 'rendered') fitSvgToContent(svgContainerRef.current)
   }, [state])
-
-  useEffect(() => {
-    const colorScheme = window.matchMedia('(prefers-color-scheme: dark)')
-    const updateColorScheme = () => setPrefersDarkMode(colorScheme.matches)
-
-    colorScheme.addEventListener('change', updateColorScheme)
-    return () => colorScheme.removeEventListener('change', updateColorScheme)
-  }, [])
 
   useEffect(() => {
     if (!value.code) return
@@ -77,9 +79,12 @@ export function MermaidDiagram({ value }: { value: MermaidDiagramValue }) {
     async function renderDiagram() {
       try {
         const mermaid = await loadMermaid()
-        // Dark values match --foreground and --card in globals.css.
-        const foreground = prefersDarkMode ? '#e5e3dc' : '#111111'
-        const background = prefersDarkMode ? '#0d0f10' : '#f4f2ed'
+        // The site is dark only: the diagram uses its tokens, with the
+        // HUD orange for the edges of the boxes.
+        const foreground = tokenColor('--foreground', '#e5e3dc')
+        const background = tokenColor('--background', '#0d0f10')
+        const hud = tokenColor('--hud', '#d9502a')
+        const muted = tokenColor('--fg-muted', '#9a958c')
 
         mermaid.initialize({
           startOnLoad: false,
@@ -90,16 +95,20 @@ export function MermaidDiagram({ value }: { value: MermaidDiagramValue }) {
             background,
             fontFamily:
               'DM Sans Variable, ui-sans-serif, system-ui, sans-serif',
-            lineColor: foreground,
+            fontSize: '14px',
+            lineColor: muted,
             primaryColor: background,
             primaryTextColor: foreground,
-            primaryBorderColor: foreground,
-            secondaryColor: prefersDarkMode ? '#202744' : '#dfe5ff',
+            primaryBorderColor: hud,
+            secondaryColor: background,
             secondaryTextColor: foreground,
-            tertiaryColor: prefersDarkMode ? '#252523' : '#ffffff',
+            tertiaryColor: background,
+            edgeLabelBackground: background,
+            clusterBkg: 'transparent',
+            clusterBorder: hud,
           },
         })
-        const themedRenderId = `${renderId}-${prefersDarkMode ? 'dark' : 'light'}`
+        const themedRenderId = `${renderId}-dark`
         const { svg } = await mermaid.render(themedRenderId, value.code ?? '')
 
         if (active) setState({ status: 'rendered', svg })
@@ -113,7 +122,7 @@ export function MermaidDiagram({ value }: { value: MermaidDiagramValue }) {
     return () => {
       active = false
     }
-  }, [prefersDarkMode, renderId, value.code])
+  }, [renderId, value.code])
 
   if (!value.code) return null
 
@@ -138,7 +147,7 @@ export function MermaidDiagram({ value }: { value: MermaidDiagramValue }) {
         />
       )}
       {value.caption && (
-        <figcaption className="text-fg-muted mx-auto mt-5 max-w-2xl text-center text-sm leading-6">
+        <figcaption className="text-fg-muted mt-3 max-w-[60ch] text-sm leading-6">
           {value.caption}
         </figcaption>
       )}
