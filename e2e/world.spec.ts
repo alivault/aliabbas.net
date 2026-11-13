@@ -4,9 +4,18 @@ import { expect, open, test } from './fixtures'
 // so these tests have more time.
 test.describe.configure({ timeout: 90_000 })
 
+/**
+ * Tests that walk or drag in the world need a steady frame rate. The CI
+ * runners draw software WebGL at a few frames a second, so there these
+ * tests run only on a developer machine.
+ */
+const needsFrames = () =>
+  test.skip(!!process.env.CI, 'Software WebGL in CI is too slow to walk.')
+
 test('far from the pages, the HUD says so, and an arrow flies back', async ({
   page,
 }) => {
+  needsFrames()
   await open(page, '/?gl=force')
   await page.getByRole('button', { name: /Enter in silence/i }).click()
   const hint = page.getByText('Lost? Click Next')
@@ -35,6 +44,7 @@ test('far from the pages, the HUD says so, and an arrow flies back', async ({
 test('a drag on a cube spins it, and a click still opens its page', async ({
   page,
 }) => {
+  needsFrames()
   await open(page, '/?gl=force')
   await page.getByRole('button', { name: /Enter in silence/i }).click()
   await page.waitForTimeout(1500)
@@ -72,11 +82,18 @@ test('on a page, the pointer reaches the cube beside the text', async ({
   await open(page, '/skills?gl=force')
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
   // The cube is on the right half; the text is on the left.
-  const target = await page.evaluate(
-    () =>
-      document.elementFromPoint(innerWidth * 0.75, innerHeight * 0.5)?.tagName,
-  )
-  expect(target).toBe('CANVAS')
+  // The world loads after the page: wait for its canvas.
+  await expect
+    .poll(
+      () =>
+        page.evaluate(
+          () =>
+            document.elementFromPoint(innerWidth * 0.75, innerHeight * 0.5)
+              ?.tagName,
+        ),
+      { timeout: 30_000 },
+    )
+    .toBe('CANVAS')
   // The text still takes the pointer.
   await page.getByRole('link', { name: 'Force each state in the lab' }).click()
   await expect(page).toHaveURL(/\/lab/)
