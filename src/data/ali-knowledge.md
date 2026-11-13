@@ -109,12 +109,12 @@ The architecture described on Ali's portfolio is:
 
 ## Professional experience
 
-### Senior Frontend Engineer — Super Studios Inc. (2024–present)
+### Senior Frontend Engineer — Super Studios Inc. (2024–August 2026)
 
-Ali designs and develops key components for modern, responsive web applications
-using Next.js, TypeScript, and Tailwind CSS. He collaborates with developers,
+Ali left Super Studios in August 2026. There, he designed and developed key
+components for modern, responsive web applications using Next.js, TypeScript, and Tailwind CSS. He collaborated with developers,
 designers, and product managers to deliver user-centered interfaces that
-prioritize performance, accessibility, and engagement.
+prioritized performance, accessibility, and engagement.
 
 Company: https://superstudios.io/
 
