@@ -80,10 +80,11 @@ export default function Hud({ inPage }: { inPage: boolean }) {
         </div>
       ) : null}
 
-      {/* The name, at the center of the top. The tracking adds space after
-          the last letter too; a negative margin of the same size centers
-          the letters themselves. */}
-      <div className="absolute top-5 left-1/2 -translate-x-1/2">
+      {/* The name, at the center of the top; on a phone, at the left, where
+          Back takes its place on a page. The tracking adds space after the
+          last letter too; a negative margin of the same size centers the
+          letters themselves. */}
+      <div className="absolute top-5 left-6 sm:left-1/2 sm:-translate-x-1/2">
         <Link
           to="/"
           data-sound="none"
