@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useEffect, useId, useRef, useState, useSyncExternalStore } from 'react'
 import type { ComponentProps, ReactNode } from 'react'
 import { createLink } from '@tanstack/react-router'
 import { motion } from 'motion/react'
@@ -38,12 +38,19 @@ export const hudText =
  * hydration of it, starts visible: text hidden until the scripts run would
  * delay the first paint. A page opened later fades in.
  */
-function useEnterFrom() {
-  const [from] = useState<'hidden' | false>(() =>
-    isHydrated() ? 'hidden' : false,
+function useEnterFrom(): 'hidden' | false {
+  // While React hydrates, this is the server's answer (false), also for a
+  // route that hydrates after the flag is set: the markup must match.
+  const [from] = useState(isHydrated)
+  const hydrating = !useSyncExternalStore(
+    noSubscribe,
+    () => true,
+    () => false,
   )
-  return from
+  return from && !hydrating ? 'hidden' : false
 }
+
+const noSubscribe = () => () => {}
 
 /**
  * The same staggered fade for a page that does not use Reader (the lab):
