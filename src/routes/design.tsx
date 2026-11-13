@@ -103,7 +103,8 @@ function DesignPage() {
       <ReaderSection id="type" title="3. Type">
         <ReaderText>
           Two faces. A wide face in spaced capitals for everything short, and a
-          plain face for everything long. 14px is the smallest size.
+          plain face for everything long. 12px is the smallest size, for short
+          labels only.
         </ReaderText>
         <Entry label={`${FONTS.hud.family} · HUD`}>
           <p>{FONTS.hud.use}</p>

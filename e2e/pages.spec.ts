@@ -2,7 +2,7 @@ import { expect, test, open } from './fixtures'
 import type { Page } from '@playwright/test'
 
 /**
- * Visible text under 14px, or in capitals by CSS, in the whole page: the
+ * Visible text under 12px, or in capitals by CSS, in the whole page: the
  * header, the content and the footer.
  */
 function smallText(page: Page) {
@@ -32,7 +32,7 @@ function smallText(page: Page) {
       )
         continue
       if (
-        parseFloat(style.fontSize) < 14 ||
+        parseFloat(style.fontSize) < 12 ||
         style.textTransform === 'uppercase'
       ) {
         found.add(
@@ -62,7 +62,7 @@ for (const path of [
   '/design',
 ]) {
   test(
-    `${path} has no text under 14px and no CSS capitals`,
+    `${path} has no text under 12px and no CSS capitals`,
     { tag: '@mobile' },
     async ({ page }) => {
       await open(page, path)

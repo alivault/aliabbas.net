@@ -25,7 +25,7 @@ The site is a 3D world (React Three Fiber) on TanStack Start, on a Cloudflare Wo
 - Colors: use the tokens in `src/styles/globals.css` through their Tailwind names. Describe a new color in `COLOR_ROLES` in `src/lib/design/tokens.ts`; a unit test fails until you do.
 - Motion: use `SPRINGS`, `EASE_OUT`, `EASE_IN` and `DURATIONS` from `src/lib/design/motion.ts`. A page enters only by the camera zoom and an opacity fade: no slides.
 - HUD text: short labels in `font-hud`, spaced capitals, HUD orange (`hudText` in `Reader.tsx`). Only inside `data-hud`.
-- Body text: sentence case, 14px (`text-sm`) or larger. Mono only for code, paths and ids.
+- Text size: 12px (`text-xs`) is the smallest, for short labels only. Body text: sentence case, 16px (`text-base`); controls and hints 14px (`text-sm`). Mono only for code, paths and ids.
 - Every link and button in the HUD style uses `hud-fill` for its hover and focus.
 
 ## Tests

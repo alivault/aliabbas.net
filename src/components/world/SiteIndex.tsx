@@ -142,7 +142,7 @@ export default function SiteIndex() {
           >
             {GROUPS.map((group) => (
               <section key={group.title}>
-                <motion.h2 variants={line} className="mb-5">
+                <motion.h2 variants={line} className="mb-5 text-xs">
                   {group.title}
                 </motion.h2>
                 <ul

@@ -242,7 +242,13 @@ export const BODY_SCALE = [
     className: 'text-sm',
     size: '14px',
     lineHeight: '24px',
-    use: 'Controls, metadata and hints. The smallest size.',
+    use: 'Controls, metadata and hints.',
+  },
+  {
+    className: 'text-xs',
+    size: '12px',
+    lineHeight: '20px',
+    use: 'Short labels, such as the section headings of the index. The smallest size.',
   },
 ] as const
 
@@ -324,7 +330,7 @@ export function designTokensDocument(rules: ReadonlyArray<unknown>) {
     ),
     text: {
       fonts: FONTS,
-      minimumSize: '14px',
+      minimumSize: '12px',
       tones: TEXT_TONES,
       titles: TYPE_SCALE,
       body: BODY_SCALE,
