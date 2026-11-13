@@ -140,10 +140,10 @@
 @media (prefers-color-scheme: dark) {
   :root {
     /* #050607: near black, slightly cool. Surfaces and lines use its hue.
-       Text is a warm off-white below full white, for less glare. Each text
+       Text is a warm near-white, a clear step above the secondary text. Each text
        color is tuned to an APCA target on this background (see the tests). */
     --background: oklch(0.121 0.0039 245.5);
-    --foreground: oklch(0.915 0.009 94);
+    --foreground: oklch(0.98 0.006 94);
     --fg-secondary: oklch(0.85 0.009 94);
     --fg-muted: oklch(0.77 0.008 94);
     --fg-faint: oklch(0.59 0.007 94);
@@ -178,7 +178,7 @@
 .scheme-dark {
   color-scheme: dark;
   --background: oklch(0.121 0.0039 245.5);
-  --foreground: oklch(0.915 0.009 94);
+  --foreground: oklch(0.98 0.006 94);
   --fg-secondary: oklch(0.85 0.009 94);
   --fg-muted: oklch(0.77 0.008 94);
   --fg-faint: oklch(0.59 0.007 94);
