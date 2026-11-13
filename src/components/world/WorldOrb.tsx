@@ -221,7 +221,10 @@ export default function WorldOrb({
   const move = (event: ThreeEvent<PointerEvent>) => {
     const at = onSurface(event)
     if (!at) return
-    const inside = Math.hypot(at.x, at.y) < HIT
+    // A little more room to leave than to enter, so a pointer on the edge
+    // does not flip the hover (and its sound) on and off.
+    const reach = hovered.current ? HIT * 1.08 : HIT
+    const inside = Math.hypot(at.x, at.y) < reach
     const { phase } = getWorld()
     if (phase === 'roam' || isOpen() || press.current) {
       setHover(inside || press.current !== null)

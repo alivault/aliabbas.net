@@ -53,7 +53,7 @@ export default function GuideArrows() {
           }}
           type="button"
           tabIndex={-1}
-          data-sound="none"
+          data-sound="hover"
           onClick={() => {
             const id = ids.current[index]
             if (id) worldCommands.goTo(id)

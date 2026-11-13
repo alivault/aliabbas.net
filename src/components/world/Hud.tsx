@@ -81,7 +81,8 @@ export default function Hud({ inPage }: { inPage: boolean }) {
         <div className="absolute top-5 left-6">
           <button
             type="button"
-            data-sound="none"
+            // The flight out of the page plays its own sound.
+            data-sound="hover"
             className={cn(corner, 'inline-flex items-center gap-3')}
             onClick={back}
           >
@@ -102,7 +103,9 @@ export default function Hud({ inPage }: { inPage: boolean }) {
       <div className="absolute top-5 left-6 sm:left-1/2 sm:-translate-x-1/2">
         <Link
           to="/"
-          data-sound="none"
+          // From a page, the flight out plays its own sound; in the world,
+          // a click.
+          data-sound={inPage ? 'hover' : 'click'}
           // On a phone, the name gives its room to Back on a page.
           className={cn(
             corner,
@@ -126,7 +129,6 @@ export default function Hud({ inPage }: { inPage: boolean }) {
             <>
               <button
                 type="button"
-                data-sound="none"
                 aria-label="Previous music"
                 className={corner}
                 onClick={() => stepVibe(-1)}
@@ -139,7 +141,6 @@ export default function Hud({ inPage }: { inPage: boolean }) {
               </button>
               <button
                 type="button"
-                data-sound="none"
                 aria-label="Next music"
                 className={corner}
                 onClick={() => stepVibe(1)}
@@ -249,7 +250,8 @@ export default function Hud({ inPage }: { inPage: boolean }) {
         <div className="absolute right-6 bottom-6">
           <button
             type="button"
-            data-sound="none"
+            // The flight plays its own sound (the swoop).
+            data-sound="hover"
             // When the visitor is lost, Next pulses: it is the way back.
             className={cn(
               corner,

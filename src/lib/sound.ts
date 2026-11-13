@@ -484,19 +484,23 @@ export function play(name: SoundName) {
 }
 
 const INTERACTIVE =
-  'a[href], button, [role="button"], [role="tab"], [role="menuitem"], [role="switch"], input[type="checkbox"], input[type="radio"], select, summary, label[for]'
+  'a[href], button, [role="button"], [role="tab"], [role="menuitem"], [role="switch"], [role="radio"], [role="option"], [role="slider"], [role="checkbox"], input[type="checkbox"], input[type="radio"], select, summary, label[for]'
 
 /**
  * Gives every interactive element of the page a hover and a click sound.
- * An element with `data-sound="none"` (or inside one) stays silent; one
- * with its own sound sets `data-sound` to that sound.
+ * `data-sound` on the element (or around it) changes the click:
+ * - a sound name plays that sound;
+ * - `hover` keeps the hover and drops the click, for a control whose
+ *   action plays its own sound (a flight, Stop);
+ * - `none` makes it silent.
  */
 export function installInteractionSounds() {
   let hovered: Element | null = null
-  const soundOf = (element: Element): SoundName | null => {
-    const owner = element.closest('[data-sound]')
-    const value = owner?.getAttribute('data-sound')
-    if (value === 'none') return null
+  const valueOf = (element: Element) =>
+    element.closest('[data-sound]')?.getAttribute('data-sound') ?? null
+  const clickSoundOf = (element: Element): SoundName | null => {
+    const value = valueOf(element)
+    if (value === 'none' || value === 'hover') return null
     return (value as SoundName | null) ?? 'click'
   }
   const onOver = (event: PointerEvent) => {
@@ -504,16 +508,22 @@ export function installInteractionSounds() {
     const element = (event.target as Element | null)?.closest(INTERACTIVE)
     if (!element || element === hovered) return
     hovered = element
-    if (soundOf(element)) play('hover')
+    if (valueOf(element) !== 'none') play('hover')
   }
+  // A move from one part of a control to another (its text, its icon)
+  // fires out and over too: it is still the same control, and only a
+  // move out of it ends the hover.
   const onOut = (event: PointerEvent) => {
     const element = (event.target as Element | null)?.closest(INTERACTIVE)
-    if (element === hovered) hovered = null
+    if (element !== hovered) return
+    const next = event.relatedTarget as Node | null
+    if (next && element?.contains(next)) return
+    hovered = null
   }
   const onClick = (event: MouseEvent) => {
     const element = (event.target as Element | null)?.closest(INTERACTIVE)
     if (!element) return
-    const sound = soundOf(element)
+    const sound = clickSoundOf(element)
     if (sound) play(sound)
   }
   const onKey = (event: KeyboardEvent) => {

@@ -190,7 +190,8 @@ export default function ContactReader() {
               ) : null}
               <button
                 type="submit"
-                data-sound="none"
+                // Send plays when the message is sent.
+                data-sound="hover"
                 disabled={isSubmitting}
                 className={cn(
                   hudText,

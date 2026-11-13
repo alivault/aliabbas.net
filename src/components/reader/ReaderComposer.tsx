@@ -82,7 +82,7 @@ export default function ReaderComposer({
         />
         <button
           type={showStop ? 'button' : 'submit'}
-          data-sound={showStop ? 'none' : 'send'}
+          data-sound={showStop ? 'click' : 'send'}
           onClick={showStop ? onStop : undefined}
           disabled={!showStop && !hasDraft}
           aria-label={

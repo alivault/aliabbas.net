@@ -344,7 +344,6 @@ function Summary({
         />
         <button
           type="button"
-          data-sound="none"
           onClick={onStop}
           className={cn(actionStyle, 'self-start')}
         >

@@ -163,7 +163,12 @@ export default function WorldIcon({
       transparent: true,
       opacity: 0,
     })
-    return new THREE.LineSegments(geometry, material)
+    const lines = new THREE.LineSegments(geometry, material)
+    // Only the box takes the pointer. A line counts a hit within a whole
+    // unit of it, so the frame and the box took turns under the pointer
+    // near an edge, and each turn played the hover sound again.
+    lines.raycast = () => {}
+    return lines
   }, [accent])
 
   const shadow = useMemo(
@@ -460,10 +465,11 @@ export default function WorldIcon({
       return
     }
     if (getWorld().phase !== 'roam') return
+    const already = hovered.current
     hovered.current = true
     document.body.style.cursor = 'pointer'
     setWorld({ hover: sheet.id })
-    play('hover')
+    if (!already) play('hover')
   }
   const out = () => {
     hovered.current = false

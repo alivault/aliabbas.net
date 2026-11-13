@@ -27,7 +27,6 @@ import type { Turn } from '~/lib/chat/chat-machine'
 import { revealSource } from '~/lib/chat/reveal-source'
 import { answerToPlainText } from '~/lib/chat/streaming-markdown'
 import { DURATIONS, EASE_OUT } from '~/lib/design/motion'
-import { play } from '~/lib/sound'
 import { cn } from '~/lib/utils'
 import Shimmer from '~/components/ui/shimmer'
 import { copyText } from '~/lib/clipboard'
@@ -246,10 +245,8 @@ export default function ChatReader() {
     [remove, setDraft],
   )
 
-  const onStop = useCallback(() => {
-    play('click')
-    stop()
-  }, [stop])
+  // The Stop buttons play the click of a button; Esc stops in silence.
+  const onStop = useCallback(() => stop(), [stop])
 
   /**
    * Esc in the sidebar goes back to the chip or the button that opened it.
@@ -694,12 +691,7 @@ const TurnView = memo(function TurnView({
 
       <div className="mt-4 flex flex-wrap gap-x-10 gap-y-2">
         {active ? (
-          <button
-            type="button"
-            data-sound="none"
-            onClick={onStop}
-            className={actionStyle}
-          >
+          <button type="button" onClick={onStop} className={actionStyle}>
             Stop
           </button>
         ) : null}

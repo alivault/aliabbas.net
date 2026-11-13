@@ -177,7 +177,7 @@ export default function EnterGate({ active }: { active: boolean }) {
           <TypedIntro onEnter={enter} />
           <button
             type="button"
-            data-sound="none"
+            data-sound="hover"
             className="hud-fill text-base"
             onClick={enter}
           >
