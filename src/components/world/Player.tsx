@@ -13,6 +13,8 @@ import type { SheetSpec } from './sheets'
 const EYE = 1.7
 const WALK = 5
 const RUN = 11
+/** A walk to a clicked point goes at run speed, and slows down at the end. */
+const CLICK_WALK = RUN
 const LOOK = 0.0035
 
 type Pose = { position: THREE.Vector3; yaw: number; pitch: number }
@@ -397,7 +399,7 @@ export default function Player({
           walkTarget.current = null
         } else {
           wish.set(dx, 0, dz)
-          speed = Math.min(WALK, distance * 2)
+          speed = Math.min(CLICK_WALK, distance * 2.5)
           // Turn gently toward where the visitor walks.
           yaw.current = lerpAngle(
             yaw.current,
