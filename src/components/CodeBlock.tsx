@@ -43,10 +43,12 @@ interface CodeBlockProps {
 export function CodeBlock({ value }: CodeBlockProps) {
   if (!value.code) return null
 
+  // Square, with the thin HUD edge of the readers, on a dark ground that
+  // lets the world show a little. Mono at 14px, the smallest size for code.
   return (
-    <div className="my-4">
+    <div className="border-hud/20 my-4 border">
       {value.filename && (
-        <div className="rounded-t-lg bg-[#282c34] px-4 py-2 text-sm text-neutral-400">
+        <div className="border-hud/20 text-fg-muted border-b px-4 py-2 font-mono text-sm">
           {value.filename}
         </div>
       )}
@@ -55,8 +57,12 @@ export function CodeBlock({ value }: CodeBlockProps) {
         style={codeTheme}
         customStyle={{
           margin: 0,
-          borderRadius: value.filename ? '0 0 0.5rem 0.5rem' : '0.5rem',
+          borderRadius: 0,
+          background: 'color-mix(in oklab, var(--background) 80%, transparent)',
+          fontSize: '14px',
+          lineHeight: '24px',
         }}
+        codeTagProps={{ style: { fontSize: '14px' } }}
       >
         {value.code}
       </SyntaxHighlighter>

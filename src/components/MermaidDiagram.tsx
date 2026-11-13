@@ -128,7 +128,7 @@ export function MermaidDiagram({ value }: { value: MermaidDiagramValue }) {
           dangerouslySetInnerHTML={{ __html: state.svg }}
         />
       ) : state.status === 'error' ? (
-        <pre className="bg-foreground text-background overflow-x-auto p-5 font-mono text-xs leading-6">
+        <pre className="bg-foreground text-background overflow-x-auto p-5 font-mono text-sm leading-6">
           <code>{value.code}</code>
         </pre>
       ) : (
