@@ -7,7 +7,7 @@ import {
   NotebookPen,
   Palette,
   ShieldCheck,
-  Brain,
+  BrainCog,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 import { caseStudies } from '~/data/case-studies'
@@ -80,7 +80,7 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
   },
   {
     id: 'skills',
-    icon: { type: 'glyph', glyph: Brain },
+    icon: { type: 'glyph', glyph: BrainCog },
     to: '/skills',
     title: 'Skills',
     summary: 'What I can do, with the evidence for each skill.',
