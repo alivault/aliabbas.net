@@ -1,8 +1,8 @@
 /**
  * All sound of the site, made with Web Audio: no files to load.
  *
- * A drone plays under the world. Each interactive element plays a short
- * sound. Browsers start audio only after a gesture, so `start()` must run in
+ * A drone plays under the world: a warm chord that moves slowly. Each
+ * interactive element plays a short sound. Browsers start audio only after a gesture, so `start()` must run in
  * a click or a key handler. The choice (on or off) is saved.
  */
 
@@ -85,9 +85,10 @@ function setup() {
   master.connect(ctx.destination)
 
   reverb = ctx.createConvolver()
-  reverb.buffer = makeImpulse(ctx, 4.5)
+  // A room, not a cave: a short tail keeps the drone light.
+  reverb.buffer = makeImpulse(ctx, 2.8)
   const wet = ctx.createGain()
-  wet.gain.value = 0.55
+  wet.gain.value = 0.4
   reverb.connect(wet).connect(master)
 
   sfxBus = ctx.createGain()
@@ -133,50 +134,88 @@ function watchVisibility(context: AudioContext) {
   window.addEventListener('pageshow', back)
 }
 
+/** The open cutoff of the drone, in Hz, far from every page. */
+const DRONE_CUTOFF = 900
+
 /**
- * Low detuned saws through a slow low-pass filter, and a band of wind
- * noise. LFOs move both, so the drone never loops the same way.
+ * The chords of the drone, low voice first. Each has an added ninth, which
+ * sounds warm and open; a bare fifth sounded ominous. Each voice moves to
+ * the nearest note of the next chord, so a change is a slow glide.
+ */
+const CHORDS: Array<Array<number>> = [
+  // D major add9: D2 D3 A3 E4 F#4
+  [73.42, 146.83, 220.0, 329.63, 369.99],
+  // G major 9: G2 D3 B3 F#4 A4
+  [98.0, 146.83, 246.94, 369.99, 440.0],
+  // D major add9 again
+  [73.42, 146.83, 220.0, 329.63, 369.99],
+  // E minor 9: E2 D3 B3 F#4 G4
+  [82.41, 146.83, 246.94, 369.99, 392.0],
+]
+/** Seconds that each chord holds, and the time constant of a glide. */
+const CHORD_SECONDS = 24
+const GLIDE = 3
+
+/**
+ * Soft sines and triangles in a slow chord progression, through an open
+ * low-pass filter, and a little wind. LFOs swell each voice on its own
+ * cycle, so the drone never loops the same way.
  */
 function buildDrone(context: AudioContext) {
   droneGain = context.createGain()
-  droneGain.gain.value = 0.22
+  droneGain.gain.value = 0.2
   droneFilter = context.createBiquadFilter()
   droneFilter.type = 'lowpass'
-  droneFilter.frequency.value = 260
-  droneFilter.Q.value = 3
+  droneFilter.frequency.value = DRONE_CUTOFF
+  droneFilter.Q.value = 0.5
   droneFilter.connect(droneGain)
   droneGain.connect(master!)
   droneGain.connect(reverb!)
 
-  const voices: Array<[number, number, OscillatorType]> = [
-    [55, -7, 'sawtooth'],
-    [55, 6, 'sawtooth'],
-    [82.41, 3, 'triangle'],
-    [110, -4, 'sine'],
-    [164.81, 9, 'sine'],
+  const shapes: Array<OscillatorType> = [
+    'sine',
+    'triangle',
+    'triangle',
+    'sine',
+    'sine',
   ]
-  for (const [frequency, detune, type] of voices) {
+  const levels = [0.12, 0.08, 0.07, 0.05, 0.045]
+  const voices = CHORDS[0].map((frequency, index) => {
     const osc = context.createOscillator()
-    osc.type = type
+    osc.type = shapes[index]
     osc.frequency.value = frequency
-    osc.detune.value = detune
+    // A few cents apart from true pitch: warm, without a slow throb.
+    osc.detune.value = (index % 2 ? 1 : -1) * 3
     const gain = context.createGain()
-    gain.gain.value = type === 'sawtooth' ? 0.16 : 0.1
+    gain.gain.value = levels[index]
     // Each voice swells on its own slow cycle.
     const lfo = context.createOscillator()
     lfo.frequency.value = 0.03 + Math.random() * 0.05
     const depth = context.createGain()
-    depth.gain.value = gain.gain.value * 0.6
+    depth.gain.value = levels[index] * 0.5
     lfo.connect(depth).connect(gain.gain)
-    osc.connect(gain).connect(droneFilter)
+    osc.connect(gain).connect(droneFilter!)
     osc.start()
     lfo.start()
-  }
+    return osc
+  })
+
+  let chord = 0
+  window.setInterval(() => {
+    chord = (chord + 1) % CHORDS.length
+    CHORDS[chord].forEach((frequency, index) =>
+      voices[index].frequency.setTargetAtTime(
+        frequency,
+        context.currentTime,
+        GLIDE,
+      ),
+    )
+  }, CHORD_SECONDS * 1000)
 
   const cutoffLfo = context.createOscillator()
   cutoffLfo.frequency.value = 0.045
   const cutoffDepth = context.createGain()
-  cutoffDepth.gain.value = 120
+  cutoffDepth.gain.value = 200
   cutoffLfo.connect(cutoffDepth).connect(droneFilter.frequency)
   cutoffLfo.start()
 
@@ -185,10 +224,10 @@ function buildDrone(context: AudioContext) {
   wind.loop = true
   const windFilter = context.createBiquadFilter()
   windFilter.type = 'bandpass'
-  windFilter.frequency.value = 500
+  windFilter.frequency.value = 700
   windFilter.Q.value = 0.8
   const windGain = context.createGain()
-  windGain.gain.value = 0.035
+  windGain.gain.value = 0.018
   const windLfo = context.createOscillator()
   windLfo.frequency.value = 0.07
   const windDepth = context.createGain()
@@ -228,7 +267,7 @@ export function setSound(on: boolean) {
 export function setDroneOpen(amount: number) {
   if (!ctx || !droneFilter) return
   droneFilter.frequency.setTargetAtTime(
-    260 + amount * 900,
+    DRONE_CUTOFF + amount * 1600,
     ctx.currentTime,
     0.4,
   )
