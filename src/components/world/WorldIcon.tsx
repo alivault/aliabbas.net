@@ -108,9 +108,9 @@ export default function WorldIcon({
     }
   }, [sheet])
 
-  // The four sides show the icon; the top and the bottom are plain tiles.
-  // Lambert light shades each side by the way it faces the sun, and the
-  // emissive map keeps the icon bright on the dark side.
+  // Every face shows the icon. Lambert light shades each face by the way
+  // it faces the sun, and the emissive map keeps the icon bright on the
+  // dark side.
   const face = useMemo(
     () =>
       withSkyFog(
@@ -124,32 +124,13 @@ export default function WorldIcon({
       ),
     [dim],
   )
-  const cap = useMemo(
-    () =>
-      withSkyFog(
-        new THREE.MeshLambertMaterial({
-          color: new THREE.Color('#2a1f19'),
-          emissive: new THREE.Color('#0d0a08'),
-          transparent: true,
-          opacity: 0,
-        }),
-        dim,
-      ),
-    [dim],
-  )
-  // Box faces: +x, -x, +y, -y, +z, -z.
-  const materials = useMemo(
-    () => [face, face, cap, cap, face, face],
-    [face, cap],
-  )
   useEffect(() => {
     if (!texture) return
     face.map = texture
     face.emissiveMap = texture
     face.opacity = 1
-    cap.opacity = 1
     face.needsUpdate = true
-  }, [face, cap, texture])
+  }, [face, texture])
 
   // The hover frame: the edges of the cube, a little outside it.
   const frame = useMemo(() => {
@@ -187,11 +168,10 @@ export default function WorldIcon({
       // the vertical axis, up and down tilts it toward or away from the
       // camera. Let go, and it spins on, slows down, and settles with a
       // face to the camera.
-      // The spin settles on a side face; the tilt settles upright (after
-      // any number of full flips), so a face with the icon looks out.
+      // Both settle on a quarter turn, so a face looks straight out.
       for (const [axis, step] of [
         [turn.yaw, QUARTER],
-        [turn.tilt, Math.PI * 2],
+        [turn.tilt, QUARTER],
       ] as const) {
         if (turn.dragging) continue
         axis.velocity *= Math.exp(-2.5 * delta)
@@ -259,10 +239,9 @@ export default function WorldIcon({
           ? iconScrollShow(state.size.width / state.size.height)
           : 1
       face.opacity = THREE.MathUtils.damp(face.opacity, target, 8, delta)
-      cap.opacity = face.opacity
       // An opaque cube writes depth; a fading one must not hide what is
       // behind its own faces.
-      face.depthWrite = cap.depthWrite = face.opacity > 0.98
+      face.depthWrite = face.opacity > 0.98
     }
     glow.current = THREE.MathUtils.damp(
       glow.current,
@@ -385,7 +364,7 @@ export default function WorldIcon({
         onClick={click}
       >
         <primitive object={frame} />
-        <mesh material={materials}>
+        <mesh material={face}>
           <boxGeometry args={[ICON_SIZE, ICON_SIZE, ICON_SIZE]} />
         </mesh>
       </group>
