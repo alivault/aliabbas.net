@@ -10,8 +10,8 @@ import { setWorld, useWorld, worldCommands } from './store'
 const corner = 'hud-fill pointer-events-auto disabled:opacity-50'
 
 /**
- * The HUD: four corners over the world. Top left goes home; on a page, Back
- * before it goes to where the visitor came from, top right opens the index, bottom left turns
+ * The HUD over the world. The name at the top center goes home; on a page,
+ * Back at the top left goes to where the visitor came from, top right opens the index, bottom left turns
  * the sound on or off, and bottom right flies to the next page.
  */
 export default function Hud({ inPage }: { inPage: boolean }) {
@@ -60,8 +60,8 @@ export default function Hud({ inPage }: { inPage: boolean }) {
           className="from-background via-background absolute inset-x-0 bottom-0 h-24 bg-linear-to-t via-45% to-transparent lg:hidden"
         />
       ) : null}
-      <div className="absolute top-5 left-6 flex items-baseline gap-10">
-        {inPage && !indexOpen ? (
+      {inPage && !indexOpen ? (
+        <div className="absolute top-5 left-6">
           <button
             type="button"
             data-sound="none"
@@ -75,12 +75,22 @@ export default function Hud({ inPage }: { inPage: boolean }) {
             />
             Back
           </button>
-        ) : null}
+        </div>
+      ) : null}
+
+      {/* The name, at the center of the top. The tracking adds space after
+          the last letter too; a negative margin of the same size centers
+          the letters themselves. */}
+      <div className="absolute top-5 left-1/2 -translate-x-1/2">
         <Link
           to="/"
           data-sound="none"
-          // On a phone, Back takes the place of the name on a page.
-          className={cn(corner, inPage && !indexOpen && 'max-sm:hidden')}
+          // On a phone, the name gives its room to Back on a page.
+          className={cn(
+            corner,
+            '-mr-[0.42em] whitespace-nowrap',
+            inPage && !indexOpen && 'max-sm:hidden',
+          )}
           // Home also closes the index, when it is open.
           onClick={() => setWorld({ indexOpen: false })}
         >
