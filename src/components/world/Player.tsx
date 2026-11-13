@@ -3,6 +3,7 @@ import { nextOnTour } from './tour'
 import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { play, setDroneOpen } from '~/lib/sound'
+import { spinGrab } from './cubeSpin'
 import { FOOTPRINT_SIZE } from './Footprint'
 import { iconSlot } from './iconSlot'
 import { heightAt } from './noise'
@@ -312,6 +313,12 @@ export default function Player({
     const move = (event: PointerEvent) => {
       if (!dragging || getWorld().phase !== 'roam' || getWorld().indexOpen)
         return
+      // The drag spins a cube: the view stays.
+      if (spinGrab.active) {
+        lastX = event.clientX
+        lastY = event.clientY
+        return
+      }
       const dx = event.clientX - lastX
       const dy = event.clientY - lastY
       lastX = event.clientX

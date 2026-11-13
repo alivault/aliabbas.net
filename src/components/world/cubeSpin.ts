@@ -22,3 +22,9 @@ export function registerSpinner(id: string, spinner: Spinner) {
 export function spinnerOf(id: string) {
   return spinners.get(id)
 }
+
+/**
+ * True while a drag spins a cube in the world. The drag that turns the
+ * camera waits then, so the drag moves the cube, not the view.
+ */
+export const spinGrab = { active: false }

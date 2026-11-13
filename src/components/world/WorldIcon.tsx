@@ -7,7 +7,7 @@ import { drawIcon } from './iconTexture'
 import { heightAt } from './noise'
 import { ICON_SIZE } from './sheets'
 import { WORLD_UNIFORMS, withSkyFog } from './sky'
-import { registerSpinner } from './cubeSpin'
+import { registerSpinner, spinGrab } from './cubeSpin'
 import { getWorld, iconScrollShow, setWorld } from './store'
 import type { SheetSpec } from './sheets'
 
@@ -225,12 +225,50 @@ export default function WorldIcon({
         g.position.z = THREE.MathUtils.damp(g.position.z, sheet.z, 4, delta)
         g.position.y = THREE.MathUtils.damp(g.position.y, sheet.y, 4, delta)
       }
-    } else if (!reducedMotion) {
-      turn.yaw.offset = turn.yaw.velocity = 0
-      turn.tilt.offset = turn.tilt.velocity = 0
-      spin.current += delta * (hovered.current ? 0.08 : 0.32)
-      // A cube left tilted rolls back upright, smoothly.
-      turn.tiltShown = THREE.MathUtils.damp(turn.tiltShown, 0, 3, delta)
+    } else {
+      // In the world, a drag spins the cube too. The spin goes on and
+      // slows down, and the slow turn of every cube takes over again; the
+      // tilt rolls back upright.
+      spin.current += turn.yaw.offset
+      turn.yaw.offset = 0
+      if (!turn.dragging) {
+        turn.yaw.velocity *= Math.exp(-2.5 * delta)
+        spin.current += turn.yaw.velocity * delta
+        turn.tilt.velocity *= Math.exp(-2.5 * delta)
+        turn.tilt.offset += turn.tilt.velocity * delta
+        if (Math.abs(turn.tilt.velocity) < 1) {
+          const upright =
+            Math.round(turn.tilt.offset / (Math.PI * 2)) * Math.PI * 2
+          turn.tilt.offset = THREE.MathUtils.damp(
+            turn.tilt.offset,
+            upright,
+            4,
+            delta,
+          )
+          // Upright after whole flips is upright: count from zero again.
+          if (Math.abs(turn.tilt.offset - upright) < 0.002) {
+            turn.tilt.offset -= upright
+            turn.tiltShown -= upright
+          }
+        }
+      }
+      if (!reducedMotion) {
+        spin.current += delta * (hovered.current ? 0.08 : 0.32)
+      }
+      turn.tiltShown = THREE.MathUtils.damp(
+        turn.tiltShown,
+        turn.tilt.offset,
+        turn.dragging ? 30 : 6,
+        delta,
+      )
+      if (Math.abs(turn.tiltShown) < 0.001 && !turn.tilt.offset) {
+        turn.tiltShown = 0
+      }
+      cameraRight
+        .set(1, 0, 0)
+        .applyQuaternion(state.camera.quaternion)
+        .setY(0)
+        .normalize()
       if (Math.abs(turn.tiltShown) > 0.001) {
         yawTurn.setFromAxisAngle(UP, spin.current)
         g.quaternion
@@ -238,11 +276,17 @@ export default function WorldIcon({
           .multiply(yawTurn)
       } else {
         turn.tiltShown = 0
-        g.rotation.set(0, spin.current, Math.sin(t * 0.5 + index * 2) * 0.03)
+        g.rotation.set(
+          0,
+          spin.current,
+          reducedMotion ? 0 : Math.sin(t * 0.5 + index * 2) * 0.03,
+        )
       }
       g.position.x = sheet.x
       g.position.z = sheet.z
-      g.position.y = sheet.y + Math.sin(t * 0.7 + index) * 0.12
+      g.position.y = reducedMotion
+        ? sheet.y
+        : sheet.y + Math.sin(t * 0.7 + index) * 0.12
     }
     // Only the icon in focus stays lit while the world goes dark. On a
     // narrow screen it fades as the text scrolls over it; the small icon of
@@ -279,7 +323,10 @@ export default function WorldIcon({
     turn.yaw.velocity = turn.tilt.velocity = 0
     Object.assign(turn, { dragging: true, x, y, time: performance.now() })
     document.body.style.cursor = 'grabbing'
-    play('click')
+    // In the world, a press can still be a click that opens the page:
+    // the sound of the open plays then, not this one.
+    if (getWorld().phase === 'roam') spinGrab.active = true
+    else play('click')
   }
   const moveSpin = (x: number, y: number) => {
     const turn = turned.current
@@ -310,6 +357,7 @@ export default function WorldIcon({
     const turn = turned.current
     if (!turn.dragging) return
     turn.dragging = false
+    spinGrab.active = false
     try {
       gl.domElement.releasePointerCapture(turn.pointer)
     } catch {
@@ -320,7 +368,11 @@ export default function WorldIcon({
     for (const axis of [turn.yaw, turn.tilt]) {
       axis.velocity = paused ? 0 : THREE.MathUtils.clamp(axis.velocity, -25, 25)
     }
-    document.body.style.cursor = hovered.current && spinnable() ? 'grab' : ''
+    document.body.style.cursor = !hovered.current
+      ? ''
+      : spinnable()
+        ? 'grab'
+        : 'pointer'
   }
   useEffect(() => {
     window.addEventListener('pointerup', release)
@@ -342,7 +394,8 @@ export default function WorldIcon({
   )
 
   const grab = (event: ThreeEvent<PointerEvent>) => {
-    if (event.button !== 0 || !spinnable()) return
+    if (event.button !== 0) return
+    if (!spinnable() && getWorld().phase !== 'roam') return
     event.stopPropagation()
     try {
       ;(event.target as Element).setPointerCapture(event.pointerId)

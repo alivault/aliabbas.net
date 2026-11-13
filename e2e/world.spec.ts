@@ -31,3 +31,37 @@ test('far from the pages, the HUD says so, and an arrow flies back', async ({
   await arrow.click({ force: true })
   await expect(hint).toHaveCount(0, { timeout: 30_000 })
 })
+
+test('a drag on a cube spins it, and a click still opens its page', async ({
+  page,
+}) => {
+  await open(page, '/?gl=force')
+  await page.getByRole('button', { name: /Enter in silence/i }).click()
+  await page.waitForTimeout(1500)
+
+  // Find a cube: the label at the bottom names the one under the pointer.
+  const label = page.locator('[data-hud] p[aria-live="polite"]')
+  let cube: { x: number; y: number } | null = null
+  for (let y = 250; y < 600 && !cube; y += 25) {
+    for (let x = 100; x < 1300 && !cube; x += 25) {
+      await page.mouse.move(x, y)
+      if ((await label.textContent())?.trim()) cube = { x, y }
+    }
+  }
+  if (!cube) throw new Error('No cube under the pointer')
+  const name = (await label.textContent())?.trim()
+
+  await page.mouse.down()
+  await page.mouse.move(cube.x + 200, cube.y + 60, { steps: 12 })
+  await page.mouse.up()
+  // A spin, not a click: the page did not open.
+  await page.waitForTimeout(300)
+  await expect(page).toHaveURL(/\/\?gl=force$/)
+
+  // The view did not turn: the same cube is still under the pointer.
+  await page.waitForTimeout(2000)
+  await page.mouse.move(cube.x, cube.y)
+  await expect(label).toHaveText(name ?? '')
+  await page.mouse.click(cube.x, cube.y)
+  await expect(page).not.toHaveURL(/\/\?gl=force$/)
+})
