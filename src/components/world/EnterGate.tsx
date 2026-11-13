@@ -99,28 +99,6 @@ export default function EnterGate({ active }: { active: boolean }) {
             , video calls from a link. He lives and works in the Los Angeles
             area.
           </p>
-          <ul className="flex flex-col items-center gap-3 text-xs">
-            <li>
-              <a
-                href="https://www.linkedin.com/in/webdevali/"
-                target="_blank"
-                rel="noreferrer"
-                className="hud-fill"
-              >
-                → LinkedIn
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://github.com/alivault"
-                target="_blank"
-                rel="noreferrer"
-                className="hud-fill"
-              >
-                → GitHub
-              </a>
-            </li>
-          </ul>
           <button
             type="button"
             data-sound="none"
