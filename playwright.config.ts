@@ -14,7 +14,7 @@ const publicEnv = Object.fromEntries(
     .map(([, key, value]) => [key, process.env[key] ?? value]),
 )
 
-const PORT = 3100
+const PORT = 3000
 const executablePath = process.env.CHROMIUM_PATH
 /**
  * CI tests the production build in dist (`E2E=1 vp build` first), as it

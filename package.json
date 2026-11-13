@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vp dev",
+    "dev": "vp dev --port 3000",
     "dev:ai": "node scripts/dev-ai-bridge.ts",
     "build": "vp build",
     "preview": "vp preview",
