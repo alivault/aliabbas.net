@@ -477,7 +477,7 @@ function EvidenceSidebar({
       // On a phone it covers the screen. On a wide screen it floats right
       // beside the text, 32px from it, as a second column, under the HUD,
       // and is as tall as its sources need.
-      className="border-hud/20 bg-background/45 fixed inset-0 z-[15] flex flex-col backdrop-blur-[16px] lg:top-20 lg:right-auto lg:bottom-auto lg:left-[calc(var(--frame-inset)+var(--reader-width)-2rem)] lg:max-h-[calc(100svh-6.5rem)] lg:w-[400px] lg:border"
+      className="border-hud/20 bg-background/45 fixed inset-0 z-[15] flex flex-col backdrop-blur-[40px] lg:top-20 lg:right-auto lg:bottom-auto lg:left-[calc(var(--frame-inset)+var(--reader-width)-2rem)] lg:max-h-[calc(100svh-6.5rem)] lg:w-[400px] lg:border"
     >
       <header className="border-hud/15 border-b px-6 pt-20 pb-5 lg:pt-5">
         <div className="flex items-baseline justify-between gap-6">
