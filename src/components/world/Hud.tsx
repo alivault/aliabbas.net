@@ -47,7 +47,13 @@ export default function Hud({ inPage }: { inPage: boolean }) {
         />
       ) : null}
       <div className="absolute top-5 left-6">
-        <Link to="/" data-sound="none" className={corner}>
+        <Link
+          to="/"
+          data-sound="none"
+          className={corner}
+          // Home also closes the index, when it is open.
+          onClick={() => setWorld({ indexOpen: false })}
+        >
           Ali Abbas
         </Link>
       </div>

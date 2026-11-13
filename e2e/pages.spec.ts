@@ -209,6 +209,11 @@ test(
     await page.getByRole('button', { name: 'Return' }).click()
     await expect(dialog).toBeHidden()
 
+    // Ali Abbas, the way home, closes the index too.
+    await index.click()
+    await page.getByRole('link', { name: 'Ali Abbas' }).click()
+    await expect(dialog).toBeHidden()
+
     await index.click()
     await dialog.getByRole('link', { name: /^Lab/ }).click()
     await expect(page).toHaveURL(/\/lab$/)
