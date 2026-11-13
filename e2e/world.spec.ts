@@ -65,3 +65,19 @@ test('a drag on a cube spins it, and a click still opens its page', async ({
   await page.mouse.click(cube.x, cube.y)
   await expect(page).not.toHaveURL(/\/\?gl=force$/)
 })
+
+test('on a page, the pointer reaches the cube beside the text', async ({
+  page,
+}) => {
+  await open(page, '/skills?gl=force')
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+  // The cube is on the right half; the text is on the left.
+  const target = await page.evaluate(
+    () =>
+      document.elementFromPoint(innerWidth * 0.75, innerHeight * 0.5)?.tagName,
+  )
+  expect(target).toBe('CANVAS')
+  // The text still takes the pointer.
+  await page.getByRole('link', { name: 'Force each state in the lab' }).click()
+  await expect(page).toHaveURL(/\/lab/)
+})

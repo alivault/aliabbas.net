@@ -129,9 +129,15 @@ export default function WorldShell({ children }: { children: ReactNode }) {
       </div>
 
       {/* The page fades out under the HUD at the top and the bottom of the
-          screen (page-fade in globals.css). */}
+          screen (page-fade in globals.css). The mask makes this layer paint
+          over the world, so it lets the pointer through; the page takes it
+          again, unless it lets it through itself (a reader, beside its
+          icon). */}
       {showText ? (
-        <div ref={pageLayer} className="page-fade">
+        <div
+          ref={pageLayer}
+          className="page-fade pointer-events-none [&>*:not(.pointer-events-none)]:pointer-events-auto"
+        >
           {children}
         </div>
       ) : null}
