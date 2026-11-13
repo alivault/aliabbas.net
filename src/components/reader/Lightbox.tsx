@@ -295,7 +295,7 @@ function View({
           type="button"
           onClick={onClose}
           data-sound="click"
-          className={cn(control, 'pointer-events-auto text-lg')}
+          className={cn(control, 'pointer-events-auto')}
         >
           Close
         </button>
