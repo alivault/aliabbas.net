@@ -1,12 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useRouter } from '@tanstack/react-router'
-import {
-  ArrowLeft,
-  ChevronLeft,
-  ChevronRight,
-  Volume2,
-  VolumeX,
-} from 'lucide-react'
+import { ArrowLeft, FastForward, Rewind, Volume2, VolumeX } from 'lucide-react'
 import { cn } from '~/lib/utils'
 import {
   VIBE_NAMES,
@@ -180,7 +174,7 @@ export default function Hud({ inPage }: { inPage: boolean }) {
         {soundOn ? (
           // The music: one of five vibes. Its name shows above for a
           // moment after a change.
-          <div className="ml-3 flex items-center gap-1">
+          <div className="ml-4 flex items-center gap-4">
             <button
               type="button"
               data-sound="none"
@@ -188,11 +182,7 @@ export default function Hud({ inPage }: { inPage: boolean }) {
               className={corner}
               onClick={() => stepVibe(-1)}
             >
-              <ChevronLeft
-                aria-hidden="true"
-                className="size-5"
-                strokeWidth={1.5}
-              />
+              <Rewind aria-hidden="true" className="size-6" strokeWidth={1.5} />
             </button>
             <button
               type="button"
@@ -201,9 +191,9 @@ export default function Hud({ inPage }: { inPage: boolean }) {
               className={corner}
               onClick={() => stepVibe(1)}
             >
-              <ChevronRight
+              <FastForward
                 aria-hidden="true"
-                className="size-5"
+                className="size-6"
                 strokeWidth={1.5}
               />
             </button>
