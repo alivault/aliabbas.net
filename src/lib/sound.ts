@@ -15,6 +15,7 @@ export type SoundName =
   | 'send'
   | 'toggle'
   | 'step'
+  | 'dash'
 
 const ENABLED_KEY = 'sound:enabled'
 
@@ -356,6 +357,17 @@ export function play(name: SoundName) {
         volume: 0.06,
         q: 2,
       })
+      break
+    case 'dash':
+      // A rush of air: noise that rises and falls, over a low thump.
+      noiseHit(context, {
+        from: 300,
+        to: 2600,
+        duration: 0.6,
+        volume: 0.16,
+        q: 1.4,
+      })
+      tone(context, { from: 95, to: 55, duration: 0.45, volume: 0.14 })
       break
     case 'portal-in':
       noiseHit(context, {

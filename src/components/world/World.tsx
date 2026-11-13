@@ -1,6 +1,7 @@
 import { useMemo, useRef } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
+import { play } from '~/lib/sound'
 import Footprint from './Footprint'
 import Player from './Player'
 import { SHEETS } from './sheets'
@@ -71,6 +72,7 @@ export default function World({
         onPick={(point) => {
           if (getWorld().phase !== 'roam') return
           walkTarget.current = point.clone()
+          play('dash')
         }}
       />
       <Footprint point={pointer} color={accent} />

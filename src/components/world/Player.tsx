@@ -13,8 +13,12 @@ import type { SheetSpec } from './sheets'
 const EYE = 1.7
 const WALK = 5
 const RUN = 11
-/** A walk to a clicked point goes at run speed, and slows down at the end. */
-const CLICK_WALK = RUN
+/**
+ * A move to a clicked point is a dash: much faster than a run, and it slows
+ * down near the end (CLICK_EASE per second of the distance that is left).
+ */
+const CLICK_WALK = 40
+const CLICK_EASE = 4
 const LOOK = 0.0035
 
 type Pose = { position: THREE.Vector3; yaw: number; pitch: number }
@@ -399,7 +403,7 @@ export default function Player({
           walkTarget.current = null
         } else {
           wish.set(dx, 0, dz)
-          speed = Math.min(CLICK_WALK, distance * 2.5)
+          speed = Math.min(CLICK_WALK, distance * CLICK_EASE)
           // Turn gently toward where the visitor walks.
           yaw.current = lerpAngle(
             yaw.current,
@@ -422,7 +426,8 @@ export default function Player({
       )
 
       const moving = velocity.current.length()
-      if (moving > 1) {
+      // A dash has its own sound (played when it starts), not steps.
+      if (moving > 1 && !walkTarget.current) {
         stepClock.current += delta * (moving / WALK)
         if (stepClock.current > 0.5) {
           stepClock.current = 0
