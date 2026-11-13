@@ -8,6 +8,12 @@ import {
   useSyncExternalStore,
 } from 'react'
 import type { ReactNode } from 'react'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '~/components/ui/tooltip'
+import { Info } from 'lucide-react'
 import { MotionConfig } from 'motion/react'
 import { cn } from 'cn'
 
@@ -124,6 +130,24 @@ export function ReducedMotionSwitch({ className }: { className?: string }) {
           Reduce motion
         </span>
       </button>
+      <Tooltip>
+        <TooltipTrigger
+          aria-label="About reduce motion"
+          className="hud-fill text-hud/70 hover:text-background focus-visible:text-background flex items-center"
+        >
+          <Info aria-hidden="true" className="size-4" />
+        </TooltipTrigger>
+        <TooltipContent
+          side="bottom"
+          sideOffset={8}
+          className="border-hud/40 bg-background text-fg-secondary block max-w-72 rounded-none border px-4 py-3 text-sm leading-6 [&>div]:hidden"
+        >
+          Some people get dizzy or sick from motion on a screen. Reduce motion
+          shows each change at once, without springs, glides or fades. Use it to
+          see the demos as these people see them. If your system asks for less
+          motion, it is on by itself.
+        </TooltipContent>
+      </Tooltip>
       <span id={descriptionId} className="text-fg-muted text-sm">
         {system ? 'Set by your system.' : ''}
       </span>

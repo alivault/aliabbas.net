@@ -178,3 +178,13 @@ test('every demo opens in the middle of a stream', async ({ page }) => {
     ).toHaveAttribute('aria-checked', 'true')
   }
 })
+
+test('the info icon beside Reduce motion explains it, also by keyboard', async ({
+  page,
+}) => {
+  const info = page.getByRole('button', { name: 'About reduce motion' })
+  await info.focus()
+  await expect(page.getByText(/Some people get dizzy or sick/)).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(page.getByText(/Some people get dizzy or sick/)).toBeHidden()
+})
