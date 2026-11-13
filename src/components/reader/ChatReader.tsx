@@ -210,7 +210,7 @@ export default function ChatReader() {
 
   return (
     <Reader>
-      <ReaderTitle>Ask about Ali</ReaderTitle>
+      <ReaderTitle>Ask AI about Ali</ReaderTitle>
       <ReaderText>
         An AI that answers from Ali’s public record: his work, his notes and his
         experience. Each claim links to its source.

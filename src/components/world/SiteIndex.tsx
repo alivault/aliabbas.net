@@ -35,7 +35,7 @@ const GROUPS: Array<{
       { label: 'Experience', to: '/experience' },
       { label: 'Skills', to: '/skills' },
       { label: 'Notes', to: '/notes' },
-      { label: 'Ask about Ali', to: '/ai' },
+      { label: 'Ask AI', to: '/ai' },
     ],
   },
   {

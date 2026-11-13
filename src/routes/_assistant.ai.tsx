@@ -6,7 +6,7 @@ import { pageHead } from '~/lib/structured-data'
 export const Route = createFileRoute('/_assistant/ai')({
   head: () =>
     pageHead({
-      title: 'Ask About Ali — Portfolio AI',
+      title: 'Ask AI About Ali — Ali Abbas',
       description:
         "Ask Ali Abbas's portfolio assistant about his experience, selected work, technical skills, and product engineering approach.",
       path: '/ai',
