@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import { cn } from '~/lib/utils'
 import Footer from './Footer'
-import HeaderBlur from './HeaderBlur'
 
 export default function Main({
   children,
@@ -22,9 +21,6 @@ export default function Main({
         !overWorld && 'bg-background',
       )}
     >
-      {/* The HUD of the world is the navigation: no site header, only a
-          blur behind the HUD. */}
-      <HeaderBlur />
       <main className="min-h-[70svh] [&>:first-child]:border-t-[length:var(--header-height)] [&>:first-child]:border-t-transparent">
         {children}
       </main>

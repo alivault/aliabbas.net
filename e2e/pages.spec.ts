@@ -156,6 +156,22 @@ for (const [path, types] of [
   })
 }
 
+test(
+  'a page blurs the top corners only after it scrolls',
+  { tag: '@mobile' },
+  async ({ page }) => {
+    await open(page, '/work/pico')
+    const blur = page.locator(
+      '[data-hud] > [aria-hidden="true"].backdrop-blur-\\[20px\\]',
+    )
+    const opacity = () =>
+      blur.evaluate((element) => getComputedStyle(element).opacity)
+    await expect.poll(opacity).toBe('0')
+    await page.evaluate(() => window.scrollTo({ top: 600 }))
+    await expect.poll(opacity).toBe('1')
+  },
+)
+
 test('Esc on a page goes back to the world', async ({ page }) => {
   await open(page, '/work')
   await page.keyboard.press('Escape')
