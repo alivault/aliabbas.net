@@ -55,7 +55,7 @@ export default function Hud({ inPage }: { inPage: boolean }) {
         {indexOpen ? (
           <button
             type="button"
-            className={cn(corner, 'text-lg')}
+            className={corner}
             onClick={() => setWorld({ indexOpen: false })}
           >
             Return
@@ -64,7 +64,7 @@ export default function Hud({ inPage }: { inPage: boolean }) {
           <button
             type="button"
             aria-haspopup="dialog"
-            className={cn(corner, 'text-lg')}
+            className={corner}
             onClick={() => setWorld({ indexOpen: true, hover: null })}
           >
             Index
