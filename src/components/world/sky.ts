@@ -54,10 +54,13 @@ export function withSkyFog<T extends THREE.Material>(
   material: T,
   /** The dim of this material: the shared one, or its own. */
   dim: { value: number } = WORLD_UNIFORMS.uDim,
+  /** 1 takes the fog away: the icon in focus is seen as it is, also far. */
+  clear: { value: number } = { value: 0 },
 ): T {
   material.onBeforeCompile = (shader) => {
     shader.uniforms.skyFogDensity = { value: FOG_DENSITY }
     shader.uniforms.uDim = dim
+    shader.uniforms.uClear = clear
     shader.vertexShader = shader.vertexShader
       .replace(
         '#include <common>',
@@ -70,14 +73,14 @@ export function withSkyFog<T extends THREE.Material>(
     shader.fragmentShader = shader.fragmentShader
       .replace(
         '#include <common>',
-        `#include <common>\nvarying vec3 vSkyWorld;\nuniform float skyFogDensity;\n${SKY_GLSL}\n${DIM_GLSL}`,
+        `#include <common>\nvarying vec3 vSkyWorld;\nuniform float skyFogDensity;\nuniform float uClear;\n${SKY_GLSL}\n${DIM_GLSL}`,
       )
       .replace(
         '#include <fog_fragment>',
         `{
           vec3 toPoint = vSkyWorld - cameraPosition;
           float dist = length(toPoint);
-          float fog = 1.0 - exp(-skyFogDensity * skyFogDensity * dist * dist);
+          float fog = (1.0 - exp(-skyFogDensity * skyFogDensity * dist * dist)) * (1.0 - uClear);
           gl_FragColor.rgb = mix(gl_FragColor.rgb, skyColor(toPoint / dist), fog);
           gl_FragColor.rgb = dimmed(gl_FragColor.rgb, toPoint / dist);
         }`,

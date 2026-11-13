@@ -90,6 +90,9 @@ export default function WorldIcon({
   const rest = useMemo(() => new THREE.Vector3(), [])
   const yawTurn = useMemo(() => new THREE.Quaternion(), [])
   const dim = useMemo(() => ({ value: 0 }), [])
+  /** 1 while this icon is in focus: no fog, so a far camera (the small
+      cube of the lab) does not darken it. */
+  const clear = useMemo(() => ({ value: 0 }), [])
 
   useEffect(() => {
     let alive = true
@@ -118,8 +121,9 @@ export default function WorldIcon({
           opacity: 0,
         }),
         dim,
+        clear,
       ),
-    [dim],
+    [dim, clear],
   )
   useEffect(() => {
     if (!texture) return
@@ -292,6 +296,20 @@ export default function WorldIcon({
     // narrow screen it fades as the text scrolls over it; the small icon of
     // the lab fades as its title scrolls away.
     dim.value = focused ? 0 : WORLD_UNIFORMS.uDim.value
+    clear.value = THREE.MathUtils.damp(
+      clear.value,
+      focused ? 1 : 0,
+      4,
+      Math.min(delta, 0.05),
+    )
+    // The small cube of a wide page (the lab) is far from the camera, and
+    // its icon blurs into the dark face. More light keeps it bright.
+    face.emissiveIntensity = THREE.MathUtils.damp(
+      face.emissiveIntensity,
+      focused && sheet.wide ? 1.6 : 1,
+      4,
+      Math.min(delta, 0.05),
+    )
     if (texture) {
       const inside = focused && getWorld().phase === 'inside'
       const target = !inside
