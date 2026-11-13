@@ -15,7 +15,7 @@ export const Route = createFileRoute('/_assistant/check')({
     pageHead({
       title: 'Check a Claim About Ali — Portfolio AI',
       description:
-        'Paste a claim about Ali Abbas. The checker grades each part against his public record — verified, partly verified, not supported, contradicted or unknown — and quotes the evidence.',
+        'Paste a claim about Ali Abbas. The checker grades each part against his public record and quotes the evidence. Each grade is verified, partly verified, not supported, contradicted or unknown.',
       path: '/check',
     }),
   component: () => null,

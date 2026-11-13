@@ -28,9 +28,8 @@ function WorkPage() {
     <Reader>
       <ReaderTitle>Work</ReaderTitle>
       <ReaderText>
-        Product experiences where visual ambition and engineering rigor have to
-        coexist. I care about the concept, the system, and the final 2px in
-        production.
+        Products that must look good and work correctly at the same time. I care
+        about the idea, the system and the last 2px in production.
       </ReaderText>
 
       <ReaderSection title="Products">

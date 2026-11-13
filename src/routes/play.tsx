@@ -21,7 +21,7 @@ const NOTE_SLUG = 'averno-engineering-a-3d-shooter-for-the-browser'
 
 const TITLE = 'Averno — a free 3D shooter you play in your browser'
 const DESCRIPTION =
-  'Fly a mining ship in any direction through a dead colony, destroy its three reactors, and escape before each one blows. Free, with nothing to install.'
+  'Fly a mining ship in all directions through a dead colony. Destroy its three reactors, and escape before each one explodes. It is free, and you do not install anything.'
 const OG_IMAGE = 'https://aliabbas.net/play/averno-og.jpg'
 const OG_ALT =
   'Averno: the Overseer robot above a reactor in a hall of cracked lava rock'

@@ -7,7 +7,7 @@ export const Route = createFileRoute('/contact')({
     pageHead({
       title: 'Contact — Ali Abbas',
       description:
-        'Contact Ali Abbas about a senior frontend role, a contract or a collaboration on interactive and streaming interfaces.',
+        'Contact Ali Abbas about a senior frontend or design engineer role, or a contract, on interactive and streaming interfaces.',
       path: '/contact',
     }),
   component: ContactPage,

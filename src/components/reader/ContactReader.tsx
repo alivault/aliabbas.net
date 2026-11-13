@@ -85,9 +85,9 @@ export default function ContactReader() {
     <Reader>
       <ReaderTitle>Contact</ReaderTitle>
       <ReaderText>
-        I am interested in senior frontend roles on interactive and streaming
-        interfaces, where design quality matters as much as technical execution.
-        If that sounds like your team, I would like to hear from you.
+        I look for senior frontend and design engineer roles on interactive and
+        streaming interfaces, where the design is as important as the code. If
+        your team does this work, please write to me.
       </ReaderText>
       <ReaderLinks>
         <a

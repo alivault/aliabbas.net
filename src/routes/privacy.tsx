@@ -15,7 +15,7 @@ export const Route = createFileRoute('/privacy')({
     pageHead({
       title: 'Privacy — Ali Abbas',
       description:
-        'How aliabbas.net collects, uses, stores, and protects personal information.',
+        'How aliabbas.net collects, uses, stores and protects personal information.',
       path: '/privacy',
     }),
   component: PrivacyPage,
@@ -47,14 +47,14 @@ function PrivacyPage() {
 
       <PrivacySection number="01" title="Overview">
         <ReaderText>
-          This policy explains what information aliabbas.net collects, why it is
-          used, how long it is retained, and the choices available to visitors.
-          The site is operated by Ali Abbas as a professional portfolio and
-          publishing website.
+          This policy tells you which information aliabbas.net collects, why it
+          collects it, how long it keeps it and which choices you have. Ali
+          Abbas operates the site as a professional portfolio and publishing
+          website.
         </ReaderText>
         <ReaderText>
-          Information collected through this site is not sold, rented, or shared
-          for cross-context behavioral advertising.
+          The site does not sell or rent the information that it collects. It
+          does not share it for cross-context behavioral advertising.
         </ReaderText>
       </PrivacySection>
 

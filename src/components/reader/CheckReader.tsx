@@ -165,8 +165,8 @@ export default function CheckReader() {
       <ReaderTitle>Check a claim</ReaderTitle>
       <ReaderText>
         Paste a claim from a résumé, a profile or a recruiter note. The checker
-        grades each part of it against Ali’s public record and shows the exact
-        words that each grade rests on.
+        grades each part of the claim against Ali’s public record. Each grade
+        shows the exact words that it uses as evidence.
       </ReaderText>
       <ReaderLinks>
         <ReaderLink to="/ai">Ask a question instead</ReaderLink>

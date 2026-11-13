@@ -28,7 +28,7 @@ export const Route = createFileRoute('/lab')({
     pageHead({
       title: 'Lab — Interface Primitives — Ali Abbas',
       description:
-        'Live specimens of the parts behind this site’s chat: streaming, citations, a resizer and a move that keeps state.',
+        'Live specimens of the parts of the chat on this site: streaming, citations, a resizer and a move that keeps its state.',
       path: '/lab',
     }),
   component: LabPage,
@@ -64,8 +64,8 @@ function LabPage() {
                 </StaggerItem>
                 <StaggerItem>
                   <p className="text-fg-secondary mt-4 max-w-[52ch] text-base leading-7">
-                    The parts behind the chat of this site, each with its real
-                    code and a fake stream. Force any state.
+                    The parts of the chat on this site, each with its real code
+                    and a fake stream. Force any state.
                   </p>
                 </StaggerItem>
               </div>

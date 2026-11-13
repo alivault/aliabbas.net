@@ -24,7 +24,7 @@ export const Route = createFileRoute('/design')({
     pageHead({
       title: 'Design System — Ali Abbas',
       description:
-        'The design system of this site: rules that tests check, color, type, space and motion tokens, and components in each state. Coding agents read the same tokens as JSON.',
+        'The design system of this site: rules that tests check, tokens for color, type, space and motion, and components in each state. Coding agents read the same tokens as JSON.',
       path: '/design',
     }),
   component: DesignPage,
@@ -59,7 +59,7 @@ function DesignPage() {
     <Reader>
       <ReaderTitle>Design system</ReaderTitle>
       <ReaderText>
-        One source, read by people and agents. This page reads the tokens from
+        People and coding agents use one source. This page reads the tokens from
         the CSS and the code, so it cannot show a value that the site does not
         use. Coding agents read the same tokens and rules as{' '}
         <ReaderExternal href="/design/tokens.json">JSON</ReaderExternal>.

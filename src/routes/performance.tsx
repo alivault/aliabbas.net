@@ -21,7 +21,7 @@ export const Route = createFileRoute('/performance')({
     pageHead({
       title: 'Performance — Ali Abbas',
       description:
-        'Core Web Vitals of aliabbas.net from real visits, lab numbers for my projects, and how I measured them.',
+        'Core Web Vitals of aliabbas.net from real visits, lab numbers for my projects and how I measured them.',
       path: '/performance',
     }),
   loader: () => getVitalsSummary(),
@@ -84,8 +84,8 @@ function PerformancePage() {
       <ReaderTitle>Performance</ReaderTitle>
       <ReaderText>
         Fast is a number. This page shows the Core Web Vitals of this site from
-        real visits, lab numbers for my projects, and the fixes the numbers led
-        to.
+        real visits, lab numbers for my projects and the changes that these
+        numbers caused.
       </ReaderText>
 
       <Section

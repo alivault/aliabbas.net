@@ -8,7 +8,7 @@ export const Route = createFileRoute('/_assistant/ai')({
     pageHead({
       title: 'Ask AI About Ali — Ali Abbas',
       description:
-        "Ask Ali Abbas's portfolio assistant about his experience, selected work, technical skills, and product engineering approach.",
+        'Ask the AI on the portfolio of Ali Abbas about his experience, work, technical skills and approach to product engineering.',
       path: '/ai',
     }),
   component: () => null,

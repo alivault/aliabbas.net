@@ -17,7 +17,7 @@ export const Route = createFileRoute('/skills')({
     pageHead({
       title: 'Skills — Ali Abbas',
       description:
-        'Streaming state, motion and interaction, design systems, and performance and accessibility.',
+        'Streaming state, motion and interaction, design systems, performance and accessibility.',
       path: '/skills',
     }),
   component: SkillsPage,
@@ -28,8 +28,9 @@ function SkillsPage() {
     <Reader>
       <ReaderTitle>Skills</ReaderTitle>
       <ReaderText>
-        I bridge product design and frontend engineering, so the idea survives
-        implementation, and the interface holds up in every state after launch.
+        I do product design and frontend engineering. Because I do both, the
+        idea does not get lost in the code, and the interface works in every
+        state after launch.
       </ReaderText>
       {capabilities.map((capability, index) => (
         <ReaderSection

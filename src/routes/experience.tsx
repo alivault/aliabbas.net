@@ -19,7 +19,7 @@ export const Route = createFileRoute('/experience')({
     pageHead({
       title: 'Experience — Ali Abbas',
       description:
-        'Senior frontend engineering and design experience across interactive, streaming and realtime products.',
+        'The experience of Ali Abbas in senior frontend engineering and design, on interactive, streaming and real-time products.',
       path: '/experience',
     }),
   loader: ({ context }) =>
@@ -42,8 +42,9 @@ function ExperiencePage() {
     <Reader>
       <ReaderTitle>Experience</ReaderTitle>
       <ReaderText>
-        A path through product teams, creative development, frontend systems,
-        and the problems that taught me how to ship better work.
+        I worked in brand and product design for more than 15 years, then in
+        frontend engineering for 5 years. Each role taught me how to ship better
+        work.
       </ReaderText>
       {isLoading ? (
         <ReaderMeta>Loading</ReaderMeta>

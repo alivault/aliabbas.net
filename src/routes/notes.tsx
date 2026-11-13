@@ -19,7 +19,7 @@ export const Route = createFileRoute('/notes')({
     pageHead({
       title: 'Field Notes — Ali Abbas',
       description:
-        'Notes on product engineering, frontend craft, tools, and interaction design.',
+        'Notes on product engineering, frontend work, developer tools and interaction design.',
       path: '/notes',
     }),
   // A failed fetch must not break the page: the component fetches again.
@@ -35,8 +35,8 @@ function NotesPage() {
     <Reader>
       <ReaderTitle>Notes</ReaderTitle>
       <ReaderText>
-        Notes on software, interaction design, developer tools, and the small
-        decisions that make products feel considered.
+        I write about software, interaction design and developer tools. I also
+        write about the small decisions that make a product feel well made.
       </ReaderText>
       {isLoading ? (
         <ReaderMeta>Loading</ReaderMeta>
