@@ -8,7 +8,7 @@ import { heightAt } from './noise'
 import { ICON_SIZE } from './sheets'
 import { WORLD_UNIFORMS, withSkyFog } from './sky'
 import { registerSpinner } from './cubeSpin'
-import { getWorld, iconScrollShow, iconSlotShow, setWorld } from './store'
+import { getWorld, iconScrollShow, setWorld } from './store'
 import type { SheetSpec } from './sheets'
 
 /** The icon that the camera flies to or reads, and the way it must face. */
@@ -85,6 +85,9 @@ export default function WorldIcon({
     pointer: -1,
   })
   const cameraRight = useMemo(() => new THREE.Vector3(), [])
+  const cameraUp = useMemo(() => new THREE.Vector3(), [])
+  const cameraForward = useMemo(() => new THREE.Vector3(), [])
+  const rest = useMemo(() => new THREE.Vector3(), [])
   const yawTurn = useMemo(() => new THREE.Quaternion(), [])
   const dim = useMemo(() => ({ value: 0 }), [])
 
@@ -202,7 +205,26 @@ export default function WorldIcon({
       g.quaternion
         .setFromAxisAngle(cameraRight, turn.tiltShown)
         .multiply(yawTurn)
-      g.position.y = THREE.MathUtils.damp(g.position.y, sheet.y, 4, delta)
+      if (sheet.wide && getWorld().phase === 'inside') {
+        // The small cube of the lab moves with the page: up by as many
+        // pixels as the page scrolls, at its depth from the camera.
+        rest.set(sheet.x, sheet.y, sheet.z)
+        const camera = state.camera as THREE.PerspectiveCamera
+        const depth = rest
+          .clone()
+          .sub(camera.position)
+          .dot(cameraForward.set(0, 0, -1).applyQuaternion(camera.quaternion))
+        const half = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2)
+        const perPixel = (2 * depth * half) / state.size.height
+        cameraUp.set(0, 1, 0).applyQuaternion(camera.quaternion)
+        g.position
+          .copy(rest)
+          .addScaledVector(cameraUp, window.scrollY * perPixel)
+      } else {
+        g.position.x = THREE.MathUtils.damp(g.position.x, sheet.x, 4, delta)
+        g.position.z = THREE.MathUtils.damp(g.position.z, sheet.z, 4, delta)
+        g.position.y = THREE.MathUtils.damp(g.position.y, sheet.y, 4, delta)
+      }
     } else if (!reducedMotion) {
       turn.yaw.offset = turn.yaw.velocity = 0
       turn.tilt.offset = turn.tilt.velocity = 0
@@ -218,6 +240,8 @@ export default function WorldIcon({
         turn.tiltShown = 0
         g.rotation.set(0, spin.current, Math.sin(t * 0.5 + index * 2) * 0.03)
       }
+      g.position.x = sheet.x
+      g.position.z = sheet.z
       g.position.y = sheet.y + Math.sin(t * 0.7 + index) * 0.12
     }
     // Only the icon in focus stays lit while the world goes dark. On a
@@ -229,7 +253,7 @@ export default function WorldIcon({
       const target = !inside
         ? 1
         : sheet.wide
-          ? iconSlotShow()
+          ? 1
           : iconScrollShow(state.size.width / state.size.height)
       face.opacity = THREE.MathUtils.damp(face.opacity, target, 8, delta)
       // An opaque cube writes depth; a fading one must not hide what is
