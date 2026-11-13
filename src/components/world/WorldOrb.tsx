@@ -58,7 +58,7 @@ void main() {
   float dist = length(toPoint);
   vec3 dir = toPoint / dist;
   float fog = 1.0 - exp(-uFogDensity * uFogDensity * dist * dist);
-  color = mix(color, skyColor(dir), fog);
+  color = mix(color, fogColor(dir), fog);
   color = mix(color, skyColor(dir) * 0.14, uDim);
   gl_FragColor = vec4(color * orb.a, orb.a) * uOpacity;
 }

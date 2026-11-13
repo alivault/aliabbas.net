@@ -13,7 +13,8 @@ const RADIUS = 2
 
 const ROCK = new THREE.Color('#7a7875')
 const ROCK_DARK = new THREE.Color('#4a4846')
-const POOL = new THREE.Color('#050505')
+// Pools are a darker, smoother rock, not holes of black.
+const POOL = new THREE.Color('#2e2c2a')
 
 /** Meters per repeat of the grain texture. */
 const GRAIN_SCALE = 18

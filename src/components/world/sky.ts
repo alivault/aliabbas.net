@@ -20,12 +20,20 @@ export const SKY_GLSL = /* glsl */ `
     vec3 sky = mix(SKY_COOL, SKY_WARM, warm);
     // A little lighter overhead.
     sky *= 1.0 + 0.08 * smoothstep(0.1, 0.8, d.y);
-    // The haze at the horizon is dark, as in a dusk with dust in the air.
-    vec3 haze = sky * 0.32;
+    // A soft haze at the horizon, as in a dusk with dust in the air. It is
+    // only a little darker than the sky, so far ground fades into light,
+    // not into black.
+    vec3 haze = sky * 0.78;
     vec3 col = mix(haze, sky, smoothstep(-0.01, 0.1, d.y));
     // Under the horizon: almost black.
     col = mix(col, vec3(0.035, 0.03, 0.028), smoothstep(-0.02, -0.2, d.y));
     return col;
+  }
+
+  // The color of the fog toward a direction: the haze of the horizon, also
+  // toward the ground, where the sky itself is almost black.
+  vec3 fogColor(vec3 d) {
+    return skyColor(normalize(vec3(d.x, max(d.y, 0.0), d.z) + 1e-5));
   }
 `
 
@@ -43,8 +51,8 @@ export const DIM_GLSL = /* glsl */ `
   }
 `
 
-/** Fog density per meter. */
-export const FOG_DENSITY = 0.011
+/** Fog density per meter: at 60 m, the fog hides about two thirds. */
+export const FOG_DENSITY = 0.016
 
 /**
  * Replaces the flat fog of a built-in material with fog in the color of the
@@ -81,7 +89,7 @@ export function withSkyFog<T extends THREE.Material>(
           vec3 toPoint = vSkyWorld - cameraPosition;
           float dist = length(toPoint);
           float fog = (1.0 - exp(-skyFogDensity * skyFogDensity * dist * dist)) * (1.0 - uClear);
-          gl_FragColor.rgb = mix(gl_FragColor.rgb, skyColor(toPoint / dist), fog);
+          gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColor(toPoint / dist), fog);
           gl_FragColor.rgb = dimmed(gl_FragColor.rgb, toPoint / dist);
         }`,
       )
