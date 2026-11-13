@@ -192,6 +192,31 @@ test('Esc on a page goes back to the world', async ({ page }) => {
   await expect(page).toHaveURL(/\/$/)
 })
 
+test('Back on a page goes to the page before it', async ({ page }) => {
+  await open(page, '/skills')
+  await page.getByRole('link', { name: 'Force each state in the lab' }).click()
+  await expect(page).toHaveURL(/\/lab$/)
+  await page.getByRole('button', { name: 'Back' }).click()
+  await expect(page).toHaveURL(/\/skills$/)
+})
+
+test(
+  'Back on a page opened from outside goes to the world',
+  { tag: '@mobile' },
+  async ({ page }) => {
+    await open(page, '/experience')
+    const back = page.getByRole('button', { name: 'Back' })
+    await expect(back).toBeVisible()
+    // On a phone, Back takes the place of the name.
+    const name = page.getByRole('link', { name: 'Ali Abbas' })
+    if ((page.viewportSize()?.width ?? 0) < 640) await expect(name).toBeHidden()
+    else await expect(name).toBeVisible()
+    await back.click()
+    await expect(page).toHaveURL(/\/$/)
+    await expect(back).toHaveCount(0)
+  },
+)
+
 test(
   'the index opens over the world and closes with Esc and Return',
   { tag: '@mobile' },

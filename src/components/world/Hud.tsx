@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Link } from '@tanstack/react-router'
-import { Volume2, VolumeX } from 'lucide-react'
+import { Link, useRouter } from '@tanstack/react-router'
+import { ArrowLeft, Volume2, VolumeX } from 'lucide-react'
 import HeaderBlur from '~/components/HeaderBlur'
 import { cn } from '~/lib/utils'
 import { isSoundOn, onSoundChange, play, setSound } from '~/lib/sound'
@@ -10,8 +10,8 @@ import { setWorld, useWorld, worldCommands } from './store'
 const corner = 'hud-fill pointer-events-auto disabled:opacity-50'
 
 /**
- * The HUD: four corners over the world. Top left goes home (also out of a
- * page, back to the world), top right opens the index, bottom left turns
+ * The HUD: four corners over the world. Top left goes home; on a page, Back
+ * before it goes to where the visitor came from, top right opens the index, bottom left turns
  * the sound on or off, and bottom right flies to the next page.
  */
 export default function Hud({ inPage }: { inPage: boolean }) {
@@ -21,6 +21,7 @@ export default function Hud({ inPage }: { inPage: boolean }) {
   const ready = useWorld((s) => s.ready)
   const phase = useWorld((s) => s.phase)
   const [soundOn, setSoundOn] = useState(false)
+  const router = useRouter()
 
   useEffect(() => {
     setSoundOn(isSoundOn())
@@ -28,6 +29,19 @@ export default function Hud({ inPage }: { inPage: boolean }) {
   }, [])
 
   const hovered = SHEETS.find((s) => s.id === hover)
+
+  // Back to where the visitor came from in this site. A page opened from
+  // outside (a link, a new tab) goes up instead: a note to the notes, and
+  // a page to the world.
+  const back = () => {
+    if (router.history.canGoBack()) {
+      router.history.back()
+      return
+    }
+    const path = router.state.location.pathname.replace(/\/+$/, '')
+    const parent = path.slice(0, path.lastIndexOf('/'))
+    void router.navigate({ to: parent || '/' })
+  }
 
   return (
     <div
@@ -46,11 +60,27 @@ export default function Hud({ inPage }: { inPage: boolean }) {
           className="from-background via-background absolute inset-x-0 bottom-0 h-24 bg-linear-to-t via-45% to-transparent lg:hidden"
         />
       ) : null}
-      <div className="absolute top-5 left-6">
+      <div className="absolute top-5 left-6 flex items-baseline gap-10">
+        {inPage && !indexOpen ? (
+          <button
+            type="button"
+            data-sound="none"
+            className={cn(corner, 'inline-flex items-center gap-3')}
+            onClick={back}
+          >
+            <ArrowLeft
+              aria-hidden="true"
+              className="size-4 -translate-y-px"
+              strokeWidth={1.5}
+            />
+            Back
+          </button>
+        ) : null}
         <Link
           to="/"
           data-sound="none"
-          className={corner}
+          // On a phone, Back takes the place of the name on a page.
+          className={cn(corner, inPage && !indexOpen && 'max-sm:hidden')}
           // Home also closes the index, when it is open.
           onClick={() => setWorld({ indexOpen: false })}
         >
