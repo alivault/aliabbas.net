@@ -647,17 +647,24 @@ function pen(kit: Kit): Built {
   }
 }
 
-/** Contact: a paper plane that bobs and banks as it flies. */
+/**
+ * Contact: a folded paper plane, with wings raised in a V and a deep keel
+ * under them. It bobs and banks as it flies; on hover it flies one small
+ * loop.
+ */
 function plane(kit: Kit): Built {
   const root = new THREE.Group()
   const craft = new THREE.Group()
   root.add(craft)
-  // Folded paper, nose to +x: two wings and a keel under them.
-  const nose = v(0.55, 0.02, 0)
-  const tail = v(-0.45, 0.02, 0)
-  const left = v(-0.47, 0.12, 0.42)
-  const right = v(-0.47, 0.12, -0.42)
-  const keel = v(-0.45, -0.2, 0)
+  // Nose to +x. The spine runs from the nose to the tail; the wings rise
+  // from it to their tips; the keel folds down under it, with a little
+  // width, so it reads as folded paper and not one flat sheet.
+  const nose = v(0.6, 0, 0)
+  const tail = v(-0.42, 0, 0)
+  const left = v(-0.5, 0.26, 0.44)
+  const right = v(-0.5, 0.26, -0.44)
+  const keelLeft = v(-0.44, -0.3, 0.04)
+  const keelRight = v(-0.44, -0.3, -0.04)
   const sheet = (faces: Array<Array<THREE.Vector3>>, shade: number) => {
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute(
@@ -669,40 +676,65 @@ function plane(kit: Kit): Built {
     )
     geometry.computeVertexNormals()
     craft.add(
-      kit.mesh(geometry, kit.graphite(shade, { side: THREE.DoubleSide })),
+      kit.mesh(
+        geometry,
+        kit.graphite(shade, { side: THREE.DoubleSide, flatShading: true }),
+      ),
     )
   }
-  // Light paper on the wings, a darker keel under them.
+  // Each fold in its own shade: light wings, a darker keel, so the folds
+  // show from any side.
+  sheet([[nose, left, tail]], 0.78)
+  sheet([[nose, tail, right]], 0.45)
   sheet(
     [
-      [nose, left, tail],
-      [nose, tail, right],
+      [nose, tail, keelLeft],
+      [nose, keelRight, tail],
     ],
-    0.6,
+    0.22,
   )
-  sheet([[nose, tail, keel]], 0.15)
-  // The folds, in light.
-  const glow = kit.glow()
-  for (const [a, b] of [
-    [nose, tail],
-    [nose, left],
-    [nose, right],
-  ]) {
-    craft.add(kit.rod(a, b, 0.009, glow))
-  }
-  // The plane flies up and to the right, seen from above, so the wings
-  // show: a turn in the plane of the wings, then a tip toward the camera.
-  root.rotation.set(0.9, 0.5, 0, 'XYZ')
+  sheet([[nose, keelLeft, keelRight]], 0.1)
+  // The spine fold, in light. Only the one: lines on every edge draw an
+  // outline, and an outline reads as a flat icon.
+  craft.add(kit.rod(nose, tail, 0.01, kit.glow()))
+  // Seen from the near side and a little below, the plane flies up and
+  // to the right: the near wing, the keel under it and the far wing over
+  // the spine all show, as three shades.
+  root.rotation.set(0.32, 0.75, 0.3, 'XYZ')
+
+  // One loop: the plane climbs, goes over the top, upside down, and
+  // comes back to where it was. It starts when the pointer comes on.
+  const LOOP_SECONDS = 1.5
+  const LOOP_RADIUS = 0.24
+  let loop = -1
+  let armed = true
   return {
     root,
     // On hover it turns to the camera, so the wings show.
     faceOnHover: 0,
-    update: ({ t, hover, motion }) => {
+    update: ({ t, delta, hover, motion }) => {
+      if (hover > 0.5 && armed && motion) {
+        loop = 0
+        armed = false
+      }
+      if (hover < 0.1) armed = true
+      let x = 0
+      let y = 0
+      let pitch = 0
+      if (loop >= 0) {
+        loop += delta / LOOP_SECONDS
+        const k = Math.min(loop, 1)
+        // Slow in and out, fastest over the top.
+        const angle = Math.PI * 2 * (k * k * (3 - 2 * k))
+        x = Math.sin(angle) * LOOP_RADIUS
+        y = (1 - Math.cos(angle)) * LOOP_RADIUS
+        pitch = angle
+        if (loop >= 1) loop = -1
+      }
       const sway = motion ? 1 : 0
-      craft.position.y = Math.sin(t * 1.6) * 0.05 * sway + hover * 0.06
-      craft.position.x = hover * 0.08
+      craft.position.set(x, y + Math.sin(t * 1.6) * 0.05 * sway, 0)
       craft.rotation.x = Math.sin(t * 1.1) * 0.16 * sway
-      craft.rotation.z = Math.sin(t * 1.6 + 1) * 0.06 * sway + hover * 0.14
+      craft.rotation.z = pitch + Math.sin(t * 1.6 + 1) * 0.06 * sway
     },
   }
 }
