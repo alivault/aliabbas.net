@@ -22,6 +22,8 @@ export type Frame = {
   hover: number
   /** False with reduced motion: the object holds still. */
   motion: boolean
+  /** 0 to 1, smoothed: the object is the one of the open page. */
+  page: number
 }
 
 export type IconObject = {
@@ -39,10 +41,6 @@ export type IconObject = {
   /** On its open page, a turn (radians) added to the angle every icon
       has there: 0.4 makes it face on. */
   pageTurn?: number
-  /** In the world it does not turn round: it faces the camera at the
-      angle of faceOnHover, always (a shape that reads from one side only,
-      as the plane). A drag still spins it, and it comes back. */
-  alwaysFace?: boolean
 }
 
 type Built = Omit<IconObject, 'kit' | 'update'> & {
@@ -751,10 +749,16 @@ function plane(kit: Kit): Built {
   // Seen from above and a little behind, the plane flies up and to the
   // right: the orange tops of both wings show, as in a send icon. Its
   // page shows it face on, so the view is this one.
-  root.rotation.set(1.32, 0.72, -0.35, 'XYZ')
-  // Banked, so the lower wing faces the camera and the keel shows under
-  // it.
-  bank.rotation.x = BANK
+  // Two poses. In the world it flies level, keel down, nose a little up,
+  // and turns round as every icon does. On its page it is seen from
+  // above, banked, as in a send icon: the view angle on root, the bank
+  // about its length.
+  const worldPose = new THREE.Quaternion().setFromEuler(
+    new THREE.Euler(0, 0, 0.18),
+  )
+  const pagePose = new THREE.Quaternion().setFromEuler(
+    new THREE.Euler(1.32, 0.72, -0.35, 'XYZ'),
+  )
   // Seen face on, its wings are wide: a little smaller, to match the
   // other icons.
   craft.scale.setScalar(0.85)
@@ -770,9 +774,9 @@ function plane(kit: Kit): Built {
     // On hover it turns to the camera, so the wings show.
     faceOnHover: 0,
     pageTurn: 0.4,
-    // From the side or the back it is a sliver: it faces the camera.
-    alwaysFace: true,
-    update: ({ t, delta, hover, motion }) => {
+    update: ({ t, delta, hover, motion, page }) => {
+      root.quaternion.slerpQuaternions(worldPose, pagePose, page)
+      bank.rotation.x = BANK * page
       if (hover > 0.5 && armed && motion) {
         loop = 0
         armed = false

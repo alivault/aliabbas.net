@@ -147,6 +147,8 @@ export default function WorldIcon({
   const shown = useRef(1)
   /** 1 while the page of an object with hoverOnPage is open. */
   const pagePose = useRef(0)
+  /** 1 while this object is the one of the open page (or flown to). */
+  const pageBlend = useRef(0)
 
   const kind = sheet.icon.type === 'glyph' ? sheet.icon.object : null
   const object = useMemo(() => {
@@ -334,12 +336,7 @@ export default function WorldIcon({
         }
       }
       const faceOn = object?.faceOnHover
-      const facing =
-        faceOn !== undefined &&
-        !turn.dragging &&
-        (hovered.current ||
-          (object?.alwaysFace && Math.abs(turn.yaw.velocity) < 0.5))
-      if (faceOn !== undefined && facing) {
+      if (faceOn !== undefined && hovered.current && !turn.dragging) {
         // An object with a face to read turns to the camera on hover, and
         // stops there, a little to one side. It turns on from there when
         // the pointer leaves.
@@ -440,7 +437,14 @@ export default function WorldIcon({
         3,
         Math.min(delta, 0.05),
       )
+      pageBlend.current = THREE.MathUtils.damp(
+        pageBlend.current,
+        focused ? 1 : 0,
+        3,
+        Math.min(delta, 0.05),
+      )
       object.update({
+        page: pageBlend.current,
         t,
         delta: Math.min(delta, 0.05),
         hover: Math.max(glow.current, pagePose.current),
