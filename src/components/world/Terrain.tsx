@@ -16,6 +16,12 @@ const ROCK = new THREE.Color('#7a7875')
 const ROCK_DARK = new THREE.Color('#4a4846')
 // Pools are a darker, smoother rock, not holes of black.
 const POOL = new THREE.Color('#2e2c2a')
+// The color of the ground also follows its shape: pale dust settles on
+// high, flat ground; steep slopes show bare dark rock; low ground is
+// darker and a little cooler.
+const DUST = new THREE.Color('#8e8273')
+const STEEP = new THREE.Color('#4f4b47')
+const LOW = new THREE.Color('#3d3d40')
 
 /** Meters per repeat of the grain texture. */
 const GRAIN_SCALE = 18
@@ -45,7 +51,7 @@ function tiledNoise(x: number, y: number, period: number) {
  * without making them much darker. Blotches, cracks of a meter, and fine
  * speckle.
  */
-function grainTexture() {
+function grainTexture(speckle = true) {
   const size = 512
   const data = new Uint8Array(size * size * 4)
   for (let y = 0; y < size; y++) {
@@ -59,7 +65,7 @@ function grainTexture() {
           amp
         amp *= 0.55
       }
-      const value = 200 + n * 260 + (Math.random() - 0.5) * 30
+      const value = 200 + n * 260 + (speckle ? (Math.random() - 0.5) * 30 : 0)
       const i = (y * size + x) * 4
       data[i] = data[i + 1] = data[i + 2] = Math.max(0, Math.min(255, value))
       data[i + 3] = 255
@@ -75,17 +81,35 @@ function grainTexture() {
   return texture
 }
 
+/** How deep the fine relief of the ground is. */
+const BUMP = 4
+/** Meters from the camera where the relief starts to fade, and is gone. */
+const RELIEF_NEAR = 8
+const RELIEF_FAR = 40
+
 /** How strong the sun is on the ground, and the flat light of the sky. */
 const SUN_GAIN = 1.5
 const SKY_GAIN = 0.55
 
 /**
+ * Valley mist: low ground fades into a pale haze, more so far away. Above
+ * MIST_TOP there is none; it is full MIST_DEPTH meters lower.
+ */
+const MIST_TOP = -2
+const MIST_DEPTH = 7
+/** Meters to the mist at half of its full strength. */
+const MIST_REACH = 70
+/** How much of the sky the pools mirror, at a glancing look. */
+const POOL_GLOSS = 0.55
+
+/**
  * The light of the ground. The flat light of the sky (the hemisphere
  * light) gave every slope the same light, so the hills had no shape; now
  * the warm light from where the sun set does most of the work, so slopes
- * toward it glow and the far sides fall into shade. The baked sunlight takes the sun away in the
- * shadow of a hill, and the baked openness darkens the sky light in
- * hollows.
+ * toward it glow and the far sides fall into shade. The baked sunlight
+ * takes the sun away in the shadow of a hill, and the baked openness
+ * darkens the sky light in hollows. The pools are glossy: at a glancing
+ * look they mirror the sky. Last, the valleys fill with mist.
  */
 function withGroundLight(material: THREE.MeshLambertMaterial) {
   const before = material.onBeforeCompile.bind(material)
@@ -94,14 +118,21 @@ function withGroundLight(material: THREE.MeshLambertMaterial) {
     shader.vertexShader = shader.vertexShader
       .replace(
         '#include <common>',
-        '#include <common>\nattribute vec2 bake;\nvarying vec2 vBake;',
+        '#include <common>\nattribute vec3 bake;\nvarying vec3 vBake;',
       )
       .replace(
         '#include <begin_vertex>',
         '#include <begin_vertex>\nvBake = bake;',
       )
     shader.fragmentShader = shader.fragmentShader
-      .replace('#include <common>', '#include <common>\nvarying vec2 vBake;')
+      .replace('#include <common>', '#include <common>\nvarying vec3 vBake;')
+      // The fine relief fades out with distance: far away, the bumps are
+      // smaller than a pixel and only flicker.
+      .replace(
+        '#include <normal_fragment_maps>',
+        `#include <normal_fragment_maps>
+        normal = normalize(mix(normal, nonPerturbedNormal, smoothstep(${RELIEF_NEAR.toFixed(1)}, ${RELIEF_FAR.toFixed(1)}, length(vViewPosition))));`,
+      )
       .replace(
         '#include <lights_fragment_begin>',
         THREE.ShaderChunk.lights_fragment_begin
@@ -114,6 +145,27 @@ function withGroundLight(material: THREE.MeshLambertMaterial) {
             'irradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometryNormal );',
             `irradiance += ${SKY_GAIN.toFixed(2)} * vBake.y * getHemisphereLightIrradiance( hemisphereLights[ i ], geometryNormal );`,
           ),
+      )
+      .replace(
+        '#include <colorspace_fragment>',
+        `#include <colorspace_fragment>
+        {
+          vec3 toPoint = vSkyWorld - cameraPosition;
+          float dist = length(toPoint);
+          vec3 look = toPoint / dist;
+          // The normal in the world, with the fine relief of the bump map.
+          vec3 worldNormal = normalize((vec4(normal, 0.0) * viewMatrix).xyz);
+          float facing = clamp(dot(-look, worldNormal), 0.0, 1.0);
+          float fresnel = 0.04 + 0.96 * pow(1.0 - facing, 5.0);
+          // Only the sky is mirrored, never the dark under the horizon.
+          vec3 bounce = reflect(look, worldNormal);
+          bounce.y = max(bounce.y, 0.02);
+          vec3 mirrored = skyColor(normalize(bounce));
+          gl_FragColor.rgb = mix(gl_FragColor.rgb, mirrored, vBake.z * fresnel * ${POOL_GLOSS.toFixed(2)});
+          float low = smoothstep(${MIST_TOP.toFixed(1)}, ${(MIST_TOP - MIST_DEPTH).toFixed(1)}, vSkyWorld.y);
+          float far = dist / (dist + ${MIST_REACH.toFixed(1)});
+          gl_FragColor.rgb = mix(gl_FragColor.rgb, fogColor(look), low * far * (1.0 - uClear));
+        }`,
       )
   }
   material.customProgramCacheKey = () => 'ground'
@@ -157,6 +209,12 @@ function coarse(
   }
 }
 
+/** 0 at `from`, 1 at `to`, smooth between; `to` may be under `from`. */
+function smoothstep(from: number, to: number, value: number) {
+  const t = Math.min(1, Math.max(0, (value - from) / (to - from)))
+  return t * t * (3 - 2 * t)
+}
+
 function buildChunk(cx: number, cz: number) {
   const geometry = new THREE.BufferGeometry()
   const side = SEGMENTS + 1
@@ -168,7 +226,7 @@ function buildChunk(cx: number, cz: number) {
   // (hollows). They are soft and wide, so they are worked out on a coarser
   // grid (every 4th and every 2nd point) and blended between: a tile then
   // takes some 4 ms, not 30.
-  const bake = new Float32Array(side * side * 2)
+  const bake = new Float32Array(side * side * 3)
   const sunlight = coarse(cx, cz, 4, sunlightAt)
   const openness = coarse(cx, cz, 2, opennessAt)
   const step = CHUNK / SEGMENTS
@@ -185,8 +243,11 @@ function buildChunk(cx: number, cz: number) {
       const u = (iz * side + ix) * 2
       uvs[u] = x / GRAIN_SCALE
       uvs[u + 1] = z / GRAIN_SCALE
-      bake[u] = sunlight(ix, iz)
-      bake[u + 1] = openness(ix, iz)
+      const open = openness(ix, iz)
+      const pool = poolAt(x, z)
+      bake[i] = sunlight(ix, iz)
+      bake[i + 1] = open
+      bake[i + 2] = pool
       // The normal from the height function itself, so chunk edges match.
       const nx = heightAt(x - e, z) - heightAt(x + e, z)
       const nz = heightAt(x, z - e) - heightAt(x, z + e)
@@ -195,7 +256,16 @@ function buildChunk(cx: number, cz: number) {
       normals[i + 1] = (2 * e) / length
       normals[i + 2] = nz / length
       color.copy(ROCK_DARK).lerp(ROCK, rockAt(x, z))
-      color.lerp(POOL, poolAt(x, z))
+      // The shape of the land: slope, height and the hollows.
+      const y = positions[i + 1]
+      const slope = 1 - normals[i + 1]
+      color.lerp(STEEP, smoothstep(0.03, 0.16, slope) * 0.55)
+      color.lerp(
+        DUST,
+        smoothstep(1, 8, y) * (1 - smoothstep(0.02, 0.1, slope)) * 0.5,
+      )
+      color.lerp(LOW, Math.max(smoothstep(-2, -9, y), (1 - open) * 1.2) * 0.45)
+      color.lerp(POOL, pool)
       colors[i] = color.r
       colors[i + 1] = color.g
       colors[i + 2] = color.b
@@ -216,7 +286,7 @@ function buildChunk(cx: number, cz: number) {
   geometry.setAttribute('normal', new THREE.BufferAttribute(normals, 3))
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
   geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2))
-  geometry.setAttribute('bake', new THREE.BufferAttribute(bake, 2))
+  geometry.setAttribute('bake', new THREE.BufferAttribute(bake, 3))
   geometry.computeBoundingSphere()
   return geometry
 }
@@ -242,6 +312,9 @@ export default function Terrain({
           new THREE.MeshLambertMaterial({
             vertexColors: true,
             map: grainTexture(),
+            // Fine relief: the same grain with no speckle, as height.
+            bumpMap: grainTexture(false),
+            bumpScale: BUMP,
           }),
         ),
       ),
