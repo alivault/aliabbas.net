@@ -150,7 +150,10 @@ export default function WorldIcon({
   /** 1 while this object is the one of the open page (or flown to). */
   const pageBlend = useRef(0)
 
-  const kind = sheet.icon.type === 'glyph' ? sheet.icon.object : null
+  const kind =
+    sheet.icon.type === 'glyph' || sheet.icon.type === 'image'
+      ? (sheet.icon.object ?? null)
+      : null
   const object = useMemo(() => {
     if (!kind) return null
     const built = buildObject(kind, accent)

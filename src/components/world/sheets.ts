@@ -20,6 +20,8 @@ export type SheetIcon =
       type: 'image'
       src: string
       /** Fill the square, no transparency. */ cover?: boolean
+      /** In the world, a 3D object in place of the cube with the image. */
+      object?: ObjectKind
     }
   /**
    * A page: a glyph where the icon is flat (the index), and a 3D object
@@ -56,7 +58,7 @@ export const ICON_SIZE = 1.4
 const FLOAT = 1.9
 
 const ICONS: Record<string, SheetIcon> = {
-  pico: { type: 'image', src: '/pico.svg' },
+  pico: { type: 'image', src: '/pico.svg', object: 'pico' },
   whimcall: { type: 'image', src: '/whimcall.png' },
   postmaster: { type: 'image', src: '/postmaster.webp' },
 }

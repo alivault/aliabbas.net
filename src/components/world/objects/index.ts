@@ -13,6 +13,7 @@ export type ObjectKind =
   | 'pen'
   | 'plane'
   | 'padlock'
+  | 'pico'
 
 /** One frame of an object: how far the pointer is on it, 0 to 1. */
 export type Frame = {
@@ -67,6 +68,7 @@ const BUILDERS: Record<ObjectKind, (kit: Kit) => Built> = {
   pen,
   plane,
   padlock,
+  pico,
 }
 
 const v = (x: number, y: number, z = 0) => new THREE.Vector3(x, y, z)
@@ -855,5 +857,56 @@ function padlock(kit: Kit): Built {
       swing.position.y = open * 0.14
       swing.rotation.y = open * 0.75
     },
+  }
+}
+
+/**
+ * Pico: the P of its app icon, in 3D. The P is four blocks (the rects of
+ * public/pico.svg, on its 102 by 136 grid): the stem, the top bar, the
+ * middle and the right side, which touch only at their corners. On hover
+ * the blocks part in depth and come apart a little.
+ */
+function pico(kit: Kit): Built {
+  const root = new THREE.Group()
+  const white = kit.graphite(0, {
+    color: new THREE.Color('#ece8e2'),
+    emissive: new THREE.Color('#3a3632'),
+    roughness: 0.5,
+  })
+  const glow = kit.glow()
+  // x, y, width, height on the grid of the SVG (y down).
+  const rects: Array<[number, number, number, number]> = [
+    [0, 34, 34, 102],
+    [34, 0, 68, 34],
+    [34, 68, 34, 34],
+    [68, 34, 34, 34],
+  ]
+  const unit = 1 / 136
+  const depth = 0.24
+  const blocks = rects.map(([x, y, w, h], index) => {
+    const block = new THREE.Group()
+    block.add(kit.box(w * unit, h * unit, depth, white, 0.02))
+    // A line of light around the middle of each block.
+    block.add(kit.box(w * unit + 0.008, h * unit + 0.008, 0.012, glow, 0.004))
+    const at = v((x + w / 2 - 51) * unit, (68 - (y + h / 2)) * unit, 0)
+    root.add(block)
+    return {
+      block,
+      at,
+      // Each block parts to its own depth and a little away from the
+      // middle.
+      out: v(at.x * 0.18, at.y * 0.18, [-0.12, 0.1, 0.16, -0.06][index]),
+    }
+  })
+  const place = (hover: number) => {
+    for (const { block, at, out } of blocks) {
+      block.position.copy(at).addScaledVector(out, hover)
+    }
+  }
+  place(0)
+  return {
+    root,
+    faceOnHover: 0.3,
+    update: ({ hover }) => place(hover),
   }
 }
