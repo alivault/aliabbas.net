@@ -153,7 +153,9 @@ test('the gate shows the intro on each visit, and Enter goes in', async ({
     gate.getByRole('button', { name: 'Enter', exact: true }),
   ).toBeFocused()
   await page.keyboard.press('Enter')
-  await expect(gate).toBeHidden()
+  // The gate fades out while the world draws again at full speed: with
+  // software WebGL (CI) that takes some seconds.
+  await expect(gate).toBeHidden({ timeout: 20_000 })
   await expect(page.getByRole('button', { name: 'Sound' })).toHaveAttribute(
     'aria-pressed',
     'true',
