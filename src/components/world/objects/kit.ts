@@ -126,6 +126,8 @@ export class Kit {
   ) {
     const mesh = new THREE.Mesh(this.geometry(geometry), material)
     mesh.raycast = () => {}
+    // It takes the key shadow; it casts one only on its page (WorldIcon).
+    mesh.receiveShadow = true
     return mesh
   }
 

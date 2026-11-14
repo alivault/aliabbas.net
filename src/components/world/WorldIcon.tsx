@@ -6,7 +6,12 @@ import { play } from '~/lib/sound'
 import { drawIcon } from './iconTexture'
 import { heightAt } from './noise'
 import { buildObject } from './objects'
-import { followCamera, studioEnvironment, withStudio } from './objects/studio'
+import {
+  aimKeyShadow,
+  followCamera,
+  studioEnvironment,
+  withStudio,
+} from './objects/studio'
 import { ICON_SIZE } from './sheets'
 import { WORLD_UNIFORMS, withSkyFog } from './sky'
 import { registerSpinner, spinGrab } from './cubeSpin'
@@ -150,6 +155,8 @@ export default function WorldIcon({
   const pagePose = useRef(0)
   /** 1 while this object is the one of the open page (or flown to). */
   const pageBlend = useRef(0)
+  /** The object casts the key shadow (on its page). */
+  const casting = useRef(false)
 
   const kind =
     sheet.icon.type === 'glyph' || sheet.icon.type === 'image'
@@ -433,6 +440,19 @@ export default function WorldIcon({
     )
     if (object) {
       followCamera(object.kit.materials, state.camera)
+      // On its page the object casts soft shadows on itself, from the key
+      // light. Glass casts none.
+      if (casting.current !== focused) {
+        casting.current = focused
+        object.root.traverse((part) => {
+          if (part instanceof THREE.Mesh) {
+            const materials = [part.material].flat() as Array<THREE.Material>
+            part.castShadow =
+              focused && materials.every((m) => m.userData.opacity === 1)
+          }
+        })
+      }
+      if (focused) aimKeyShadow(g.position, state.camera)
       fadeObject(object.kit.materials, shown.current)
       const boost = focused && sheet.wide ? 1.4 : 1
       for (const material of object.kit.glows) {

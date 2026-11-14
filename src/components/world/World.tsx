@@ -3,6 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import Beacons from './Beacons'
 import Footprint from './Footprint'
+import { keyShadow } from './objects/studio'
 import GuideProbe from './GuideProbe'
 import Player from './Player'
 import { SHEETS } from './sheets'
@@ -55,6 +56,7 @@ export default function World({
   return (
     <Canvas
       flat
+      shadows="percentage"
       dpr={[1, 1.5]}
       camera={{ fov: 55, near: 0.05, far: 900 }}
       gl={{ antialias: true, powerPreference: 'high-performance' }}
@@ -66,6 +68,10 @@ export default function World({
       <Sky />
       <hemisphereLight args={['#d6d2cc', '#202020', 1.2]} />
       <directionalLight position={sun} color="#ffe0c0" intensity={1.1} />
+      {/* The shadow of the studio key light, for the object of the open
+          page: it lights nothing. */}
+      <primitive object={keyShadow} />
+      <primitive object={keyShadow.target} />
       <Terrain
         onPoint={(point) => {
           pointer.current = getWorld().phase === 'roam' ? point : null
