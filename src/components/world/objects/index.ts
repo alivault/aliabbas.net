@@ -39,6 +39,10 @@ export type IconObject = {
   /** On its open page, a turn (radians) added to the angle every icon
       has there: 0.4 makes it face on. */
   pageTurn?: number
+  /** In the world it does not turn round: it faces the camera at the
+      angle of faceOnHover, always (a shape that reads from one side only,
+      as the plane). A drag still spins it, and it comes back. */
+  alwaysFace?: boolean
 }
 
 type Built = Omit<IconObject, 'kit' | 'update'> & {
@@ -766,6 +770,8 @@ function plane(kit: Kit): Built {
     // On hover it turns to the camera, so the wings show.
     faceOnHover: 0,
     pageTurn: 0.4,
+    // From the side or the back it is a sliver: it faces the camera.
+    alwaysFace: true,
     update: ({ t, delta, hover, motion }) => {
       if (hover > 0.5 && armed && motion) {
         loop = 0

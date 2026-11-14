@@ -334,7 +334,12 @@ export default function WorldIcon({
         }
       }
       const faceOn = object?.faceOnHover
-      if (faceOn !== undefined && hovered.current && !turn.dragging) {
+      const facing =
+        faceOn !== undefined &&
+        !turn.dragging &&
+        (hovered.current ||
+          (object?.alwaysFace && Math.abs(turn.yaw.velocity) < 0.5))
+      if (faceOn !== undefined && facing) {
         // An object with a face to read turns to the camera on hover, and
         // stops there, a little to one side. It turns on from there when
         // the pointer leaves.
