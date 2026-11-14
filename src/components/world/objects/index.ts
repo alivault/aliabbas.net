@@ -666,10 +666,15 @@ function pen(kit: Kit): Built {
  * under them. It bobs and banks as it flies; on hover it flies one small
  * loop.
  */
+const BANK = 0.45
+
 function plane(kit: Kit): Built {
   const root = new THREE.Group()
+  // A bank about the length of the plane, under the view angle of root.
+  const bank = new THREE.Group()
+  root.add(bank)
   const craft = new THREE.Group()
-  root.add(craft)
+  bank.add(craft)
   const paper = kit.paint()
   const under = kit.graphite(0.15, {
     side: THREE.DoubleSide,
@@ -681,11 +686,11 @@ function plane(kit: Kit): Built {
   // right wing, all joined at the nose and along the folds. Nose to +x.
   // At the top the keel opens between the wings, as a real plane does.
   const nose = v(0.6, 0.02, 0)
-  const tipLeft = v(-0.5, 0.25, 0.46)
-  const foldLeft = v(-0.42, 0.04, 0.07)
-  const keel = v(-0.44, -0.3, 0)
-  const foldRight = v(-0.42, 0.04, -0.07)
-  const tipRight = v(-0.5, 0.25, -0.46)
+  const tipLeft = v(-0.46, 0.22, 0.6)
+  const foldLeft = v(-0.4, 0.04, 0.12)
+  const keel = v(-0.5, -0.28, 0)
+  const foldRight = v(-0.4, 0.04, -0.12)
+  const tipRight = v(-0.46, 0.22, -0.6)
   const points = [nose, tipLeft, foldLeft, keel, foldRight, tipRight]
   // The faces, wound the same way, so the top of the wings and the inside
   // of the keel are one side of the sheet.
@@ -742,7 +747,10 @@ function plane(kit: Kit): Built {
   // Seen from above and a little behind, the plane flies up and to the
   // right: the orange tops of both wings show, as in a send icon. Its
   // page shows it face on, so the view is this one.
-  root.rotation.set(1.1, 0.67, 0, 'XYZ')
+  root.rotation.set(1.32, 0.72, 0, 'XYZ')
+  // Banked, so the lower wing faces the camera and the keel shows under
+  // it.
+  bank.rotation.x = BANK
   // Seen face on, its wings are wide: a little smaller, to match the
   // other icons.
   craft.scale.setScalar(0.85)
