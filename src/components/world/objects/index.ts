@@ -719,8 +719,8 @@ function plane(kit: Kit): Built {
   const behind = points.map((p, index) =>
     p.clone().addScaledVector(normals[index].normalize(), -thickness),
   )
-  // The top side first (orange), then the bottom side and the edge
-  // (graphite).
+  // The top side first (graphite), then the bottom side and the edge
+  // (orange).
   const triangles: Array<Array<THREE.Vector3>> = []
   for (const [a, b, c] of faces) {
     triangles.push([points[a], points[b], points[c]])
@@ -745,7 +745,7 @@ function plane(kit: Kit): Built {
   geometry.computeVertexNormals()
   geometry.addGroup(0, topCount, 0)
   geometry.addGroup(topCount, triangles.length * 3 - topCount, 1)
-  craft.add(kit.mesh(geometry, [paper, under]))
+  craft.add(kit.mesh(geometry, [under, paper]))
   // Seen from above and a little behind, the plane flies up and to the
   // right: the orange tops of both wings show, as in a send icon. Its
   // page shows it face on, so the view is this one.
