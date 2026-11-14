@@ -1,5 +1,5 @@
-import { useMemo, useRef } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { useEffect, useMemo, useRef } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import Beacons from './Beacons'
 import Footprint from './Footprint'
@@ -53,9 +53,14 @@ export default function World({
   const sun = useMemo(() => SUN_DIRECTION.clone().multiplyScalar(100), [])
   // In the world, a drag turns the camera; on a page, it scrolls the page.
   const roaming = useWorld((s) => s.phase === 'roam')
+  // Behind the enter gate, the world is a still backdrop under a dark
+  // blur: it is drawn only a few times a second, so the page is free while
+  // the intro types in.
+  const behindGate = useWorld((s) => !s.entered && s.phase === 'roam')
 
   return (
     <Canvas
+      frameloop={behindGate ? 'demand' : 'always'}
       flat
       shadows="percentage"
       // The shadow map is drawn only when an object casts (WorldIcon asks
@@ -114,8 +119,23 @@ export default function World({
       <GuideProbe />
       <Player reducedMotion={reducedMotion} walkTarget={walkTarget} />
       <Dimmer />
+      {behindGate ? <SlowFrames /> : null}
     </Canvas>
   )
+}
+
+/** Frames a second of the world behind the enter gate. */
+const GATE_FPS = 2
+
+/** Draws a frame now and then, while the world draws only on demand. */
+function SlowFrames() {
+  const invalidate = useThree((s) => s.invalidate)
+  useEffect(() => {
+    invalidate()
+    const timer = window.setInterval(() => invalidate(), 1000 / GATE_FPS)
+    return () => window.clearInterval(timer)
+  }, [invalidate])
+  return null
 }
 
 /**
