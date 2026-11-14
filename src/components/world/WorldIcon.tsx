@@ -328,7 +328,23 @@ export default function WorldIcon({
           }
         }
       }
-      if (!reducedMotion) {
+      const faceOn = object?.faceOnHover
+      if (faceOn !== undefined && hovered.current && !turn.dragging) {
+        // An object with a face to read turns to the camera on hover, and
+        // stops there, a little to one side. It turns on from there when
+        // the pointer leaves.
+        const toCamera =
+          Math.atan2(
+            state.camera.position.x - g.position.x,
+            state.camera.position.z - g.position.z,
+          ) - faceOn
+        spin.current = THREE.MathUtils.damp(
+          spin.current,
+          shortestAngle(spin.current, toCamera),
+          reducedMotion ? 30 : 6,
+          delta,
+        )
+      } else if (!reducedMotion) {
         spin.current += delta * (hovered.current ? 0.08 : 0.32)
       }
       turn.tiltShown = THREE.MathUtils.damp(

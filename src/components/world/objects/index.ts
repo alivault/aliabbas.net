@@ -28,9 +28,16 @@ export type IconObject = {
   root: THREE.Group
   kit: Kit
   update: (frame: Frame) => void
+  /**
+   * On hover, the object turns to the camera and stops there, at this
+   * angle from face on (radians): a face that has to be read (a dial).
+   */
+  faceOnHover?: number
 }
 
-type Built = { root: THREE.Group; update?: (frame: Frame) => void }
+type Built = Omit<IconObject, 'kit' | 'update'> & {
+  update?: (frame: Frame) => void
+}
 
 /**
  * Builds an object, in meters, about one meter across and centered on the
@@ -39,7 +46,7 @@ type Built = { root: THREE.Group; update?: (frame: Frame) => void }
 export function buildObject(kind: ObjectKind, accent: string): IconObject {
   const kit = new Kit(accent)
   const built = BUILDERS[kind](kit)
-  return { root: built.root, kit, update: built.update ?? (() => {}) }
+  return { ...built, kit, update: built.update ?? (() => {}) }
 }
 
 const BUILDERS: Record<ObjectKind, (kit: Kit) => Built> = {
@@ -456,12 +463,23 @@ function dial(kit: Kit): Built {
   let value = 0.55
   return {
     root,
+    // On hover the dial turns to the camera, a little to one side.
+    faceOnHover: 0.3,
     update: ({ t, delta, hover, motion }) => {
       const idle = motion
         ? 0.55 + Math.sin(t * 1.3) * 0.06 + Math.sin(t * 4.1) * 0.015
         : 0.55
-      value = ease(value, idle + (0.95 - idle) * hover, 7, delta)
-      needle.rotation.z = angleOf(value) - Math.PI / 2
+      value = ease(value, idle + (0.94 - idle) * hover, 7, delta)
+      // At the top it redlines: the needle shakes against the end, fast
+      // and uneven, as an engine at its limit.
+      const shake = motion
+        ? hover *
+          hover *
+          (Math.sin(t * 41) * 0.014 +
+            Math.sin(t * 67 + 1.3) * 0.01 +
+            (Math.random() - 0.5) * 0.012)
+        : 0
+      needle.rotation.z = angleOf(Math.min(value + shake, 1)) - Math.PI / 2
     },
   }
 }
