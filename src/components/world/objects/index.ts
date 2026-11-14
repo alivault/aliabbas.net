@@ -33,6 +33,9 @@ export type IconObject = {
    * angle from face on (radians): a face that has to be read (a dial).
    */
   faceOnHover?: number
+  /** On its open page, the object shows its hover pose (it can still be
+      spun). */
+  hoverOnPage?: boolean
 }
 
 type Built = Omit<IconObject, 'kit' | 'update'> & {
@@ -437,11 +440,15 @@ function notebook(kit: Kit): Built {
   pen.add(tip)
   pen.add(kit.rod(v(0.09, 0, 0), v(0.53, 0, 0), 0.028, kit.graphite(0.3)))
   book.add(pen)
-  // At rest it lies along the top edge of the book, past the pages, where
-  // the turning page does not reach. To write, its tip is on the right
-  // page and its body rises up and back, out of the way of the pages.
-  const restAt = v(-0.265, 0.016, -0.375)
-  const restTurn = new THREE.Quaternion()
+  // At rest it lies along the right edge of the book, past the pages,
+  // where the turning page does not reach, its tip to the bottom. To
+  // write, its tip is on the right page and its body rises up and back,
+  // out of the way of the pages.
+  const restAt = v(0.535, 0.045, 0.27)
+  const restTurn = new THREE.Quaternion().setFromUnitVectors(
+    v(1, 0, 0),
+    v(0, 0, -1),
+  )
   const writeAt = v(0.2, 0.05, 0.06)
   const writeTurn = new THREE.Quaternion().setFromUnitVectors(
     v(1, 0, 0),
@@ -455,6 +462,8 @@ function notebook(kit: Kit): Built {
     root,
     // On hover it turns to the camera, so the pages show.
     faceOnHover: 0.35,
+    // On the notes page it lies open, the pen in the hand.
+    hoverOnPage: true,
     update: ({ hover }) => {
       // First the page goes over from the right to the left; only when
       // it is past the spine does the pen come to the right page. On the

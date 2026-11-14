@@ -145,6 +145,8 @@ export default function WorldIcon({
   const clear = useMemo(() => ({ value: 0 }), [])
   /** How much of the icon shows, 0 to 1 (it fades as text scrolls over). */
   const shown = useRef(1)
+  /** 1 while the page of an object with hoverOnPage is open. */
+  const pagePose = useRef(0)
 
   const kind = sheet.icon.type === 'glyph' ? sheet.icon.object : null
   const object = useMemo(() => {
@@ -424,10 +426,16 @@ export default function WorldIcon({
         material.emissiveIntensity =
           (material.userData.glow as number) * boost * (1 + glow.current * 0.5)
       }
+      pagePose.current = THREE.MathUtils.damp(
+        pagePose.current,
+        object.hoverOnPage && inside ? 1 : 0,
+        3,
+        Math.min(delta, 0.05),
+      )
       object.update({
         t,
         delta: Math.min(delta, 0.05),
-        hover: glow.current,
+        hover: Math.max(glow.current, pagePose.current),
         motion: !reducedMotion,
       })
     } else {
