@@ -120,7 +120,10 @@ export class Kit {
    * A part of the object. It does not take the pointer: the icon has one
    * box for that, so a pointer that moves over the parts stays on it.
    */
-  mesh(geometry: THREE.BufferGeometry, material: THREE.Material) {
+  mesh(
+    geometry: THREE.BufferGeometry,
+    material: THREE.Material | Array<THREE.Material>,
+  ) {
     const mesh = new THREE.Mesh(this.geometry(geometry), material)
     mesh.raycast = () => {}
     return mesh

@@ -668,6 +668,10 @@ function plane(kit: Kit): Built {
   const craft = new THREE.Group()
   root.add(craft)
   const paper = kit.paint()
+  const under = kit.graphite(0.15, {
+    side: THREE.DoubleSide,
+    flatShading: true,
+  })
   // Either winding of a side face shows.
   paper.side = THREE.DoubleSide
   // One sheet, folded: left wing, left half of the keel, right half,
@@ -705,9 +709,14 @@ function plane(kit: Kit): Built {
   const behind = points.map((p, index) =>
     p.clone().addScaledVector(normals[index].normalize(), -thickness),
   )
+  // The top side first (orange), then the bottom side and the edge
+  // (graphite).
   const triangles: Array<Array<THREE.Vector3>> = []
   for (const [a, b, c] of faces) {
     triangles.push([points[a], points[b], points[c]])
+  }
+  const topCount = triangles.length * 3
+  for (const [a, b, c] of faces) {
     triangles.push([behind[a], behind[c], behind[b]])
   }
   outline.forEach((a, index) => {
@@ -724,11 +733,13 @@ function plane(kit: Kit): Built {
     ),
   )
   geometry.computeVertexNormals()
-  craft.add(kit.mesh(geometry, paper))
-  // Seen from the near side and a little below, the plane flies up and
-  // to the right: the near wing, the keel under it and the far wing over
-  // the spine all show, as three shades.
-  root.rotation.set(0.32, 0.75, 0.3, 'XYZ')
+  geometry.addGroup(0, topCount, 0)
+  geometry.addGroup(topCount, triangles.length * 3 - topCount, 1)
+  craft.add(kit.mesh(geometry, [paper, under]))
+  // Seen from the near side and a little above, the plane flies up and
+  // to the right: the orange tops of both wings show, and the graphite
+  // keel under them.
+  root.rotation.set(0.75, 0.7, 0.1, 'XYZ')
 
   // One loop: the plane climbs, goes over the top, upside down, and
   // comes back to where it was. It starts when the pointer comes on.
