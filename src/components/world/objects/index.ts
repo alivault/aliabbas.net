@@ -12,7 +12,6 @@ export type ObjectKind =
   | 'dial'
   | 'pen'
   | 'plane'
-  | 'padlock'
   | 'pico'
   | 'ship'
 
@@ -68,7 +67,6 @@ const BUILDERS: Record<ObjectKind, (kit: Kit) => Built> = {
   dial,
   pen,
   plane,
-  padlock,
   pico,
   ship,
 }
@@ -803,61 +801,6 @@ function plane(kit: Kit): Built {
       craft.position.set(x, y + Math.sin(t * 1.6) * 0.05 * sway, 0)
       craft.rotation.x = Math.sin(t * 1.1) * 0.16 * sway
       craft.rotation.z = pitch + Math.sin(t * 1.6 + 1) * 0.06 * sway
-    },
-  }
-}
-
-/** Privacy: a padlock, open at rest. On hover it locks. */
-function padlock(kit: Kit): Built {
-  const root = new THREE.Group()
-  const body = kit.graphite(0.08)
-  const steel = kit.graphite(0.45, { roughness: 0.38, metalness: 0.35 })
-  const glow = kit.glow()
-  const lock = kit.box(0.66, 0.5, 0.26, body, 0.06)
-  lock.position.y = -0.2
-  root.add(lock)
-  // The shackle turns about its left leg.
-  const swing = new THREE.Group()
-  swing.position.x = -0.19
-  const shackle = new THREE.Group()
-  shackle.position.x = 0.19
-  const bow = kit.mesh(
-    new THREE.TorusGeometry(0.19, 0.045, 12, 32, Math.PI),
-    steel,
-  )
-  bow.position.y = 0.2
-  shackle.add(bow)
-  // The leg it turns about is long: when the lock is open, it still
-  // goes down into the body, as on a real lock.
-  shackle.add(kit.rod(v(-0.19, 0.2), v(-0.19, -0.2), 0.045, steel))
-  shackle.add(kit.rod(v(0.19, 0.2), v(0.19, -0.02), 0.045, steel))
-  swing.add(shackle)
-  root.add(swing)
-  // The keyhole, in light.
-  const hole = kit.mesh(new THREE.CylinderGeometry(0.05, 0.05, 0.02, 24), glow)
-  hole.rotation.x = Math.PI / 2
-  hole.position.set(0, -0.15, 0.131)
-  root.add(hole)
-  const slot = kit.box(0.036, 0.12, 0.02, glow)
-  slot.position.set(0, -0.23, 0.131)
-  root.add(slot)
-  // A band of light across the body.
-  const band = kit.box(0.672, 0.016, 0.272, glow, 0.006)
-  band.position.y = -0.36
-  root.add(band)
-  root.position.y = 0.06
-  return {
-    root,
-    // On hover it turns to the camera, so the keyhole show.
-    faceOnHover: 0.3,
-    // On the privacy page it is locked.
-    hoverOnPage: true,
-    update: ({ hover }) => {
-      // Open at rest; on hover (and on its page) the shackle swings back
-      // and drops in: it locks.
-      const open = 1 - hover
-      swing.position.y = open * 0.14
-      swing.rotation.y = open * 0.75
     },
   }
 }

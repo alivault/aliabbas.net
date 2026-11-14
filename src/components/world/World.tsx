@@ -123,14 +123,21 @@ export default function World({
  * Enough for the text to read, while the world still shows around it.
  */
 const PAGE_DIM = 0.85
+/** How far the world darkens behind a page that has no icon. */
+const NO_ICON_DIM = 0.95
 
 /** Darkens the world while a page is open, and lights it again after. */
 function Dimmer() {
   useFrame((_, delta) => {
-    const { phase, indexOpen } = getWorld()
+    const { phase, indexOpen, target: sheet } = getWorld()
     const target =
       phase === 'inside' || phase === 'entering'
-        ? PAGE_DIM
+        ? sheet
+          ? PAGE_DIM
+          : // A page with no icon (Privacy): the camera stays where it
+            // was, with icons in view behind the text, so the world
+            // darkens more.
+            NO_ICON_DIM
         : indexOpen
           ? 0.75
           : 0

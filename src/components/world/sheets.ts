@@ -6,7 +6,6 @@ import {
   Mail,
   NotebookPen,
   Palette,
-  ShieldCheck,
   BrainCog,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
@@ -146,13 +145,6 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
     to: '/contact',
     title: 'Contact',
     summary: 'Send me a message.',
-  },
-  {
-    id: 'privacy',
-    icon: { type: 'glyph', glyph: ShieldCheck, object: 'padlock' },
-    to: '/privacy',
-    title: 'Privacy',
-    summary: 'What this site collects, and why.',
   },
 ]
 
