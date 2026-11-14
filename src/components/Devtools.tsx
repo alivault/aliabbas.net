@@ -7,6 +7,8 @@ export default function Devtools() {
 
   return (
     <TanStackDevtools
+      // No button over the world: open the devtools with the hotkey.
+      config={{ triggerHidden: true }}
       plugins={[
         {
           name: 'TanStack Router',
