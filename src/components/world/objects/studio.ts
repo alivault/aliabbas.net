@@ -50,6 +50,40 @@ export function aimKeyShadow(at: THREE.Vector3, camera: THREE.Camera) {
 /** How much of the studio light a part in full shadow loses. */
 const SHADOW = 0.6
 
+/** The exposure of the tone mapping of the objects. */
+const EXPOSURE = 0.9
+
+/**
+ * ACES filmic tone mapping (as three.js has it), for the lit parts of the
+ * objects only: highlights roll off in place of clipping, and the mid
+ * tones get more contrast. The renderer has none (the canvas is flat), as
+ * the sky, the ground and the HUD color are matched to the screen as is.
+ */
+const TONE_GLSL = /* glsl */ `
+  vec3 studioFit( vec3 v ) {
+    vec3 a = v * ( v + 0.0245786 ) - 0.000090537;
+    vec3 b = v * ( 0.983729 * v + 0.4329510 ) + 0.238081;
+    return a / b;
+  }
+  vec3 studioTone( vec3 color ) {
+    const mat3 inputMatrix = mat3(
+      vec3( 0.59719, 0.07600, 0.02840 ),
+      vec3( 0.35458, 0.90834, 0.13383 ),
+      vec3( 0.04823, 0.01566, 0.83777 )
+    );
+    const mat3 outputMatrix = mat3(
+      vec3( 1.60475, -0.10208, -0.00327 ),
+      vec3( -0.53108, 1.10813, -0.07276 ),
+      vec3( -0.07367, -0.00605, 1.07602 )
+    );
+    color *= ${EXPOSURE.toFixed(2)} / 0.6;
+    color = inputMatrix * color;
+    color = studioFit( color );
+    color = outputMatrix * color;
+    return clamp( color, 0.0, 1.0 );
+  }
+`
+
 /** The studio, in the frame of the camera: it looks along -z, up is +y. */
 function studioScene() {
   const scene = new THREE.Scene()
@@ -149,7 +183,22 @@ export function withStudio(
       #endif`,
     )
   }
-  material.customProgramCacheKey = () => 'studio'
+  // The tone mapping, before the fog (the fog is in screen colors). The
+  // parts that glow keep the HUD color as it is.
+  const toned = material.userData.glow === undefined
+  if (toned) {
+    const prior = material.onBeforeCompile.bind(material)
+    material.onBeforeCompile = (shader, renderer) => {
+      prior(shader, renderer)
+      shader.fragmentShader = shader.fragmentShader
+        .replace('#include <common>', `#include <common>\n${TONE_GLSL}`)
+        .replace(
+          '#include <tonemapping_fragment>',
+          'gl_FragColor.rgb = studioTone( gl_FragColor.rgb );',
+        )
+    }
+  }
+  material.customProgramCacheKey = () => (toned ? 'studio-toned' : 'studio')
   material.needsUpdate = true
   return material
 }
