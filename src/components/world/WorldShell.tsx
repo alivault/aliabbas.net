@@ -36,6 +36,11 @@ export default function WorldShell({ children }: { children: ReactNode }) {
   // undefined until the client knows if WebGL is fast.
   const [webgl, setWebgl] = useState<boolean | undefined>(undefined)
   const firstMove = useRef(true)
+  // True once the world has placed the camera for the first time. Until
+  // then a page that the server showed stays: a deep link snaps the camera
+  // to its icon at once, and the text must not unmount for that one frame
+  // (it took the focus and the keys typed into a field).
+  const [placed, setPlaced] = useState(false)
 
   useEffect(() => {
     markHydrated()
@@ -51,6 +56,7 @@ export default function WorldShell({ children }: { children: ReactNode }) {
     if (!ready) return
     const first = firstMove.current
     firstMove.current = false
+    if (first) setPlaced(true)
     const { phase, target } = getWorld()
     if (!inPage) {
       if (phase !== 'roam' && phase !== 'leaving') worldCommands.leave()
@@ -93,7 +99,7 @@ export default function WorldShell({ children }: { children: ReactNode }) {
 
   // The text shows when the camera holds the icon. Before the world runs
   // (on the server, or without WebGL), it shows at once.
-  const showText = inPage && (!ready || phase === 'inside')
+  const showText = inPage && (!ready || !placed || phase === 'inside')
 
   // Keeps the fade of the page on the screen where the browser has no
   // scroll timeline: the mask moves down by the scroll of the window.
