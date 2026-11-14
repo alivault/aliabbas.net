@@ -14,6 +14,7 @@ export type ObjectKind =
   | 'plane'
   | 'padlock'
   | 'pico'
+  | 'ship'
 
 /** One frame of an object: how far the pointer is on it, 0 to 1. */
 export type Frame = {
@@ -69,6 +70,7 @@ const BUILDERS: Record<ObjectKind, (kit: Kit) => Built> = {
   plane,
   padlock,
   pico,
+  ship,
 }
 
 const v = (x: number, y: number, z = 0) => new THREE.Vector3(x, y, z)
@@ -913,5 +915,190 @@ function pico(kit: Kit): Built {
     faceOnHover: 0.3,
     hoverOnPage: true,
     update: ({ hover }) => place(hover),
+  }
+}
+
+/**
+ * Averno: the player's ship. The game shows it only from inside, so its
+ * shape comes from what the game draws and does (averno-game):
+ * - the outline on the centre screen of the cockpit (cockpit.ts): a sharp
+ *   nose, a narrow fore body with shoulders, swept wings to square tips,
+ *   and a narrow tail with a notch behind each wing;
+ * - a bubble canopy over a dark shell (build_models.py, the cockpit);
+ * - two lasers low and out on the wings, two more inside them, and
+ *   missiles from under the middle (engine.ts, the muzzles);
+ * - a headlight under the nose, and an afterburner at the tail.
+ * Nose to +x, up +y. On hover the afterburner flares and the ship surges.
+ */
+function ship(kit: Kit): Built {
+  const root = new THREE.Group()
+  const craft = new THREE.Group()
+  root.add(craft)
+  const hull = kit.graphite(0.12, { roughness: 0.45, metalness: 0.35 })
+  const panel = kit.graphite(0.32, { roughness: 0.4, metalness: 0.45 })
+  // Dark glass with a trace of the cyan of the game's HUD.
+  const canopy = kit.graphite(0, {
+    color: new THREE.Color('#1d3a44'),
+    emissive: new THREE.Color('#06171c'),
+    roughness: 0.06,
+    metalness: 0.25,
+  })
+  const glow = kit.glow()
+
+  // The outline from the cockpit screen, in its units: x across, y from
+  // the nose (-1) to the tail (0.7). Here: forward = -y * LENGTH, across
+  // = x * SPAN.
+  const LENGTH = 0.6
+  const SPAN = 0.56
+  const at = (x: number, y: number) => new THREE.Vector2(-y * LENGTH, x * SPAN)
+  /** A flat plate from an outline in the plane of the wings, `height`
+      thick, with soft edges. */
+  const plate = (
+    outline: Array<THREE.Vector2>,
+    height: number,
+    material: THREE.Material,
+    bevel = 0.012,
+  ) => {
+    const shape = new THREE.Shape(outline)
+    const geometry = new THREE.ExtrudeGeometry(shape, {
+      depth: height,
+      bevelEnabled: true,
+      bevelThickness: bevel,
+      bevelSize: bevel,
+      bevelSegments: 2,
+    })
+    // The shape is drawn in x (forward) and y (across); lay it flat:
+    // across goes to z, and the thickness down, centered after.
+    geometry.rotateX(Math.PI / 2)
+    geometry.translate(0, height / 2, 0)
+    return kit.mesh(geometry, material)
+  }
+
+  // The body: nose, shoulders, and the narrow tail.
+  craft.add(
+    plate(
+      [
+        at(0, -1),
+        at(0.22, -0.3),
+        at(0.25, 0.35),
+        at(0.18, 0.7),
+        at(-0.18, 0.7),
+        at(-0.25, 0.35),
+        at(-0.22, -0.3),
+      ],
+      0.12,
+      hull,
+      0.03,
+    ),
+  )
+  // A raised spine along the top, so the hull steps up to the middle.
+  const spine = plate(
+    [
+      at(0, -0.78),
+      at(0.12, -0.25),
+      at(0.15, 0.4),
+      at(0.1, 0.68),
+      at(-0.1, 0.68),
+      at(-0.15, 0.4),
+      at(-0.12, -0.25),
+    ],
+    0.07,
+    hull,
+    0.02,
+  )
+  spine.position.y = 0.085
+  craft.add(spine)
+  // The wings, swept back to square tips, a little lower than the body.
+  for (const side of [1, -1]) {
+    const wing = plate(
+      [
+        at(side * 0.2, -0.25),
+        at(side * 0.9, 0.35),
+        at(side * 0.85, 0.55),
+        at(side * 0.24, 0.38),
+      ].map((p, i, all) => (side > 0 ? p : all[all.length - 1 - i])),
+      0.035,
+      panel,
+    )
+    wing.position.y = -0.03
+    craft.add(wing)
+    // A lit edge along the wing tip.
+    const tip = kit.rod(
+      v(-0.35 * LENGTH, -0.03, side * 0.9 * SPAN),
+      v(-0.55 * LENGTH, -0.03, side * 0.85 * SPAN),
+      0.012,
+      glow,
+    )
+    craft.add(tip)
+  }
+  // The bubble canopy over the fore body.
+  const bubble = kit.mesh(
+    new THREE.SphereGeometry(1, 32, 16, 0, Math.PI * 2, 0, Math.PI / 2),
+    canopy,
+  )
+  bubble.scale.set(0.2, 0.11, 0.1)
+  bubble.position.set(0.17, 0.11, 0)
+  craft.add(bubble)
+  // A frame across the canopy, as in the cockpit.
+  const hoop = kit.mesh(new THREE.TorusGeometry(1, 0.06, 8, 32, Math.PI), panel)
+  hoop.scale.set(0.1, 0.11, 0.1)
+  hoop.rotation.y = Math.PI / 2
+  hoop.position.set(0.12, 0.11, 0)
+  craft.add(hoop)
+
+  // Lasers: two out on the wings, two inside them, low; tips in light.
+  for (const z of [0.3, -0.3, 0.17, -0.17]) {
+    const outer = Math.abs(z) > 0.2
+    const back = outer ? -0.12 : -0.02
+    const front = outer ? 0.2 : 0.3
+    craft.add(kit.rod(v(back, -0.06, z), v(front, -0.06, z), 0.016, panel))
+    const muzzle = kit.mesh(new THREE.SphereGeometry(0.02, 12, 8), glow)
+    muzzle.position.set(front, -0.06, z)
+    craft.add(muzzle)
+  }
+  // The headlight under the nose.
+  const lamp = kit.mesh(new THREE.SphereGeometry(0.028, 14, 10), kit.glow(1.6))
+  lamp.scale.set(0.6, 0.6, 1)
+  lamp.position.set(0.38, -0.035, 0)
+  craft.add(lamp)
+  // Two engines at the tail, with the afterburner in them.
+  const flames: Array<THREE.Mesh> = []
+  for (const z of [0.065, -0.065]) {
+    const nozzle = kit.mesh(
+      new THREE.CylinderGeometry(0.05, 0.06, 0.1, 20, 1, true),
+      panel,
+    )
+    nozzle.rotation.z = Math.PI / 2
+    nozzle.position.set(-0.42, 0.0, z)
+    craft.add(nozzle)
+    const core = kit.mesh(new THREE.CircleGeometry(0.045, 20), kit.glow(1.4))
+    core.rotation.y = -Math.PI / 2
+    core.position.set(-0.43, 0, z)
+    craft.add(core)
+    const flame = kit.mesh(new THREE.ConeGeometry(0.04, 1, 16, 1, true), glow)
+    flame.rotation.z = Math.PI / 2
+    flame.position.set(-0.47, 0, z)
+    craft.add(flame)
+    flames.push(flame)
+  }
+
+  return {
+    root,
+    faceOnHover: 0.5,
+    update: ({ t, hover, motion, page }) => {
+      // On its page it rolls a little to the camera, so the top shows.
+      root.rotation.x = 0.85 * page
+      const sway = motion ? 1 : 0
+      craft.position.y = Math.sin(t * 1.3) * 0.03 * sway
+      craft.position.x = hover * 0.06
+      craft.rotation.x = Math.sin(t * 0.9) * 0.05 * sway
+      // The afterburner: short at rest, long on hover, with a flicker.
+      const flicker = motion ? 1 + Math.sin(t * 37) * 0.08 : 1
+      for (const flame of flames) {
+        const length = (0.06 + hover * 0.22) * flicker
+        flame.scale.set(1, length, 1)
+        flame.position.x = -0.45 - length / 2
+      }
+    },
   }
 }

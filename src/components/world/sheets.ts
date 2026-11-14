@@ -113,6 +113,7 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
       type: 'image',
       src: '/play/averno-crucible-core.webp',
       cover: true,
+      object: 'ship',
     },
     to: '/play',
     title: 'Averno',
