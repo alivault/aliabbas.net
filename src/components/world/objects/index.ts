@@ -564,23 +564,23 @@ function dial(kit: Kit): Built {
  * shoulders and goes in a little toward the base.
  */
 function nibGeometry() {
-  const tipY = -0.34
+  const tipY = -0.44
   const baseY = 0.2
   const length = baseY - tipY
   const thickness = 0.012
   /** The angle that the sheet spans across, in radians. */
   const span = 1.45
-  const ease = (t: number) => t * t * (3 - 2 * t)
   /**
-   * Width of the nib, from its tip (0) to its base (1): almost straight
-   * sides out from the tip, round shoulders, then a waist into the grip.
+   * Width of the nib, from its tip (0) to its base (1). It is long and
+   * slim, as a real nib: the sides go out almost straight from the point
+   * to round shoulders a little past the middle, then in a little to the
+   * base. The base is as wide as some 40% of the length.
    */
   const width = (t: number) => {
-    if (t < 0.52) return 0.02 + 0.46 * Math.pow(t / 0.52, 0.92)
-    if (t < 0.64)
-      return 0.48 + 0.03 * Math.sin(((t - 0.52) / 0.12) * (Math.PI / 2))
-    if (t < 0.84) return 0.51 - 0.13 * ease((t - 0.64) / 0.2)
-    return 0.38
+    if (t < 0.48) return 0.014 + 0.236 * Math.pow(t / 0.48, 1.08)
+    if (t < 0.58)
+      return 0.25 + 0.025 * Math.sin(((t - 0.48) / 0.1) * (Math.PI / 2))
+    return 0.275 - ((t - 0.58) / 0.42) * 0.04
   }
   // The middle line of the top is at z = topZ; the axis of the cone of the
   // base is behind it.
@@ -649,11 +649,74 @@ function nibGeometry() {
     tipY,
     baseY,
     topZ,
+    thickness,
+    /** The width of the nib at a height. */
+    widthAt: (y: number) =>
+      width(Math.min(1, Math.max(0, (y - tipY) / length))),
     /** Where the breather hole is: some way up from the shoulders. */
     eyeY: tipY + length * 0.6,
     axisZ: topZ - base,
     baseRadius: base,
   }
+}
+
+/**
+ * The feed under a nib: rings of an oval, each one with its top against
+ * the underside of the nib at that height, so the two touch all along.
+ */
+function feedGeometry(nib: ReturnType<typeof nibGeometry>) {
+  const start = nib.tipY + 0.07
+  const end = nib.baseY + 0.12
+  const under = nib.topZ - nib.thickness
+  /** Half the width of the feed, and half its height, at a height. */
+  const size = (y: number) => {
+    const point = Math.min(1, (y - start) / 0.08)
+    const across = Math.min(0.062, nib.widthAt(y) * 0.32) * Math.sqrt(point)
+    return { across, down: across * 1.25 }
+  }
+  const rings = 48
+  const around = 20
+  const positions: Array<number> = []
+  const index: Array<number> = []
+  for (let r = 0; r <= rings; r++) {
+    const y = start + ((end - start) * r) / rings
+    const { across, down } = size(y)
+    for (let a = 0; a <= around; a++) {
+      const angle = (a / around) * Math.PI * 2
+      positions.push(
+        Math.sin(angle) * across,
+        y,
+        under - down + Math.cos(angle) * down,
+      )
+    }
+  }
+  const side = around + 1
+  for (let r = 0; r < rings; r++) {
+    for (let a = 0; a < around; a++) {
+      const i = r * side + a
+      index.push(i, i + 1, i + side, i + 1, i + side + 1, i + side)
+    }
+  }
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute(positions, 3),
+  )
+  geometry.setIndex(index)
+  geometry.computeVertexNormals()
+  // Fins from the middle of the nib into the grip: thin plates across the
+  // feed that stand out at its sides and under it.
+  const fins: Array<{ y: number; z: number; width: number; depth: number }> = []
+  for (let y = nib.tipY + 0.3; y < nib.baseY + 0.02; y += 0.026) {
+    const { across, down } = size(y)
+    fins.push({
+      y,
+      z: under - down * 1.3,
+      width: across * 2.3,
+      depth: down * 1.4,
+    })
+  }
+  return { geometry, fins }
 }
 
 /** Design: a pen nib on a curve, with the handles of the curve. */
@@ -687,18 +750,17 @@ function pen(kit: Kit): Built {
   const bead = kit.mesh(new THREE.SphereGeometry(0.018, 14, 10), steel)
   bead.position.set(0, nib.tipY + 0.008, nib.topZ - 0.012)
   root.add(bead)
-  // Under the nib, the feed: a dark bar with fins, that brings the ink.
+  // Under the nib, the feed that brings the ink: a dark bar against the
+  // underside of the nib along all its length, narrower than the nib, with
+  // a point a little short of the tip and fins along its underside. It
+  // goes on into the grip.
   const ink = kit.graphite(0)
-  const feed = kit.mesh(new THREE.CylinderGeometry(0.075, 0.1, 0.36, 18), ink)
-  feed.position.set(0, nib.baseY - 0.16, nib.axisZ + 0.04)
-  root.add(feed)
-  for (let i = 0; i < 5; i++) {
-    const fin = kit.mesh(
-      new THREE.CylinderGeometry(0.108, 0.108, 0.014, 18),
-      ink,
-    )
-    fin.position.set(0, nib.baseY - 0.02 - i * 0.035, nib.axisZ + 0.04)
-    root.add(fin)
+  const feed = feedGeometry(nib)
+  root.add(kit.mesh(feed.geometry, ink))
+  for (const fin of feed.fins) {
+    const plate = kit.box(fin.width, 0.012, fin.depth, ink)
+    plate.position.set(0, fin.y, fin.z)
+    root.add(plate)
   }
   // The grip of the pen, round, with a ring of light where the nib goes
   // in. It widens a little away from the nib, as a grip does.
