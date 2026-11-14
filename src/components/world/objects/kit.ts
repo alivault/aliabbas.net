@@ -57,6 +57,25 @@ export class Kit {
     return material
   }
 
+  /**
+   * A solid part in the HUD color: lit, so its faces shade, with some
+   * glow of its own. Like a glow, it gets brighter on hover.
+   */
+  paint(strength = 0.35) {
+    const material = this.keep(
+      new THREE.MeshStandardMaterial({
+        color: new THREE.Color(this.accent),
+        emissive: new THREE.Color(this.accent),
+        emissiveIntensity: strength,
+        roughness: 0.55,
+        flatShading: true,
+      }),
+    )
+    material.userData.glow = strength
+    this.glows.push(material)
+    return material
+  }
+
   /** Dark, clear glass. */
   glass() {
     return this.keep(

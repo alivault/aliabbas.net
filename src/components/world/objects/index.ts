@@ -667,16 +667,33 @@ function plane(kit: Kit): Built {
   const root = new THREE.Group()
   const craft = new THREE.Group()
   root.add(craft)
-  // Nose to +x. The spine runs from the nose to the tail; the wings rise
-  // from it to their tips; the keel folds down under it, with a little
-  // width, so it reads as folded paper and not one flat sheet.
-  const nose = v(0.6, 0, 0)
-  const tail = v(-0.42, 0, 0)
-  const left = v(-0.5, 0.26, 0.44)
-  const right = v(-0.5, 0.26, -0.44)
-  const keelLeft = v(-0.44, -0.3, 0.04)
-  const keelRight = v(-0.44, -0.3, -0.04)
-  const sheet = (faces: Array<Array<THREE.Vector3>>, shade: number) => {
+  const paper = kit.paint()
+  // Either winding of a side face shows.
+  paper.side = THREE.DoubleSide
+  /** A flat triangle of paper with some thickness, under its face. */
+  const panel = (
+    a: THREE.Vector3,
+    b: THREE.Vector3,
+    c: THREE.Vector3,
+    thickness = 0.03,
+  ) => {
+    const normal = b.clone().sub(a).cross(c.clone().sub(a)).normalize()
+    const down = normal.multiplyScalar(-thickness)
+    const [a2, b2, c2] = [a, b, c].map((p) => p.clone().add(down))
+    const faces = [
+      [a, b, c],
+      [a2, c2, b2],
+      [a, a2, b2, b],
+      [b, b2, c2, c],
+      [c, c2, a2, a],
+    ].flatMap((face) =>
+      face.length === 3
+        ? [face]
+        : [
+            [face[0], face[1], face[2]],
+            [face[0], face[2], face[3]],
+          ],
+    )
     const geometry = new THREE.BufferGeometry()
     geometry.setAttribute(
       'position',
@@ -686,28 +703,14 @@ function plane(kit: Kit): Built {
       ),
     )
     geometry.computeVertexNormals()
-    craft.add(
-      kit.mesh(
-        geometry,
-        kit.graphite(shade, { side: THREE.DoubleSide, flatShading: true }),
-      ),
-    )
+    craft.add(kit.mesh(geometry, paper))
   }
-  // Each fold in its own shade: light wings, a darker keel, so the folds
-  // show from any side.
-  sheet([[nose, left, tail]], 0.78)
-  sheet([[nose, tail, right]], 0.45)
-  sheet(
-    [
-      [nose, tail, keelLeft],
-      [nose, keelRight, tail],
-    ],
-    0.22,
-  )
-  sheet([[nose, keelLeft, keelRight]], 0.1)
-  // The spine fold, in light. Only the one: lines on every edge draw an
-  // outline, and an outline reads as a flat icon.
-  craft.add(kit.rod(nose, tail, 0.01, kit.glow()))
+  // Nose to +x. The two wings meet only at the nose: toward the tail they
+  // open apart, and the keel shows in the gap between them.
+  const nose = v(0.6, 0.02, 0)
+  panel(nose, v(-0.5, 0.25, 0.46), v(-0.42, 0.05, 0.07))
+  panel(nose, v(-0.42, 0.05, -0.07), v(-0.5, 0.25, -0.46))
+  panel(nose, v(-0.44, -0.3, 0.015), v(-0.42, 0.0, 0.015), 0.03)
   // Seen from the near side and a little below, the plane flies up and
   // to the right: the near wing, the keel under it and the far wing over
   // the spine all show, as three shades.
