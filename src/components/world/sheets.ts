@@ -11,7 +11,7 @@ import {
 import type { LucideIcon } from 'lucide-react'
 import { caseStudies } from '~/data/case-studies'
 import type { ObjectKind } from './objects'
-import { heightAt } from './noise'
+import { AI_HILL, heightAt } from './noise'
 
 /** What a sheet shows: the icon of a project, or a glyph for a page. */
 export type SheetIcon =
@@ -150,7 +150,8 @@ const PAGES: Array<Omit<SheetSpec, 'x' | 'y' | 'z'>> = [
 
 /**
  * Places the sheets on a loose spiral out from the start. The first two are
- * in the first view, left and right, as in a room you just came into.
+ * in the first view, left and right, as in a room you just came into. Ask AI
+ * is on its hill.
  */
 export const SHEETS: Array<SheetSpec> = PAGES.map((page, i) => {
   const first = [
@@ -159,6 +160,12 @@ export const SHEETS: Array<SheetSpec> = PAGES.map((page, i) => {
   ][i]
   const angle = i * 2.399963 - 1.2
   const radius = 12 + i * 7
+  // Ask AI is on the top of its own hill, the highest ground in view, a
+  // little higher in the air than the others.
+  if (page.id === 'chat') {
+    const { x, z } = AI_HILL
+    return { ...page, x, z, y: heightAt(x, z) + FLOAT + 1 }
+  }
   const x = first ? first[0] : Math.sin(angle) * radius
   const z = first ? first[1] : -Math.cos(angle) * radius
   return { ...page, x, z, y: heightAt(x, z) + FLOAT }

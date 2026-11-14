@@ -85,7 +85,9 @@ test('a drag on a cube spins it, and a click still opens its page', async ({
   for (let y = 250; y < 600 && !cube; y += 25) {
     for (let x = 100; x < 1300 && !cube; x += 25) {
       await page.mouse.move(x, y)
-      if ((await label.textContent())?.trim()) cube = { x, y }
+      const text = (await label.textContent())?.trim()
+      // The orb (Ask AI, on its hill) is no cube.
+      if (text && text !== 'Ask AI') cube = { x, y }
     }
   }
   if (!cube) throw new Error('No cube under the pointer')

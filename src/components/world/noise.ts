@@ -41,13 +41,21 @@ function fbm(x: number, z: number, octaves: number): number {
   return sum / total
 }
 
+/**
+ * A lone hill, ahead and to the left of the start, the highest ground in
+ * view: the Ask AI orb floats on its top. Height and radius in meters.
+ */
+export const AI_HILL = { x: -22, z: -50, height: 10, radius: 15 }
+
 /** Ground height in meters at a world position. */
 export function heightAt(x: number, z: number): number {
   const hills = fbm(x / 90, z / 90, 5)
   const detail = fbm(x / 9, z / 9, 2)
   // Flatter near the start, so the first view is calm.
   const calm = Math.min(1, 0.35 + Math.hypot(x, z) / 80)
-  return ((hills - 0.5) * 22 + (detail - 0.5) * 0.6) * calm
+  const ground = ((hills - 0.5) * 22 + (detail - 0.5) * 0.6) * calm
+  const out = Math.hypot(x - AI_HILL.x, z - AI_HILL.z) / AI_HILL.radius
+  return ground + AI_HILL.height * Math.exp(-out * out)
 }
 
 /** 0 for bare rock, 1 for the black pools of the ground. */
