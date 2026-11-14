@@ -17,6 +17,12 @@ const publicEnv = Object.fromEntries(
 const PORT = 3000
 const executablePath = process.env.CHROMIUM_PATH
 /**
+ * GPU=1: draw WebGL on the GPU (the self-hosted runner, a Mac with Asahi
+ * Linux), not in software. Headless Chromium needs ANGLE on EGL for that.
+ */
+const gpu = process.env.GPU === '1'
+const launchArgs = gpu ? ['--use-angle=gl-egl'] : []
+/**
  * CI tests the production build in dist (`E2E=1 vp build` first), as it
  * ships. Locally the tests use the dev server.
  */
@@ -33,7 +39,7 @@ export default defineConfig({
   use: {
     baseURL: `http://localhost:${PORT}`,
     trace: 'retain-on-failure',
-    launchOptions: executablePath ? { executablePath } : undefined,
+    launchOptions: { executablePath, args: launchArgs },
   },
   projects: [
     {

@@ -44,9 +44,10 @@ export default function WorldShell({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     markHydrated()
-    // ?gl=force draws the world also with software WebGL, for tests.
-    const force = new URLSearchParams(location.search).get('gl') === 'force'
-    setWebgl(force || hasFastWebGL())
+    // ?gl=force draws the world also with software WebGL, and ?gl=off
+    // shows the list without it also with a GPU: both are for tests.
+    const gl = new URLSearchParams(location.search).get('gl')
+    setWebgl(gl !== 'off' && (gl === 'force' || hasFastWebGL()))
     loadVisited()
     return installInteractionSounds()
   }, [])

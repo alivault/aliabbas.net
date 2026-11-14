@@ -5,12 +5,15 @@ import { expect, open, test } from './fixtures'
 test.describe.configure({ timeout: 90_000 })
 
 /**
- * Tests that walk or drag in the world need a steady frame rate. The CI
- * runners draw software WebGL at a few frames a second, so there these
- * tests run only on a developer machine.
+ * Tests that walk or drag in the world need a steady frame rate. A CI
+ * runner with no GPU draws software WebGL at a few frames a second, so
+ * there these tests skip. The self-hosted runner has a GPU (GPU=1).
  */
 const needsFrames = () =>
-  test.skip(!!process.env.CI, 'Software WebGL in CI is too slow to walk.')
+  test.skip(
+    !!process.env.CI && process.env.GPU !== '1',
+    'Software WebGL in CI is too slow to walk.',
+  )
 
 test('far from the pages, the HUD says so, and an arrow flies back', async ({
   page,

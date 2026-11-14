@@ -65,7 +65,8 @@ for (const path of [
     `${path} has no text under 12px and no CSS capitals`,
     { tag: '@mobile' },
     async ({ page }) => {
-      await open(page, path)
+      // The home page without the world (and its gate): the list of pages.
+      await open(page, path === '/' ? '/?gl=off' : path)
       await expect(page.locator('main')).toBeVisible()
       expect(await smallText(page)).toEqual([])
     },
@@ -196,7 +197,7 @@ test(
 )
 
 test('the index list fades out under the HUD', async ({ page }) => {
-  await open(page, '/')
+  await open(page, '/?gl=off')
   await page.getByRole('button', { name: 'Index' }).click()
   const list = page.locator('[data-index-scroll]')
   await expect(list).toBeVisible()
@@ -238,7 +239,7 @@ test(
   'the index opens over the world and closes with Esc and Return',
   { tag: '@mobile' },
   async ({ page }) => {
-    await open(page, '/')
+    await open(page, '/?gl=off')
     const index = page.getByRole('button', { name: 'Index' })
     await index.click()
     const dialog = page.getByRole('dialog')
@@ -264,8 +265,8 @@ test(
 )
 
 test('without a GPU, the home page lists the pages', async ({ page }) => {
-  // Headless Chromium has no GPU: the world is a list over a still sky.
-  await open(page, '/')
+  // Without a GPU (here ?gl=off), the world is a list over a still sky.
+  await open(page, '/?gl=off')
   const pages = page.getByRole('navigation', { name: 'Pages' })
   await expect(pages.getByRole('link', { name: 'Ask AI' })).toHaveAttribute(
     'href',
