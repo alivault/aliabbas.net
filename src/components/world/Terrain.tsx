@@ -201,8 +201,14 @@ export default function Terrain({
     onPick(event.point)
   }
 
+  // A press on the ground stops here too. Else an icon behind a hill got
+  // the press, took the pointer for a spin, and the click went to it
+  // through the hill: the page opened.
+  const press = (event: ThreeEvent<PointerEvent>) => event.stopPropagation()
+
   return (
     <group
+      onPointerDown={press}
       onPointerMove={move}
       onPointerOut={() => onPoint(null)}
       onClick={click}
