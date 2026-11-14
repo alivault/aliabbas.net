@@ -431,9 +431,14 @@ export default function WorldIcon({
         material.emissiveIntensity =
           (material.userData.glow as number) * boost * (1 + glow.current * 0.5)
       }
+      // From the click on: the camera flies in with the object still
+      // in its hover pose, as the hover fades. It does not close and open
+      // again.
+      const posed = Boolean(object.hoverOnPage && focused)
+      if (posed) pagePose.current = Math.max(pagePose.current, glow.current)
       pagePose.current = THREE.MathUtils.damp(
         pagePose.current,
-        object.hoverOnPage && inside ? 1 : 0,
+        posed ? 1 : 0,
         3,
         Math.min(delta, 0.05),
       )
