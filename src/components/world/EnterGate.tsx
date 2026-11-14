@@ -18,14 +18,12 @@ type Part = { text: string; slug?: 'pico' | 'whimcall' }
 /** The intro, in parts: a part with a slug links to its case study. */
 const INTRO: Array<Part> = [
   {
-    text: 'Ali Abbas is a senior frontend and design engineer. He builds interactive and streaming interfaces, after fifteen years in brand and product design. His recent work includes ',
+    text: 'Ali Abbas is a senior frontend and design engineer. He makes interactive and streaming interfaces. Before that, he did brand and product design for fifteen years. He recently made ',
   },
   { text: 'Pico', slug: 'pico' },
   { text: ', a workspace for AI coding agents, and ' },
   { text: 'Whimcall', slug: 'whimcall' },
-  {
-    text: ', video calls from a link. He lives and works in the Los Angeles area.',
-  },
+  { text: ', video calls from one link. He lives in Los Angeles.' },
 ]
 const LENGTH = INTRO.reduce((sum, part) => sum + part.text.length, 0)
 
