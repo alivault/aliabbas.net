@@ -5,7 +5,7 @@ import * as THREE from 'three'
 import { play, playFlight, setDroneOpen } from '~/lib/sound'
 import { spinGrab } from './cubeSpin'
 import { FOOTPRINT_SIZE } from './Footprint'
-import { CLICK_EASE, CLICK_WALK, dashTiming } from './dash'
+import { CLICK_EASE, CLICK_WALK, dashTiming, standOff } from './dash'
 import { frameScreenX } from './frame'
 import { iconSlot } from './iconSlot'
 import { heightAt } from './noise'
@@ -493,13 +493,27 @@ export default function Player({
         dash.current.stop()
         dash.current = null
       }
+      // Where to stop: back from the square on the ground far enough to
+      // see all of it, also turned corner first (standOff in dash.ts).
+      const perspective = camera as THREE.PerspectiveCamera
+      const halfHeight = THREE.MathUtils.degToRad(perspective.fov) / 2
+      const stand = target
+        ? standOff({
+            size: FOOTPRINT_SIZE,
+            drop: position.current.y - target.y,
+            pitch: pitch.current,
+            halfHeight,
+            halfWidth: Math.atan(Math.tan(halfHeight) * perspective.aspect),
+          })
+        : 0
       if (target && !dash.current && !forward && !strafe && !gliding) {
         const timing = dashTiming(
-          Math.hypot(
-            target.x - position.current.x,
-            target.z - position.current.z,
-          ) -
-            FOOTPRINT_SIZE / 2,
+          Math.abs(
+            Math.hypot(
+              target.x - position.current.x,
+              target.z - position.current.z,
+            ) - stand,
+          ),
         )
         dash.current = {
           target,
@@ -509,22 +523,34 @@ export default function Player({
       if (!forward && !strafe && !gliding && target) {
         const dx = target.x - position.current.x
         const dz = target.z - position.current.z
-        // The walk stops at the near edge of the square on the ground, not
-        // at its middle: the square marks the place to stand in front of.
-        const distance = Math.hypot(dx, dz) - FOOTPRINT_SIZE / 2
-        if (distance < 0.15) {
+        const across = Math.hypot(dx, dz)
+        // The walk stops where the whole square is in view. A square
+        // nearer than that: the camera steps back from it.
+        const distance = across - stand
+        if (Math.abs(distance) < 0.15) {
           walkTarget.current = null
         } else {
           wish
             .set(dx, 0, dz)
             .normalize()
-            .multiplyScalar(Math.min(CLICK_WALK, distance * CLICK_EASE))
-          // Turn gently toward where the visitor walks.
-          yaw.current = lerpAngle(
-            yaw.current,
-            Math.atan2(-dx, -dz),
-            1 - Math.exp(-1.5 * delta),
-          )
+            .multiplyScalar(
+              Math.sign(distance) *
+                Math.min(CLICK_WALK, Math.abs(distance) * CLICK_EASE),
+            )
+          // Turn toward the square, so it is in the middle of the view
+          // at the end. Not when it is under the feet: its direction
+          // changes too fast there.
+          if (across > 1) {
+            yaw.current = lerpAngle(
+              yaw.current,
+              Math.atan2(-dx, -dz),
+              // Faster near the end, so the turn is done when the walk is.
+              1 -
+                Math.exp(
+                  -(3 + 6 * (1 - Math.min(1, Math.abs(distance) / 5))) * delta,
+                ),
+            )
+          }
         }
       }
       velocity.current.lerp(wish, 1 - Math.exp(-8 * delta))

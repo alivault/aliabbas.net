@@ -231,13 +231,14 @@ test('a click on the ground plays a swoop as long as the dash', async ({
   await page.waitForTimeout(1500)
   const swoops = () =>
     page.evaluate(() => (window as unknown as { swoops: Array<number> }).swoops)
-  // Near the bottom of the screen: the ground, a few meters away.
-  await page.mouse.click(720, 860)
+  // A little below the middle of the screen: the ground some meters
+  // away, near where the camera stops to see the whole square.
+  await page.mouse.click(720, 620)
   await expect.poll(async () => (await swoops()).length).toBe(1)
   const [near] = await swoops()
   await page.waitForTimeout(2500)
   // Near the horizon: far away, so a longer dash.
-  await page.mouse.click(720, 560)
+  await page.mouse.click(720, 470)
   await expect.poll(async () => (await swoops()).length).toBe(2)
   const [, far] = await swoops()
   expect(near).toBeGreaterThan(0.3)
