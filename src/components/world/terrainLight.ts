@@ -18,8 +18,12 @@ const SUN_RISE = SUN.y / SUN_FLAT
 
 /** How far a hill can throw a shadow, in meters. */
 const REACH = 160
-/** How soft the edge of a shadow is: wider far from the hill. */
-const SOFT = 0.05
+/**
+ * How soft the edge of a shadow is: wider far from the hill. The sun has
+ * set, and the light is the glow of the sky over where it went down, so
+ * the shadows are soft.
+ */
+const SOFT = 0.1
 
 /**
  * 1 where the sun reaches a point, 0 in the shadow of a hill, soft at

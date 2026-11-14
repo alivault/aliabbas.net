@@ -82,8 +82,8 @@ const SKY_GAIN = 0.55
 /**
  * The light of the ground. The flat light of the sky (the hemisphere
  * light) gave every slope the same light, so the hills had no shape; now
- * the low warm sun does most of the work, so slopes toward it glow and the
- * far sides fall into shade. The baked sunlight takes the sun away in the
+ * the warm light from where the sun set does most of the work, so slopes
+ * toward it glow and the far sides fall into shade. The baked sunlight takes the sun away in the
  * shadow of a hill, and the baked openness darkens the sky light in
  * hollows.
  */
