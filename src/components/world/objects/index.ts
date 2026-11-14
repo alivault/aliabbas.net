@@ -1085,6 +1085,8 @@ function ship(kit: Kit): Built {
   return {
     root,
     faceOnHover: 0.5,
+    // On the Averno page the afterburner burns long, as on hover.
+    hoverOnPage: true,
     update: ({ t, hover, motion, page }) => {
       // On its page it rolls a little to the camera, so the top shows.
       root.rotation.x = 0.85 * page
