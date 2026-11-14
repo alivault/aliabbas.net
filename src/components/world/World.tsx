@@ -57,6 +57,11 @@ export default function World({
     <Canvas
       flat
       shadows="percentage"
+      // The shadow map is drawn only when an object casts (WorldIcon asks
+      // for it), not every frame: in the world, nothing casts.
+      onCreated={({ gl }) => {
+        gl.shadowMap.autoUpdate = false
+      }}
       dpr={[1, 1.5]}
       camera={{ fov: 55, near: 0.05, far: 900 }}
       gl={{ antialias: true, powerPreference: 'high-performance' }}

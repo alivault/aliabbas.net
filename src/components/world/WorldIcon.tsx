@@ -442,6 +442,9 @@ export default function WorldIcon({
       followCamera(object.kit.materials, state.camera)
       // On its page the object casts soft shadows on itself, from the key
       // light. Glass casts none.
+      // The shadow map is drawn only while an object casts: each frame on
+      // its page, and once more as it stops, to clear it.
+      if (focused || casting.current) state.gl.shadowMap.needsUpdate = true
       if (casting.current !== focused) {
         casting.current = focused
         object.root.traverse((part) => {
