@@ -863,8 +863,9 @@ function padlock(kit: Kit): Built {
 /**
  * Pico: the P of its app icon, in 3D. The P is four blocks (the rects of
  * public/pico.svg, on its 102 by 136 grid): the stem, the top bar, the
- * middle and the right side, which touch only at their corners. On hover
- * the blocks part in depth and come apart a little.
+ * middle and the right side, which touch only at their corners. At rest
+ * the blocks are apart, each at its own depth; on hover and on its page
+ * they come together.
  */
 function pico(kit: Kit): Built {
   const root = new THREE.Group()
@@ -873,7 +874,6 @@ function pico(kit: Kit): Built {
     emissive: new THREE.Color('#3a3632'),
     roughness: 0.5,
   })
-  const glow = kit.glow()
   // x, y, width, height on the grid of the SVG (y down).
   const rects: Array<[number, number, number, number]> = [
     [0, 34, 34, 102],
@@ -886,8 +886,6 @@ function pico(kit: Kit): Built {
   const blocks = rects.map(([x, y, w, h], index) => {
     const block = new THREE.Group()
     block.add(kit.box(w * unit, h * unit, depth, white, 0.02))
-    // A line of light around the middle of each block.
-    block.add(kit.box(w * unit + 0.008, h * unit + 0.008, 0.012, glow, 0.004))
     const at = v((x + w / 2 - 51) * unit, (68 - (y + h / 2)) * unit, 0)
     root.add(block)
     return {
@@ -898,15 +896,18 @@ function pico(kit: Kit): Built {
       out: v(at.x * 0.18, at.y * 0.18, [-0.12, 0.1, 0.16, -0.06][index]),
     }
   })
+  // Apart at rest; on hover (and on its page) the blocks come together
+  // into the P.
   const place = (hover: number) => {
     for (const { block, at, out } of blocks) {
-      block.position.copy(at).addScaledVector(out, hover)
+      block.position.copy(at).addScaledVector(out, 1 - hover)
     }
   }
   place(0)
   return {
     root,
     faceOnHover: 0.3,
+    hoverOnPage: true,
     update: ({ hover }) => place(hover),
   }
 }
