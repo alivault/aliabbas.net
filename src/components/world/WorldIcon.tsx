@@ -626,10 +626,13 @@ export default function WorldIcon({
         {object ? (
           <>
             <primitive object={object.root} />
-            {/* One box takes the pointer for the whole object, so the
-                hover does not flicker between its parts and the gaps. */}
+            {/* One ball takes the pointer for the whole object, so the
+                hover does not flicker between its parts and the gaps. A
+                ball, not a box: an object turns to the camera on hover,
+                and a box would turn away from under the pointer (a click
+                near its edge then lost its pointer up). */}
             <mesh material={HIT_MATERIAL}>
-              <boxGeometry args={[ICON_SIZE, ICON_SIZE, ICON_SIZE]} />
+              <sphereGeometry args={[ICON_SIZE * 0.62, 24, 16]} />
             </mesh>
           </>
         ) : (

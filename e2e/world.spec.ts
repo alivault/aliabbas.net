@@ -69,7 +69,12 @@ test('a drag on a cube spins it, and a click still opens its page', async ({
     }
   }
   if (!cube) throw new Error('No cube under the pointer')
+  // The first point found is on the edge of the icon, and the icon bobs:
+  // go a little inside, where it stays under the pointer.
   const name = (await label.textContent())?.trim()
+  const inside = { x: cube.x + 30, y: cube.y + 30 }
+  await page.mouse.move(inside.x, inside.y)
+  if ((await label.textContent())?.trim() === name) cube = inside
 
   await page.mouse.down()
   await page.mouse.move(cube.x + 200, cube.y + 60, { steps: 12 })
