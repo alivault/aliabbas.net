@@ -3,6 +3,7 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import Beacons from './Beacons'
 import Footprint from './Footprint'
+import Motes from './Motes'
 import { keyShadow } from './objects/studio'
 import GuideProbe from './GuideProbe'
 import Player from './Player'
@@ -70,7 +71,7 @@ export default function World({
         pointer.current = null
       }}
     >
-      <Sky />
+      <Sky reducedMotion={reducedMotion} />
       <hemisphereLight args={['#d6d2cc', '#202020', 1.2]} />
       <directionalLight position={sun} color="#ffe0c0" intensity={1.1} />
       {/* The shadow of the studio key light, for the object of the open
@@ -109,6 +110,7 @@ export default function World({
         ),
       )}
       <Beacons color={accent} />
+      <Motes reducedMotion={reducedMotion} />
       <GuideProbe />
       <Player reducedMotion={reducedMotion} walkTarget={walkTarget} />
       <Dimmer />

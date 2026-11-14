@@ -3,6 +3,7 @@ import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 import type { ThreeEvent } from '@react-three/fiber'
 import { heightAt, poolAt, rockAt } from './noise'
+import { rockGeometry, rocksIn } from './rocks'
 import { withSkyFog } from './sky'
 import { opennessAt, sunlightAt } from './terrainLight'
 
@@ -22,6 +23,8 @@ const POOL = new THREE.Color('#2e2c2a')
 const DUST = new THREE.Color('#8e8273')
 const STEEP = new THREE.Color('#4f4b47')
 const LOW = new THREE.Color('#3d3d40')
+/** The rocks on the ground: a little darker than the rock under them. */
+const ROCK_STONE = new THREE.Color('#6b665f')
 
 /** Meters per repeat of the grain texture. */
 const GRAIN_SCALE = 18
@@ -127,11 +130,16 @@ function withGroundLight(material: THREE.MeshLambertMaterial) {
     shader.fragmentShader = shader.fragmentShader
       .replace('#include <common>', '#include <common>\nvarying vec3 vBake;')
       // The fine relief fades out with distance: far away, the bumps are
-      // smaller than a pixel and only flicker.
+      // smaller than a pixel and only flicker. It fades at a glancing look
+      // too, where the bumps drew thin dark streaks across the slope.
       .replace(
         '#include <normal_fragment_maps>',
         `#include <normal_fragment_maps>
-        normal = normalize(mix(normal, nonPerturbedNormal, smoothstep(${RELIEF_NEAR.toFixed(1)}, ${RELIEF_FAR.toFixed(1)}, length(vViewPosition))));`,
+        {
+          float far = smoothstep(${RELIEF_NEAR.toFixed(1)}, ${RELIEF_FAR.toFixed(1)}, length(vViewPosition));
+          float glance = 1.0 - smoothstep(0.12, 0.4, abs(dot(normalize(vViewPosition), nonPerturbedNormal)));
+          normal = normalize(mix(normal, nonPerturbedNormal, max(far, glance)));
+        }`,
       )
       .replace(
         '#include <lights_fragment_begin>',
@@ -291,6 +299,50 @@ function buildChunk(cx: number, cz: number) {
   return geometry
 }
 
+/** The rocks of a tile, as one mesh drawn many times. */
+function buildRocks(
+  cx: number,
+  cz: number,
+  geometry: THREE.BufferGeometry,
+  material: THREE.Material,
+) {
+  const rocks = rocksIn(cx * CHUNK, cz * CHUNK, CHUNK)
+  const mesh = new THREE.InstancedMesh(geometry, material, rocks.length)
+  // Each rock has the light of the ground where it is, as the ground has
+  // per point: a rock in the shadow of a hill is in shadow too.
+  const bake = new Float32Array(rocks.length * 3)
+  const matrix = new THREE.Matrix4()
+  const turn = new THREE.Quaternion()
+  const euler = new THREE.Euler()
+  const at = new THREE.Vector3()
+  const scale = new THREE.Vector3()
+  rocks.forEach((rock, i) => {
+    turn.setFromEuler(euler.set(...rock.turn))
+    matrix.compose(
+      at.set(rock.x, rock.y, rock.z),
+      turn,
+      scale.set(...rock.scale),
+    )
+    mesh.setMatrixAt(i, matrix)
+    bake[i * 3] = sunlightAt(rock.x, rock.z)
+    bake[i * 3 + 1] = opennessAt(rock.x, rock.z)
+  })
+  // Rocks share one shape, so their light goes on each copy, not on the
+  // shape.
+  mesh.geometry = geometry.clone()
+  mesh.geometry.setAttribute(
+    'bake',
+    new THREE.InstancedBufferAttribute(bake, 3),
+  )
+  mesh.computeBoundingSphere()
+  // A click goes through a rock to the ground behind it: the walk goes
+  // there.
+  mesh.raycast = () => {}
+  return mesh
+}
+
+type Tile = { ground: THREE.BufferGeometry; rocks: THREE.InstancedMesh }
+
 /**
  * Ground that never ends: a grid of chunks around the camera. When the
  * camera crosses into a new chunk, the grid moves with it. Built chunks stay
@@ -303,7 +355,7 @@ export default function Terrain({
   onPoint: (point: THREE.Vector3 | null) => void
   onPick: (point: THREE.Vector3) => void
 }) {
-  const cache = useRef(new Map<string, THREE.BufferGeometry>())
+  const cache = useRef(new Map<string, Tile>())
   const [center, setCenter] = useState<[number, number]>([0, 0])
   const material = useMemo(
     () =>
@@ -320,6 +372,20 @@ export default function Terrain({
       ),
     [],
   )
+  const rock = useMemo(
+    () => ({
+      geometry: rockGeometry(),
+      material: withGroundLight(
+        withSkyFog(
+          new THREE.MeshLambertMaterial({
+            color: ROCK_STONE,
+            flatShading: true,
+          }),
+        ),
+      ),
+    }),
+    [],
+  )
 
   useFrame(({ camera }) => {
     const cx = Math.floor(camera.position.x / CHUNK)
@@ -327,29 +393,34 @@ export default function Terrain({
     if (cx !== center[0] || cz !== center[1]) setCenter([cx, cz])
   })
 
-  const chunks: Array<{ key: string; geometry: THREE.BufferGeometry }> = []
+  const chunks: Array<{ key: string; tile: Tile }> = []
   for (let dz = -RADIUS; dz <= RADIUS; dz++) {
     for (let dx = -RADIUS; dx <= RADIUS; dx++) {
       const cx = center[0] + dx
       const cz = center[1] + dz
       const key = `${cx},${cz}`
-      let geometry = cache.current.get(key)
-      if (!geometry) {
-        geometry = buildChunk(cx, cz)
-        cache.current.set(key, geometry)
+      let tile = cache.current.get(key)
+      if (!tile) {
+        tile = {
+          ground: buildChunk(cx, cz),
+          rocks: buildRocks(cx, cz, rock.geometry, rock.material),
+        }
+        cache.current.set(key, tile)
       }
-      chunks.push({ key, geometry })
+      chunks.push({ key, tile })
     }
   }
   // Keep the cache small: drop chunks far from the camera.
   if (cache.current.size > 64) {
-    for (const [key, geometry] of cache.current) {
+    for (const [key, tile] of cache.current) {
       const [cx, cz] = key.split(',').map(Number)
       if (
         Math.abs(cx - center[0]) > RADIUS + 2 ||
         Math.abs(cz - center[1]) > RADIUS + 2
       ) {
-        geometry.dispose()
+        tile.ground.dispose()
+        tile.rocks.geometry.dispose()
+        tile.rocks.dispose()
         cache.current.delete(key)
       }
     }
@@ -381,8 +452,11 @@ export default function Terrain({
       onPointerOut={() => onPoint(null)}
       onClick={click}
     >
-      {chunks.map(({ key, geometry }) => (
-        <mesh key={key} geometry={geometry} material={material} />
+      {chunks.map(({ key, tile }) => (
+        <group key={key}>
+          <mesh geometry={tile.ground} material={material} />
+          <primitive object={tile.rocks} />
+        </group>
       ))}
     </group>
   )

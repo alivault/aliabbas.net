@@ -88,7 +88,9 @@ export function withSkyFog<T extends THREE.Material>(
       )
       .replace(
         '#include <project_vertex>',
-        '#include <project_vertex>\nvSkyWorld = (modelMatrix * vec4(transformed, 1.0)).xyz;',
+        // mvPosition is set by project_vertex, with the matrix of each copy
+        // of an instanced mesh (the rocks); back to the world from there.
+        '#include <project_vertex>\nvSkyWorld = cameraPosition + transpose(mat3(viewMatrix)) * mvPosition.xyz;',
       )
     shader.fragmentShader = shader.fragmentShader
       .replace(

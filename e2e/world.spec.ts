@@ -61,10 +61,11 @@ test('a scroll glides through the world, and the page does not scroll', async ({
   // Scroll up, to glide backward, away from the pages, until the HUD says
   // lost.
   await page.mouse.move(640, 300)
+  // Short checks between the scrolls keep the glide at its full speed.
   await expect(async () => {
-    for (let n = 0; n < 10; n++) await page.mouse.wheel(0, -200)
-    await expect(hint).toHaveCSS('opacity', '1', { timeout: 1000 })
-  }).toPass({ timeout: 60_000 })
+    for (let n = 0; n < 5; n++) await page.mouse.wheel(0, -400)
+    await expect(hint).toHaveCSS('opacity', '1', { timeout: 150 })
+  }).toPass({ timeout: 75_000, intervals: [0] })
   expect(await page.evaluate(() => window.scrollY)).toBe(0)
 })
 
