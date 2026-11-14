@@ -95,6 +95,8 @@ function stack(kit: Kit): Built {
   })
   return {
     root,
+    // On hover it turns to the camera, so the logos show.
+    faceOnHover: 0.35,
     update: ({ hover }) => {
       // On hover the slabs spread apart.
       const gap = 0.25 + hover * 0.1
@@ -274,6 +276,8 @@ function gears(kit: Kit): Built {
   place()
   return {
     root,
+    // On hover it turns to the camera, so the rings show.
+    faceOnHover: 0.25,
     update: ({ delta, hover, motion }) => {
       if (!motion) return
       turn += delta * (0.35 + hover * 1.6)
@@ -449,6 +453,8 @@ function notebook(kit: Kit): Built {
   }
   return {
     root,
+    // On hover it turns to the camera, so the pages show.
+    faceOnHover: 0.35,
     update: ({ hover }) => {
       // First the page goes over from the right to the left; only when
       // it is past the spine does the pen come to the right page. On the
@@ -633,6 +639,8 @@ function pen(kit: Kit): Built {
   root.position.y = 0.08
   return {
     root,
+    // On hover it turns to the camera, so the nib and the curve show.
+    faceOnHover: 0.3,
     update: ({ hover }) => {
       if (Math.abs(hover - shown) > 0.004) draw(hover)
     },
@@ -687,6 +695,8 @@ function plane(kit: Kit): Built {
   root.rotation.set(0.9, 0.5, 0, 'XYZ')
   return {
     root,
+    // On hover it turns to the camera, so the wings show.
+    faceOnHover: 0,
     update: ({ t, hover, motion }) => {
       const sway = motion ? 1 : 0
       craft.position.y = Math.sin(t * 1.6) * 0.05 * sway + hover * 0.06
@@ -737,6 +747,8 @@ function padlock(kit: Kit): Built {
   root.position.y = 0.06
   return {
     root,
+    // On hover it turns to the camera, so the keyhole show.
+    faceOnHover: 0.3,
     update: ({ hover }) => {
       swing.position.y = hover * 0.14
       swing.rotation.y = hover * 0.75
