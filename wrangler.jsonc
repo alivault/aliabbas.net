@@ -61,6 +61,6 @@
     // The frontend hostnames that the Turnstile check accepts.
     "TURNSTILE_HOSTNAMES": "aliabbas.net,www.aliabbas.net",
     // The Better Auth accounts that may open /admin, comma-separated.
-    "ADMIN_EMAILS": "ali@aliabbas.net",
+    "ADMIN_EMAILS": "ali@aliabbas.net,ali@aliabbas.dev",
   },
 }
