@@ -13,9 +13,9 @@ export const SKY_GLSL = /* glsl */ `
   const vec3 SKY_WARM = vec3(0.74, 0.47, 0.25);
   const vec3 SKY_COOL = vec3(0.34, 0.29, 0.25);
   const vec3 SKY_SUN = vec3(${SUN_DIRECTION.x.toFixed(4)}, 0.0, ${SUN_DIRECTION.z.toFixed(4)});
-  // The sun has set: its glow is centered a little under the horizon, so
-  // the brightest light is the horizon itself.
-  const vec3 SUN_AT = normalize(vec3(${SUN_DIRECTION.x.toFixed(4)}, -0.05, ${SUN_DIRECTION.z.toFixed(4)}));
+  // The sun has set some time ago: its glow is centered well under the
+  // horizon, so only a dim warm light shows along the horizon.
+  const vec3 SUN_AT = normalize(vec3(${SUN_DIRECTION.x.toFixed(4)}, -0.2, ${SUN_DIRECTION.z.toFixed(4)}));
   const vec3 SUN_LIGHT = vec3(1.0, 0.74, 0.46);
 
   vec3 skyColor(vec3 d) {
@@ -27,11 +27,11 @@ export const SKY_GLSL = /* glsl */ `
     sky = mix(sky, sky * vec3(0.6, 0.64, 0.76), up * 0.8);
     // A bright band along the horizon, strongest toward the sun.
     float band = exp(-max(d.y, 0.0) * 9.0);
-    sky += SKY_WARM * band * (0.05 + 0.2 * warm);
+    sky += SKY_WARM * band * (0.03 + 0.1 * warm);
     // The afterglow of the sun under the horizon: wide, and brighter close
     // to where it set. It lights the haze and the fog toward it too.
     float toSun = max(dot(d, SUN_AT), 0.0);
-    sky += SUN_LIGHT * (pow(toSun, 6.0) * 0.2 + pow(toSun, 40.0) * 0.18);
+    sky += SUN_LIGHT * (pow(toSun, 6.0) * 0.1 + pow(toSun, 30.0) * 0.06);
     // A soft haze at the horizon, as in a dusk with dust in the air. It is
     // only a little darker than the sky, so far ground fades into light,
     // not into black.

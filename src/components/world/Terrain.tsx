@@ -76,7 +76,7 @@ function grainTexture() {
 }
 
 /** How strong the sun is on the ground, and the flat light of the sky. */
-const SUN_GAIN = 2.1
+const SUN_GAIN = 1.5
 const SKY_GAIN = 0.55
 
 /**
