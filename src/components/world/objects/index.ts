@@ -672,7 +672,7 @@ function pen(kit: Kit): Built {
  * under them. It bobs and banks as it flies; on hover it flies one small
  * loop.
  */
-const BANK = 0.45
+const BANK = 0.15
 
 function plane(kit: Kit): Built {
   const root = new THREE.Group()
@@ -761,7 +761,7 @@ function plane(kit: Kit): Built {
     new THREE.Euler(0, 0, 0.18),
   )
   const pagePose = new THREE.Quaternion().setFromEuler(
-    new THREE.Euler(1.32, 0.72, -0.35, 'XYZ'),
+    new THREE.Euler(0.95, 0.75, -0.3, 'XYZ'),
   )
   // Seen face on, its wings are wide: a little smaller, to match the
   // other icons.
