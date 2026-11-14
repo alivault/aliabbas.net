@@ -670,47 +670,61 @@ function plane(kit: Kit): Built {
   const paper = kit.paint()
   // Either winding of a side face shows.
   paper.side = THREE.DoubleSide
-  /** A flat triangle of paper with some thickness, under its face. */
-  const panel = (
-    a: THREE.Vector3,
-    b: THREE.Vector3,
-    c: THREE.Vector3,
-    thickness = 0.03,
-  ) => {
-    const normal = b.clone().sub(a).cross(c.clone().sub(a)).normalize()
-    const down = normal.multiplyScalar(-thickness)
-    const [a2, b2, c2] = [a, b, c].map((p) => p.clone().add(down))
-    const faces = [
-      [a, b, c],
-      [a2, c2, b2],
-      [a, a2, b2, b],
-      [b, b2, c2, c],
-      [c, c2, a2, a],
-    ].flatMap((face) =>
-      face.length === 3
-        ? [face]
-        : [
-            [face[0], face[1], face[2]],
-            [face[0], face[2], face[3]],
-          ],
-    )
-    const geometry = new THREE.BufferGeometry()
-    geometry.setAttribute(
-      'position',
-      new THREE.Float32BufferAttribute(
-        faces.flatMap((face) => face.flatMap((p) => p.toArray())),
-        3,
-      ),
-    )
-    geometry.computeVertexNormals()
-    craft.add(kit.mesh(geometry, paper))
-  }
-  // Nose to +x. The two wings meet only at the nose: toward the tail they
-  // open apart, and the keel shows in the gap between them.
+  // One sheet, folded: left wing, left half of the keel, right half,
+  // right wing, all joined at the nose and along the folds. Nose to +x.
+  // At the top the keel opens between the wings, as a real plane does.
   const nose = v(0.6, 0.02, 0)
-  panel(nose, v(-0.5, 0.25, 0.46), v(-0.42, 0.05, 0.07))
-  panel(nose, v(-0.42, 0.05, -0.07), v(-0.5, 0.25, -0.46))
-  panel(nose, v(-0.44, -0.3, 0.015), v(-0.42, 0.0, 0.015), 0.03)
+  const tipLeft = v(-0.5, 0.25, 0.46)
+  const foldLeft = v(-0.42, 0.04, 0.07)
+  const keel = v(-0.44, -0.3, 0)
+  const foldRight = v(-0.42, 0.04, -0.07)
+  const tipRight = v(-0.5, 0.25, -0.46)
+  const points = [nose, tipLeft, foldLeft, keel, foldRight, tipRight]
+  // The faces, wound the same way, so the top of the wings and the inside
+  // of the keel are one side of the sheet.
+  const faces = [
+    [0, 2, 1],
+    [0, 3, 2],
+    [0, 4, 3],
+    [0, 5, 4],
+  ]
+  // The edge of the sheet, all around.
+  const outline = [0, 1, 2, 3, 4, 5]
+  // The paper has a thickness: each point has a twin behind it, along
+  // the mean normal of its faces.
+  const thickness = 0.028
+  const normals = points.map(() => new THREE.Vector3())
+  for (const [a, b, c] of faces) {
+    const n = points[b]
+      .clone()
+      .sub(points[a])
+      .cross(points[c].clone().sub(points[a]))
+      .normalize()
+    for (const index of [a, b, c]) normals[index].add(n)
+  }
+  const behind = points.map((p, index) =>
+    p.clone().addScaledVector(normals[index].normalize(), -thickness),
+  )
+  const triangles: Array<Array<THREE.Vector3>> = []
+  for (const [a, b, c] of faces) {
+    triangles.push([points[a], points[b], points[c]])
+    triangles.push([behind[a], behind[c], behind[b]])
+  }
+  outline.forEach((a, index) => {
+    const b = outline[(index + 1) % outline.length]
+    triangles.push([points[a], behind[a], behind[b]])
+    triangles.push([points[a], behind[b], points[b]])
+  })
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute(
+      triangles.flatMap((face) => face.flatMap((p) => p.toArray())),
+      3,
+    ),
+  )
+  geometry.computeVertexNormals()
+  craft.add(kit.mesh(geometry, paper))
   // Seen from the near side and a little below, the plane flies up and
   // to the right: the near wing, the keel under it and the far wing over
   // the spine all show, as three shades.
