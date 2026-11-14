@@ -19,6 +19,12 @@ const EYE = 1.7
 const WALK = 5
 const RUN = 11
 const LOOK = 0.0035
+/** Meters per second of glide that one pixel of scroll gives. */
+const SCROLL_PUSH = 0.03
+/** The fastest glide from the scroll wheel, in meters per second. */
+const SCROLL_TOP = RUN
+/** How fast the glide dies out after the scroll stops, per second. */
+const SCROLL_DRAG = 3
 
 type Pose = { position: THREE.Vector3; yaw: number; pitch: number }
 
@@ -50,7 +56,8 @@ function lerpAngle(a: number, b: number, t: number) {
 
 /**
  * The camera, as a person who walks on the ground. Drag to look, WASD or the
- * arrows to walk, Shift to run, a click on the ground to walk there. Flights
+ * arrows to walk, Shift to run, a click on the ground to walk there, scroll
+ * to glide forward and back (and to the side, with a sideways scroll). Flights
  * (into a sheet, back out, or to the next sheet) take over until they end.
  */
 /** The vertical view of the camera, in degrees (as in World.tsx). */
@@ -79,6 +86,8 @@ export default function Player({
   /** The dash that has its sound, and the function that stops it. */
   const dash = useRef<{ target: THREE.Vector3; stop: () => void } | null>(null)
   const droneClock = useRef(0)
+  /** The glide from the scroll wheel: forward and to the right, in m/s. */
+  const glide = useRef({ forward: 0, strafe: 0 })
 
   const pose = (): Pose => ({
     position: position.current.clone(),
@@ -365,6 +374,37 @@ export default function Player({
     }
   }, [gl])
 
+  // Glide with the scroll wheel or two fingers on a touchpad: down goes
+  // forward, as into the world, and sideways goes to the side.
+  useEffect(() => {
+    const wheel = (event: WheelEvent) => {
+      // A pinch on a touchpad comes as a wheel with Ctrl: it is a zoom.
+      if (event.ctrlKey) return
+      if (getWorld().phase !== 'roam' || getWorld().indexOpen) return
+      // Lines and pages to pixels.
+      const unit =
+        event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? size.height : 1
+      const g = glide.current
+      g.forward = THREE.MathUtils.clamp(
+        g.forward - event.deltaY * unit * SCROLL_PUSH,
+        -SCROLL_TOP,
+        SCROLL_TOP,
+      )
+      g.strafe = THREE.MathUtils.clamp(
+        g.strafe + event.deltaX * unit * SCROLL_PUSH,
+        -SCROLL_TOP,
+        SCROLL_TOP,
+      )
+      // The world does not scroll, and a sideways swipe must not go back
+      // in the browser history.
+      event.preventDefault()
+      walkTarget.current = null
+      if (flight.current?.cancellable) stopFlight()
+    }
+    window.addEventListener('wheel', wheel, { passive: false })
+    return () => window.removeEventListener('wheel', wheel)
+  }, [walkTarget, size.height])
+
   // Walk with the keyboard.
   useEffect(() => {
     const MOVE = new Set([
@@ -435,7 +475,16 @@ export default function Player({
       const cos = Math.cos(yaw.current)
       wish.x = -sin * forward + cos * strafe
       wish.z = -cos * forward - sin * strafe
-      let speed = k.has('ShiftLeft') || k.has('ShiftRight') ? RUN : WALK
+      const speed = k.has('ShiftLeft') || k.has('ShiftRight') ? RUN : WALK
+      if (wish.lengthSq() > 0) wish.normalize().multiplyScalar(speed)
+      // The glide of the scroll wheel adds to the keys, and dies out.
+      const g = glide.current
+      const fade = Math.exp(-SCROLL_DRAG * delta)
+      g.forward = Math.abs(g.forward * fade) < 0.05 ? 0 : g.forward * fade
+      g.strafe = Math.abs(g.strafe * fade) < 0.05 ? 0 : g.strafe * fade
+      wish.x += -sin * g.forward + cos * g.strafe
+      wish.z += -cos * g.forward - sin * g.strafe
+      const gliding = g.forward !== 0 || g.strafe !== 0
 
       const target = walkTarget.current
       // A new dash starts its swoop, as long as the dash; a dash that ends
@@ -444,7 +493,7 @@ export default function Player({
         dash.current.stop()
         dash.current = null
       }
-      if (target && !dash.current && !forward && !strafe) {
+      if (target && !dash.current && !forward && !strafe && !gliding) {
         const timing = dashTiming(
           Math.hypot(
             target.x - position.current.x,
@@ -457,7 +506,7 @@ export default function Player({
           stop: playFlight(timing.duration, timing.peak),
         }
       }
-      if (!forward && !strafe && target) {
+      if (!forward && !strafe && !gliding && target) {
         const dx = target.x - position.current.x
         const dz = target.z - position.current.z
         // The walk stops at the near edge of the square on the ground, not
@@ -466,8 +515,10 @@ export default function Player({
         if (distance < 0.15) {
           walkTarget.current = null
         } else {
-          wish.set(dx, 0, dz)
-          speed = Math.min(CLICK_WALK, distance * CLICK_EASE)
+          wish
+            .set(dx, 0, dz)
+            .normalize()
+            .multiplyScalar(Math.min(CLICK_WALK, distance * CLICK_EASE))
           // Turn gently toward where the visitor walks.
           yaw.current = lerpAngle(
             yaw.current,
@@ -476,7 +527,6 @@ export default function Player({
           )
         }
       }
-      if (wish.lengthSq() > 0) wish.normalize().multiplyScalar(speed)
       velocity.current.lerp(wish, 1 - Math.exp(-8 * delta))
       position.current.addScaledVector(velocity.current, delta)
 

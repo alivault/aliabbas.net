@@ -49,6 +49,25 @@ test('far from the pages, the HUD says so, and an arrow flies back', async ({
   await expect(hint).toHaveCount(0, { timeout: 30_000 })
 })
 
+test('a scroll glides through the world, and the page does not scroll', async ({
+  page,
+}) => {
+  needsFrames()
+  await open(page, '/?gl=force')
+  await page.getByRole('button', { name: 'Enter', exact: true }).click()
+  const hint = page.getByText('Lost? Click Next')
+  await expect(hint).toHaveCount(0)
+
+  // Scroll up, to glide backward, away from the pages, until the HUD says
+  // lost.
+  await page.mouse.move(640, 300)
+  await expect(async () => {
+    for (let n = 0; n < 10; n++) await page.mouse.wheel(0, -200)
+    await expect(hint).toHaveCSS('opacity', '1', { timeout: 1000 })
+  }).toPass({ timeout: 60_000 })
+  expect(await page.evaluate(() => window.scrollY)).toBe(0)
+})
+
 test('a drag on a cube spins it, and a click still opens its page', async ({
   page,
 }) => {
