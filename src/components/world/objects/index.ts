@@ -36,6 +36,9 @@ export type IconObject = {
   /** On its open page, the object shows its hover pose (it can still be
       spun). */
   hoverOnPage?: boolean
+  /** On its open page, a turn (radians) added to the angle every icon
+      has there: 0.4 makes it face on. */
+  pageTurn?: number
 }
 
 type Built = Omit<IconObject, 'kit' | 'update'> & {
@@ -736,10 +739,13 @@ function plane(kit: Kit): Built {
   geometry.addGroup(0, topCount, 0)
   geometry.addGroup(topCount, triangles.length * 3 - topCount, 1)
   craft.add(kit.mesh(geometry, [paper, under]))
-  // Seen from the near side and a little above, the plane flies up and
-  // to the right: the orange tops of both wings show, and the graphite
-  // keel under them.
-  root.rotation.set(0.75, 0.7, 0.1, 'XYZ')
+  // Seen from above and a little behind, the plane flies up and to the
+  // right: the orange tops of both wings show, as in a send icon. Its
+  // page shows it face on, so the view is this one.
+  root.rotation.set(1.1, 0.67, 0, 'XYZ')
+  // Seen face on, its wings are wide: a little smaller, to match the
+  // other icons.
+  craft.scale.setScalar(0.85)
 
   // One loop: the plane climbs, goes over the top, upside down, and
   // comes back to where it was. It starts when the pointer comes on.
@@ -751,6 +757,7 @@ function plane(kit: Kit): Built {
     root,
     // On hover it turns to the camera, so the wings show.
     faceOnHover: 0,
+    pageTurn: 0.4,
     update: ({ t, delta, hover, motion }) => {
       if (hover > 0.5 && armed && motion) {
         loop = 0

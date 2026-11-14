@@ -263,7 +263,10 @@ export default function WorldIcon({
         Math.abs(turn.yaw.velocity) + Math.abs(turn.tilt.velocity) > 0.05
       spin.current = THREE.MathUtils.damp(
         spin.current,
-        shortestAngle(spin.current, focus.yaw + turn.yaw.offset),
+        shortestAngle(
+          spin.current,
+          focus.yaw + (object?.pageTurn ?? 0) + turn.yaw.offset,
+        ),
         fast ? 30 : 3.5,
         delta,
       )
