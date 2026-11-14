@@ -885,7 +885,9 @@ function pico(kit: Kit): Built {
   const depth = 0.24
   const blocks = rects.map(([x, y, w, h], index) => {
     const block = new THREE.Group()
-    block.add(kit.box(w * unit, h * unit, depth, white, 0.02))
+    // Sharp corners, so the blocks meet corner to corner, as in the
+    // icon.
+    block.add(kit.box(w * unit, h * unit, depth, white))
     const at = v((x + w / 2 - 51) * unit, (68 - (y + h / 2)) * unit, 0)
     root.add(block)
     return {
