@@ -6,6 +6,7 @@ import { play } from '~/lib/sound'
 import { drawIcon } from './iconTexture'
 import { heightAt } from './noise'
 import { buildObject } from './objects'
+import { followCamera, studioEnvironment, withStudio } from './objects/studio'
 import { ICON_SIZE } from './sheets'
 import { WORLD_UNIFORMS, withSkyFog } from './sky'
 import { registerSpinner, spinGrab } from './cubeSpin'
@@ -158,9 +159,12 @@ export default function WorldIcon({
     if (!kind) return null
     const built = buildObject(kind, accent)
     built.root.scale.setScalar(OBJECT_SCALE)
-    for (const material of built.kit.materials) withSkyFog(material, dim, clear)
+    const studio = studioEnvironment(gl)
+    for (const material of built.kit.materials) {
+      withStudio(withSkyFog(material, dim, clear), studio)
+    }
     return built
-  }, [kind, accent, dim, clear])
+  }, [kind, accent, dim, clear, gl])
   useEffect(() => () => object?.kit.dispose(), [object])
 
   useEffect(() => {
@@ -428,6 +432,7 @@ export default function WorldIcon({
       delta,
     )
     if (object) {
+      followCamera(object.kit.materials, state.camera)
       fadeObject(object.kit.materials, shown.current)
       const boost = focused && sheet.wide ? 1.4 : 1
       for (const material of object.kit.glows) {

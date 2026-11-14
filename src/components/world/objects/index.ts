@@ -871,7 +871,7 @@ function pico(kit: Kit): Built {
   const root = new THREE.Group()
   const white = kit.graphite(0, {
     color: new THREE.Color('#ece8e2'),
-    emissive: new THREE.Color('#3a3632'),
+    emissive: new THREE.Color('#0c0b0a'),
     roughness: 0.5,
   })
   // x, y, width, height on the grid of the SVG (y down).
@@ -886,8 +886,10 @@ function pico(kit: Kit): Built {
   const blocks = rects.map(([x, y, w, h], index) => {
     const block = new THREE.Group()
     // Sharp corners, so the blocks meet corner to corner, as in the
-    // icon.
-    block.add(kit.box(w * unit, h * unit, depth, white))
+    // icon. Each is a hair larger, so where two blocks meet they overlap
+    // and the drawing leaves no dotted seam between them.
+    const hair = 0.002
+    block.add(kit.box(w * unit + hair, h * unit + hair, depth, white))
     const at = v((x + w / 2 - 51) * unit, (68 - (y + h / 2)) * unit, 0)
     root.add(block)
     return {

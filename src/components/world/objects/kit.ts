@@ -34,9 +34,9 @@ export class Kit {
         color,
         roughness: 0.62,
         metalness: 0.12,
-        // A little light of its own, so the side away from the sun is not
-        // black against the dark ground.
-        emissive: new THREE.Color('#1c1814'),
+        // Only a trace of light of its own: the studio lights it, and an
+        // even glow on every face would make it flat.
+        emissive: new THREE.Color('#070605'),
         ...options,
       }),
     )
