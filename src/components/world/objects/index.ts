@@ -515,8 +515,10 @@ function dial(kit: Kit): Built {
   arc.position.z = front
   root.add(arc)
   const needle = new THREE.Group()
-  const blade = kit.box(0.026, 0.36, 0.014, kit.glow(1.2), 0.006)
-  blade.position.y = 0.13
+  // The blade starts well inside the cap (radius 0.05), so its corners
+  // do not show past the cap from the side.
+  const blade = kit.box(0.026, 0.34, 0.014, kit.glow(1.2), 0.006)
+  blade.position.y = 0.14
   needle.add(blade)
   needle.position.z = front + 0.012
   root.add(needle)
