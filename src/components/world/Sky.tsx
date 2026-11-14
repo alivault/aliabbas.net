@@ -1,7 +1,7 @@
 import { useMemo, useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
-import { DIM_GLSL, SKY_GLSL, WORLD_UNIFORMS } from './sky'
+import { DIM_GLSL, SKY_GLSL, SUN_GLSL, WORLD_UNIFORMS } from './sky'
 
 /** A dome around the camera. It moves with the camera, so it never ends. */
 export default function Sky() {
@@ -23,9 +23,15 @@ export default function Sky() {
           varying vec3 vDirection;
           ${SKY_GLSL}
           ${DIM_GLSL}
+          ${SUN_GLSL}
           void main() {
             vec3 d = normalize(vDirection);
-            gl_FragColor = vec4(dimmed(skyColor(d), d), 1.0);
+            vec3 color = dimmed(skyColor(d) + sunDisk(d) * (1.0 - uDim), d);
+            // A grain of less than one step of color, so the smooth
+            // gradient shows no bands.
+            float grain = fract(sin(dot(gl_FragCoord.xy, vec2(12.9898, 78.233))) * 43758.5453);
+            color += (grain - 0.5) / 255.0;
+            gl_FragColor = vec4(color, 1.0);
           }
         `,
       }),

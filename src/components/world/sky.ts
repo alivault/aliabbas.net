@@ -13,13 +13,23 @@ export const SKY_GLSL = /* glsl */ `
   const vec3 SKY_WARM = vec3(0.74, 0.47, 0.25);
   const vec3 SKY_COOL = vec3(0.34, 0.29, 0.25);
   const vec3 SKY_SUN = vec3(${SUN_DIRECTION.x.toFixed(4)}, 0.0, ${SUN_DIRECTION.z.toFixed(4)});
+  const vec3 SUN_AT = vec3(${SUN_DIRECTION.x.toFixed(4)}, ${SUN_DIRECTION.y.toFixed(4)}, ${SUN_DIRECTION.z.toFixed(4)});
+  const vec3 SUN_LIGHT = vec3(1.0, 0.74, 0.46);
 
   vec3 skyColor(vec3 d) {
     vec2 flat2 = normalize(d.xz + 1e-5);
     float warm = smoothstep(-0.6, 0.9, dot(flat2, normalize(SKY_SUN.xz)));
     vec3 sky = mix(SKY_COOL, SKY_WARM, warm);
-    // A little lighter overhead.
-    sky *= 1.0 + 0.08 * smoothstep(0.1, 0.8, d.y);
+    // Dusk: darker and cooler overhead.
+    float up = smoothstep(0.08, 0.9, d.y);
+    sky = mix(sky, sky * vec3(0.6, 0.64, 0.76), up * 0.8);
+    // A bright band along the horizon, strongest toward the sun.
+    float band = exp(-max(d.y, 0.0) * 9.0);
+    sky += SKY_WARM * band * (0.05 + 0.2 * warm);
+    // The wide glow of the low sun; it lights the haze and the fog toward
+    // it too.
+    float toSun = max(dot(d, SUN_AT), 0.0);
+    sky += SUN_LIGHT * pow(toSun, 6.0) * 0.2;
     // A soft haze at the horizon, as in a dusk with dust in the air. It is
     // only a little darker than the sky, so far ground fades into light,
     // not into black.
@@ -42,6 +52,19 @@ export const SKY_GLSL = /* glsl */ `
  * and the ground while a page is open, so only its icon stays lit.
  */
 export const WORLD_UNIFORMS = { uDim: { value: 0 } }
+
+/**
+ * The sun itself: a soft disk low over the horizon, and its corona. Only
+ * the sky dome draws it, not the fog: the ground must not show a sun.
+ */
+export const SUN_GLSL = /* glsl */ `
+  vec3 sunDisk(vec3 d) {
+    float s = max(dot(d, SUN_AT), 0.0);
+    float disk = smoothstep(0.99955, 0.99978, s);
+    vec3 corona = SUN_LIGHT * (pow(s, 600.0) * 0.45 + pow(s, 80.0) * 0.12);
+    return SUN_LIGHT * disk * 0.9 + corona;
+  }
+`
 
 /** The color of the world in the dark, toward a direction. */
 export const DIM_GLSL = /* glsl */ `

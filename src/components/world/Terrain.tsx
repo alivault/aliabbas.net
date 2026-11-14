@@ -4,6 +4,7 @@ import * as THREE from 'three'
 import type { ThreeEvent } from '@react-three/fiber'
 import { heightAt, poolAt, rockAt } from './noise'
 import { withSkyFog } from './sky'
+import { opennessAt, sunlightAt } from './terrainLight'
 
 /** Chunk size in meters, and quads per side. */
 const CHUNK = 96
@@ -74,6 +75,88 @@ function grainTexture() {
   return texture
 }
 
+/** How strong the sun is on the ground, and the flat light of the sky. */
+const SUN_GAIN = 2.1
+const SKY_GAIN = 0.55
+
+/**
+ * The light of the ground. The flat light of the sky (the hemisphere
+ * light) gave every slope the same light, so the hills had no shape; now
+ * the low warm sun does most of the work, so slopes toward it glow and the
+ * far sides fall into shade. The baked sunlight takes the sun away in the
+ * shadow of a hill, and the baked openness darkens the sky light in
+ * hollows.
+ */
+function withGroundLight(material: THREE.MeshLambertMaterial) {
+  const before = material.onBeforeCompile.bind(material)
+  material.onBeforeCompile = (shader, renderer) => {
+    before(shader, renderer)
+    shader.vertexShader = shader.vertexShader
+      .replace(
+        '#include <common>',
+        '#include <common>\nattribute vec2 bake;\nvarying vec2 vBake;',
+      )
+      .replace(
+        '#include <begin_vertex>',
+        '#include <begin_vertex>\nvBake = bake;',
+      )
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', '#include <common>\nvarying vec2 vBake;')
+      .replace(
+        '#include <lights_fragment_begin>',
+        THREE.ShaderChunk.lights_fragment_begin
+          .replace(
+            'getDirectionalLightInfo( directionalLight, directLight );',
+            `getDirectionalLightInfo( directionalLight, directLight );
+            directLight.color *= ${SUN_GAIN.toFixed(2)} * vBake.x;`,
+          )
+          .replace(
+            'irradiance += getHemisphereLightIrradiance( hemisphereLights[ i ], geometryNormal );',
+            `irradiance += ${SKY_GAIN.toFixed(2)} * vBake.y * getHemisphereLightIrradiance( hemisphereLights[ i ], geometryNormal );`,
+          ),
+      )
+  }
+  material.customProgramCacheKey = () => 'ground'
+  return material
+}
+
+/**
+ * A value of the ground worked out every `every` points of a tile, and
+ * read at any point of the tile, blended from the four around it.
+ */
+function coarse(
+  cx: number,
+  cz: number,
+  every: number,
+  valueAt: (x: number, z: number) => number,
+) {
+  const cells = SEGMENTS / every
+  const side = cells + 1
+  const step = (CHUNK / SEGMENTS) * every
+  const values = new Float32Array(side * side)
+  for (let j = 0; j < side; j++) {
+    for (let i = 0; i < side; i++) {
+      values[j * side + i] = valueAt(
+        cx * CHUNK + i * step,
+        cz * CHUNK + j * step,
+      )
+    }
+  }
+  return (ix: number, iz: number) => {
+    const fx = ix / every
+    const fz = iz / every
+    const i = Math.min(Math.floor(fx), cells - 1)
+    const j = Math.min(Math.floor(fz), cells - 1)
+    const u = fx - i
+    const v = fz - j
+    const at = (a: number, b: number) => values[b * side + a]
+    return (
+      (at(i, j) * (1 - u) + at(i + 1, j) * u) * (1 - v) +
+      (at(i, j + 1) * (1 - u) + at(i + 1, j + 1) * u) * v
+    )
+  }
+}
+
 function buildChunk(cx: number, cz: number) {
   const geometry = new THREE.BufferGeometry()
   const side = SEGMENTS + 1
@@ -81,6 +164,13 @@ function buildChunk(cx: number, cz: number) {
   const normals = new Float32Array(side * side * 3)
   const colors = new Float32Array(side * side * 3)
   const uvs = new Float32Array(side * side * 2)
+  // The light that does not change: sunlight (hill shadows) and openness
+  // (hollows). They are soft and wide, so they are worked out on a coarser
+  // grid (every 4th and every 2nd point) and blended between: a tile then
+  // takes some 4 ms, not 30.
+  const bake = new Float32Array(side * side * 2)
+  const sunlight = coarse(cx, cz, 4, sunlightAt)
+  const openness = coarse(cx, cz, 2, opennessAt)
   const step = CHUNK / SEGMENTS
   const color = new THREE.Color()
   const e = 0.5
@@ -95,6 +185,8 @@ function buildChunk(cx: number, cz: number) {
       const u = (iz * side + ix) * 2
       uvs[u] = x / GRAIN_SCALE
       uvs[u + 1] = z / GRAIN_SCALE
+      bake[u] = sunlight(ix, iz)
+      bake[u + 1] = openness(ix, iz)
       // The normal from the height function itself, so chunk edges match.
       const nx = heightAt(x - e, z) - heightAt(x + e, z)
       const nz = heightAt(x, z - e) - heightAt(x, z + e)
@@ -124,6 +216,7 @@ function buildChunk(cx: number, cz: number) {
   geometry.setAttribute('normal', new THREE.BufferAttribute(normals, 3))
   geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3))
   geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2))
+  geometry.setAttribute('bake', new THREE.BufferAttribute(bake, 2))
   geometry.computeBoundingSphere()
   return geometry
 }
@@ -144,11 +237,13 @@ export default function Terrain({
   const [center, setCenter] = useState<[number, number]>([0, 0])
   const material = useMemo(
     () =>
-      withSkyFog(
-        new THREE.MeshLambertMaterial({
-          vertexColors: true,
-          map: grainTexture(),
-        }),
+      withGroundLight(
+        withSkyFog(
+          new THREE.MeshLambertMaterial({
+            vertexColors: true,
+            map: grainTexture(),
+          }),
+        ),
       ),
     [],
   )
