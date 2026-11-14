@@ -4,6 +4,16 @@ import { devtools } from '@tanstack/devtools-vite'
 import { tanstackStart } from '@tanstack/react-start/plugin/vite'
 import react from '@vitejs/plugin-react'
 import { defineConfig, lazyPlugins } from 'vite-plus'
+import { existsSync } from 'node:fs'
+
+// workerd (the local Cloudflare runtime) is a prebuilt binary: it looks
+// for the trusted certificates where Debian keeps them. NixOS keeps them
+// elsewhere, so every HTTPS call from the Worker in dev and in the tests
+// failed ("TLS peer's certificate is not trusted"), and Convex with it.
+const NIXOS_CERTS = '/etc/ssl/certs/ca-certificates.crt'
+if (!process.env.SSL_CERT_FILE && existsSync(NIXOS_CERTS)) {
+  process.env.SSL_CERT_FILE = NIXOS_CERTS
+}
 
 export default defineConfig({
   lint: {
