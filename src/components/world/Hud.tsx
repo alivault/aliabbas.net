@@ -229,12 +229,12 @@ export default function Hud({ inPage }: { inPage: boolean }) {
       </div>
 
       {/* The name of the sheet under the pointer: at the bottom center, in
-          line with Next. On a phone, above Next, where it has no room at
-          its side. */}
+          line with Next and as large. On a phone, above Next, where it has
+          no room at its side. */}
       <p
         aria-live="polite"
         className={cn(
-          'absolute bottom-20 left-1/2 sm:bottom-6 sm:flex sm:h-7 sm:items-center -translate-x-1/2 text-center whitespace-nowrap transition-opacity',
+          'absolute bottom-20 left-1/2 sm:bottom-6 sm:flex sm:h-7 sm:items-center -translate-x-1/2 text-center text-lg whitespace-nowrap transition-opacity',
           (hovered || lost) && !inPage && !indexOpen
             ? 'opacity-100'
             : 'opacity-0',
