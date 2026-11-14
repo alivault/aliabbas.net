@@ -103,48 +103,78 @@ function stack(kit: Kit): Built {
   }
 }
 
-/** Experience: a briefcase. On hover its lid opens a little on a glow. */
+/**
+ * Experience: an attaché case, standing on its long edge with the handle
+ * on top. It is two thin shells; on hover the front shell tips open on its
+ * bottom edge, on a glow inside.
+ */
 function briefcase(kit: Kit): Built {
   const root = new THREE.Group()
   const body = kit.graphite(0.05)
-  const trim = kit.graphite(0.3)
+  const trim = kit.graphite(0.32, { roughness: 0.4, metalness: 0.3 })
   const glow = kit.glow()
-  const seam = 0.04
-  const base = kit.box(0.94, 0.46, 0.32, body, 0.05)
-  base.position.y = seam - 0.23
-  root.add(base)
-  // The light inside, seen when the lid opens.
-  const inside = kit.mesh(new THREE.PlaneGeometry(0.84, 0.24), glow)
-  inside.rotation.x = -Math.PI / 2
-  inside.position.y = seam + 0.002
+  const width = 0.98
+  const height = 0.66
+  const half = 0.1
+  const bottom = -height / 2
+  // The back shell, and the light inside it.
+  const back = kit.box(width, height, half, body, 0.03)
+  back.position.z = -half / 2
+  root.add(back)
+  const inside = kit.mesh(
+    new THREE.PlaneGeometry(width - 0.08, height - 0.08),
+    glow,
+  )
+  inside.position.z = 0.002
   root.add(inside)
-  // The lid turns about its back edge.
+  // The front shell turns about the bottom edge.
   const hinge = new THREE.Group()
-  hinge.position.set(0, seam, -0.16)
-  const lid = kit.box(0.94, 0.17, 0.32, body, 0.05)
-  lid.position.set(0, 0.085 + 0.004, 0.16)
-  hinge.add(lid)
-  const handle = kit.mesh(
-    new THREE.TorusGeometry(0.13, 0.03, 10, 24, Math.PI),
+  hinge.position.set(0, bottom, 0)
+  const front = kit.box(width, height, half, body, 0.03)
+  front.position.set(0, height / 2, half / 2 + 0.004)
+  hinge.add(front)
+  // Two locks near the top of the front, as on a case.
+  for (const x of [-0.3, 0.3]) {
+    const plate = kit.box(0.13, 0.065, 0.016, trim, 0.008)
+    plate.position.set(x, height - 0.075, half + 0.012)
+    hinge.add(plate)
+    const dial = kit.box(0.06, 0.022, 0.01, glow)
+    dial.position.set(x, height - 0.075, half + 0.022)
+    hinge.add(dial)
+  }
+  root.add(hinge)
+  // The seam all around the edge, as a line of light.
+  const seam = 0.014
+  for (const [w, h, x, y] of [
+    [width + 0.004, seam, 0, height / 2 - seam / 2 + 0.002],
+    [width + 0.004, seam, 0, bottom + seam / 2 - 0.002],
+    [seam, height + 0.004, width / 2 - seam / 2 + 0.002, 0],
+    [seam, height + 0.004, -width / 2 + seam / 2 - 0.002, 0],
+  ]) {
+    const line = kit.box(w, h, 0.007, glow)
+    line.position.set(x, y, 0.002)
+    root.add(line)
+  }
+  // The handle on the top edge: two posts and a flat arch between them.
+  for (const x of [-0.16, 0.16]) {
+    const post = kit.box(0.06, 0.04, 0.07, trim, 0.01)
+    post.position.set(x, height / 2 + 0.02, 0)
+    root.add(post)
+  }
+  const grip = kit.mesh(
+    new THREE.TorusGeometry(0.15, 0.026, 12, 32, Math.PI),
     trim,
   )
-  handle.position.set(0, 0.174, 0.16)
-  hinge.add(handle)
-  root.add(hinge)
-  // A band of light along the seam, and two latches over it.
-  const band = kit.box(0.946, 0.012, 0.326, glow, 0.005)
-  band.position.y = seam - 0.008
-  root.add(band)
-  for (const x of [-0.28, 0.28]) {
-    const latch = kit.box(0.09, 0.07, 0.03, trim, 0.01)
-    latch.position.set(x, seam, 0.165)
-    root.add(latch)
-  }
-  root.position.y = 0.02
+  grip.scale.y = 0.55
+  grip.position.y = height / 2 + 0.03
+  root.add(grip)
+  root.position.y = -0.03
   return {
     root,
+    // On hover it turns to the camera, so the opening shows.
+    faceOnHover: 0.45,
     update: ({ hover }) => {
-      hinge.rotation.x = -0.5 * hover
+      hinge.rotation.x = 0.32 * hover
     },
   }
 }
