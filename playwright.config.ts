@@ -14,7 +14,11 @@ const publicEnv = Object.fromEntries(
     .map(([, key, value]) => [key, process.env[key] ?? value]),
 )
 
-const PORT = 3000
+/**
+ * The port of the server under test. The self-hosted runner shares its
+ * machine with a dev server on 3000, so it sets E2E_PORT.
+ */
+const PORT = Number(process.env.E2E_PORT ?? 3000)
 const executablePath = process.env.CHROMIUM_PATH
 /**
  * GPU=1: draw WebGL on the GPU (the self-hosted runner, a Mac with Asahi

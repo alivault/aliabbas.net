@@ -110,6 +110,8 @@ jobs:
         run: vp exec playwright test
         env:
           GPU: '1'
+          # Ali's dev server may run on 3000 on the same machine.
+          E2E_PORT: '3317'
 
       - name: Upload Playwright report
         if: failure()
