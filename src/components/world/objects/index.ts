@@ -803,7 +803,7 @@ function plane(kit: Kit): Built {
   }
 }
 
-/** Privacy: a padlock. On hover its shackle lifts and swings open. */
+/** Privacy: a padlock, open at rest. On hover it locks. */
 function padlock(kit: Kit): Built {
   const root = new THREE.Group()
   const body = kit.graphite(0.08)
@@ -823,9 +823,10 @@ function padlock(kit: Kit): Built {
   )
   bow.position.y = 0.2
   shackle.add(bow)
-  for (const x of [-0.19, 0.19]) {
-    shackle.add(kit.rod(v(x, 0.2), v(x, -0.02), 0.045, steel))
-  }
+  // The leg it turns about is long: when the lock is open, it still
+  // goes down into the body, as on a real lock.
+  shackle.add(kit.rod(v(-0.19, 0.2), v(-0.19, -0.2), 0.045, steel))
+  shackle.add(kit.rod(v(0.19, 0.2), v(0.19, -0.02), 0.045, steel))
   swing.add(shackle)
   root.add(swing)
   // The keyhole, in light.
@@ -845,9 +846,14 @@ function padlock(kit: Kit): Built {
     root,
     // On hover it turns to the camera, so the keyhole show.
     faceOnHover: 0.3,
+    // On the privacy page it is locked.
+    hoverOnPage: true,
     update: ({ hover }) => {
-      swing.position.y = hover * 0.14
-      swing.rotation.y = hover * 0.75
+      // Open at rest; on hover (and on its page) the shackle swings back
+      // and drops in: it locks.
+      const open = 1 - hover
+      swing.position.y = open * 0.14
+      swing.rotation.y = open * 0.75
     },
   }
 }
