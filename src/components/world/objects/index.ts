@@ -425,23 +425,42 @@ function notebook(kit: Kit): Built {
   turning.position.y = 0.004
   // The spine, as a line of light.
   book.add(kit.rod(v(0, 0.0, -0.33), v(0, 0.0, 0.33), 0.012, kit.glow()))
-  // The pen lies across the right page.
+  // The pen: its origin is the point of the tip, its body along +x.
   const pen = new THREE.Group()
-  const barrel = kit.graphite(0.3)
-  pen.add(kit.rod(v(-0.24, 0, 0), v(0.2, 0, 0), 0.028, barrel))
   const tip = kit.mesh(new THREE.ConeGeometry(0.028, 0.09, 16), kit.glow())
   tip.rotation.z = Math.PI / 2
-  tip.position.x = -0.285
+  tip.position.x = 0.045
   pen.add(tip)
-  pen.position.set(0.26, 0.09, 0.02)
-  pen.rotation.y = 0.6
+  pen.add(kit.rod(v(0.09, 0, 0), v(0.53, 0, 0), 0.028, kit.graphite(0.3)))
   book.add(pen)
+  // At rest it lies along the top edge of the book, past the pages, where
+  // the turning page does not reach. To write, its tip is on the right
+  // page and its body rises up and back, out of the way of the pages.
+  const restAt = v(-0.265, 0.016, -0.375)
+  const restTurn = new THREE.Quaternion()
+  const writeAt = v(0.2, 0.05, 0.06)
+  const writeTurn = new THREE.Quaternion().setFromUnitVectors(
+    v(1, 0, 0),
+    v(0.35, 0.78, -0.5).normalize(),
+  )
+  const smooth = (from: number, to: number, x: number) => {
+    const k = THREE.MathUtils.clamp((x - from) / (to - from), 0, 1)
+    return k * k * (3 - 2 * k)
+  }
   return {
     root,
     update: ({ hover }) => {
-      // The page goes over from the right to the left.
-      const eased = hover * hover * (3 - 2 * hover)
-      turning.rotation.z = 0.12 + eased * (Math.PI - 0.24)
+      // First the page goes over from the right to the left; only when
+      // it is past the spine does the pen come to the right page. On the
+      // way back the pen goes first. Both follow the hover, so the order
+      // holds both ways.
+      const page = smooth(0, 0.6, hover)
+      turning.rotation.z = 0.12 + page * (Math.PI - 0.24)
+      const write = smooth(0.5, 1, hover)
+      pen.position.lerpVectors(restAt, writeAt, write)
+      // It lifts on the way, clear of the page under it.
+      pen.position.y += Math.sin(write * Math.PI) * 0.14
+      pen.quaternion.slerpQuaternions(restTurn, writeTurn, write)
     },
   }
 }
