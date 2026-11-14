@@ -557,47 +557,169 @@ function dial(kit: Kit): Built {
   }
 }
 
+/**
+ * The nib of a fountain pen: a thin sheet bent round a cone whose axis is
+ * along y, the tip down. Across, the sheet spans the same angle at each
+ * height, so it is flatter where it is narrow. Its outline has round
+ * shoulders and goes in a little toward the base.
+ */
+function nibGeometry() {
+  const tipY = -0.34
+  const baseY = 0.2
+  const length = baseY - tipY
+  const thickness = 0.012
+  /** The angle that the sheet spans across, in radians. */
+  const span = 1.45
+  const ease = (t: number) => t * t * (3 - 2 * t)
+  /**
+   * Width of the nib, from its tip (0) to its base (1): almost straight
+   * sides out from the tip, round shoulders, then a waist into the grip.
+   */
+  const width = (t: number) => {
+    if (t < 0.52) return 0.02 + 0.46 * Math.pow(t / 0.52, 0.92)
+    if (t < 0.64)
+      return 0.48 + 0.03 * Math.sin(((t - 0.52) / 0.12) * (Math.PI / 2))
+    if (t < 0.84) return 0.51 - 0.13 * ease((t - 0.64) / 0.2)
+    return 0.38
+  }
+  // The middle line of the top is at z = topZ; the axis of the cone of the
+  // base is behind it.
+  const topZ = 0.05
+  /** The radius of the cone: the width is the arc across. */
+  const radiusAt = (t: number) => width(t) / span
+  const rows = 40
+  const columns = 16
+  const positions: Array<number> = []
+  const index: Array<number> = []
+  // Two surfaces, the outer (top) and the inner, a thickness apart.
+  for (const inner of [0, 1]) {
+    for (let r = 0; r <= rows; r++) {
+      const t = r / rows
+      const y = tipY + t * length
+      const radius = radiusAt(t) - inner * thickness
+      for (let c = 0; c <= columns; c++) {
+        const angle = (c / columns - 0.5) * span
+        positions.push(
+          Math.sin(angle) * radius,
+          y,
+          topZ - inner * thickness + (Math.cos(angle) - 1) * radiusAt(t),
+        )
+      }
+    }
+  }
+  const side = columns + 1
+  const layer = (rows + 1) * side
+  const at = (inner: number, r: number, c: number) =>
+    inner * layer + r * side + c
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < columns; c++) {
+      const a = at(0, r, c)
+      const b = at(0, r, c + 1)
+      const d = at(0, r + 1, c)
+      const e = at(0, r + 1, c + 1)
+      index.push(a, b, d, b, e, d)
+      const ia = at(1, r, c)
+      const ib = at(1, r, c + 1)
+      const id = at(1, r + 1, c)
+      const ie = at(1, r + 1, c + 1)
+      index.push(ia, id, ib, ib, id, ie)
+    }
+  }
+  // The cut edges of the sheet: the two long sides and the tip.
+  for (let r = 0; r < rows; r++) {
+    for (const c of [0, columns]) {
+      index.push(at(0, r, c), at(0, r + 1, c), at(1, r, c))
+      index.push(at(1, r, c), at(0, r + 1, c), at(1, r + 1, c))
+    }
+  }
+  for (let c = 0; c < columns; c++) {
+    index.push(at(0, 0, c), at(1, 0, c), at(0, 0, c + 1))
+    index.push(at(0, 0, c + 1), at(1, 0, c), at(1, 0, c + 1))
+  }
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute(positions, 3),
+  )
+  geometry.setIndex(index)
+  geometry.computeVertexNormals()
+  const base = radiusAt(1)
+  return {
+    geometry,
+    tipY,
+    baseY,
+    topZ,
+    /** Where the breather hole is: some way up from the shoulders. */
+    eyeY: tipY + length * 0.6,
+    axisZ: topZ - base,
+    baseRadius: base,
+  }
+}
+
 /** Design: a pen nib on a curve, with the handles of the curve. */
 function pen(kit: Kit): Built {
   const root = new THREE.Group()
-  const body = kit.graphite(0.14)
   const glow = kit.glow()
-  // The nib points down to the middle of the curve.
-  const tipY = -0.34
-  const outline = new THREE.Shape()
-  outline.moveTo(0, tipY)
-  outline.lineTo(0.22, 0.02)
-  outline.quadraticCurveTo(0.24, 0.1, 0.17, 0.2)
-  outline.lineTo(-0.17, 0.2)
-  outline.quadraticCurveTo(-0.24, 0.1, -0.22, 0.02)
-  outline.closePath()
-  const eye = new THREE.Path()
-  eye.absarc(0, -0.03, 0.045, 0, Math.PI * 2, true)
-  outline.holes.push(eye)
-  const depth = 0.1
-  const nibShape = new THREE.ExtrudeGeometry(outline, {
-    depth,
-    bevelEnabled: true,
-    bevelThickness: 0.012,
-    bevelSize: 0.01,
-    bevelSegments: 2,
+  // The nib points down to the middle of the curve. It is a thin sheet of
+  // steel bent round, as a slice of a cone: narrow and flatter at the tip,
+  // round at the shoulders, and it goes into the round grip of the pen.
+  const steel = kit.graphite(0.5, {
+    roughness: 0.32,
+    metalness: 0.55,
+    side: THREE.DoubleSide,
   })
-  nibShape.translate(0, 0, -depth / 2)
-  root.add(kit.mesh(nibShape, body))
-  // The slit from the eye to the tip, and the eye, in light.
-  const slit = kit.box(0.014, 0.25, 0.012, glow)
-  slit.position.set(0, (tipY + 0.02 - 0.075) / 2, depth / 2 + 0.012)
+  const nib = nibGeometry()
+  root.add(kit.mesh(nib.geometry, steel))
+  // The slit from the breather hole to the tip, and the hole, in light.
+  // Both lie on the top of the nib, at its middle line.
+  const slitLength = nib.eyeY - nib.tipY - 0.03
+  const slit = kit.box(0.012, slitLength, 0.01, glow)
+  slit.position.set(0, nib.tipY + 0.02 + slitLength / 2, nib.topZ + 0.002)
   root.add(slit)
-  const eyeGlow = kit.mesh(
-    new THREE.CylinderGeometry(0.044, 0.044, depth, 20),
+  const eye = kit.mesh(
+    new THREE.CylinderGeometry(0.026, 0.026, 0.014, 20),
     glow,
   )
-  eyeGlow.rotation.x = Math.PI / 2
-  eyeGlow.position.y = -0.03
-  root.add(eyeGlow)
-  const collar = kit.box(0.4, 0.12, 0.15, kit.graphite(0.3), 0.03)
-  collar.position.y = 0.26
-  root.add(collar)
+  eye.rotation.x = Math.PI / 2
+  eye.position.set(0, nib.eyeY, nib.topZ)
+  root.add(eye)
+  // A small bead of hard metal at the tip.
+  const bead = kit.mesh(new THREE.SphereGeometry(0.018, 14, 10), steel)
+  bead.position.set(0, nib.tipY + 0.008, nib.topZ - 0.012)
+  root.add(bead)
+  // Under the nib, the feed: a dark bar with fins, that brings the ink.
+  const ink = kit.graphite(0)
+  const feed = kit.mesh(new THREE.CylinderGeometry(0.075, 0.1, 0.36, 18), ink)
+  feed.position.set(0, nib.baseY - 0.16, nib.axisZ + 0.04)
+  root.add(feed)
+  for (let i = 0; i < 5; i++) {
+    const fin = kit.mesh(
+      new THREE.CylinderGeometry(0.108, 0.108, 0.014, 18),
+      ink,
+    )
+    fin.position.set(0, nib.baseY - 0.02 - i * 0.035, nib.axisZ + 0.04)
+    root.add(fin)
+  }
+  // The grip of the pen, round, with a ring of light where the nib goes
+  // in. It widens a little away from the nib, as a grip does.
+  const grip = kit.mesh(
+    new THREE.CylinderGeometry(
+      nib.baseRadius + 0.03,
+      nib.baseRadius + 0.012,
+      0.2,
+      40,
+    ),
+    kit.graphite(0.22),
+  )
+  grip.position.set(0, nib.baseY + 0.1, nib.axisZ)
+  root.add(grip)
+  const ring = kit.mesh(
+    new THREE.TorusGeometry(nib.baseRadius + 0.022, 0.008, 8, 40),
+    glow,
+  )
+  ring.rotation.x = Math.PI / 2
+  ring.position.set(0, nib.baseY + 0.005, nib.axisZ)
+  root.add(ring)
 
   // The curve: anchors at the ends, handles to the two control points.
   const anchors = [v(-0.48, -0.16, 0.04), v(0.48, -0.16, 0.04)]
