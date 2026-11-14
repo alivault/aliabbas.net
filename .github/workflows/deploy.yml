@@ -1,9 +1,15 @@
 name: Test and deploy
 
-# A push to master deploys as soon as the fast checks pass. The end-to-end
-# tests run at the same time, against a production build of the same commit.
-# If they fail, the rollback job puts the previous version back. Pull
-# requests run the same checks and tests, and do not deploy.
+# A push to master: the fast checks and the build, then the end-to-end
+# tests on the self-hosted runner (a Mac with Asahi Linux and a GPU, so the
+# 3D world is drawn at full speed and its tests run too), then the deploy.
+# Nothing deploys until every test passes.
+#
+# Pull requests run the checks and the end-to-end tests on GitHub's
+# runners (software WebGL, the world tests skip) and never deploy. They
+# never run on the self-hosted runner: the repo is public, and that runner
+# is Ali's computer. A manual run can also use GitHub's runners for the
+# tests, for when the Mac is off.
 
 on:
   push:
@@ -11,6 +17,11 @@ on:
       - master
   pull_request:
   workflow_dispatch:
+    inputs:
+      hosted:
+        description: Run the end-to-end tests on GitHub's runners (no GPU), for when the Mac is off
+        type: boolean
+        default: false
 
 # A newer push to a pull request cancels the older run. On master each
 # commit has its own group: a run is never stopped part way through a deploy.
@@ -25,17 +36,10 @@ env:
   WORKER_NAME: ali-abbas
 
 jobs:
-  ship:
-    name: Check, build and deploy
+  check:
+    name: Check, unit tests and build
     runs-on: ubuntu-latest
     timeout-minutes: 10
-    # Deploys run one at a time, in push order.
-    concurrency:
-      group: deploy-${{ github.event_name == 'pull_request' && github.sha || 'production' }}
-      cancel-in-progress: false
-    outputs:
-      previous: ${{ steps.deploy.outputs.previous }}
-      version: ${{ steps.deploy.outputs.version }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
@@ -51,7 +55,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: modules-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json') }}
+          key: modules-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json') }}
 
       - name: Install dependencies
         if: steps.modules.outputs.cache-hit != 'true'
@@ -66,21 +70,62 @@ jobs:
           wait $unit
           wait $build
 
-      - name: Deploy Worker
-        id: deploy
-        if: github.event_name != 'pull_request'
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-        run: |
-          previous=$(vp exec wrangler deployments status --name "$WORKER_NAME" --json | jq -r '.versions[0].version_id')
-          vp exec wrangler deploy --message "${GITHUB_SHA::7}" | tee deploy.log
-          version=$(grep -oP 'Current Version ID: \K\S+' deploy.log)
-          echo "previous=$previous" >> "$GITHUB_OUTPUT"
-          echo "version=$version" >> "$GITHUB_OUTPUT"
+  # The end-to-end tests on the Mac, with the GPU (GPU=1 in
+  # playwright.config.ts). Only for pushes to master and manual runs.
+  e2e-gpu:
+    name: End-to-end tests (GPU)
+    if: github.event_name != 'pull_request' && !inputs.hosted
+    runs-on: [self-hosted, linux, ARM64, asahi-gpu]
+    timeout-minutes: 15
+    steps:
+      # The checkout keeps node_modules from the last run, so the install
+      # is fast. git still resets every tracked file.
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          clean: false
 
-  e2e:
+      - name: Set up Vite+
+        uses: voidzero-dev/setup-vp@v1.21.2
+        with:
+          run-install: false
+
+      - name: Install dependencies
+        run: vp install --frozen-lockfile
+
+      # E2E=1 turns off the remote Cloudflare bindings, so preview needs no
+      # login. The tests mock the AI. The Turnstile test key from
+      # .env.development passes on localhost; the production key does not.
+      - name: Build
+        run: |
+          VITE_TURNSTILE_SITE_KEY=$(grep -oP '^VITE_TURNSTILE_SITE_KEY=\K.*' .env.development) \
+            vp build
+        env:
+          E2E: '1'
+
+      # CHROMIUM_PATH comes from the runner's service (the Chromium of
+      # NixOS). Playwright starts it with no sandbox of its own, which the
+      # service's namespace rules need.
+      - name: End-to-end tests
+        run: vp exec playwright test
+        env:
+          GPU: '1'
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-gpu
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7
+
+  # The same tests on GitHub's runners, with software WebGL: for pull
+  # requests, and for a manual run while the Mac is off.
+  e2e-hosted:
     name: End-to-end tests (${{ matrix.shard }}/3)
+    if: github.event_name == 'pull_request' || inputs.hosted
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
@@ -96,21 +141,17 @@ jobs:
         with:
           run-install: false
 
-      # node_modules itself, for this lockfile: a hit skips the install.
       - name: Restore node_modules
         id: modules
         uses: actions/cache@v4
         with:
           path: node_modules
-          key: modules-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json') }}
+          key: modules-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json') }}
 
       - name: Install dependencies
         if: steps.modules.outputs.cache-hit != 'true'
         run: vp install --frozen-lockfile
 
-      # E2E=1 turns off the remote Cloudflare bindings, so preview needs no
-      # login. The tests mock the AI. The Turnstile test key from
-      # .env.development passes on localhost; the production key does not.
       - name: Build
         run: |
           VITE_TURNSTILE_SITE_KEY=$(grep -oP '^VITE_TURNSTILE_SITE_KEY=\K.*' .env.development) \
@@ -134,28 +175,50 @@ jobs:
             test-results/
           retention-days: 7
 
-  rollback:
-    name: Roll back after failed tests
-    needs: [ship, e2e]
-    if: failure() && github.event_name != 'pull_request' && needs.ship.result == 'success' && needs.ship.outputs.previous != ''
+  # Only after the checks and one set of end-to-end tests passed. The
+  # other set did not run, so it is "skipped", not "success".
+  deploy:
+    name: Deploy
+    needs: [check, e2e-gpu, e2e-hosted]
+    if: >-
+      always() &&
+      github.event_name != 'pull_request' &&
+      github.ref == 'refs/heads/master' &&
+      needs.check.result == 'success' &&
+      (needs.e2e-gpu.result == 'success' || needs.e2e-hosted.result == 'success') &&
+      needs.e2e-gpu.result != 'failure' &&
+      needs.e2e-hosted.result != 'failure'
     runs-on: ubuntu-latest
-    timeout-minutes: 5
-    env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      PREVIOUS: ${{ needs.ship.outputs.previous }}
-      VERSION: ${{ needs.ship.outputs.version }}
+    timeout-minutes: 10
+    # Deploys run one at a time, in push order.
+    concurrency:
+      group: deploy-production
+      cancel-in-progress: false
     steps:
-      # Roll back only if this run's version is still live. A newer push may
-      # have deployed since then, and its own tests decide about it.
-      - name: Roll back to the previous version
-        run: |
-          wrangler="npx --yes wrangler@4.114.0"
-          live=$($wrangler deployments status --name "$WORKER_NAME" --json | jq -r '.versions[0].version_id')
-          if [ "$live" != "$VERSION" ]; then
-            echo "Version $live is live, not $VERSION: a newer deploy replaced it. No rollback."
-            exit 0
-          fi
-          $wrangler rollback "$PREVIOUS" --name "$WORKER_NAME" --yes \
-            --message "End-to-end tests failed for ${GITHUB_SHA::7}"
-          echo "::warning::Rolled back to $PREVIOUS: the end-to-end tests failed for ${GITHUB_SHA::7}."
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Vite+
+        uses: voidzero-dev/setup-vp@v1.21.2
+        with:
+          run-install: false
+
+      - name: Restore node_modules
+        id: modules
+        uses: actions/cache@v4
+        with:
+          path: node_modules
+          key: modules-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json') }}
+
+      - name: Install dependencies
+        if: steps.modules.outputs.cache-hit != 'true'
+        run: vp install --frozen-lockfile
+
+      - name: Build
+        run: vp build
+
+      - name: Deploy Worker
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: vp exec wrangler deploy --message "${GITHUB_SHA::7}"
